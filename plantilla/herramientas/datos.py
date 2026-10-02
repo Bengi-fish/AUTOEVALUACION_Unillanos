@@ -27,12 +27,12 @@ ICONS.update({
 SEDES = {
     "villavicencio": {
         "nombre": "Villavicencio",
-        "stats": {"factores": "12", "participantes": "3.126", "acciones": "22", "global": "4,2"},
+        "stats": {"factores": "12", "participantes": "3.126", "acciones": "26", "global": "4,2"},
         "delta": {},
     },
     "granada": {
         "nombre": "Granada",
-        "stats": {"factores": "12", "participantes": "1.686", "acciones": "15", "global": "4,2"},
+        "stats": {"factores": "12", "participantes": "1.686", "acciones": "18", "global": "4,2"},
         # La suma de variaciones es cero para que el promedio sea igual.
         "delta": {"f1": -0.1, "f2": 0.1, "f3": -0.2, "f4": 0.0, "f5": 0.1, "f6": 0.2,
                   "f7": -0.1, "f8": 0.1, "f9": -0.3, "f10": 0.1, "f11": 0.0, "f12": 0.1},

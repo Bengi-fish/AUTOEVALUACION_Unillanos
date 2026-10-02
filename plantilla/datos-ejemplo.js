@@ -671,7 +671,7 @@ window.UnillanosData = {
    "stats": {
     "factores": "12",
     "participantes": "3.126",
-    "acciones": "22",
+    "acciones": "26",
     "global": "4,2"
    },
    "delta": {}
@@ -681,7 +681,7 @@ window.UnillanosData = {
    "stats": {
     "factores": "12",
     "participantes": "1.686",
-    "acciones": "15",
+    "acciones": "18",
     "global": "4,2"
    },
    "delta": {

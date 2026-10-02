@@ -15,56 +15,13 @@ def esc(s):
     return html.escape(s, quote=True)
 
 # ---------------------------------------------------------------- menú
-NAV_INSTITUCIONAL = [
-    ("Registro calificado institucional", "institucional-registro-calificado.html", "inst-registro"),
-    ("Autoevaluación", "institucional-autoevaluacion.html", "inst-autoevaluacion"),
-    ("Plan de mejoramiento", "institucional-autoevaluacion.html#plan-mejoramiento", "inst-plan"),
-]
-NAV_DOCUMENTOS = [
-    ("Normatividad", "documentos.html#normatividad", "doc-normatividad"),
-    ("Documentos base", "documentos.html#documentos-base", "doc-base"),
-]
-
 def nav(section, page):
-    chev = ic("chevron-down", "ua-icon--sm ua-nav__chev")
-    def link(label, href, key):
-        cur = ' aria-current="page"' if key == page else ""
-        return '<li><a href="%s"%s>%s</a></li>' % (href, cur, label)
-    def top(label, key, extra=""):
-        cur = ' aria-current="page"' if section == key else ""
-        return '<li class="ua-nav__item"><a class="ua-nav__link" href="%s"%s>%s</a></li>' % (extra, cur, label)
-    def mega(label, key, mid, body, cls):
-        cur = " is-current" if section == key else ""
-        return ('<li class="ua-nav__item ua-nav__item--mega ua-nav__item--compact">'
-                '<button class="ua-nav__link%s" type="button" data-ua-subtoggle aria-expanded="false" aria-controls="%s">%s%s</button>'
-                '<div class="ua-mega %s" id="%s">%s</div></li>') % (cur, mid, label, chev, cls, mid, body)
-
-    inst = ('<div class="ua-mega__inner"><div class="ua-mega__col"><ul class="ua-mega__list">%s</ul></div></div>'
-            % "".join(link(*x) for x in NAV_INSTITUCIONAL))
-    prog_links = (
-        '<li><a href="programas.html#registro">Registro calificado de programa</a></li>'
-        '<li><p class="ua-mega__sublabel">Autoevaluación de programas</p><ul class="ua-mega__sublist">'
-        '<li><a href="programas.html#nacional">Nacional</a></li><li><a href="programas.html#internacional">Internacional</a></li></ul></li>'
-        '<li><a href="programas.html#plan">Planes de mejoramiento de programas</a></li>')
-    prog = ('<div class="ua-mega__inner"><div class="ua-mega__col"><ul class="ua-mega__list">%s</ul></div>'
-            '<div class="ua-mega__col"><p class="ua-mega__title">%s Buscar un programa</p>'
-            '<form class="ua-search ua-search--full" data-ua-prog-search data-route="registro" role="search">%s<span class="ua-sr">Buscar un programa</span>'
-            '<input type="search" list="menu-prog-lista" placeholder="Nombre del programa o facultad"><datalist id="menu-prog-lista"></datalist></form>'
-            '<p class="ua-mega__hint">Ejemplo: Enfermería, Ingeniería de Sistemas, Medicina Veterinaria y Zootecnia.</p></div></div>'
-            % (prog_links, ic("search", "ua-icon--sm"), ic("search")))
-    docs = ('<div class="ua-mega__inner"><div class="ua-mega__col"><ul class="ua-mega__list">%s</ul></div></div>'
-            % "".join(link(*x) for x in NAV_DOCUMENTOS))
-    inicio_cur = ' aria-current="page"' if section == "inicio" else ""
-    part_cur = ' aria-current="page"' if section == "participa" else ""
-    return ('<nav class="ua-nav" id="ua-menu" aria-label="Menú principal"><div class="ua-container"><ul class="ua-nav__list">'
-            '<li class="ua-nav__item"><a class="ua-nav__link" href="index.html"%s>Inicio</a></li>%s%s%s'
-            '<li class="ua-nav__item"><a class="ua-nav__link" href="participa.html"%s>Participa</a></li>'
-            '</ul></div></nav>') % (
-        inicio_cur,
-        mega("Institucional", "institucional", "menu-institucional", inst, "ua-mega--slim"),
-        mega("Programas", "programas", "menu-programas", prog, "ua-mega--duo"),
-        mega("Documentos", "documentos", "menu-documentos", docs, "ua-mega--slim"),
-        part_cur)
+    items = [("inicio", "Inicio", "index.html"), ("institucional", "Institucional", "institucional.html"),
+             ("programas", "Programas", "programas.html"), ("documentos", "Documentos", "documentos.html"),
+             ("participa", "Participa", "participa.html")]
+    lis = "".join('<li class="ua-nav__item"><a class="ua-nav__link" href="%s"%s>%s</a></li>' % (
+        href, ' aria-current="page"' if section == key else "", label) for key, label, href in items)
+    return '<nav class="ua-nav" id="ua-menu" aria-label="Menú principal"><div class="ua-container"><ul class="ua-nav__list">%s</ul></div></nav>' % lis
 
 def header(section, page):
     return ('<a class="ua-btn ua-btn--primario ua-skip" href="#contenido">Saltar al contenido</a>\n'
@@ -90,8 +47,8 @@ def footer():
         '    <p class="ua-footer__inst"><strong>Universidad de los Llanos</strong><span>Sedes Villavicencio y Granada · Meta, Colombia</span></p>\n'
         '  </div></div>\n  <div class="ua-footer__rule"></div>\n  <div class="ua-container">\n  <div class="ua-footer__top">\n'
         '    <div><p class="ua-footer__name">Sistema de Información de Autoevaluación Institucional</p><p>Un espacio para consultar, participar y hacer seguimiento a la mejora continua de la Universidad.</p></div>\n'
-        '    <div><h3>Institucional</h3><ul class="ua-footer__links"><li><a href="institucional-registro-calificado.html">Registro calificado institucional</a></li><li><a href="institucional-autoevaluacion.html">Autoevaluación</a></li><li><a href="institucional-autoevaluacion.html#plan-mejoramiento">Plan de mejoramiento</a></li></ul></div>\n'
-        '    <div><h3>Programas y documentos</h3><ul class="ua-footer__links"><li><a href="programas.html#registro">Registro calificado de programa</a></li><li><a href="programas.html#nacional">Autoevaluación de programas</a></li><li><a href="documentos.html#normatividad">Normatividad</a></li><li><a href="documentos.html#documentos-base">Documentos base</a></li><li><a href="participa.html">Participa</a></li></ul></div>\n'
+        '    <div><h3>Institucional</h3><ul class="ua-footer__links"><li><a href="institucional.html#registro-calificado">Registro calificado</a></li><li><a href="institucional.html#autoevaluacion">Autoevaluación</a></li><li><a href="institucional.html#plan-mejoramiento">Plan de mejoramiento</a></li></ul></div>\n'
+        '    <div><h3>Programas y documentos</h3><ul class="ua-footer__links"><li><a href="programas.html">Buscar un programa</a></li><li><a href="documentos.html#normatividad">Normatividad</a></li><li><a href="documentos.html#documentos-base">Documentos base</a></li><li><a href="participa.html">Participa</a></li></ul></div>\n'
         '    <div><h3>Contacto</h3><ul class="ua-footer__contact"><li>%s<span>Dirección de la sede principal<br>Villavicencio, Meta, Colombia</span></li><li>%s<span>Teléfono de contacto</span></li><li>%s<span>Correo de la oficina de autoevaluación</span></li></ul></div>\n'
         '  </div>\n'
         '  <div class="ua-footer__bottom"><span>Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional. © 2026 Universidad de los Llanos.</span>\n'
@@ -201,7 +158,7 @@ def build_inicio():
     stats = ('<section class="ua-stats" aria-label="Cifras del proceso"><div class="ua-container"><ul class="ua-stats__list">'
         '<li class="ua-stat"><span class="ua-stat__value">12</span><span class="ua-stat__label">Factores evaluados</span></li>'
         '<li class="ua-stat"><span class="ua-stat__value">4.812</span><span class="ua-stat__label">Personas participaron en encuestas</span></li>'
-        '<li class="ua-stat"><span class="ua-stat__value">37</span><span class="ua-stat__label">Acciones de mejora formuladas</span></li>'
+        '<li class="ua-stat"><span class="ua-stat__value">44</span><span class="ua-stat__label">Acciones de mejora formuladas</span></li>'
         '<li class="ua-stat"><span class="ua-stat__value">4,2</span><span class="ua-stat__label">Valoración global sobre 5</span></li>'
         '</ul></div></section>')
 
@@ -230,7 +187,7 @@ def build_inicio():
                 '<span class="ua-card__cta">%s%s</span></a>') % (href, ic(icon_name), title, text, cta, ic("arrow-right", "ua-icon--sm"))
     explora = ('<section class="ua-section" id="explora"><div class="ua-container">%s<div class="ua-cards">%s%s%s%s</div></div></section>') % (
         section_head("Explora el sistema", "Lo que se ha evaluado, en un solo lugar", "Entra por el ámbito que te interesa: la Universidad en sus dos sedes o cada uno de sus programas."),
-        card("building", "Institucional", "Registro calificado, autoevaluación por factores y plan de mejoramiento de la Universidad, en las sedes Villavicencio y Granada.", "institucional-autoevaluacion.html", "Ver autoevaluación institucional"),
+        card("building", "Institucional", "Registro calificado, autoevaluación por factores y plan de mejoramiento de la Universidad, en las sedes Villavicencio y Granada.", "institucional.html", "Ver autoevaluación institucional"),
         card("cap", "Programas", "Busca un programa y consulta su registro calificado, su autoevaluación nacional o internacional y su plan de mejoramiento.", "programas.html", "Buscar un programa"),
         card("book", "Documentos", "Normatividad y documentos base que sustentan el proceso de autoevaluación.", "documentos.html", "Ver documentos"),
         card("message", "Participa", "Conoce las encuestas, grupos focales y entrevistas del proceso y envía tus recomendaciones.", "participa.html", "Participar"))
@@ -252,11 +209,7 @@ def galeria_html():
         '<div class="ua-gallery__track" tabindex="0" aria-label="Galería del proceso">%s</div></div></section>') % (ic("chevron-left"), ic("chevron-right"), items)
 
 # ---------------------------------------------------------------- INSTITUCIONAL · REGISTRO CALIFICADO
-def build_inst_registro():
-    head = pagehead([("Inicio", "index.html"), ("Institucional", "institucional-autoevaluacion.html"), ("Registro calificado institucional", "")],
-        "Institucional", "Registro calificado <span>institucional</span>",
-        "El registro calificado institucional reconoce que la Universidad cumple las condiciones de calidad exigidas para ofrecer y desarrollar sus programas.")
-
+def panel_inst_registro():
     concepto = ('<section class="ua-section"><div class="ua-container"><div class="ua-concept">'
         '<div>%s<p class="ua-lead">El registro calificado es el reconocimiento que otorga el Ministerio de Educación Nacional cuando una institución demuestra que reúne las condiciones de calidad para funcionar y ofrecer programas de educación superior.</p>'
         '<p>La verificación se hace sobre las <strong>condiciones institucionales</strong>: la forma en que la Universidad selecciona y evalúa a sus estudiantes y profesores, se organiza, se evalúa a sí misma, acompaña a sus egresados, cuida el bienestar de su comunidad y dispone de los recursos para cumplir sus funciones.</p>'
@@ -279,7 +232,7 @@ def build_inst_registro():
     cards = "".join('<li class="ua-cond"><span class="ua-cond__n">%02d</span><h3 class="ua-cond__title">%s</h3><p class="ua-cond__text">%s</p>'
                     '<div class="ua-cond__estados"><span class="ua-cond__sede">Villavicencio</span>%s<span class="ua-cond__sede">Granada</span>%s</div></li>'
                     % (i, esc(t), esc(d), estado(*v), estado(*g)) for i, (t, d, v, g) in enumerate(conds, 1))
-    condiciones = ('<section class="ua-section ua-section--alt" id="condiciones"><div class="ua-container">%s<ol class="ua-cond-grid">%s</ol></div></section>') % (
+    condiciones = ('<section class="ua-section ua-section--alt"><div class="ua-container">%s<ol class="ua-cond-grid">%s</ol></div></section>') % (
         section_head("Condiciones institucionales", "Lo que se verifica", "Cada condición se documenta con evidencias y se revisa por sede. El estado que ves es ilustrativo."), cards)
 
     docs = ('<section class="ua-section"><div class="ua-container">%s<ul class="ua-docs">%s%s%s%s</ul></div></section>') % (
@@ -288,61 +241,71 @@ def build_inst_registro():
         doc_item("Acto administrativo", "Resolución de registro calificado institucional · Granada", "PDF · 1,3 MB · ejemplo"),
         doc_item("Informe", "Informe de verificación de condiciones institucionales", "PDF · 3,2 MB · ejemplo"),
         doc_item("Matriz", "Matriz de evidencias por condición", "XLSX · 220 KB · ejemplo", "XLSX"))
-    cta = ('<section class="ua-section ua-section--alt"><div class="ua-container"><div class="ua-cta-row"><div><h2 class="ua-h3">Siguiente paso</h2><p>Consulta la autoevaluación institucional por factores, con su valoración y su plan de mejoramiento.</p></div>'
-           '<a class="ua-btn ua-btn--primario" href="institucional-autoevaluacion.html">Ver autoevaluación%s</a></div></div></section>') % ic("arrow-right")
-    page("institucional-registro-calificado.html", "Registro calificado institucional", "institucional", "inst-registro", head + concepto + condiciones + docs + cta)
+    cta = ('<section class="ua-section ua-section--alt"><div class="ua-container"><div class="ua-cta-row"><div><h2 class="ua-h3">Siguiente paso</h2><p>Consulta la autoevaluación institucional por factores, con su valoración y sus fortalezas.</p></div>'
+           '<a class="ua-btn ua-btn--primario" href="#autoevaluacion" data-ua-view-go="autoevaluacion">Ver autoevaluación%s</a></div></div></section>') % ic("arrow-right")
+    return concepto + condiciones + docs + cta
 
 # ---------------------------------------------------------------- INSTITUCIONAL · AUTOEVALUACIÓN
-def build_inst_autoevaluacion():
+def panel_inst_autoevaluacion():
     scope = ('<div class="ua-scope" role="group" aria-label="Elegir sede">'
              '<span class="ua-scope__label">%s Sede</span>'
              '<button type="button" class="ua-scope__opt" data-ua-sede="villavicencio" aria-pressed="true">Villavicencio</button>'
              '<button type="button" class="ua-scope__opt" data-ua-sede="granada" aria-pressed="false">Granada</button></div>') % ic("map-pin", "ua-icon--sm")
-    head = ('<section class="ua-pagehead"><div class="ua-container">%s'
-            '<div class="ua-pagehead__row">%s%s</div>'
-            '<span class="ua-eyebrow" style="display:block">Institucional · Proceso 2024 – 2026</span>'
-            '<h1 class="ua-pagehead__title">Autoevaluación <span>institucional</span> · <span data-ua-sede-name>Villavicencio</span></h1>'
-            '<p class="ua-pagehead__lead">Valoración de los doce factores del modelo institucional, con sus fortalezas y el plan de mejoramiento. Elige la sede para ver sus resultados.</p></div></section>') % (
-        crumbs([("Inicio", "index.html"), ("Institucional", "institucional-autoevaluacion.html"), ("Autoevaluación", "")]), scope, CHIP_PROTO)
+    intro = ('<section class="ua-section ua-section--tight"><div class="ua-container"><div class="ua-panel-intro"><div><span class="ua-eyebrow">Autoevaluación institucional · Proceso 2024 – 2026</span>'
+             '<h2 class="ua-h2">Resultados de <span data-ua-sede-name>Villavicencio</span></h2>'
+             '<p>Valoración de los doce factores del modelo institucional y sus fortalezas. Elige la sede para ver sus resultados.</p></div>%s</div></div></section>') % scope
 
     stats = ('<section class="ua-stats" aria-label="Cifras de la sede"><div class="ua-container"><ul class="ua-stats__list">'
         '<li class="ua-stat"><span class="ua-stat__value" data-ua-stat="factores">12</span><span class="ua-stat__label">Factores evaluados</span></li>'
         '<li class="ua-stat"><span class="ua-stat__value" data-ua-stat="participantes">3.126</span><span class="ua-stat__label">Personas participaron en encuestas</span></li>'
-        '<li class="ua-stat"><span class="ua-stat__value" data-ua-stat="acciones">22</span><span class="ua-stat__label">Acciones de mejora formuladas</span></li>'
+        '<li class="ua-stat"><span class="ua-stat__value" data-ua-stat="acciones">26</span><span class="ua-stat__label">Acciones de mejora formuladas</span></li>'
         '<li class="ua-stat"><span class="ua-stat__value" data-ua-stat="global">4,2</span><span class="ua-stat__label">Valoración global sobre 5</span></li>'
         '</ul></div></section>')
 
-    factores = ('<section class="ua-section" id="factores"><div class="ua-container">%s'
+    factores = ('<section class="ua-section"><div class="ua-container">%s'
         '<div class="ua-factor-grid" data-ua-factor-grid data-source="institucional"></div>'
         '<div class="ua-adendas" data-ua-adendas data-source="institucional"></div></div></section>') % section_head(
-        "Resultados", "Factores evaluados", "Consulta la valoración, las fortalezas y el plan de mejoramiento de cada uno de los doce factores y las adendas del informe.",
+        "Resultados", "Factores evaluados", "Consulta la valoración y las fortalezas de cada uno de los doce factores y las adendas del informe.",
         '<a class="ua-btn ua-btn--secundario" href="#">%sDescargar informe consolidado</a>' % ic("download"))
 
-    detalle = ('<section class="ua-section ua-section--alt" id="detalle"><div class="ua-container"><span id="plan-mejoramiento"></span>%s'
+    detalle = ('<section class="ua-section ua-section--alt" id="detalle"><div class="ua-container">%s'
         '<div class="ua-tabs" id="tabs-institucional" data-ua-tabs data-source="institucional" data-initial="f1" data-label="Factores y adendas"></div></div></section>') % section_head(
-        "Informe por factor", "Valoración y plan de mejoramiento", "Cada factor se acompaña de su plan de mejoramiento: situaciones por intervenir, acciones, responsables y plazos.")
-    page("institucional-autoevaluacion.html", "Autoevaluación institucional", "institucional", "inst-autoevaluacion", head + stats + factores + detalle)
+        "Informe por factor", "Valoración y fortalezas", "Cada factor enlaza con sus acciones en la pestaña Plan de mejoramiento.")
+    return intro + stats + factores + detalle
+
+def panel_inst_plan():
+    return ('<section class="ua-section"><div class="ua-container">%s<div data-ua-plan-all data-plan-source="institucional"></div></div></section>') % section_head(
+        "Plan de mejoramiento", "Acciones de mejora de la Universidad",
+        "Plan consolidado de ambas sedes: situación por intervenir, acción, responsables y plazo. Filtra por factor o por plazo.")
+
+def viewbar(tabs):
+    """tabs: [(clave, icono, etiqueta)]"""
+    btns = "".join('<button class="ua-viewtab" role="tab" type="button" data-view="%s" aria-selected="%s">%s <span>%s</span></button>' % (k, "true" if i == 0 else "false", ic(icn), lab) for i, (k, icn, lab) in enumerate(tabs))
+    return '<div class="ua-viewbar"><div class="ua-container"><div class="ua-viewtabs" role="tablist" aria-label="Secciones">%s<span class="ua-viewtabs__ink" aria-hidden="true"></span></div></div></div>' % btns
+
+def build_institucional():
+    head = pagehead([("Inicio", "index.html"), ("Institucional", "")], "Institucional", "Calidad <span>institucional</span>",
+        "Registro calificado, autoevaluación y plan de mejoramiento de la Universidad, en un solo lugar.")
+    bar = viewbar([("registro", "award", "Registro calificado"), ("autoevaluacion", "target", "Autoevaluación"), ("plan", "layers", "Plan de mejoramiento")])
+    panels = ('<div data-view-panel="registro" role="tabpanel" class="ua-pane">%s</div>'
+              '<div data-view-panel="autoevaluacion" role="tabpanel" class="ua-pane" hidden>%s</div>'
+              '<div data-view-panel="plan" role="tabpanel" class="ua-pane" hidden>%s</div>') % (panel_inst_registro(), panel_inst_autoevaluacion(), panel_inst_plan())
+    body = head + '<div data-ua-views data-routes="registro-calificado=registro;autoevaluacion=autoevaluacion;plan-mejoramiento=plan">%s%s</div>' % (bar, panels)
+    page("institucional.html", "Institucional", "institucional", "institucional", body)
 
 # ---------------------------------------------------------------- PROGRAMAS (buscador)
 def build_programas():
-    vistas = [("registro", "Registro calificado"), ("nacional", "Autoevaluación nacional"), ("internacional", "Autoevaluación internacional"), ("plan", "Plan de mejoramiento")]
-    btns = "".join('<button type="button" class="ua-filter__btn" data-ua-vista="%s" aria-pressed="%s">%s</button>' % (k, "true" if k == "registro" else "false", v) for k, v in vistas)
-    head = ('<section class="ua-pagehead"><div class="ua-container">%s'
-            '<div class="ua-pagehead__row">%s</div>'
-            '<span class="ua-eyebrow" style="display:block">Programas académicos</span>'
-            '<h1 class="ua-pagehead__title" data-ua-vista-title>Registro calificado de programa</h1>'
-            '<p class="ua-pagehead__lead" data-ua-vista-lead>Elige un programa para consultar su registro calificado.</p></div></section>') % (
-        crumbs([("Inicio", "index.html"), ("Programas", "")]), CHIP_PROTO)
+    head = pagehead([("Inicio", "index.html"), ("Programas", "")], "Programas académicos", "Encuentra un <span>programa</span>",
+        "Busca un programa para consultar su registro calificado, su autoevaluación y su plan de mejoramiento.")
     cuerpo = ('<section class="ua-section"><div class="ua-container">'
-        '<div class="ua-filter" role="group" aria-label="Qué quieres consultar">%s</div>'
         '<div class="ua-searchbar"><label class="ua-search ua-search--full">%s<span class="ua-sr">Buscar un programa</span><input type="search" data-ua-prog-q placeholder="Nombre del programa o facultad"></label>'
         '<label class="ua-selectbar"><span class="ua-sr">Facultad</span><select class="ua-select" data-ua-prog-facultad><option value="">Todas las facultades</option></select></label>'
         '<label class="ua-selectbar"><span class="ua-sr">Sede</span><select class="ua-select" data-ua-prog-sede><option value="">Todas las sedes</option><option>Villavicencio</option><option>Granada</option></select></label></div>'
         '<p class="ua-searchbar__count ua-meta" data-ua-prog-count aria-live="polite"></p>'
         '<ul class="ua-prog-list" data-ua-prog-list></ul>'
         '<p class="ua-meta ua-prog-note">%s En este prototipo, todos los programas abren la ficha del programa de ejemplo (Ingeniería Electrónica).</p>'
-        '</div></section>') % (btns, ic("search"), ic("info", "ua-icon--sm"))
-    page("programas.html", "Programas académicos", "programas", "prog-buscador", head + cuerpo, "data-ua-programas")
+        '</div></section>') % (ic("search"), ic("info", "ua-icon--sm"))
+    page("programas.html", "Programas académicos", "programas", "programas", head + cuerpo, "data-ua-programas")
 
 # ---------------------------------------------------------------- PROGRAMA DE EJEMPLO
 def build_programa():
@@ -352,15 +315,12 @@ def build_programa():
         '<span class="ua-eyebrow" style="display:block">Facultad de Ciencias Básicas e Ingeniería · Sede Villavicencio</span>'
         '<h1 class="ua-pagehead__title">Ingeniería <span>Electrónica</span></h1>'
         '<p class="ua-pagehead__lead">Registro calificado, autoevaluación y plan de mejoramiento del programa, en un solo lugar.</p>'
-        '<form class="ua-progsearch" data-ua-prog-search data-ua-route-link role="search"><label class="ua-search ua-search--full">%s<span class="ua-sr">Buscar otro programa</span>'
+        '<form class="ua-progsearch" data-ua-prog-search role="search"><label class="ua-search ua-search--full">%s<span class="ua-sr">Buscar otro programa</span>'
         '<input type="search" list="prog-lista" placeholder="Buscar otro programa"><datalist id="prog-lista"></datalist></label>'
         '<button class="ua-btn ua-btn--secundario" type="submit">Buscar</button></form>'
         '</div></section>') % (crumbs([("Inicio", "index.html"), ("Programas", "programas.html"), ("Ingeniería Electrónica", "")]), CHIP_PROTO, ic("search"))
 
-    tabs = ('<div class="ua-viewtabs" role="tablist" aria-label="Secciones del programa">'
-        '<button class="ua-viewtab" role="tab" type="button" data-view="registro" aria-selected="true">%s Registro calificado</button>'
-        '<button class="ua-viewtab" role="tab" type="button" data-view="autoevaluacion" aria-selected="false">%s Autoevaluación</button>'
-        '<button class="ua-viewtab" role="tab" type="button" data-view="plan" aria-selected="false">%s Plan de mejoramiento</button></div>') % (ic("award"), ic("target"), ic("layers"))
+    bar = viewbar([("registro", "award", "Registro calificado"), ("autoevaluacion", "target", "Autoevaluación"), ("plan", "layers", "Plan de mejoramiento")])
 
     ficha = [("Nivel", "Pregrado universitario"), ("Modalidad", "Presencial"), ("Duración", "10 semestres"), ("Créditos académicos", "160"),
              ("Código SNIES", "00000 (ejemplo)"), ("Sede", "Villavicencio"), ("Resolución de registro", "N.º 0000 de 2022 (ejemplo)"), ("Vigente hasta", "Diciembre de 2029")]
@@ -377,17 +337,17 @@ def build_programa():
         ("Infraestructura física y tecnológica", "Espacios y equipos adecuados para el desarrollo del programa.", ("Pendiente", "pendiente")),
     ]
     cond_html = "".join('<li class="ua-cond"><span class="ua-cond__n">%02d</span><h3 class="ua-cond__title">%s</h3><p class="ua-cond__text">%s</p><div class="ua-cond__estados">%s</div></li>' % (i, esc(t), esc(d), estado(*e)) for i, (t, d, e) in enumerate(cond, 1))
-    registro = ('<div data-view-panel="registro" role="tabpanel">'
+    registro = ('<div data-view-panel="registro" role="tabpanel" class="ua-pane"><section class="ua-section"><div class="ua-container">'
         '<div class="ua-panel-intro"><div><span class="ua-eyebrow">Registro calificado</span><h2 class="ua-h2">Ficha del programa</h2></div>%s</div>'
         '<dl class="ua-ficha">%s</dl>'
         '<div class="ua-panel-intro"><div><span class="ua-eyebrow">Condiciones de calidad</span><h2 class="ua-h2">Lo que se verifica</h2><p>Las nueve condiciones de calidad del programa. El estado que ves es ilustrativo.</p></div></div>'
         '<ol class="ua-cond-grid">%s</ol>'
-        '<ul class="ua-docs ua-docs--spaced">%s%s</ul></div>') % (
+        '<ul class="ua-docs ua-docs--spaced">%s%s</ul></div></section></div>') % (
         estado("Registro vigente", "ok"), ficha_html, cond_html,
         doc_item("Acto administrativo", "Resolución de registro calificado · Ingeniería Electrónica", "PDF · 1,1 MB · ejemplo"),
         doc_item("Documento maestro", "Documento maestro del programa", "PDF · 4,8 MB · ejemplo"))
 
-    auto = ('<div data-view-panel="autoevaluacion" role="tabpanel" hidden>'
+    auto = ('<div data-view-panel="autoevaluacion" role="tabpanel" class="ua-pane" hidden><section class="ua-section"><div class="ua-container">'
         '<div class="ua-panel-intro"><div><span class="ua-eyebrow">Autoevaluación del programa</span><h2 class="ua-h2">Factores, valoración y fortalezas</h2><p>Elige con qué fin se mira la autoevaluación: acreditación nacional o internacional.</p></div>'
         '<div class="ua-scope" role="group" aria-label="Tipo de autoevaluación"><span class="ua-scope__label">%s Fin</span>'
         '<button type="button" class="ua-scope__opt" data-sub="nacional" aria-pressed="true">Nacional</button>'
@@ -396,13 +356,13 @@ def build_programa():
         '<div class="ua-subsection"><div class="ua-tabs" id="tabs-prog-nacional" data-ua-tabs data-source="programa-nacional" data-initial="p1" data-label="Factores del programa"></div></div></div>'
         '<div data-sub-panel="internacional" hidden><div class="ua-factor-grid ua-factor-grid--four" data-ua-factor-grid data-source="programa-internacional"></div>'
         '<div class="ua-subsection"><div class="ua-tabs" id="tabs-prog-internacional" data-ua-tabs data-source="programa-internacional" data-initial="i1" data-label="Dimensiones del programa"></div></div></div>'
-        '</div>') % ic("target", "ua-icon--sm")
+        '</div></section></div>') % ic("target", "ua-icon--sm")
 
-    plan = ('<div data-view-panel="plan" role="tabpanel" hidden>'
-        '<div class="ua-panel-intro"><div><span class="ua-eyebrow">Plan de mejoramiento</span><h2 class="ua-h2">Acciones del programa</h2><p>Reúne las acciones de mejora de la autoevaluación nacional (F) e internacional (D).</p></div></div>'
-        '<div data-ua-plan-all></div></div>')
+    plan = ('<div data-view-panel="plan" role="tabpanel" class="ua-pane" hidden><section class="ua-section"><div class="ua-container">'
+        '<div class="ua-panel-intro"><div><span class="ua-eyebrow">Plan de mejoramiento</span><h2 class="ua-h2">Acciones del programa</h2><p>Reúne las acciones de mejora de la autoevaluación nacional (F) e internacional (D). Filtra por factor o por plazo.</p></div></div>'
+        '<div data-ua-plan-all data-plan-source="programa"></div></div></section></div>')
 
-    body = head + ('<section class="ua-section"><div class="ua-container" data-ua-views>%s%s%s%s</div></section>') % (tabs, registro, auto, plan)
+    body = head + '<div data-ua-views data-routes="registro=registro;nacional=autoevaluacion/nacional;internacional=autoevaluacion/internacional;plan=plan">%s%s%s%s</div>' % (bar, registro, auto, plan)
     page("programa-ejemplo.html", "Ingeniería Electrónica", "programas", "prog-ficha", body)
 
 # ---------------------------------------------------------------- DOCUMENTOS
@@ -426,11 +386,13 @@ def build_documentos():
     n_items = "".join(('<li class="ua-doc"><span class="ua-doc__icon">%sPDF</span><div class="ua-doc__main"><span class="ua-doc__cat">Normatividad</span><h3 class="ua-doc__title">%s</h3><p class="ua-doc__desc">%s</p><p class="ua-meta">%s</p></div>'
                        '<a class="ua-icon-btn" href="#">%s<span class="ua-sr">Descargar %s</span></a></li>') % (ic("file"), esc(t), esc(d), esc(m), ic("download"), esc(t)) for t, d, m in normas)
     b_items = "".join(doc_item("Documento base", t, m) for t, m in base)
-    cuerpo = ('<section class="ua-section" id="normatividad"><div class="ua-container">%s<ul class="ua-docs">%s</ul></div></section>'
-              '<section class="ua-section ua-section--alt" id="documentos-base"><div class="ua-container">%s<ul class="ua-docs">%s</ul></div></section>') % (
-        section_head("Normatividad", "Normas que orientan el proceso", "Leyes, decretos y acuerdos del sector. Los enlaces de descarga son de ejemplo."), n_items,
+    bar = viewbar([("normatividad", "scale", "Normatividad"), ("documentos-base", "book", "Documentos base")])
+    p1 = ('<div data-view-panel="normatividad" role="tabpanel" class="ua-pane"><section class="ua-section"><div class="ua-container">%s<ul class="ua-docs">%s</ul></div></section></div>') % (
+        section_head("Normatividad", "Normas que orientan el proceso", "Leyes, decretos y acuerdos del sector. Los enlaces de descarga son de ejemplo."), n_items)
+    p2 = ('<div data-view-panel="documentos-base" role="tabpanel" class="ua-pane" hidden><section class="ua-section"><div class="ua-container">%s<ul class="ua-docs">%s</ul></div></section></div>') % (
         section_head("Documentos base", "Documentos que sustentan el proceso", "Los documentos institucionales se irán definiendo con el comité de autoevaluación."), b_items)
-    page("documentos.html", "Documentos", "documentos", "doc-normatividad", head + cuerpo)
+    cuerpo = '<div data-ua-views data-routes="normatividad=normatividad;documentos-base=documentos-base">%s%s%s</div>' % (bar, p1, p2)
+    page("documentos.html", "Documentos", "documentos", "documentos", head + cuerpo)
 
 # ---------------------------------------------------------------- PARTICIPA
 def build_participa():
@@ -458,5 +420,5 @@ def write_data():
 
 if __name__ == "__main__":
     write_data()
-    build_inicio(); build_inst_registro(); build_inst_autoevaluacion(); build_programas(); build_programa(); build_documentos(); build_participa()
+    build_inicio(); build_institucional(); build_programas(); build_programa(); build_documentos(); build_participa()
     print("ok", sorted(f for f in os.listdir(OUT) if f.endswith((".html", ".js", ".css"))))

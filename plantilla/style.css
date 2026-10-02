@@ -706,3 +706,65 @@ body.ua { min-height: 100vh; }
   .ua-progsearch { flex-direction: column; }
   .ua-sede__head { flex-wrap: wrap; }
 }
+
+/* =====================================================================
+   Pestañas de página (Institucional · Programa · Documentos) y movimiento
+   ===================================================================== */
+.ua-viewbar { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); -webkit-backdrop-filter: saturate(1.4) blur(10px); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--borde); box-shadow: 0 1px 0 rgba(0,0,0,.02); }
+.ua-viewbar .ua-viewtabs { position: relative; border-bottom: 0; margin-bottom: 0; scrollbar-width: none; }
+.ua-viewbar .ua-viewtabs::-webkit-scrollbar { display: none; }
+.ua-viewtabs__ink { position: absolute; left: 0; bottom: 0; height: 3px; width: var(--w, 0); transform: translateX(var(--x, 0)); border-radius: 3px 3px 0 0; background: linear-gradient(90deg, var(--Unillanos_Red), #ff4d5f); opacity: 0; pointer-events: none; }
+.ua-viewtabs--ink .ua-viewtabs__ink { opacity: 1; transition: transform .55s cubic-bezier(.34,1.45,.4,1), width .55s cubic-bezier(.34,1.45,.4,1), opacity .2s; }
+.ua-viewtabs--ink .ua-viewtab[aria-selected="true"] { border-bottom-color: transparent !important; }
+.ua .ua-viewtab { position: relative; transition: color .2s ease, background-color .2s ease; border-radius: var(--radio-md) var(--radio-md) 0 0; }
+.ua .ua-viewtab:hover { background: var(--superficie-50); }
+.ua .ua-viewtab .ua-icon { transition: color .2s ease, transform .3s ease; }
+.ua .ua-viewtab[aria-selected="true"] .ua-icon { animation: ua-pop .55s cubic-bezier(.34,1.56,.64,1); }
+.ua-tabs { scroll-margin-top: 84px; }
+
+@keyframes ua-pop { 0% { transform: scale(.6) rotate(-14deg); } 55% { transform: scale(1.35) rotate(6deg); } 100% { transform: scale(1) rotate(0); } }
+
+/* Entrada del panel: desliza según el sentido del cambio, con un poco de desenfoque */
+.ua-pane.is-in-next { animation: ua-in-next .55s cubic-bezier(.2,.8,.2,1) backwards; }
+.ua-pane.is-in-prev { animation: ua-in-prev .55s cubic-bezier(.2,.8,.2,1) backwards; }
+.ua-pane.is-in-fade, .ua-panel.is-in-fade, [data-sub-panel].is-in-fade { animation: ua-in-fade .4s ease backwards; }
+[data-sub-panel].is-in-next, .ua-panel.is-in-next { animation: ua-in-next .5s cubic-bezier(.2,.8,.2,1) backwards; }
+[data-sub-panel].is-in-prev, .ua-panel.is-in-prev { animation: ua-in-prev .5s cubic-bezier(.2,.8,.2,1) backwards; }
+@keyframes ua-in-next { from { opacity: 0; transform: translateX(56px); filter: blur(8px); } }
+@keyframes ua-in-prev { from { opacity: 0; transform: translateX(-56px); filter: blur(8px); } }
+@keyframes ua-in-fade { from { opacity: 0; transform: translateY(10px); } }
+
+/* Cascada: cada pieza sube con un pequeño retraso (--i) */
+.ua-rise { animation: ua-rise .65s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: calc(var(--i, 0) * 60ms + 90ms); }
+@keyframes ua-rise { from { opacity: 0; transform: translateY(22px) scale(.97); } }
+
+/* Las barras de valoración se llenan al entrar */
+.is-in-next .ua-meter__fill, .is-in-prev .ua-meter__fill, .is-in-fade .ua-meter__fill { transform-origin: left center; animation: ua-fill 1s cubic-bezier(.2,.8,.2,1) .3s backwards; }
+@keyframes ua-fill { from { transform: scaleX(0); } }
+
+/* Enlace al plan de mejoramiento desde cada factor */
+.ua-planlink { display: flex; align-items: center; gap: var(--espacio-4); padding: var(--espacio-4) var(--espacio-5); border: 1px solid var(--borde); border-radius: var(--radio-lg); background: var(--superficie-50); text-decoration: none; color: var(--tinta-900); transition: border-color .2s, background-color .2s, transform .2s, box-shadow .2s; }
+.ua-planlink > .ua-icon { flex: none; width: 40px; height: 40px; padding: 9px; border-radius: 12px; background: #fde7ea; color: var(--rojo-700); }
+.ua-planlink__text { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.ua-planlink__text strong { font-size: 17px; }
+.ua-planlink__text span { color: var(--tinta-500); font-size: 14px; }
+.ua-planlink__go { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; color: var(--rojo-700); white-space: nowrap; }
+.ua-planlink__go .ua-icon { transition: transform .25s ease; }
+.ua-planlink:hover { border-color: var(--Unillanos_Red); background: var(--Surface); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(227,6,29,.10); }
+.ua-planlink:hover .ua-planlink__go .ua-icon { transform: translateX(5px); }
+@media (max-width: 560px) { .ua-planlink { flex-wrap: wrap; } .ua-planlink__go { width: 100%; } }
+
+/* Filtros del plan de mejoramiento */
+.ua-planall-filter { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espacio-3); margin-bottom: var(--espacio-5); }
+.ua-planall-filter .ua-selectbar { display: flex; align-items: center; gap: 8px; flex: 1 1 260px; max-width: 420px; }
+.ua-planall-filter__lab { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--tinta-500); }
+.ua-planall-filter .ua-select { flex: 1; min-width: 0; }
+
+/* Sección compacta (cabecera de la autoevaluación) */
+.ua-section--tight { padding-block: var(--espacio-6) var(--espacio-5); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ua-pane, .ua-panel, [data-sub-panel], .ua-rise, .ua-meter__fill, .ua .ua-viewtab .ua-icon { animation: none !important; }
+  .ua-viewtabs--ink .ua-viewtabs__ink { transition: none; }
+}
+.ua [hidden] { display: none !important; }
