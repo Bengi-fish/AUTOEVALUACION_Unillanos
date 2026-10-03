@@ -1,16 +1,19 @@
 # AUTOEVALUACION_Unillanos
 
-Sistema de Información de Autoevaluación de la Universidad de los Llanos (UNILLANOS).
+Sistema de Información de Autoevaluación de la Universidad de los Llanos (UNILLANOS), en Drupal 11.
+
+**Para empezar a desarrollar:** [`docs/IMPLEMENTACION_DRUPAL.md`](docs/IMPLEMENTACION_DRUPAL.md).
+**Contexto para Claude Code:** [`CLAUDE.md`](CLAUDE.md).
 
 ## Estructura
 
 | Carpeta | Contenido |
 | --- | --- |
-| `plantilla/` | Prototipo de alta fidelidad (`index.html` + `style.css`). Abrir `index.html` en el navegador; ambos archivos deben estar en la misma carpeta. |
-| `docs/` | Documentos fuente de los que se extrae la información del sistema. |
-
-## Documentos fuente (`docs/`)
-
-- `acuerdo-cesu-001-2025.docx`: Acuerdo CESU 001 de 2025.
-- `plan-mejoramiento-institucional-2024-II-2030-CNA.xlsx`: plan de mejoramiento institucional 2024-II a 2030 (CNA).
-- `informe-autoevaluacion-2022-ingenieria-electronica.pdf`: informe de autoevaluación 2022 del programa de Ingeniería Electrónica.
+| `docs/fuentes/` | Documentos originales: Acuerdo CESU 01 de 2025, informe de autoevaluación de Ingeniería Electrónica 2018–2022 y plan de mejoramiento FO-GCL-20 de Ingeniería Electrónica (2024-2 – 2030). |
+| `docs/mer/` | MER v2: diagrama (`MER-v2.png` / `.pdf`), versión en texto (`MER.md`) y diccionario de datos. |
+| `docs/drupal/` | Traducción del MER a Drupal (tipos de contenido, campos, nombres de máquina). |
+| `datos/semillas/` | Catálogos en CSV: lineamientos, factores/características/aspectos (CNA 2020, CESU 2025), condiciones del Decreto 1330, escala de cumplimiento, estamentos, sedes, facultades, programas, proyectos institucionales. |
+| `datos/importacion/` | Datos por programa en CSV (por ahora, Ingeniería Electrónica). |
+| `datos/herramientas/` | `plan_excel_a_csv.py`: convierte un Excel FO-GCL-20 en CSV. |
+| `plantilla/` | Prototipo de alta fidelidad (HTML/CSS/JS). Abrir `plantilla/index.html`. |
+| `drupal/` | Proyecto Drupal (se crea en la fase 1 de la guía). |

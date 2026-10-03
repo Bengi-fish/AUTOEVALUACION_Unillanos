@@ -1,0 +1,41 @@
+id,nombre,nivel,modalidad,facultad_id,sede_id,codigo_snies,director,resolucion_registro,registro_hasta,resolucion_acreditacion,acreditacion_hasta,activo
+enfermeria,Enfermería,pregrado,,fcs,,,,,,,,1
+tecnologia-en-regencia-de-farmacia,Tecnología en Regencia de Farmacia,pregrado,,fcs,,,,,,,,1
+especializacion-en-seguridad-y-salud-en-el-trabajo,Especialización en Seguridad y Salud en el Trabajo,especializacion,,fcs,,,,,,,,1
+especializacion-en-salud-familiar,Especialización en Salud Familiar,especializacion,,fcs,,,,,,,,1
+especializacion-en-administracion-en-salud,Especialización en Administración en Salud,especializacion,,fcs,,,,,,,,1
+especializacion-en-epidemiologia,Especialización en Epidemiologia,especializacion,,fcs,,,,,,,,1
+maestria-en-epidemiologia,Maestría en Epidemiología,maestria,,fcs,,,,,,,,1
+biologia,Biología,pregrado,,fcbi,,,,,,,,1
+ingenieria-de-sistemas,Ingeniería de Sistemas,pregrado,,fcbi,,,,,,,,1
+ingenieria-electronica,Ingeniería Electrónica,pregrado,,fcbi,,,Héctor Iván Reyes Moncayo,,,,,1
+ingenieria-de-procesos,Ingeniería de Procesos,pregrado,,fcbi,,,,,,,,1
+ingenieria-ambiental,Ingeniería Ambiental,pregrado,,fcbi,,,,,,,,1
+especializacion-en-ingenieria-de-software,Especialización en Ingeniería de Software,especializacion,,fcbi,,,,,,,,1
+especializacion-en-gestion-ambiental-sostenible,Especialización en Gestión Ambiental Sostenible,especializacion,,fcbi,,,,,,,,1
+especializacion-en-instrumentacion-y-control-industrial,Especialización en Instrumentación y Control Industrial,especializacion,,fcbi,,,,,,,,1
+maestria-en-gestion-ambiental-sostenible,Maestría en Gestión Ambiental Sostenible,maestria,,fcbi,,,,,,,,1
+administracion-de-empresas,Administración de Empresas,pregrado,,fce,,,,,,,,1
+contaduria-publica,Contaduría Pública,pregrado,,fce,,,,,,,,1
+economia,Economía,pregrado,,fce,,,,,,,,1
+mercadeo,Mercadeo,pregrado,,fce,,,,,,,,1
+especializacion-en-finanzas,Especialización en Finanzas,especializacion,,fce,,,,,,,,1
+especializacion-en-administracion-de-negocios,Especialización en Administración de Negocios,especializacion,,fce,,,,,,,,1
+especializacion-en-desarrollo-de-mercados,Especialización en Desarrollo de Mercados,especializacion,,fce,,,,,,,,1
+especializacion-en-gestion-de-la-calidad,Especialización en Gestión de la Calidad,especializacion,,fce,,,,,,,,1
+maestria-en-administracion-de-negocios,Maestría en Administración de Negocios,maestria,,fce,,,,,,,,1
+medicina-veterinaria-y-zootecnia,Medicina Veterinaria y Zootecnia,pregrado,,fcarn,,,,,,,,1
+ingenieria-agronomica,Ingeniería Agronómica,pregrado,,fcarn,,,,,,,,1
+ingenieria-agroindustrial,Ingeniería Agroindustrial,pregrado,,fcarn,,,,,,,,1
+especializacion-en-produccion-agricola-tropical-sostenible,Especialización en Producción Agrícola Tropical Sostenible,especializacion,,fcarn,,,,,,,,1
+especializacion-en-acuicultura-aguas-continentales,Especialización en Acuicultura - Aguas Continentales,especializacion,,fcarn,,,,,,,,1
+maestria-en-produccion-tropical-sostenible,Maestría en Producción Tropical Sostenible,maestria,,fcarn,,,,,,,,1
+maestria-en-sistemas-sostenibles-de-salud-produccion-animal-tropical,Maestría en Sistemas Sostenibles de Salud - Producción Animal Tropical,maestria,,fcarn,,,,,,,,1
+maestria-en-acuicultura,Maestría en Acuicultura,maestria,,fcarn,,,,,,,,1
+doctorado-en-ciencias-agrarias,Doctorado en Ciencias Agrarias,doctorado,,fcarn,,,,,,,,1
+licenciatura-en-educacion-fisica-y-deporte,Licenciatura en Educación Física y Deporte,pregrado,,fchye,,,,,,,,1
+licenciatura-en-matematicas,Licenciatura en Matemáticas,pregrado,,fchye,,,,,,,,1
+licenciatura-en-educacion-infantil,Licenciatura en Educación Infantil,pregrado,,fchye,,,,,,,,1
+especializacion-en-accion-motriz,Especialización en Acción Motriz,especializacion,,fchye,,,,,,,,1
+maestria-en-estudios-de-desarrollo-local,Maestría en Estudios de Desarrollo Local,maestria,,fchye,,,,,,,,1
+maestria-en-estudios-culturales,Maestría en Estudios Culturales,maestria,,fchye,,,,,,,,1

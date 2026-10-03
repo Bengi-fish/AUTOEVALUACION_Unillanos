@@ -1,0 +1,6 @@
+id,nombre,valoracion_min,valoracion_max,porcentaje_min,orden
+pleno,Pleno,4.8,5.0,96,1
+alto,Alto,4.0,4.7,86,2
+aceptable,Aceptable,3.0,3.9,61,3
+insatisfactorio,Insatisfactorio,2.6,2.9,51,4
+no_cumple,No se cumple,1.0,2.5,0,5

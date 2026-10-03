@@ -1,0 +1,20 @@
+id,meta_id,nombre,linea_base,valor_base,total
+M01-I1,M01,No. de puntos por encima del grupo de referencia,165 Programa 153 Grupo de referencia,165,165
+M02-I1,M02,% estudiantes participando en Bienestar Institucional,0.501,0.501,0.6
+M02-I2,M02,% Profesores participando en Bienestar Institucional,0.14,0.14,0.6
+M02-I3,M02,% Administrativos participando en Bienestar Institucional,0.08,0.08,0.6
+M03-I1,M03,No. de convocatorias desarrolladas,1,0,1
+M04-I1,M04,% de asignación de horas a la función misional de investigación,0.07,0.07,0.25
+M05-I1,M05,% de asignación de horas a la función de proyección social,0.04,0.04,0.2
+M06-I1,M06,No. de estrategias desarrolladas anualmente,1,1,1
+M07-I1,M07,% de docentes que participan en redes u organismos académicos con productos o resultados,0.1379310345,0.1379,0.3
+M08-I1,M08,No. producto desarrollado,0,0,1
+M09-I1,M09,No. de estudiantes visitantes del programa.,1,0,1
+M10-I1,M10,% de estudiantes beneficiarios de movilidad saliente,0.1553398058,0.1553398058,0.2
+M11-I1,M11,% de la tasa de deserción,"6,25% lel programa 11,03% es la media nacional",0.056,0.04
+M12-I1,M12,No. de semestres de graduación de los estudiantes,"12,5 semestres",12.5,12.5
+M13-I1,M13,N° de grupos que subieron de categoría,1 grupo en B y 4 en C,2,1
+M14-I1,M14,% de nuevos registros en la base de datos,0.35,0.35,0.45
+M15-I1,M15,N° de complejos de laboratorios construidos,0,0,1
+M16-I1,M16,% de ejecución del plan de adquisición de equipos de laboratorios,0,0.28,1.0039
+M17-I1,M17,% de medición de impacto,0.6,0.6,0.8

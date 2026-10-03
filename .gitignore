@@ -1,0 +1,31 @@
+# --- Drupal (proyecto Composer en drupal/) ---
+/drupal/vendor/
+/drupal/web/core/
+/drupal/web/modules/contrib/
+/drupal/web/themes/contrib/
+/drupal/web/profiles/contrib/
+/drupal/web/libraries/
+/drupal/web/sites/*/files/
+/drupal/web/sites/*/private/
+/drupal/web/sites/*/settings.local.php
+/drupal/web/sites/*/settings.ddev.php
+/drupal/web/sites/simpletest/
+/drupal/private/
+
+# --- Bases de datos y respaldos (nunca al repositorio) ---
+*.sql
+*.sql.gz
+*.mysql
+*.tar.gz
+
+# --- Sistema y editores ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+__pycache__/
+node_modules/
+
+# --- Claude Code: ajustes locales de cada persona ---
+.claude/settings.local.json
