@@ -315,10 +315,10 @@ Lee CLAUDE.md y docs/IMPLEMENTACION_DRUPAL.md (sección 6). Ejecuta la Fase 2 en
 
 1. Antes de instalar, comprueba que webform y migrate_source_csv tengan versión compatible con la
    versión de Drupal instalada. Si alguno no la tiene, avísame y espera; no lo fuerces.
-2. Instala con `ddev composer require`: drupal/admin_toolbar drupal/pathauto drupal/paragraphs
+2. Instala con `ddev composer require`: drupal/pathauto drupal/paragraphs
    drupal/field_group drupal/auto_entitylabel drupal/webform drupal/migrate_plus drupal/migrate_tools
    drupal/migrate_source_csv drupal/better_exposed_filters.
-3. Habilita con `ddev drush en -y`: admin_toolbar admin_toolbar_tools pathauto paragraphs field_group
+3. Habilita con `ddev drush en -y`: pathauto paragraphs field_group
    auto_entitylabel webform webform_ui migrate_plus migrate_tools migrate_source_csv
    better_exposed_filters media media_library datetime link options.
 4. Traducciones: `ddev drush locale:check && ddev drush locale:update`.
@@ -331,13 +331,12 @@ Lee CLAUDE.md y docs/IMPLEMENTACION_DRUPAL.md (sección 6). Ejecuta la Fase 2 en
 6. Crea `.claude/settings.json` (se versiona, a diferencia de settings.local.json) con
    {"attribution": {"commit": "", "pr": ""}, "includeCoAuthoredBy": false}
    para que Claude no firme commits ni pull requests.
-7. Si el menú de administración queda duplicado entre admin_toolbar y el módulo navigation del
-   núcleo, dime cuál prefieres antes de desactivar nada.
-Mensaje de commit: "Fase 2: módulos contrib y configuración regional".
+7. Nota: el menú de administración es el módulo navigation del núcleo. No se usa admin_toolbar.
+Mensaje de commit: "Fase 2: módulos contrib, configuración regional y menú Navigation del núcleo".
 Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
 
-**Tú verificas:** entras con `ddev drush uli` y compruebas que aparece la barra de administración y que Estructura → Webform existe.
+**Tú verificas:** entras con `ddev drush uli` y compruebas que aparece la barra lateral de Navigation y que Estructura → Webform existe.
 
 **Hecho cuando:** los módulos están habilitados, `config:status` sin diferencias y el sitio responde.
 

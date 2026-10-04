@@ -12,7 +12,7 @@ Este documento traduce cada entidad del [MER v2](../mer/MER.md) a una pieza de D
 | Archivos descargables | **Media (tipo Documento)** | Biblioteca de archivos estándar de Drupal. |
 | Formulario público | **Webform** | Consentimiento, correo, estados y exportación sin programar. |
 
-Todo con módulos del núcleo, salvo: `paragraphs`, `webform`, `pathauto`, `field_group`, `auto_entitylabel`, `migrate_plus`, `migrate_tools`, `migrate_source_csv`, `better_exposed_filters`, `admin_toolbar`.
+Todo con módulos del núcleo, salvo: `paragraphs`, `webform`, `pathauto`, `field_group`, `auto_entitylabel`, `migrate_plus`, `migrate_tools`, `migrate_source_csv`, `better_exposed_filters`.
 
 La lógica que Drupal no trae se programa en el módulo propio **`unillanos_autoeval`** (cálculo del grado, validación de unicidad, avance de metas).
 

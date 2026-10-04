@@ -1,0 +1,16 @@
+uuid: 504fcc62-1f7b-4d6d-b0f4-a28102ed7218
+langcode: es
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: VWUWqwszm5ZaqT3frIPWjyyVmvmWnWMFRphkVXCl8t0
+id: image
+label: Imagen
+description: 'Archivo de imagen alojado localmente.'
+source: image
+queue_thumbnail_downloads: false
+new_revision: true
+source_configuration:
+  source_field: field_media_image
+field_map:
+  name: name

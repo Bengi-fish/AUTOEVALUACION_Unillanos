@@ -46,7 +46,7 @@ display:
             items_per_page_options_all: false
             items_per_page_options_all_label: '- Todo -'
             offset: false
-            offset_label: Offset
+            offset_label: Desplazamiento
           quantity: 9
       exposed_form:
         type: basic
