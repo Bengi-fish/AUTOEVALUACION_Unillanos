@@ -114,9 +114,29 @@ class ServiciosTest extends UnillanosKernelTestBase {
   }
 
   /**
+   * Un hallazgo transversal, sin elemento, no recibe sugerencia ni falla.
+   */
+  public function testHallazgoSinElementoNoSugiereDestino(): void {
+    $proceso = $this->crearNodo('proceso');
+    $this->assertNull($this->destino($proceso->id(), NULL));
+
+    $sin_destino = $this->crearNodo('hallazgo', ['field_proceso' => $proceso->id()]);
+    $this->assertTrue($sin_destino->get('field_elemento')->isEmpty());
+    $this->assertTrue($sin_destino->get('field_destino')->isEmpty());
+    $this->assertCount(0, $sin_destino->validate());
+
+    $con_destino = $this->crearNodo('hallazgo', [
+      'field_proceso' => $proceso->id(),
+      'field_destino' => 'plan_accion',
+    ]);
+    $this->assertSame('plan_accion', $con_destino->get('field_destino')->value);
+    $this->assertCount(0, $con_destino->validate());
+  }
+
+  /**
    * Devuelve el destino sugerido.
    */
-  protected function destino(int|string $proceso, int|string $elemento): ?string {
+  protected function destino(int|string $proceso, int|string|NULL $elemento): ?string {
     return $this->container->get('unillanos_autoeval.sugerencia_destino')->sugerir($proceso, $elemento);
   }
 
