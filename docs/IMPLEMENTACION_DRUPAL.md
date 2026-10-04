@@ -441,7 +441,8 @@ python3 datos/herramientas/plan_excel_a_csv.py "docs/fuentes/<plan-del-programa>
 
 Revisa a mano:
 
-- `responsables.csv`: unifica los nombres repetidos o mal escritos, por ejemplo "Profsores" y "Profesores", o "Dirección General de Investigación" y "Dirección General de Investigaciones".
+- `responsables.csv`: catálogo canónico (`id`, `nombre`, `tipo`, `sigla`), sin duplicados.
+- `equivalencias_responsables.csv` (`variante`, `id`): mapea cada texto de `metas.csv` al responsable canónico, sin distinguir mayúsculas ni espacios. Aquí se unifican "Profsores" → "Profesores" o "Dirección General de Investigación" → "Dirección General de Investigaciones".
 - `equivalencias_factores_plan.csv`: asigna a cada texto de factor del Excel su elemento del modelo. Ojo: algunos planes usan la numeración de factores de 2013.
 - `valoraciones_factores.csv` y `proceso.csv`: se llenan a partir del informe del programa.
 

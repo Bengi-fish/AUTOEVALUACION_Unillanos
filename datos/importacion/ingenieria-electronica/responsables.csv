@@ -1,27 +1,22 @@
-nombre
-Bienestar Institucional
-Centro de proyección social FCBI
-Comité de Escuela
-Comité de Escuela Ingeniería
-Comité de Programa
-Consejo Académico
-Consejo Superior
-Consejo de FCBI
-Consejo de Facultad
-Coordinación de laboratorios
-Departamento de Básicas
-Dirección General de Currículo
-Dirección General de Investigaciones
-Dirección General de Investigación
-Dirección General de Proyección Social
-Director de Programa
-Estudiantes
-Oficina de Relaciones Interinstitucionales OIRI
-PREU
-Profesores
-Profesores del programa
-Profsores
-Programa de Egresados
-Vicerrectoría Académica
-Vicerrectoría de Recursos
-Vicerrectoría de Recursos Universitarios
+id,nombre,tipo,sigla
+bienestar_institucional,Bienestar Institucional,dependencia,
+centro_de_proyeccion_social_fcbi,Centro de proyección social FCBI,dependencia,
+comite_de_escuela,Comité de Escuela,organo_colegiado,
+comite_de_programa,Comité de Programa,organo_colegiado,
+consejo_academico,Consejo Académico,organo_colegiado,
+consejo_superior,Consejo Superior,organo_colegiado,
+consejo_de_facultad,Consejo de Facultad,organo_colegiado,
+coordinacion_de_laboratorios,Coordinación de laboratorios,dependencia,
+departamento_de_basicas,Departamento de Básicas,dependencia,
+direccion_general_de_curriculo,Dirección General de Currículo,dependencia,
+direccion_general_de_investigaciones,Dirección General de Investigaciones,dependencia,
+direccion_general_de_proyeccion_social,Dirección General de Proyección Social,dependencia,
+director_de_programa,Director de Programa,dependencia,
+estudiantes,Estudiantes,comunidad,
+oficina_de_relaciones_interinstitucionales_oiri,Oficina de Relaciones Interinstitucionales OIRI,dependencia,OIRI
+preu,PREU,dependencia,
+profesores,Profesores,comunidad,
+profesores_del_programa,Profesores del programa,dependencia,
+programa_de_egresados,Programa de Egresados,dependencia,
+vicerrectoria_academica,Vicerrectoría Académica,dependencia,
+vicerrectoria_de_recursos_universitarios,Vicerrectoría de Recursos Universitarios,dependencia,
