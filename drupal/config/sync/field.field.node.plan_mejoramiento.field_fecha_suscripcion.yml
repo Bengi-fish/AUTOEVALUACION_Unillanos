@@ -1,0 +1,21 @@
+uuid: 11a50161-8b34-4a02-bd8d-417bcdfcc82a
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_fecha_suscripcion
+    - node.type.plan_mejoramiento
+  module:
+    - datetime
+id: node.plan_mejoramiento.field_fecha_suscripcion
+field_name: field_fecha_suscripcion
+entity_type: node
+bundle: plan_mejoramiento
+label: 'Fecha de suscripción'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

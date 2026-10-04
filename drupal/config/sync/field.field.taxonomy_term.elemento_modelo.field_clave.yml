@@ -1,0 +1,19 @@
+uuid: 5447796b-f192-4e40-a429-8f1a39ff9786
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_clave
+    - taxonomy.vocabulary.elemento_modelo
+id: taxonomy_term.elemento_modelo.field_clave
+field_name: field_clave
+entity_type: taxonomy_term
+bundle: elemento_modelo
+label: Clave
+description: 'Clave de importación estable. Ej.: CNA20-F02, CESU25-C10, RC-P3.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,11 @@
+uuid: 49a59e0b-79c3-4e57-a0f5-da1258ab2f32
+langcode: es
+status: true
+dependencies: {  }
+name: Lineamiento
+type: lineamiento
+description: ''
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: false

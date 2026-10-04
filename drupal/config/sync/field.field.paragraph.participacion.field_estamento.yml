@@ -1,0 +1,28 @@
+uuid: 92048f05-ea67-4d5d-9cae-89454977ca21
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_estamento
+    - paragraphs.paragraphs_type.participacion
+    - taxonomy.vocabulary.estamento
+id: paragraph.participacion.field_estamento
+field_name: field_estamento
+entity_type: paragraph
+bundle: participacion
+label: Estamento
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      estamento: estamento
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+field_type: entity_reference

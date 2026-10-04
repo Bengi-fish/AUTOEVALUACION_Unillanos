@@ -1,0 +1,113 @@
+uuid: da845cb9-747e-4e13-9607-cf03fc88628f
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.proceso.field_ambito
+    - field.field.node.proceso.field_estado
+    - field.field.node.proceso.field_fase_actual
+    - field.field.node.proceso.field_lineamiento
+    - field.field.node.proceso.field_participaciones
+    - field.field.node.proceso.field_periodo_evaluado
+    - field.field.node.proceso.field_programa
+    - field.field.node.proceso.field_resultado
+    - field.field.node.proceso.field_sede
+    - field.field.node.proceso.field_tipo_proceso
+    - node.type.proceso
+  module:
+    - entity_reference_revisions
+    - options
+    - user
+id: node.proceso.default
+targetEntityType: node
+bundle: proceso
+mode: default
+content:
+  field_ambito:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_estado:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 8
+    region: content
+  field_fase_actual:
+    type: number_integer
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_lineamiento:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_participaciones:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  field_periodo_evaluado:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_programa:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_resultado:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 9
+    region: content
+  field_sede:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_tipo_proceso:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  langcode: true

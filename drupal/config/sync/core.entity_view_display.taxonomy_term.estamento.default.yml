@@ -1,0 +1,22 @@
+uuid: 5344b1ce-d9d3-4446-b8be-dd2a6e9e6530
+langcode: es
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.estamento
+  module:
+    - text
+id: taxonomy_term.estamento.default
+targetEntityType: taxonomy_term
+bundle: estamento
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  langcode: true

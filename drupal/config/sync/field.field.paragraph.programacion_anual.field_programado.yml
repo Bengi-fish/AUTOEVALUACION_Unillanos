@@ -1,0 +1,23 @@
+uuid: 68d57583-64ed-4459-b1e5-52dc27930773
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_programado
+    - paragraphs.paragraphs_type.programacion_anual
+id: paragraph.programacion_anual.field_programado
+field_name: field_programado
+entity_type: paragraph
+bundle: programacion_anual
+label: Programado
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

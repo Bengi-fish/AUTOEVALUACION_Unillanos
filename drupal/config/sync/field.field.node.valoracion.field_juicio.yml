@@ -1,0 +1,22 @@
+uuid: 5953ffd3-9293-43c8-b927-62f7a5299ab9
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_juicio
+    - node.type.valoracion
+  module:
+    - text
+id: node.valoracion.field_juicio
+field_name: field_juicio
+entity_type: node
+bundle: valoracion
+label: Juicio
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

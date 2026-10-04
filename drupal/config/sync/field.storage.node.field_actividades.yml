@@ -1,0 +1,19 @@
+uuid: 43b600df-96f7-4359-9a29-9bd4b8d4cb55
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - text
+id: node.field_actividades
+field_name: field_actividades
+entity_type: node
+type: text_long
+settings: {  }
+module: text
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

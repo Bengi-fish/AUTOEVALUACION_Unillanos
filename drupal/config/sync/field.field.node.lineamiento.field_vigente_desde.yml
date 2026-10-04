@@ -1,0 +1,21 @@
+uuid: ea8280bc-d4ce-4028-ba88-7193022db888
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vigente_desde
+    - node.type.lineamiento
+  module:
+    - datetime
+id: node.lineamiento.field_vigente_desde
+field_name: field_vigente_desde
+entity_type: node
+bundle: lineamiento
+label: 'Vigente desde'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

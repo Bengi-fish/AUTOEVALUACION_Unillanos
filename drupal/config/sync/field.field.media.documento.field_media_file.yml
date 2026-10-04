@@ -1,0 +1,27 @@
+uuid: 1a148ada-4fe2-4303-80c4-9e3ca65bbe46
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_media_file
+    - media.type.documento
+  module:
+    - file
+id: media.documento.field_media_file
+field_name: field_media_file
+entity_type: media
+bundle: documento
+label: Archivo
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: 'documentos/[date:custom:Y-m]'
+  file_extensions: 'pdf doc docx xls xlsx ppt pptx odt ods txt zip'
+  max_filesize: ''
+  description_field: false
+field_type: file

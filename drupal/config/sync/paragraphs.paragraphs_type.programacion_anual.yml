@@ -1,0 +1,10 @@
+uuid: d5e97dc7-c0f9-4c19-858d-4f7f46674dba
+langcode: es
+status: true
+dependencies: {  }
+id: programacion_anual
+label: 'Programación anual'
+icon_uuid: null
+icon_default: null
+description: null
+behavior_plugins: {  }

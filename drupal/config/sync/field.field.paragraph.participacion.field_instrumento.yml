@@ -1,0 +1,21 @@
+uuid: afacf405-99a4-443c-a61f-fb5c989245d8
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_instrumento
+    - paragraphs.paragraphs_type.participacion
+  module:
+    - options
+id: paragraph.participacion.field_instrumento
+field_name: field_instrumento
+entity_type: paragraph
+bundle: participacion
+label: Instrumento
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,28 @@
+uuid: c9e3fe66-3c93-4085-9721-b25cbce2a311
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_grado
+    - node.type.valoracion
+    - taxonomy.vocabulary.grado_cumplimiento
+id: node.valoracion.field_grado
+field_name: field_grado
+entity_type: node
+bundle: valoracion
+label: 'Grado de cumplimiento'
+description: 'Se calcula a partir de la valoración; no se digita.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      grado_cumplimiento: grado_cumplimiento
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+field_type: entity_reference

@@ -1,0 +1,28 @@
+uuid: 2a9ab074-9d4b-46b3-929d-4db75f095b85
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_lineamiento
+    - node.type.lineamiento
+    - node.type.proceso
+id: node.proceso.field_lineamiento
+field_name: field_lineamiento
+entity_type: node
+bundle: proceso
+label: Lineamiento
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      lineamiento: lineamiento
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

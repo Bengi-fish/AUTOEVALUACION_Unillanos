@@ -1,0 +1,32 @@
+uuid: 638ff458-190f-4b94-8a85-19b4b376ef0c
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.facultad.field_sigla
+    - taxonomy.vocabulary.facultad
+  module:
+    - text
+id: taxonomy_term.facultad.default
+targetEntityType: taxonomy_term
+bundle: facultad
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_sigla:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden:
+  langcode: true

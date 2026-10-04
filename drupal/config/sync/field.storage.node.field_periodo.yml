@@ -1,0 +1,21 @@
+uuid: ecbb61cc-fc41-4f67-93bd-f89b6192b9ef
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_periodo
+field_name: field_periodo
+entity_type: node
+type: string
+settings:
+  max_length: 20
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,22 @@
+uuid: 9b6b0a2a-9c0b-461f-a405-3e67ef50ef72
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sintesis
+    - node.type.valoracion
+  module:
+    - text
+id: node.valoracion.field_sintesis
+field_name: field_sintesis
+entity_type: node
+bundle: valoracion
+label: Síntesis
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

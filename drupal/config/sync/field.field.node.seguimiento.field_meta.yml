@@ -1,0 +1,28 @@
+uuid: f12dd5b2-64be-4800-8323-a918bde2e231
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_meta
+    - node.type.meta
+    - node.type.seguimiento
+id: node.seguimiento.field_meta
+field_name: field_meta
+entity_type: node
+bundle: seguimiento
+label: Meta
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      meta: meta
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

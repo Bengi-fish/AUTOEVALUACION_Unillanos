@@ -1,0 +1,21 @@
+uuid: 769795b5-21b9-4e5a-bff4-86d430fd3498
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_estado_condicion
+    - node.type.valoracion
+  module:
+    - options
+id: node.valoracion.field_estado_condicion
+field_name: field_estado_condicion
+entity_type: node
+bundle: valoracion
+label: 'Estado de la condición'
+description: 'Solo para condiciones de registro calificado.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

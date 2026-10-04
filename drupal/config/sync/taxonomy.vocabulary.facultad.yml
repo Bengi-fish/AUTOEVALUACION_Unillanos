@@ -1,0 +1,9 @@
+uuid: 453f3964-9b5c-4fb2-b7e3-387faa0d75eb
+langcode: es
+status: true
+dependencies: {  }
+name: Facultad
+vid: facultad
+description: ''
+weight: 0
+new_revision: false

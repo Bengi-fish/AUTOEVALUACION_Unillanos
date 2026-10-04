@@ -1,0 +1,30 @@
+uuid: 1075acd4-215b-42c8-a333-713e4d9ea29c
+langcode: es
+status: true
+dependencies:
+  module:
+    - options
+    - taxonomy
+id: taxonomy_term.field_tipo_responsable
+field_name: field_tipo_responsable
+entity_type: taxonomy_term
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: dependencia
+      label: Dependencia
+    -
+      value: organo_colegiado
+      label: 'Órgano colegiado'
+    -
+      value: comunidad
+      label: Comunidad
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

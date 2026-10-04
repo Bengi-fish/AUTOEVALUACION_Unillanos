@@ -1,0 +1,20 @@
+uuid: 33445c6c-ef37-4d50-8c66-b1aceb727b22
+langcode: es
+status: true
+dependencies:
+  module:
+    - datetime
+    - media
+id: media.field_fecha_publicacion
+field_name: field_fecha_publicacion
+entity_type: media
+type: datetime
+settings:
+  datetime_type: date
+module: datetime
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

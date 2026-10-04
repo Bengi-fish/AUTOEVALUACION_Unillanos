@@ -1,0 +1,23 @@
+uuid: f3a727e4-644f-4f22-8dec-6adcd2c6b47b
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_activo
+    - taxonomy.vocabulary.proyecto_institucional
+id: taxonomy_term.proyecto_institucional.field_activo
+field_name: field_activo
+entity_type: taxonomy_term
+bundle: proyecto_institucional
+label: Activo
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: Activado
+  off_label: Desactivado
+field_type: boolean

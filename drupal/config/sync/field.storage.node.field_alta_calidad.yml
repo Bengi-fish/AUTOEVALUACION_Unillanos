@@ -1,0 +1,30 @@
+uuid: a77aaabf-c1f5-4861-9d3e-645958a80daf
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_alta_calidad
+field_name: field_alta_calidad
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: acreditacion
+      label: Acreditación
+    -
+      value: reacreditacion
+      label: Reacreditación
+    -
+      value: no_aplica
+      label: 'No aplica'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

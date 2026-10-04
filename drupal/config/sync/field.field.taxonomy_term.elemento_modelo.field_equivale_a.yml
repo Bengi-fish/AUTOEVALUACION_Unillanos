@@ -1,0 +1,27 @@
+uuid: 288e4f8a-8f6c-46ca-b8e1-a9464df939b5
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_equivale_a
+    - taxonomy.vocabulary.elemento_modelo
+id: taxonomy_term.elemento_modelo.field_equivale_a
+field_name: field_equivale_a
+entity_type: taxonomy_term
+bundle: elemento_modelo
+label: 'Equivale a'
+description: 'Elemento equivalente en otro lineamiento.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      elemento_modelo: elemento_modelo
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+field_type: entity_reference

@@ -1,0 +1,19 @@
+uuid: 4f18aa55-5b9f-4669-8a2a-b8eeb933e9d7
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_director
+    - node.type.programa
+id: node.programa.field_director
+field_name: field_director
+entity_type: node
+bundle: programa
+label: Director
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

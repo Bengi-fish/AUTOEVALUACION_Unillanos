@@ -1,0 +1,9 @@
+uuid: 488968fc-8761-4345-ac9f-b7b5faeb38c3
+langcode: es
+status: true
+dependencies: {  }
+name: 'Elemento del modelo'
+vid: elemento_modelo
+description: ''
+weight: 0
+new_revision: false

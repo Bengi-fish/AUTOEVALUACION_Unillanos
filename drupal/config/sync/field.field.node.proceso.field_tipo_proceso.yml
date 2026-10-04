@@ -1,0 +1,21 @@
+uuid: 5b019860-c868-4adf-80ec-90d48fd2821e
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_tipo_proceso
+    - node.type.proceso
+  module:
+    - options
+id: node.proceso.field_tipo_proceso
+field_name: field_tipo_proceso
+entity_type: node
+bundle: proceso
+label: 'Tipo de proceso'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

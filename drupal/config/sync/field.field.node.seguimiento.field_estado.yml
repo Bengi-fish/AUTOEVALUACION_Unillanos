@@ -1,0 +1,21 @@
+uuid: 53a22297-616a-4c67-937d-75955bd2c9b2
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_estado
+    - node.type.seguimiento
+  module:
+    - options
+id: node.seguimiento.field_estado
+field_name: field_estado
+entity_type: node
+bundle: seguimiento
+label: Estado
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

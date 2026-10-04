@@ -1,0 +1,130 @@
+uuid: 2c0485c8-dddc-408a-a388-8914d39e4b59
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.plan_mejoramiento.field_alta_calidad
+    - field.field.node.plan_mejoramiento.field_aprobaciones
+    - field.field.node.plan_mejoramiento.field_codigo_formato
+    - field.field.node.plan_mejoramiento.field_fecha_suscripcion
+    - field.field.node.plan_mejoramiento.field_periodo
+    - field.field.node.plan_mejoramiento.field_proceso
+    - field.field.node.plan_mejoramiento.field_tipo_plan
+    - field.field.node.plan_mejoramiento.field_version_formato
+    - node.type.plan_mejoramiento
+  module:
+    - datetime
+    - path
+    - text
+id: node.plan_mejoramiento.default
+targetEntityType: node
+bundle: plan_mejoramiento
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_alta_calidad:
+    type: options_select
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_aprobaciones:
+    type: text_textarea
+    weight: 8
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_codigo_formato:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_fecha_suscripcion:
+    type: datetime_default
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_periodo:
+    type: string_textfield
+    weight: 5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_proceso:
+    type: entity_reference_autocomplete
+    weight: 1
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_tipo_plan:
+    type: options_select
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_version_formato:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 120
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 5
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  promote: true
+  sticky: true

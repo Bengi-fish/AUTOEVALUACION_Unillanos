@@ -1,0 +1,9 @@
+uuid: ae8f9190-0ce9-40fc-9d60-f829e6e1bd9d
+langcode: es
+status: true
+dependencies: {  }
+name: 'Proyecto institucional'
+vid: proyecto_institucional
+description: ''
+weight: 0
+new_revision: false

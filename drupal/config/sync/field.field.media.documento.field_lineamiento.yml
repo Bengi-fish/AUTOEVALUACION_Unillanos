@@ -1,0 +1,28 @@
+uuid: 7d912ca0-d7cc-4ec2-98b4-385fc63ea107
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_lineamiento
+    - media.type.documento
+    - node.type.lineamiento
+id: media.documento.field_lineamiento
+field_name: field_lineamiento
+entity_type: media
+bundle: documento
+label: Lineamiento
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      lineamiento: lineamiento
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

@@ -1,0 +1,101 @@
+uuid: 8ae7319c-ddac-499d-b6fc-2a792dbd4095
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.elemento_modelo.field_clave
+    - field.field.taxonomy_term.elemento_modelo.field_equivale_a
+    - field.field.taxonomy_term.elemento_modelo.field_lineamiento
+    - field.field.taxonomy_term.elemento_modelo.field_numero
+    - field.field.taxonomy_term.elemento_modelo.field_propio
+    - field.field.taxonomy_term.elemento_modelo.field_tipo_elemento
+    - taxonomy.vocabulary.elemento_modelo
+  module:
+    - path
+    - text
+id: taxonomy_term.elemento_modelo.default
+targetEntityType: taxonomy_term
+bundle: elemento_modelo
+mode: default
+content:
+  description:
+    type: text_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_clave:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_equivale_a:
+    type: entity_reference_autocomplete
+    weight: 6
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_lineamiento:
+    type: options_select
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_numero:
+    type: number
+    weight: 4
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_propio:
+    type: boolean_checkbox
+    weight: 5
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_tipo_elemento:
+    type: options_select
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 100
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+hidden: {  }

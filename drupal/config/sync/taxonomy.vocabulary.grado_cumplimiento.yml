@@ -1,0 +1,9 @@
+uuid: 2b899b2d-cd02-4d25-8314-40aff9278e73
+langcode: es
+status: true
+dependencies: {  }
+name: 'Grado de cumplimiento'
+vid: grado_cumplimiento
+description: ''
+weight: 0
+new_revision: false

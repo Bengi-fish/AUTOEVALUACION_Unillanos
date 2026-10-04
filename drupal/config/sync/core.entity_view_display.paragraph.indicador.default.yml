@@ -1,0 +1,54 @@
+uuid: cf3a356f-d8fa-471d-a21c-6341a63d34fa
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.indicador.field_linea_base
+    - field.field.paragraph.indicador.field_nombre
+    - field.field.paragraph.indicador.field_programacion
+    - field.field.paragraph.indicador.field_unidad
+    - paragraphs.paragraphs_type.indicador
+  module:
+    - entity_reference_revisions
+id: paragraph.indicador.default
+targetEntityType: paragraph
+bundle: indicador
+mode: default
+content:
+  field_linea_base:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_nombre:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_programacion:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_unidad:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden: {  }

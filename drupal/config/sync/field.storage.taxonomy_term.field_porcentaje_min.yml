@@ -1,0 +1,20 @@
+uuid: 378d3c85-969c-40bf-a788-79f670f4e6ce
+langcode: es
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_porcentaje_min
+field_name: field_porcentaje_min
+entity_type: taxonomy_term
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

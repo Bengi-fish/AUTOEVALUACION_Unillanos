@@ -1,0 +1,21 @@
+uuid: 948276b8-b9de-4bc4-b9b1-4032f1b80e26
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_tipo_meta
+    - node.type.meta
+  module:
+    - options
+id: node.meta.field_tipo_meta
+field_name: field_tipo_meta
+entity_type: node
+bundle: meta
+label: 'Tipo de meta'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,22 @@
+uuid: e690826b-437d-475e-a58a-b35a68034ceb
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_actividades
+    - node.type.seguimiento
+  module:
+    - text
+id: node.seguimiento.field_actividades
+field_name: field_actividades
+entity_type: node
+bundle: seguimiento
+label: Actividades
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

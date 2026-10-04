@@ -1,0 +1,10 @@
+uuid: f2bc2d53-a7b2-4984-85ea-27585aef1822
+langcode: es
+status: true
+dependencies: {  }
+id: participacion
+label: Participación
+icon_uuid: null
+icon_default: null
+description: null
+behavior_plugins: {  }

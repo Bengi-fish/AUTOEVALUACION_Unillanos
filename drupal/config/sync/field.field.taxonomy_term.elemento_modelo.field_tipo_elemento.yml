@@ -1,0 +1,21 @@
+uuid: c9372a9b-db03-4c88-bb54-5c36aaab83bd
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_tipo_elemento
+    - taxonomy.vocabulary.elemento_modelo
+  module:
+    - options
+id: taxonomy_term.elemento_modelo.field_tipo_elemento
+field_name: field_tipo_elemento
+entity_type: taxonomy_term
+bundle: elemento_modelo
+label: 'Tipo de elemento'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

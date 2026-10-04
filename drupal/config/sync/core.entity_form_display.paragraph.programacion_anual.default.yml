@@ -1,0 +1,38 @@
+uuid: a61f9ef9-ed59-4e89-b2d8-85ebce710d0c
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.programacion_anual.field_anio
+    - field.field.paragraph.programacion_anual.field_logrado
+    - field.field.paragraph.programacion_anual.field_programado
+    - paragraphs.paragraphs_type.programacion_anual
+id: paragraph.programacion_anual.default
+targetEntityType: paragraph
+bundle: programacion_anual
+mode: default
+content:
+  field_anio:
+    type: number
+    weight: 1
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_logrado:
+    type: number
+    weight: 3
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_programado:
+    type: number
+    weight: 2
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

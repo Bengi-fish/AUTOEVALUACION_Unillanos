@@ -1,0 +1,21 @@
+uuid: f3dac6de-a716-4a26-ae91-f88a1562a677
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_nivel
+    - node.type.programa
+  module:
+    - options
+id: node.programa.field_nivel
+field_name: field_nivel
+entity_type: node
+bundle: programa
+label: Nivel
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

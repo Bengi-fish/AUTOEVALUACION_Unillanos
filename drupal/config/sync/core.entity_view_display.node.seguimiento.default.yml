@@ -1,0 +1,113 @@
+uuid: 566f845c-e1d1-4830-9b5a-a8d85d042de1
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.seguimiento.field_actividades
+    - field.field.node.seguimiento.field_avance
+    - field.field.node.seguimiento.field_estado
+    - field.field.node.seguimiento.field_medios_verificacion
+    - field.field.node.seguimiento.field_meta
+    - field.field.node.seguimiento.field_observaciones
+    - field.field.node.seguimiento.field_periodo
+    - field.field.node.seguimiento.field_reportado_por
+    - field.field.node.seguimiento.field_verificacion
+    - field.field.node.seguimiento.field_verificado_por
+    - node.type.seguimiento
+  module:
+    - options
+    - text
+    - user
+id: node.seguimiento.default
+targetEntityType: node
+bundle: seguimiento
+mode: default
+content:
+  field_actividades:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_avance:
+    type: number_decimal
+    label: inline
+    settings:
+      thousand_separator: ''
+      decimal_separator: ','
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_estado:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  field_medios_verificacion:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_meta:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_observaciones:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_periodo:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_reportado_por:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 8
+    region: content
+  field_verificacion:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_verificado_por:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 9
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  langcode: true

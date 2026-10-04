@@ -1,0 +1,28 @@
+uuid: 5446882d-39e9-41ce-997d-8699f782902b
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_proyecto
+    - node.type.meta
+    - taxonomy.vocabulary.proyecto_institucional
+id: node.meta.field_proyecto
+field_name: field_proyecto
+entity_type: node
+bundle: meta
+label: 'Proyecto institucional'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      proyecto_institucional: proyecto_institucional
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+field_type: entity_reference

@@ -1,0 +1,19 @@
+uuid: 233cce9e-78e3-4efa-adec-e0a5a1b5bcd1
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_resolucion_acreditacion
+    - node.type.programa
+id: node.programa.field_resolucion_acreditacion
+field_name: field_resolucion_acreditacion
+entity_type: node
+bundle: programa
+label: 'Resolución de acreditación'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

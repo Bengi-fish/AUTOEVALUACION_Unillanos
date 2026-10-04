@@ -1,0 +1,28 @@
+uuid: 0cf43a90-8825-43f8-a248-bf4c1ee8c896
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_documento
+    - media.type.documento
+    - node.type.valoracion
+id: node.valoracion.field_documento
+field_name: field_documento
+entity_type: node
+bundle: valoracion
+label: 'Documento soporte'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      documento: documento
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

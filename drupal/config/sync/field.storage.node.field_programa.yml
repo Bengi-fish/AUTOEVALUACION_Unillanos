@@ -1,0 +1,19 @@
+uuid: 44f5763d-5dcb-4185-85dd-b70cd6735832
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_programa
+field_name: field_programa
+entity_type: node
+type: entity_reference
+settings:
+  target_type: node
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

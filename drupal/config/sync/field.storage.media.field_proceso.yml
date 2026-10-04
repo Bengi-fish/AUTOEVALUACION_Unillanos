@@ -1,0 +1,20 @@
+uuid: 1aacd5ca-90a8-414c-89ca-d92cabb5c389
+langcode: es
+status: true
+dependencies:
+  module:
+    - media
+    - node
+id: media.field_proceso
+field_name: field_proceso
+entity_type: media
+type: entity_reference
+settings:
+  target_type: node
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

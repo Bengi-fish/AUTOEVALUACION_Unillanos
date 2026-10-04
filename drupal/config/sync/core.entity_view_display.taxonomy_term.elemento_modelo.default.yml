@@ -1,0 +1,80 @@
+uuid: 24a7c5d7-c5e7-433e-9dd7-6fec0cdb1fef
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.elemento_modelo.field_clave
+    - field.field.taxonomy_term.elemento_modelo.field_equivale_a
+    - field.field.taxonomy_term.elemento_modelo.field_lineamiento
+    - field.field.taxonomy_term.elemento_modelo.field_numero
+    - field.field.taxonomy_term.elemento_modelo.field_propio
+    - field.field.taxonomy_term.elemento_modelo.field_tipo_elemento
+    - taxonomy.vocabulary.elemento_modelo
+  module:
+    - options
+    - text
+id: taxonomy_term.elemento_modelo.default
+targetEntityType: taxonomy_term
+bundle: elemento_modelo
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_clave:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_equivale_a:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_lineamiento:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_numero:
+    type: number_integer
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_propio:
+    type: boolean
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_tipo_elemento:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 3
+    region: content
+hidden:
+  langcode: true

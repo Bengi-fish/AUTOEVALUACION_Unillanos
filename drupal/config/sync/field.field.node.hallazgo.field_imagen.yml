@@ -1,0 +1,38 @@
+uuid: 9ea08a3b-13f9-41ed-8697-f32cf3e31747
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_imagen
+    - node.type.hallazgo
+  module:
+    - image
+id: node.hallazgo.field_imagen
+field_name: field_imagen
+entity_type: node
+bundle: hallazgo
+label: Imagen
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: hallazgos
+  file_extensions: 'png jpg jpeg webp'
+  max_filesize: '5 MB'
+  max_resolution: ''
+  min_resolution: ''
+  alt_field: true
+  alt_field_required: false
+  title_field: false
+  title_field_required: false
+  default_image:
+    uuid: null
+    alt: ''
+    title: ''
+    width: null
+    height: null
+field_type: image

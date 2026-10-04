@@ -1,0 +1,21 @@
+uuid: 2e0c8dd1-732e-43ff-a23f-01518c1fa93a
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_categoria
+    - media.type.documento
+  module:
+    - options
+id: media.documento.field_categoria
+field_name: field_categoria
+entity_type: media
+bundle: documento
+label: Categoría
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

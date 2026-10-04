@@ -1,0 +1,52 @@
+uuid: 8cdd2d8f-be51-4e57-bcfe-6618bcec2710
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.participacion.field_estamento
+    - field.field.paragraph.participacion.field_fecha_aplicacion
+    - field.field.paragraph.participacion.field_instrumento
+    - field.field.paragraph.participacion.field_participantes
+    - paragraphs.paragraphs_type.participacion
+  module:
+    - datetime
+    - options
+id: paragraph.participacion.default
+targetEntityType: paragraph
+bundle: participacion
+mode: default
+content:
+  field_estamento:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_fecha_aplicacion:
+    type: datetime_custom
+    label: inline
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_instrumento:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_participantes:
+    type: number_integer
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 3
+    region: content
+hidden: {  }

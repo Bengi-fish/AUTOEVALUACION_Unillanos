@@ -1,0 +1,20 @@
+uuid: 774787b0-b9c8-4352-9e75-8647b0bd1e35
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_porcentaje
+field_name: field_porcentaje
+entity_type: node
+type: decimal
+settings:
+  precision: 4
+  scale: 1
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

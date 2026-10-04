@@ -1,0 +1,20 @@
+uuid: 7e00fc51-2b14-41b7-bfeb-6d2ad320e84a
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_peso
+field_name: field_peso
+entity_type: node
+type: decimal
+settings:
+  precision: 6
+  scale: 4
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

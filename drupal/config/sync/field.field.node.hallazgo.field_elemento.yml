@@ -1,0 +1,28 @@
+uuid: 8e277e9b-3e28-4d71-91b0-76908c00a2b1
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_elemento
+    - node.type.hallazgo
+    - taxonomy.vocabulary.elemento_modelo
+id: node.hallazgo.field_elemento
+field_name: field_elemento
+entity_type: node
+bundle: hallazgo
+label: 'Elemento del modelo'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      elemento_modelo: elemento_modelo
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+field_type: entity_reference

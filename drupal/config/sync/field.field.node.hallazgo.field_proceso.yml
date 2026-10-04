@@ -1,0 +1,28 @@
+uuid: c8837e5d-767b-4194-9d2b-70c06a6eefcf
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_proceso
+    - node.type.hallazgo
+    - node.type.proceso
+id: node.hallazgo.field_proceso
+field_name: field_proceso
+entity_type: node
+bundle: hallazgo
+label: Proceso
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      proceso: proceso
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

@@ -1,0 +1,127 @@
+uuid: cacc391b-3d04-4072-b2b3-b0fdcf6c9c5e
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.media.documento.field_categoria
+    - field.field.media.documento.field_enlace
+    - field.field.media.documento.field_fecha_publicacion
+    - field.field.media.documento.field_lineamiento
+    - field.field.media.documento.field_media_file
+    - field.field.media.documento.field_proceso
+    - field.field.media.documento.field_version
+    - image.style.thumbnail
+    - media.type.documento
+  module:
+    - datetime
+    - file
+    - image
+    - link
+    - options
+    - user
+id: media.documento.default
+targetEntityType: media
+bundle: documento
+mode: default
+content:
+  created:
+    type: timestamp
+    label: hidden
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+      tooltip:
+        date_format: long
+        custom_date_format: ''
+      time_diff:
+        enabled: false
+        future_format: '@interval hence'
+        past_format: '@interval ago'
+        granularity: 2
+        refresh: 60
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_categoria:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_enlace:
+    type: link
+    label: inline
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_fecha_publicacion:
+    type: datetime_custom
+    label: inline
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_lineamiento:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_media_file:
+    type: file_default
+    label: visually_hidden
+    settings:
+      use_description_as_link_text: true
+    third_party_settings: {  }
+    weight: -4
+    region: content
+  field_proceso:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_version:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  thumbnail:
+    type: image
+    label: hidden
+    settings:
+      image_link: ''
+      image_style: thumbnail
+      image_loading:
+        attribute: lazy
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  uid:
+    type: author
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  langcode: true
+  name: true

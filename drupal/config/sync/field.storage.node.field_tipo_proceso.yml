@@ -1,0 +1,33 @@
+uuid: 56a6d5b3-87ef-4dda-866c-c23378d9ebcd
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_tipo_proceso
+field_name: field_tipo_proceso
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: registro_calificado
+      label: 'Registro calificado'
+    -
+      value: acreditacion
+      label: Acreditación
+    -
+      value: renovacion_acreditacion
+      label: 'Renovación de la acreditación'
+    -
+      value: acreditacion_internacional
+      label: 'Acreditación internacional'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

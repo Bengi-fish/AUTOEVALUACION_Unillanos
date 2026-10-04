@@ -1,0 +1,39 @@
+uuid: d07f5017-0606-405c-a13b-7058bc1c7404
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_estado
+field_name: field_estado
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: planeado
+      label: Planeado
+    -
+      value: en_curso
+      label: 'En curso'
+    -
+      value: finalizado
+      label: Finalizado
+    -
+      value: borrador
+      label: Borrador
+    -
+      value: reportado
+      label: Reportado
+    -
+      value: verificado
+      label: Verificado
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

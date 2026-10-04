@@ -1,0 +1,20 @@
+uuid: 7e1dad2c-6048-40f0-b304-8c040fc2d34c
+langcode: es
+status: true
+dependencies:
+  module:
+    - paragraphs
+id: paragraph.field_participantes
+field_name: field_participantes
+entity_type: paragraph
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

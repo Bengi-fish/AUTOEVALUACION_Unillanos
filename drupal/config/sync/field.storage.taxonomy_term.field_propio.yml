@@ -1,0 +1,18 @@
+uuid: d846bc67-69ca-455b-b50e-a7a1284eb98d
+langcode: es
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_propio
+field_name: field_propio
+entity_type: taxonomy_term
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

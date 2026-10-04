@@ -1,0 +1,21 @@
+uuid: cee140d8-4c1b-4dfa-a815-005934b99334
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_director
+field_name: field_director
+entity_type: node
+type: string
+settings:
+  max_length: 150
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

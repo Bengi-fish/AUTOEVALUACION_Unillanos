@@ -1,0 +1,22 @@
+uuid: dde60fd8-da80-4ec2-80ad-c663e80ba554
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_aprobaciones
+    - node.type.plan_mejoramiento
+  module:
+    - text
+id: node.plan_mejoramiento.field_aprobaciones
+field_name: field_aprobaciones
+entity_type: node
+bundle: plan_mejoramiento
+label: Aprobaciones
+description: 'Quién elaboró y aprobó, con actas y fechas.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

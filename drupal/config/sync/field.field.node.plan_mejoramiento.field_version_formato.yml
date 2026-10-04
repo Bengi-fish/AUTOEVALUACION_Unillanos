@@ -1,0 +1,19 @@
+uuid: a5cb4a3f-3d46-4de8-961a-8ac2520add5f
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_version_formato
+    - node.type.plan_mejoramiento
+id: node.plan_mejoramiento.field_version_formato
+field_name: field_version_formato
+entity_type: node
+bundle: plan_mejoramiento
+label: 'Versión del formato'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

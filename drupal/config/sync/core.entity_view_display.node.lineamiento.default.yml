@@ -1,0 +1,58 @@
+uuid: c7b541de-bac9-489f-9020-0d5638eb97c0
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.lineamiento.field_ambito
+    - field.field.node.lineamiento.field_norma
+    - field.field.node.lineamiento.field_tipo_proceso
+    - field.field.node.lineamiento.field_vigente_desde
+    - node.type.lineamiento
+  module:
+    - datetime
+    - options
+    - user
+id: node.lineamiento.default
+targetEntityType: node
+bundle: lineamiento
+mode: default
+content:
+  field_ambito:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_norma:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_tipo_proceso:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_vigente_desde:
+    type: datetime_custom
+    label: inline
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  langcode: true

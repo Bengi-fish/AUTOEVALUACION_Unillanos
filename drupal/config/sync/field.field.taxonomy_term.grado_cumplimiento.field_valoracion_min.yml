@@ -1,0 +1,23 @@
+uuid: 48082978-03db-4656-ab7f-a81b6ebcd772
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_valoracion_min
+    - taxonomy.vocabulary.grado_cumplimiento
+id: taxonomy_term.grado_cumplimiento.field_valoracion_min
+field_name: field_valoracion_min
+entity_type: taxonomy_term
+bundle: grado_cumplimiento
+label: 'Valoración mínima'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

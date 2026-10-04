@@ -1,0 +1,23 @@
+uuid: bddb2fc5-7b79-4688-8938-efbead5d53e7
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_logrado
+    - paragraphs.paragraphs_type.programacion_anual
+id: paragraph.programacion_anual.field_logrado
+field_name: field_logrado
+entity_type: paragraph
+bundle: programacion_anual
+label: Logrado
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

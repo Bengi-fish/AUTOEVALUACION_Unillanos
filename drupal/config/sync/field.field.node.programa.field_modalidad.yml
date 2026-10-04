@@ -1,0 +1,21 @@
+uuid: 77e3179b-08dd-4a51-a93f-9635d9aaba20
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_modalidad
+    - node.type.programa
+  module:
+    - options
+id: node.programa.field_modalidad
+field_name: field_modalidad
+entity_type: node
+bundle: programa
+label: Modalidad
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

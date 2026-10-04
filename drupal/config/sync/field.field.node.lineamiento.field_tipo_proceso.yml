@@ -1,0 +1,21 @@
+uuid: 5e20ab2e-8f84-4507-80c9-8e104a5d7a48
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_tipo_proceso
+    - node.type.lineamiento
+  module:
+    - options
+id: node.lineamiento.field_tipo_proceso
+field_name: field_tipo_proceso
+entity_type: node
+bundle: lineamiento
+label: 'Tipo de proceso'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

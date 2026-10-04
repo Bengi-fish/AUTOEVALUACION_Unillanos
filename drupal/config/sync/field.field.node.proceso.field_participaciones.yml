@@ -1,0 +1,31 @@
+uuid: c19dd42f-8030-4c49-99a4-c279b3470d9c
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_participaciones
+    - node.type.proceso
+    - paragraphs.paragraphs_type.participacion
+  module:
+    - entity_reference_revisions
+id: node.proceso.field_participaciones
+field_name: field_participaciones
+entity_type: node
+bundle: proceso
+label: Participaciones
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      participacion: participacion
+    negate: 0
+    target_bundles_drag_drop:
+      participacion:
+        weight: 0
+        enabled: true
+field_type: entity_reference_revisions

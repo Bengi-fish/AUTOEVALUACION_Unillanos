@@ -1,0 +1,18 @@
+uuid: ae28c77a-6a8d-402d-9bbb-f31fac948c8e
+langcode: es
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_activa
+field_name: field_activa
+entity_type: taxonomy_term
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

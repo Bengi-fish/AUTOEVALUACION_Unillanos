@@ -1,0 +1,23 @@
+uuid: b5522f07-fb63-4ece-b7b9-eb6c439b66e9
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_numero
+    - taxonomy.vocabulary.elemento_modelo
+id: taxonomy_term.elemento_modelo.field_numero
+field_name: field_numero
+entity_type: taxonomy_term
+bundle: elemento_modelo
+label: Número
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

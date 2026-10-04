@@ -1,0 +1,20 @@
+uuid: b6654896-436c-437c-98fd-f90ac898ce31
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - taxonomy
+id: taxonomy_term.field_lineamiento
+field_name: field_lineamiento
+entity_type: taxonomy_term
+type: entity_reference
+settings:
+  target_type: node
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

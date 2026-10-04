@@ -1,0 +1,21 @@
+uuid: 75ecb216-593a-4ed8-93c0-77e0d176c1ed
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_codigo_formato
+    - node.type.plan_mejoramiento
+id: node.plan_mejoramiento.field_codigo_formato
+field_name: field_codigo_formato
+entity_type: node
+bundle: plan_mejoramiento
+label: 'Código del formato'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: FO-GCL-20
+default_value_callback: ''
+settings: {  }
+field_type: string

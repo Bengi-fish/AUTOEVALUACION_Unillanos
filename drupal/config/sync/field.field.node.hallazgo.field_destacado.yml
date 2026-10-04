@@ -1,0 +1,23 @@
+uuid: 29297829-abb9-4b4e-b694-23f8e4abec91
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_destacado
+    - node.type.hallazgo
+id: node.hallazgo.field_destacado
+field_name: field_destacado
+entity_type: node
+bundle: hallazgo
+label: 'Destacado en la portada'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: Activado
+  off_label: Desactivado
+field_type: boolean

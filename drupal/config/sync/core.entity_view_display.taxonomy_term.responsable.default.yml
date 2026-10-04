@@ -1,0 +1,41 @@
+uuid: 8e2cb59c-854c-47c5-a70e-d705ea260d23
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.responsable.field_sigla
+    - field.field.taxonomy_term.responsable.field_tipo_responsable
+    - taxonomy.vocabulary.responsable
+  module:
+    - options
+    - text
+id: taxonomy_term.responsable.default
+targetEntityType: taxonomy_term
+bundle: responsable
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_sigla:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_tipo_responsable:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden:
+  langcode: true

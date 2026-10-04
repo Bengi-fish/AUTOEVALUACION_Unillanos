@@ -1,0 +1,23 @@
+uuid: 5390f582-a771-473c-abc4-6c2b53a03518
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_avance
+    - node.type.seguimiento
+id: node.seguimiento.field_avance
+field_name: field_avance
+entity_type: node
+bundle: seguimiento
+label: Avance
+description: 'Entre 0 y 1.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 0.0
+  max: 1.0
+  prefix: ''
+  suffix: ''
+field_type: decimal

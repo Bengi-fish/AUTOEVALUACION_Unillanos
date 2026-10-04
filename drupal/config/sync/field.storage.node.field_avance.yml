@@ -1,0 +1,20 @@
+uuid: 07597741-47c0-490e-bd34-69930ce9b06f
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_avance
+field_name: field_avance
+entity_type: node
+type: decimal
+settings:
+  precision: 5
+  scale: 2
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

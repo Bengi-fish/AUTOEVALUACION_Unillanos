@@ -1,0 +1,19 @@
+uuid: 067a4ea2-39bf-4a2e-aae6-ad6360de6893
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_sigla
+    - taxonomy.vocabulary.responsable
+id: taxonomy_term.responsable.field_sigla
+field_name: field_sigla
+entity_type: taxonomy_term
+bundle: responsable
+label: Sigla
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

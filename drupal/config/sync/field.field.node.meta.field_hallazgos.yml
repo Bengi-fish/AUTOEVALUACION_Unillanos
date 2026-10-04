@@ -1,0 +1,28 @@
+uuid: 3093a6eb-039e-47d9-a2d1-fa1a590e0795
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_hallazgos
+    - node.type.hallazgo
+    - node.type.meta
+id: node.meta.field_hallazgos
+field_name: field_hallazgos
+entity_type: node
+bundle: meta
+label: 'Hallazgos que atiende'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      hallazgo: hallazgo
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

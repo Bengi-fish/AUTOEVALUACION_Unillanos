@@ -1,0 +1,14 @@
+uuid: fc29459c-65db-4f71-8034-554308f2c7c0
+langcode: es
+status: true
+dependencies: {  }
+id: documento
+label: Documento
+description: ''
+source: file
+queue_thumbnail_downloads: false
+new_revision: true
+source_configuration:
+  source_field: field_media_file
+field_map:
+  name: name

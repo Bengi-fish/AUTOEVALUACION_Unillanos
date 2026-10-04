@@ -1,0 +1,23 @@
+uuid: b8c58ca2-58b2-4fc6-b2c3-51a20fa5d336
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_valoracion
+    - node.type.valoracion
+id: node.valoracion.field_valoracion
+field_name: field_valoracion
+entity_type: node
+bundle: valoracion
+label: Valoración
+description: 'Entre 1,00 y 5,00.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 1.0
+  max: 5.0
+  prefix: ''
+  suffix: ''
+field_type: decimal

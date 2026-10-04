@@ -1,0 +1,9 @@
+uuid: 36ac5aa0-102e-4b2a-869d-b823e19ba207
+langcode: es
+status: true
+dependencies: {  }
+name: Responsable
+vid: responsable
+description: ''
+weight: 0
+new_revision: false

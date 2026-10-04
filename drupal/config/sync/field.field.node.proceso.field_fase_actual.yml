@@ -1,0 +1,23 @@
+uuid: bc5883e3-d9fa-4aaa-a4c0-f84ea1a3f838
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_fase_actual
+    - node.type.proceso
+id: node.proceso.field_fase_actual
+field_name: field_fase_actual
+entity_type: node
+bundle: proceso
+label: 'Fase actual'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 1
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

@@ -1,0 +1,11 @@
+uuid: 4e7ac237-d99d-4464-bba1-9a5e7dc7fefb
+langcode: es
+status: true
+dependencies: {  }
+name: 'Plan de mejoramiento'
+type: plan_mejoramiento
+description: ''
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: false

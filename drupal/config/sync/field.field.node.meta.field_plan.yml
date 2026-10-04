@@ -1,0 +1,28 @@
+uuid: fb460fad-323e-4b7d-807c-de25eea7f56a
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_plan
+    - node.type.meta
+    - node.type.plan_mejoramiento
+id: node.meta.field_plan
+field_name: field_plan
+entity_type: node
+bundle: meta
+label: 'Plan de mejoramiento'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      plan_mejoramiento: plan_mejoramiento
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

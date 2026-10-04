@@ -1,0 +1,18 @@
+uuid: 4d99e17a-a770-4140-9d19-0910a165228f
+langcode: es
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_activo
+field_name: field_activo
+entity_type: taxonomy_term
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

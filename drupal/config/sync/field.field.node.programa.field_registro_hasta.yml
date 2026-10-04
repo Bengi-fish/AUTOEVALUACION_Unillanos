@@ -1,0 +1,21 @@
+uuid: 58ce5e05-9b7c-43c7-b361-60e667951fbe
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_registro_hasta
+    - node.type.programa
+  module:
+    - datetime
+id: node.programa.field_registro_hasta
+field_name: field_registro_hasta
+entity_type: node
+bundle: programa
+label: 'Registro calificado vigente hasta'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

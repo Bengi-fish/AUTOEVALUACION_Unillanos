@@ -1,0 +1,33 @@
+uuid: b5e986a9-7b9a-4619-9858-05b840997d69
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.proyecto_institucional.field_activo
+    - taxonomy.vocabulary.proyecto_institucional
+  module:
+    - text
+id: taxonomy_term.proyecto_institucional.default
+targetEntityType: taxonomy_term
+bundle: proyecto_institucional
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_activo:
+    type: boolean
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden:
+  langcode: true

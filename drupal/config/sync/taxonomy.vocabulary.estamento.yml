@@ -1,0 +1,9 @@
+uuid: b223d35a-e189-4e2d-89f0-9f8aa746c17f
+langcode: es
+status: true
+dependencies: {  }
+name: Estamento
+vid: estamento
+description: ''
+weight: 0
+new_revision: false

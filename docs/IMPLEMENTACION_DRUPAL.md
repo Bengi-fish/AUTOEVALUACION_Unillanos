@@ -376,7 +376,7 @@ ddev drush php:eval 'print_r(array_keys(\Drupal\media\Entity\MediaType::loadMult
 
 **Tú verificas:** en la interfaz (Estructura → Tipos de contenido / Taxonomía / Tipos de párrafo) los nombres coinciden con el documento. Crea a mano un programa y un proceso de prueba y bórralos.
 
-**Hecho cuando:** existen los 7 vocabularios, 8 tipos de contenido, 3 paragraphs y el media `documento`; el script corrido por segunda vez no cambia nada y `config:status` queda sin diferencias.
+**Hecho cuando:** existen los 7 vocabularios, 8 tipos de contenido, 3 paragraphs y el media `documento`; el script corrido por segunda vez no cambia nada y `config:status` queda sin diferencias. Esas cifras cuentan solo lo propio del modelo: el vocabulario `tags` y los media por defecto de Drupal (`audio`, `document`, `image`, `remote_video`, `video`) se dejan como están.
 
 **Push y merge:** sección 2.6 con `fase-3-modelo`.
 
@@ -385,6 +385,13 @@ ddev drush php:eval 'print_r(array_keys(\Drupal\media\Entity\MediaType::loadMult
 ## 8. Fase 4 · Módulo propio `unillanos_autoeval` (reglas de negocio)
 
 **Rama:** `fase-4-reglas` · **Respaldo:** no.
+
+**Pendientes heredados de la Fase 3** (resolverlos en esta fase):
+
+- Instalar `drupal/core-dev` (PHPCS, PHPStan, PHPUnit) con `ddev composer require --dev drupal/core-dev` y correr PHPCS y PHPStan sobre `drupal/scripts/crear_modelo.php`.
+- `field_estado` está compartido entre `proceso` y `seguimiento` con la unión de sus valores (`planeado`, `en_curso`, `finalizado`, `borrador`, `reportado`, `verificado`). Restringirlo por tipo de contenido (validación o `allowed_values_function`).
+- Unicidad de `field_clave` en `programa` y `elemento_modelo`: la restricción `UniqueField` no se exporta en la configuración, así que se implementa como restricción de validación en el módulo.
+- Obligatoriedad de campos: revisarla en la Fase 5 con los CSV reales antes de importar (se marcaron como obligatorios los campos de relación "exactamente uno" del MER y los enumerados que definen el tipo).
 
 **Claude ejecuta.** Prompt:
 

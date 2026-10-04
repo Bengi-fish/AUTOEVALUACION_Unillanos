@@ -1,0 +1,27 @@
+uuid: de94ef96-4b02-41ca-aa64-e609ee5facd4
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_origen
+field_name: field_origen
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: determinacion_cna
+      label: 'Determinación del CNA'
+    -
+      value: autoevaluacion
+      label: Autoevaluación
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

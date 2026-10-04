@@ -1,0 +1,19 @@
+uuid: df29d1fe-558e-4c81-8c91-0fea18ef152c
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_codigo
+    - node.type.meta
+id: node.meta.field_codigo
+field_name: field_codigo
+entity_type: node
+bundle: meta
+label: Código
+description: 'Ej.: 2a.2b, 2c.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

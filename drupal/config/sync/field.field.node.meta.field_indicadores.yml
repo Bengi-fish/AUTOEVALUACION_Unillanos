@@ -1,0 +1,31 @@
+uuid: 68236b77-2672-4daf-8c1a-e3015af5bbfb
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_indicadores
+    - node.type.meta
+    - paragraphs.paragraphs_type.indicador
+  module:
+    - entity_reference_revisions
+id: node.meta.field_indicadores
+field_name: field_indicadores
+entity_type: node
+bundle: meta
+label: Indicadores
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      indicador: indicador
+    negate: 0
+    target_bundles_drag_drop:
+      indicador:
+        weight: 0
+        enabled: true
+field_type: entity_reference_revisions

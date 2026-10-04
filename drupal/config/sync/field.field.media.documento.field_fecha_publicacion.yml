@@ -1,0 +1,21 @@
+uuid: dbe4cebf-b6a6-40bf-8d53-47718ff8022d
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_fecha_publicacion
+    - media.type.documento
+  module:
+    - datetime
+id: media.documento.field_fecha_publicacion
+field_name: field_fecha_publicacion
+entity_type: media
+bundle: documento
+label: 'Fecha de publicación'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

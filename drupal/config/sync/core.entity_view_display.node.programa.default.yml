@@ -1,0 +1,139 @@
+uuid: 674f953b-148c-4393-b2ad-696dcef06a39
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.programa.field_acreditacion_hasta
+    - field.field.node.programa.field_clave
+    - field.field.node.programa.field_codigo_snies
+    - field.field.node.programa.field_director
+    - field.field.node.programa.field_facultad
+    - field.field.node.programa.field_imagen
+    - field.field.node.programa.field_modalidad
+    - field.field.node.programa.field_nivel
+    - field.field.node.programa.field_registro_hasta
+    - field.field.node.programa.field_resolucion_acreditacion
+    - field.field.node.programa.field_resolucion_registro
+    - field.field.node.programa.field_sede
+    - node.type.programa
+  module:
+    - datetime
+    - image
+    - options
+    - user
+id: node.programa.default
+targetEntityType: node
+bundle: programa
+mode: default
+content:
+  field_acreditacion_hasta:
+    type: datetime_custom
+    label: inline
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    weight: 11
+    region: content
+  field_clave:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_codigo_snies:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_director:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_facultad:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_imagen:
+    type: image
+    label: above
+    settings:
+      image_link: ''
+      image_style: ''
+      image_loading:
+        attribute: lazy
+    third_party_settings: {  }
+    weight: 12
+    region: content
+  field_modalidad:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_nivel:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_registro_hasta:
+    type: datetime_custom
+    label: inline
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    weight: 9
+    region: content
+  field_resolucion_acreditacion:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  field_resolucion_registro:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 8
+    region: content
+  field_sede:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  langcode: true

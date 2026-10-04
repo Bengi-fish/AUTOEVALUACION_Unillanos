@@ -1,0 +1,22 @@
+uuid: 8a7b4657-5c0e-48aa-909a-6747c935d2cc
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_verificacion
+    - node.type.seguimiento
+  module:
+    - text
+id: node.seguimiento.field_verificacion
+field_name: field_verificacion
+entity_type: node
+bundle: seguimiento
+label: Verificación
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

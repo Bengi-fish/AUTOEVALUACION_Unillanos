@@ -1,0 +1,21 @@
+uuid: 46422a92-94aa-4609-aa5a-e237b2476cfe
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_destino
+    - node.type.hallazgo
+  module:
+    - options
+id: node.hallazgo.field_destino
+field_name: field_destino
+entity_type: node
+bundle: hallazgo
+label: Destino
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

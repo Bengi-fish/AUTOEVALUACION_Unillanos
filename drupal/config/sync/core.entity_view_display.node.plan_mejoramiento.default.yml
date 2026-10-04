@@ -1,0 +1,96 @@
+uuid: 7acc54b9-3250-4a00-b741-a4d541909444
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.plan_mejoramiento.field_alta_calidad
+    - field.field.node.plan_mejoramiento.field_aprobaciones
+    - field.field.node.plan_mejoramiento.field_codigo_formato
+    - field.field.node.plan_mejoramiento.field_fecha_suscripcion
+    - field.field.node.plan_mejoramiento.field_periodo
+    - field.field.node.plan_mejoramiento.field_proceso
+    - field.field.node.plan_mejoramiento.field_tipo_plan
+    - field.field.node.plan_mejoramiento.field_version_formato
+    - node.type.plan_mejoramiento
+  module:
+    - datetime
+    - options
+    - text
+    - user
+id: node.plan_mejoramiento.default
+targetEntityType: node
+bundle: plan_mejoramiento
+mode: default
+content:
+  field_alta_calidad:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_aprobaciones:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 8
+    region: content
+  field_codigo_formato:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_fecha_suscripcion:
+    type: datetime_custom
+    label: inline
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_periodo:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_proceso:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_tipo_plan:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_version_formato:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  langcode: true

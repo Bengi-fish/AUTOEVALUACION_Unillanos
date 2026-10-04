@@ -1,0 +1,21 @@
+uuid: f20c506a-29ae-4211-85ed-68c2a1c1d38f
+langcode: es
+status: true
+dependencies:
+  module:
+    - paragraphs
+id: paragraph.field_unidad
+field_name: field_unidad
+entity_type: paragraph
+type: string
+settings:
+  max_length: 40
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

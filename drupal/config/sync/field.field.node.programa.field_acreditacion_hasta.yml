@@ -1,0 +1,21 @@
+uuid: 7a437d52-40d1-4f2c-8ff9-06342f8f43ae
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_acreditacion_hasta
+    - node.type.programa
+  module:
+    - datetime
+id: node.programa.field_acreditacion_hasta
+field_name: field_acreditacion_hasta
+entity_type: node
+bundle: programa
+label: 'Acreditación vigente hasta'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

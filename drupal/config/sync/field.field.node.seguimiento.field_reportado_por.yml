@@ -1,0 +1,19 @@
+uuid: 5baece42-a711-4e08-9b26-577ac8187b3e
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_reportado_por
+    - node.type.seguimiento
+id: node.seguimiento.field_reportado_por
+field_name: field_reportado_por
+entity_type: node
+bundle: seguimiento
+label: 'Reportado por'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

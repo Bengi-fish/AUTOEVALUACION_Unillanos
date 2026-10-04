@@ -1,0 +1,28 @@
+uuid: 96b441f7-30db-4426-a388-9999224fce53
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_facultad
+    - node.type.programa
+    - taxonomy.vocabulary.facultad
+id: node.programa.field_facultad
+field_name: field_facultad
+entity_type: node
+bundle: programa
+label: Facultad
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      facultad: facultad
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+field_type: entity_reference

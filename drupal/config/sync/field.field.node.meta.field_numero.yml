@@ -1,0 +1,23 @@
+uuid: a080a77a-eee6-4459-bd8e-8bb9673af7e8
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_numero
+    - node.type.meta
+id: node.meta.field_numero
+field_name: field_numero
+entity_type: node
+bundle: meta
+label: Número
+description: 'Orden de la meta dentro del plan.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

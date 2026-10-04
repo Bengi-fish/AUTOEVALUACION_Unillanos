@@ -1,0 +1,24 @@
+uuid: 9ad9ba73-204d-4de0-aed4-8bee178975e5
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.hallazgo
+  module:
+    - text
+id: node.hallazgo.body
+field_name: body
+entity_type: node
+bundle: hallazgo
+label: Descripción
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+  required_summary: false
+  allowed_formats: {  }
+field_type: text_with_summary

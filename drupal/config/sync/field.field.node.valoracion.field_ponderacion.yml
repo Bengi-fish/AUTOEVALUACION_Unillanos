@@ -1,0 +1,23 @@
+uuid: 48d4bc2c-ae46-4938-9926-ec9002dc40a0
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ponderacion
+    - node.type.valoracion
+id: node.valoracion.field_ponderacion
+field_name: field_ponderacion
+entity_type: node
+bundle: valoracion
+label: Ponderación
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

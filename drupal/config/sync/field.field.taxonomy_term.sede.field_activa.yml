@@ -1,0 +1,23 @@
+uuid: 9920f7a3-0f3c-4dd5-ad24-f2e5da8defc1
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_activa
+    - taxonomy.vocabulary.sede
+id: taxonomy_term.sede.field_activa
+field_name: field_activa
+entity_type: taxonomy_term
+bundle: sede
+label: Activa
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: Activado
+  off_label: Desactivado
+field_type: boolean

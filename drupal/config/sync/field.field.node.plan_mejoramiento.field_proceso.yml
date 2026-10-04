@@ -1,0 +1,28 @@
+uuid: 9e30905a-ee3c-4ccd-a271-4be6c12c69b4
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_proceso
+    - node.type.plan_mejoramiento
+    - node.type.proceso
+id: node.plan_mejoramiento.field_proceso
+field_name: field_proceso
+entity_type: node
+bundle: plan_mejoramiento
+label: Proceso
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      proceso: proceso
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

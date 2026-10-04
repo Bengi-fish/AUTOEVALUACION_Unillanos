@@ -1,0 +1,75 @@
+uuid: 3aeb1049-5e9e-41c9-b57d-7bcf3c0556af
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.grado_cumplimiento.field_porcentaje_min
+    - field.field.taxonomy_term.grado_cumplimiento.field_valoracion_max
+    - field.field.taxonomy_term.grado_cumplimiento.field_valoracion_min
+    - taxonomy.vocabulary.grado_cumplimiento
+  module:
+    - path
+    - text
+id: taxonomy_term.grado_cumplimiento.default
+targetEntityType: taxonomy_term
+bundle: grado_cumplimiento
+mode: default
+content:
+  description:
+    type: text_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_porcentaje_min:
+    type: number
+    weight: 3
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_valoracion_max:
+    type: number
+    weight: 2
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_valoracion_min:
+    type: number
+    weight: 1
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 100
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+hidden: {  }

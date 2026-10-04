@@ -1,0 +1,20 @@
+uuid: 291398c4-2ca0-46e3-b73d-44a23b740717
+langcode: es
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_valoracion_min
+field_name: field_valoracion_min
+entity_type: taxonomy_term
+type: decimal
+settings:
+  precision: 2
+  scale: 1
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

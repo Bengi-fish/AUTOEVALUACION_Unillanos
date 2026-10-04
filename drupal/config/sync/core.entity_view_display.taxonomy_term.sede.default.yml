@@ -1,0 +1,43 @@
+uuid: 715112d1-3c9c-4bff-840c-6be747a6fc0e
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.sede.field_activa
+    - field.field.taxonomy_term.sede.field_municipio
+    - taxonomy.vocabulary.sede
+  module:
+    - text
+id: taxonomy_term.sede.default
+targetEntityType: taxonomy_term
+bundle: sede
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_activa:
+    type: boolean
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_municipio:
+    type: string
+    label: inline
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden:
+  langcode: true

@@ -1,0 +1,22 @@
+uuid: 5c7dd536-d5a9-4772-9d9a-5ebb287a9fff
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_actividades
+    - node.type.meta
+  module:
+    - text
+id: node.meta.field_actividades
+field_name: field_actividades
+entity_type: node
+bundle: meta
+label: Actividades
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

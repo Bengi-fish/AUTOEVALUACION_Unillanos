@@ -1,0 +1,22 @@
+uuid: fdd6373f-e214-46d4-89fb-aefaa0762fd4
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_medios_verificacion
+    - node.type.seguimiento
+  module:
+    - text
+id: node.seguimiento.field_medios_verificacion
+field_name: field_medios_verificacion
+entity_type: node
+bundle: seguimiento
+label: 'Medios de verificación'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

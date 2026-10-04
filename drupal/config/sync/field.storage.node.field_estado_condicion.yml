@@ -1,0 +1,30 @@
+uuid: fd2472ca-d502-4574-a91d-6509e69dfb5e
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_estado_condicion
+field_name: field_estado_condicion
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: cumple
+      label: Cumple
+    -
+      value: cumple_parcialmente
+      label: 'Cumple parcialmente'
+    -
+      value: no_cumple
+      label: 'No cumple'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,21 @@
+uuid: 1e79a90a-4ec0-455b-bea5-2076758b64a4
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ambito
+    - node.type.proceso
+  module:
+    - options
+id: node.proceso.field_ambito
+field_name: field_ambito
+entity_type: node
+bundle: proceso
+label: Ámbito
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

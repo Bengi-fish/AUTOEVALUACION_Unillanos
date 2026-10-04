@@ -1,0 +1,28 @@
+uuid: 234f59e8-a388-4805-afa1-00b028d68ee5
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_proceso
+    - media.type.documento
+    - node.type.proceso
+id: media.documento.field_proceso
+field_name: field_proceso
+entity_type: media
+bundle: documento
+label: Proceso
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      proceso: proceso
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

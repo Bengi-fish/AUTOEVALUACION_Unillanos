@@ -1,0 +1,23 @@
+uuid: ab7f7d29-adf2-4687-95af-4fce7546b501
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_valoracion_max
+    - taxonomy.vocabulary.grado_cumplimiento
+id: taxonomy_term.grado_cumplimiento.field_valoracion_max
+field_name: field_valoracion_max
+entity_type: taxonomy_term
+bundle: grado_cumplimiento
+label: 'Valoración máxima'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

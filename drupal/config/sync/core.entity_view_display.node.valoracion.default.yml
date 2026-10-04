@@ -1,0 +1,118 @@
+uuid: b60e232e-474e-4dc8-b7ff-d6a4ccb6cbd3
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.valoracion.field_documento
+    - field.field.node.valoracion.field_elemento
+    - field.field.node.valoracion.field_estado_condicion
+    - field.field.node.valoracion.field_grado
+    - field.field.node.valoracion.field_juicio
+    - field.field.node.valoracion.field_ponderacion
+    - field.field.node.valoracion.field_porcentaje
+    - field.field.node.valoracion.field_proceso
+    - field.field.node.valoracion.field_sintesis
+    - field.field.node.valoracion.field_valoracion
+    - node.type.valoracion
+  module:
+    - options
+    - text
+    - user
+id: node.valoracion.default
+targetEntityType: node
+bundle: valoracion
+mode: default
+content:
+  field_documento:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 8
+    region: content
+  field_elemento:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_estado_condicion:
+    type: list_default
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_grado:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_juicio:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 9
+    region: content
+  field_ponderacion:
+    type: number_decimal
+    label: inline
+    settings:
+      thousand_separator: ''
+      decimal_separator: ','
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_porcentaje:
+    type: number_decimal
+    label: inline
+    settings:
+      thousand_separator: ''
+      decimal_separator: ','
+      scale: 1
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_proceso:
+    type: entity_reference_label
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_sintesis:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  field_valoracion:
+    type: number_decimal
+    label: inline
+    settings:
+      thousand_separator: ''
+      decimal_separator: ','
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  langcode: true

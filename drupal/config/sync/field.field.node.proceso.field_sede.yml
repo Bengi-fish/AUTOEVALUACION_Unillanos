@@ -1,0 +1,28 @@
+uuid: 8cf4bf5c-003f-4f54-8f87-8f484cfff497
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sede
+    - node.type.proceso
+    - taxonomy.vocabulary.sede
+id: node.proceso.field_sede
+field_name: field_sede
+entity_type: node
+bundle: proceso
+label: Sede
+description: 'Solo para procesos institucionales. Sede o programa, no ambos.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      sede: sede
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+field_type: entity_reference

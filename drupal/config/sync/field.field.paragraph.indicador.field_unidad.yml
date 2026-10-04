@@ -1,0 +1,19 @@
+uuid: 43666d63-48ad-4ab0-a6b5-2d60fcfb9437
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_unidad
+    - paragraphs.paragraphs_type.indicador
+id: paragraph.indicador.field_unidad
+field_name: field_unidad
+entity_type: paragraph
+bundle: indicador
+label: Unidad
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

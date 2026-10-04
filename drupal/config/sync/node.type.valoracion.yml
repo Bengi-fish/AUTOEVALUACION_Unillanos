@@ -1,0 +1,11 @@
+uuid: 7f7666a4-1748-4250-aa13-c125d651b42a
+langcode: es
+status: true
+dependencies: {  }
+name: Valoración
+type: valoracion
+description: ''
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: false

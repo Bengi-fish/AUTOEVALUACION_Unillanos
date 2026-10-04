@@ -1,0 +1,33 @@
+uuid: 5ea98830-ecb7-49a0-af95-72bb9425c2d5
+langcode: es
+status: true
+dependencies:
+  module:
+    - options
+    - taxonomy
+id: taxonomy_term.field_tipo_elemento
+field_name: field_tipo_elemento
+entity_type: taxonomy_term
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: factor
+      label: Factor
+    -
+      value: caracteristica
+      label: Característica
+    -
+      value: aspecto
+      label: Aspecto
+    -
+      value: condicion
+      label: Condición
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,28 @@
+uuid: d39599b0-1dc6-449c-934d-bb91aa600046
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_responsables
+    - node.type.meta
+    - taxonomy.vocabulary.responsable
+id: node.meta.field_responsables
+field_name: field_responsables
+entity_type: node
+bundle: meta
+label: Responsables
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      responsable: responsable
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+field_type: entity_reference

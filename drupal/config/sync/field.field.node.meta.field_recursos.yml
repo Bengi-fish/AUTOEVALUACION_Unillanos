@@ -1,0 +1,19 @@
+uuid: 402820ff-fd6b-4f71-9475-70a73d4af9c1
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_recursos
+    - node.type.meta
+id: node.meta.field_recursos
+field_name: field_recursos
+entity_type: node
+bundle: meta
+label: Recursos
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

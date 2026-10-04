@@ -1,0 +1,21 @@
+uuid: 7b3823ac-58c7-4443-9114-6f3e4df14492
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_origen
+    - node.type.hallazgo
+  module:
+    - options
+id: node.hallazgo.field_origen
+field_name: field_origen
+entity_type: node
+bundle: hallazgo
+label: Origen
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

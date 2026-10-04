@@ -1,0 +1,19 @@
+uuid: 9f0a5c93-d578-49cd-9193-b139d4d8da6e
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_norma
+    - node.type.lineamiento
+id: node.lineamiento.field_norma
+field_name: field_norma
+entity_type: node
+bundle: lineamiento
+label: Norma
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

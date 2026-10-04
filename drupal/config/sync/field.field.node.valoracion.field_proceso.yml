@@ -1,0 +1,28 @@
+uuid: 118b97d0-4309-480e-8f7e-67bfdb05e248
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_proceso
+    - node.type.proceso
+    - node.type.valoracion
+id: node.valoracion.field_proceso
+field_name: field_proceso
+entity_type: node
+bundle: valoracion
+label: Proceso
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      proceso: proceso
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

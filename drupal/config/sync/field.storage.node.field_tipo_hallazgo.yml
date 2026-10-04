@@ -1,0 +1,27 @@
+uuid: bcf3d97f-6315-4608-a7e5-34e681a42dce
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_tipo_hallazgo
+field_name: field_tipo_hallazgo
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: fortaleza
+      label: Fortaleza
+    -
+      value: aspecto_por_mejorar
+      label: 'Aspecto por mejorar'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

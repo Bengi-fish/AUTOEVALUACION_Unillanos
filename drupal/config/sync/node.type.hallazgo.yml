@@ -1,0 +1,11 @@
+uuid: 201cb12c-5223-4f95-9864-165b1f536344
+langcode: es
+status: true
+dependencies: {  }
+name: Hallazgo
+type: hallazgo
+description: ''
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: false

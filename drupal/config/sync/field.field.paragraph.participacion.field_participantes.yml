@@ -1,0 +1,23 @@
+uuid: 229e2ed5-da5d-4798-b9de-c5ea0ea930f6
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_participantes
+    - paragraphs.paragraphs_type.participacion
+id: paragraph.participacion.field_participantes
+field_name: field_participantes
+entity_type: paragraph
+bundle: participacion
+label: Participantes
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 0
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

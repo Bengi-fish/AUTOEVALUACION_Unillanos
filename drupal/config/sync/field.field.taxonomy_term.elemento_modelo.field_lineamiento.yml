@@ -1,0 +1,28 @@
+uuid: 5ef346b1-9579-4088-ac5a-5012b6ab42e9
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_lineamiento
+    - node.type.lineamiento
+    - taxonomy.vocabulary.elemento_modelo
+id: taxonomy_term.elemento_modelo.field_lineamiento
+field_name: field_lineamiento
+entity_type: taxonomy_term
+bundle: elemento_modelo
+label: Lineamiento
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      lineamiento: lineamiento
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

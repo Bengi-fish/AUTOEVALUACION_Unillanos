@@ -1,0 +1,23 @@
+uuid: c2bde09c-6762-4e6e-946d-2afb0acd3010
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_peso
+    - node.type.meta
+id: node.meta.field_peso
+field_name: field_peso
+entity_type: node
+bundle: meta
+label: Peso
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: decimal

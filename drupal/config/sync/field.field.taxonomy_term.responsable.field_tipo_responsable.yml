@@ -1,0 +1,21 @@
+uuid: 7b02f3b7-76a2-423c-85eb-038b989a977f
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_tipo_responsable
+    - taxonomy.vocabulary.responsable
+  module:
+    - options
+id: taxonomy_term.responsable.field_tipo_responsable
+field_name: field_tipo_responsable
+entity_type: taxonomy_term
+bundle: responsable
+label: 'Tipo de responsable'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

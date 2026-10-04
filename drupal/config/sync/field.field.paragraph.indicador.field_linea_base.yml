@@ -1,0 +1,19 @@
+uuid: 26cf62db-f4d8-42b5-b123-73626c8609f2
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_linea_base
+    - paragraphs.paragraphs_type.indicador
+id: paragraph.indicador.field_linea_base
+field_name: field_linea_base
+entity_type: paragraph
+bundle: indicador
+label: 'Línea base'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

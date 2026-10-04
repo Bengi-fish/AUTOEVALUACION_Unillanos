@@ -1,0 +1,31 @@
+uuid: 346fc94c-2e4c-4ecd-aa9d-6156c0792227
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_programacion
+    - paragraphs.paragraphs_type.indicador
+    - paragraphs.paragraphs_type.programacion_anual
+  module:
+    - entity_reference_revisions
+id: paragraph.indicador.field_programacion
+field_name: field_programacion
+entity_type: paragraph
+bundle: indicador
+label: 'Programación anual'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      programacion_anual: programacion_anual
+    negate: 0
+    target_bundles_drag_drop:
+      programacion_anual:
+        weight: 0
+        enabled: true
+field_type: entity_reference_revisions

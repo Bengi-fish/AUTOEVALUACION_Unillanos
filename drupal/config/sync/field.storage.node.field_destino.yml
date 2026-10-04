@@ -1,0 +1,30 @@
+uuid: b147f986-5522-4522-9284-fea1f2bf359a
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_destino
+field_name: field_destino
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: plan_mejoramiento
+      label: 'Plan de mejoramiento'
+    -
+      value: plan_accion
+      label: 'Plan de acción'
+    -
+      value: ninguno
+      label: Ninguno
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

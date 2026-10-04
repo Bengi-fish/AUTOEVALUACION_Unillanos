@@ -1,0 +1,19 @@
+uuid: 5be0743f-c9eb-409a-bc46-9960e44fa643
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_verificado_por
+    - node.type.seguimiento
+id: node.seguimiento.field_verificado_por
+field_name: field_verificado_por
+entity_type: node
+bundle: seguimiento
+label: 'Verificado por'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

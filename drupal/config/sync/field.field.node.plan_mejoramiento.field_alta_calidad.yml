@@ -1,0 +1,21 @@
+uuid: 771a1c76-168e-46d2-b02f-a6691a166fd3
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alta_calidad
+    - node.type.plan_mejoramiento
+  module:
+    - options
+id: node.plan_mejoramiento.field_alta_calidad
+field_name: field_alta_calidad
+entity_type: node
+bundle: plan_mejoramiento
+label: 'Alta calidad'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -1,0 +1,30 @@
+uuid: 7d4ec777-a88f-4c8a-afdf-17f917257423
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_ambito
+field_name: field_ambito
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: programa
+      label: Programa
+    -
+      value: unidad_academica
+      label: 'Unidad académica'
+    -
+      value: institucional
+      label: Institucional
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

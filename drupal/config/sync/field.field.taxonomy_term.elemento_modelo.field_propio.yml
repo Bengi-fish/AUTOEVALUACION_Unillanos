@@ -1,0 +1,23 @@
+uuid: 6d746c59-d842-492d-a4b2-bcd7c73fb430
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_propio
+    - taxonomy.vocabulary.elemento_modelo
+id: taxonomy_term.elemento_modelo.field_propio
+field_name: field_propio
+entity_type: taxonomy_term
+bundle: elemento_modelo
+label: 'Propio de la Universidad'
+description: 'Marcar si es un aspecto agregado por la Universidad.'
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: Activado
+  off_label: Desactivado
+field_type: boolean
