@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__list_memories",
+      "mcp__serena__list_dir",
+      "mcp__serena__onboarding",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__find_symbol",
+      "mcp__serena__think_about_collected_information",
+      "mcp__serena__find_file",
+      "mcp__serena__write_memory",
+      "mcp__serena__think_about_whether_you_are_done",
+      "mcp__serena__summarize_changes",
+      "mcp__serena__edit_memory",
+      "mcp__serena__read_memory",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__initial_instructions",
+      "Bash(cat:*)",
+      "Bash(drush status:*)",
+      "Bash(drush pm:list:*)",
+      "Bash(find:*)",
+      "Bash(claude:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf .)",
+      "Bash(rm -rf *)",
+      "Bash(chmod -R 777*)",
+      "Bash(chmod 777 *)",
+      "Bash(git push --force*)",
+      "Bash(git push * --force*)",
+      "Bash(git reset --hard HEAD~*)",
+      "Bash(git clean -fdx)",
+      "Bash(drush sql:drop*)",
+      "Bash(drush sql-drop*)",
+      "Bash(drush site:install*)",
+      "Bash(drush si *)",
+      "Bash(composer remove drupal/core*)",
+      "Bash(truncate *)",
+      "Bash(dd if=*)",
+      "Edit(/var/www/html/web/core/*)",
+      "Edit(/var/www/html/vendor/*)",
+      "Write(/var/www/html/web/core/*)",
+      "Write(/var/www/html/vendor/*)"
+    ]
+  },
+  "hooks": {}
+}

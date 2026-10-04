@@ -1,0 +1,283 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Session Start
+At the start of each session, read the Serena memories `project-overview` and `task-completion-checklist` using `mcp__serena__read_memory` to understand this project's context and quality requirements.
+
+## Project Overview
+This is a Drupal 11 project. Drupal is an open source content management platform.
+
+## Development Environment
+- **Platform**: DDEV containerized development environment
+- **IMPORTANT**: Claude Code and Serena MCP run **inside the DDEV container**
+- All commands execute directly without `ddev` prefix (e.g., `drush cr` not `ddev drush cr`)
+- Working directory: `/var/www/html`
+- Web root: `/var/www/html/web`
+
+### Environment Details
+| Component | Version |
+|-----------|---------|
+| PHP | 8.3 |
+| Database | MariaDB 10.11 |
+| Web Server | nginx-fpm |
+| Composer | 2 |
+| Drush | 13 |
+
+## Before Marking Any Task as Complete
+
+### Code Quality Gates (MANDATORY)
+
+#### PHPCS - Coding Standards
+```bash
+# Check if project has phpcs.xml
+[ -f phpcs.xml ] || [ -f phpcs.xml.dist ] && phpcs || \
+vendor/bin/phpcs --standard=Drupal,DrupalPractice web/modules/custom/MODULE_NAME/
+
+# Auto-fix
+vendor/bin/phpcbf --standard=Drupal,DrupalPractice web/modules/custom/MODULE_NAME/
+```
+**Must pass with zero errors.**
+
+#### PHPStan - Static Analysis (Level 5)
+```bash
+# Check if project has phpstan.neon
+[ -f phpstan.neon ] || [ -f phpstan.neon.dist ] && phpstan || \
+vendor/bin/phpstan analyze web/modules/custom/MODULE_NAME/
+```
+**Must pass with zero errors.**
+
+### Workflow
+1. Write/modify code
+2. Run PHPCBF (auto-fix)
+3. Run PHPCS (verify)
+4. Run PHPStan (verify)
+5. If any check fails → fix issues → repeat
+6. Only when ALL pass → mark task complete
+
+## Configuration Management
+- **Export configuration**: `drush config:export -y`
+- **Import configuration**: `drush config:import -y`
+- **Import partial configuration**: `drush config:import --partial --source=[path-to-module/config/install]`
+- **Verify configuration**: `drush config:export --diff`
+- **View config details**: `drush config:get [config.name]`
+- **Change config value**: `drush config:set [config.name] [key] [value]`
+- **Install from config**: `drush site:install --existing-config`
+- **Get config sync directory**: `drush status --field=config-sync`
+
+## Development Commands
+- **List available modules**: `drush pm:list [--filter=FILTER]`
+- **List enabled modules**: `drush pm:list --status=enabled [--filter=FILTER]`
+- **Download a Drupal module**: `composer require drupal/[module_name]`
+- **Install a Drupal module**: `drush en [module_name]`
+- **Clear cache**: `drush cache:rebuild`
+- **Inspect logs**: `drush watchdog:show --count=20`
+- **Delete logs**: `drush watchdog:delete all`
+- **Run cron**: `drush cron`
+- **Show status**: `drush status`
+
+## Entity Management
+- **View fields on entity**: `drush field:info [entity_type] [bundle]`
+
+## Best Practices
+- If making configuration changes to a module's config/install, also apply to active configuration
+- Always export configuration after making changes
+- Check configuration diffs before importing
+- If a module provides install configuration, use `config/install` not `hook_install`
+- Prefer contrib modules over custom implementations
+- Implement access control for all custom entities
+- If phpcs/phpstan/phpunit unavailable: `composer require --dev drupal/core-dev`
+
+## File Size Guidelines
+- **Maximum file size**: Assess files approaching 2000 lines for splitting
+- **When to split**: Files with multiple distinct responsibilities or logical sections
+- **PHP splitting strategy**:
+  - Extract traits for shared behavior
+  - Create service classes for distinct responsibilities
+  - Use composition over inheritance
+- **JavaScript splitting strategy**:
+  - Split by functional concern (e.g., `module.helpers.js`, `module.renderers.js`)
+  - Keep related functionality together
+  - Use Drupal behaviors pattern with `once()` for initialization
+  - Register all files in `*.libraries.yml` with proper dependencies
+
+## Code Style Guidelines
+- **PHP Version**: 8.3+ compatibility required (use PHP 8.1+ features)
+- **Coding Standard**: Drupal coding standards
+- **Indentation**: 2 spaces, no tabs
+- **Line Length**: 120 characters maximum
+- **Comment**: 80 characters maximum line length, always finishing with a full stop
+- **Namespaces**: PSR-4 standard, `Drupal\{module_name}\{subdirectory}`
+- **Strict Types**: Add `declare(strict_types=1);` after opening PHP tag in:
+  - Entities (always)
+  - Interfaces (always)
+  - Enums (always)
+  - Skip in: Plugins, Services, Forms, Controllers
+- **Types**:
+  - Always declare property types
+  - Use PHP 8.1+ features: enums, attributes, union types, match expressions
+  - Nullable: `?string` or `Type|NULL`
+  - Constructor property promotion for dependency injection
+- **Documentation**:
+  - PHPDoc required for all properties and methods
+  - Use `{@inheritDoc}` for inherited methods
+  - Include `@var` for complex property types
+- **Error Handling**: Specific exception types with `@throws` annotations, meaningful messages
+- **Plugins**: Use PHP 8 attributes (not annotations)
+  - Example: `#[AiAgent(id: 'my_agent', label: new TranslatableMarkup('Label'))]`
+- **Enums**: Use PHP 8.1 backed enums with helper methods and match expressions
+
+### Naming Conventions
+- **Classes/Interfaces/Traits**: PascalCase (e.g., `AiAgent`, `AgentHelper`)
+- **Methods**: camelCase (e.g., `getConnectorData()`, `buildForm()`)
+- **Properties**: camelCase for service injection (e.g., `$entityTypeManager`), snake_case acceptable for entity/config properties (e.g., `$bundle_definitions`)
+- **Method parameters**: snake_case in traditional constructors (e.g., `$plugin_id`, `$entity_type`)
+- **Local variables**: snake_case for clarity (e.g., `$field_name`, `$entity_type`)
+- **Enum Cases**: PascalCase (e.g., `case Started`, `case Finished`)
+- **Constants**: ALL_CAPS with underscores (e.g., `DEFAULT_TIMEOUT`)
+
+### Class Structure
+- Properties before methods (with explicit visibility)
+- Dependency injection via constructor with property promotion
+- Use service container instead of `\Drupal::service()`
+- Use `final` modifier for entity classes
+- Use traits for common functionality (e.g., `DependencySerializationTrait`)
+- Follow Drupal plugin conventions with PHP 8 attributes
+
+### Example Code Structure
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\my_module\Entity;
+
+/**
+ * Defines the My Entity type.
+ */
+final class MyEntity extends ConfigEntityBase {
+
+  /**
+   * The entity ID.
+   */
+  protected string $id;
+
+  /**
+   * The optional description.
+   */
+  protected ?string $description = NULL;
+
+}
+```
+
+### Example Service with Constructor Promotion
+```php
+<?php
+
+namespace Drupal\my_module\Service;
+
+class MyService {
+
+  /**
+   * Constructor.
+   */
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected LoggerChannelFactoryInterface $loggerFactory,
+  ) {}
+
+}
+```
+
+### Example Plugin with Attributes
+```php
+<?php
+
+namespace Drupal\my_module\Plugin\MyPluginType;
+
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\my_module\Attribute\MyPlugin;
+
+#[MyPlugin(
+  id: 'my_plugin_id',
+  label: new TranslatableMarkup('My Plugin Label'),
+  description: new TranslatableMarkup('Plugin description'),
+)]
+class MyPluginClass extends PluginBase {
+  // Implementation
+}
+```
+
+### Example Enum
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\my_module\Enum;
+
+enum MyEnum: string {
+  case OptionOne = 'option_one';
+  case OptionTwo = 'option_two';
+
+  public function getLabel(): string {
+    return match ($this) {
+      self::OptionOne => 'Option One',
+      self::OptionTwo => 'Option Two',
+    };
+  }
+}
+```
+
+## Security Guidelines
+1. **Sanitize all user input**: Use `Xss::filter()`, `Html::escape()`
+2. **Use CSRF tokens**: For forms and links
+3. **Check access**: Use access control handlers and permissions
+4. **Validate file uploads**: Use file validators
+5. **No SQL injection**: Use Entity Query or Database API with placeholders
+6. **Never commit secrets**: Use environment variables for API keys
+
+## Frontend Architecture
+
+### SASS/CSS Guidelines
+- Use SCSS syntax with BEM naming
+- 2 spaces indentation
+- Avoid `!important` unless necessary
+
+### JavaScript Guidelines
+- ES6+ modules with exports
+- Use `const`/`let`, never `var`
+- No `console.log()` in committed code
+- Use Drupal behaviors for Drupal-specific JS
+- Component scripts prefixed with underscore (e.g., `_header.js`)
+
+## Directory Structure
+```
+/var/www/html/
+├── web/                      # Drupal webroot
+│   ├── core/                 # Drupal core (DO NOT MODIFY)
+│   ├── modules/
+│   │   ├── contrib/          # Contributed modules (DO NOT MODIFY)
+│   │   └── custom/           # Custom modules (DEVELOPMENT TARGET)
+│   ├── themes/
+│   │   ├── contrib/          # Contributed themes
+│   │   └── custom/           # Custom themes
+│   └── sites/
+├── config/sync/              # Configuration files
+├── vendor/                   # Composer dependencies (DO NOT MODIFY)
+├── .ddev/                    # DDEV configuration
+└── composer.json
+```
+
+## Forbidden Actions
+- DO NOT modify files in `web/core/`
+- DO NOT modify files in `vendor/`
+- DO NOT modify files in `web/modules/contrib/`
+- DO NOT commit API keys or passwords
+- DO NOT use `chmod 777`
+- DO NOT force push to main/master branches
+
+## Getting Help
+- **Drupal documentation**: https://www.drupal.org/docs
+- **Drush commands**: `drush list`
+- **Module info**: `drush pm:info [module]`

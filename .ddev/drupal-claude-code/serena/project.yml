@@ -1,0 +1,109 @@
+# .serena/project.yml
+# Serena project configuration for Drupal 11 / PHP 8.3 / DDEV
+
+# ============================================================================
+# LANGUAGES & ANALYSIS
+# ============================================================================
+
+languages:
+  - php
+  - typescript
+
+encoding: "utf-8"
+
+# ============================================================================
+# PATH FILTERING & INDEXING OPTIMIZATION
+# ============================================================================
+
+ignore_all_files_in_gitignore: true
+
+ignored_paths:
+  # Composer & package managers
+  - vendor/
+  - node_modules/
+  - composer.lock
+  - package-lock.json
+  - yarn.lock
+
+  # Drupal core (too large)
+  - web/core/
+
+  # Contributed modules/themes
+  - web/modules/contrib/
+  - web/themes/contrib/
+
+  # Runtime & build artifacts
+  - web/sites/*/files/
+  - web/sites/*/private/
+  - var/
+  - .cache/
+  - tmp/
+
+  # IDE & editor metadata
+  - .idea/
+  - .vscode/
+  - .ddev/
+  - .git/
+  - .github/
+
+  # Test artifacts & coverage reports
+  - coverage/
+  - .phpunit.cache/
+  - build/
+
+  # Node build outputs
+  - dist/
+  - .next/
+
+# ============================================================================
+# SAFETY & PERMISSIONS
+# ============================================================================
+
+read_only: false
+excluded_tools: []
+
+# ============================================================================
+# INITIAL CONTEXT & GUIDANCE
+# ============================================================================
+
+initial_prompt: >
+  This repository is a Drupal 11 / PHP 8.3 project running under DDEV with
+  MariaDB and PHP 8.3. The project uses Single Directory Components (SDC)
+  for Canvas UI, Drush 13 for CLI operations, Pest for testing, and Composer
+  for dependency management.
+
+  CRITICAL: Read and follow the CLAUDE.md file in the project root. It defines
+  the authoritative guidelines for code style, quality checks (PHPCS, PHPStan,
+  security), Drush workflows, and Drupal conventions.
+
+  Before proposing or applying any changes:
+  1. Understand the project structure (custom code in web/modules/custom/)
+  2. Follow all rules in CLAUDE.md (code style, naming, class structure)
+  3. Ensure PHPCS and PHPStan pass before marking work complete
+  4. Use Serena's semantic tools (find_symbol, insert_after_symbol, etc.)
+     rather than file-based operations when available
+
+  Prefer web/modules/custom/* over core/contrib. Use modern Drupal 11 patterns:
+  - Services and dependency injection (constructor promotion)
+  - Typed properties and PHP 8.3+ features
+  - Plugins with PHP 8 attributes (not legacy annotations)
+  - Strict types for entities, interfaces, and enums
+  - Config/install for install configuration
+
+# ============================================================================
+# PROJECT METADATA
+# ============================================================================
+
+project_name: "drupal-project"
+
+# ============================================================================
+# OPTIONAL TOOLS
+# ============================================================================
+
+included_optional_tools:
+  - summarize_changes
+  - delete_lines
+  - replace_lines
+  - insert_at_line
+  - restart_language_server
+  - initial_instructions

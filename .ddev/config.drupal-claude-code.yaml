@@ -1,0 +1,15 @@
+#ddev-generated
+# Drupal Claude Code DDEV Configuration
+
+hooks:
+  post-start:
+    # Append gitignore rules
+    - exec: "tail -n +2 /var/www/html/.ddev/web-build/claude-code.gitignore >> /var/www/html/.ddev/.gitignore 2>/dev/null || true"
+    # Claude Code config - symlink .ddev/.claude to ~/.claude
+    - exec: "mkdir -p /var/www/html/.ddev/.claude && ln -sf /var/www/html/.ddev/.claude ~/.claude"
+    - exec: "test -f /var/www/html/.ddev/.claude.json || echo '{}' > /var/www/html/.ddev/.claude.json && ln -sf /var/www/html/.ddev/.claude.json ~/.claude.json"
+    - exec: "test -f /var/www/html/.ddev/drupal-claude-code/settings.json && cp /var/www/html/.ddev/drupal-claude-code/settings.json ~/.claude/settings.json || true"
+    - exec: "test -f /var/www/html/.ddev/drupal-claude-code/statusline.sh && cp /var/www/html/.ddev/drupal-claude-code/statusline.sh ~/.claude/statusline.sh && chmod +x ~/.claude/statusline.sh || true"
+    # Project settings.local.json
+    - exec: "mkdir -p /var/www/html/.claude && test -f /var/www/html/.ddev/drupal-claude-code/settings.local.json && test ! -f /var/www/html/.claude/settings.local.json && cp /var/www/html/.ddev/drupal-claude-code/settings.local.json /var/www/html/.claude/settings.local.json || true"
+

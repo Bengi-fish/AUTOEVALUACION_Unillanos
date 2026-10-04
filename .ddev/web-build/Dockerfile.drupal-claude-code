@@ -1,0 +1,16 @@
+#ddev-generated
+# Dockerfile for Claude Code addon - extends DDEV web container
+# All stable tools are baked into the image for faster container starts
+
+# Install Claude Code CLI as DDEV user (installs directly to ~/.local/bin)
+# Install uv (Python package manager for Serena) as DDEV user
+USER $username
+RUN curl -fsSL https://claude.ai/install.sh | bash \
+    && rm -rf ~/.claude
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+USER root
+
+# Install language servers for Serena
+# - intelephense: PHP language server
+# - typescript: TypeScript language server (tsserver)
+RUN npm install -g intelephense typescript

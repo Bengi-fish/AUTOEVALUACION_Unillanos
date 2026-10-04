@@ -1,0 +1,41 @@
+# .claudeignore - Minimal ignores for Claude Code context
+# This file controls what Claude Code includes in its context window
+
+# Large dependency directories (always exclude)
+vendor/
+node_modules/
+
+# Drupal core - exclude most, keep useful references
+web/core/*
+!web/core/themes/
+!web/core/scripts/
+!web/core/recipes/
+!web/core/modules/
+
+# Contributed modules (focus on custom code)
+web/modules/contrib/
+web/themes/contrib/
+
+# Generated files & caches
+*.log
+.phpunit.cache/
+.phpstan.cache/
+
+# Version control internals
+.git/
+
+# IDE configuration
+.idea/
+.vscode/
+
+# DDEV internals (keep config files)
+.ddev/db_snapshots/
+.ddev/.gitignore
+.ddev/.ddev-docker-compose*
+
+# Serena build artifacts (large)
+.serena/build/
+
+# Test artifacts
+/tmp/
+coverage/

@@ -1,0 +1,34 @@
+name: drupal-claude-code
+repository: lexsoft00/ddev-drupal-claude-code
+version: 1.0.0
+install_date: "2026-10-03T21:19:39-05:00"
+project_files:
+    - commands/web/claude
+    - config.drupal-claude-code.yaml
+    - drupal-claude-code/.gitignore
+    - drupal-claude-code/.claudeignore
+    - drupal-claude-code/settings.json
+    - drupal-claude-code/settings.local.json
+    - drupal-claude-code/statusline.sh
+    - drupal-claude-code/templates/CLAUDE.md.template
+    - drupal-claude-code/serena/project.yml
+    - drupal-claude-code/serena/memories/project-overview.md
+    - drupal-claude-code/serena/memories/task-completion-checklist.md
+    - drupal-claude-code/serena/memories/architecture-patterns.md
+    - drupal-claude-code/serena/memories/code-style-conventions.md
+    - drupal-claude-code/serena/memories/commands-reference.md
+    - drupal-claude-code/serena/memories/security-guidelines.md
+    - web-build/Dockerfile.drupal-claude-code
+    - web-build/claude-code.gitignore
+global_files: []
+removal_actions:
+    - |
+      #ddev-description: Removing addon files
+      echo "Removing Claude Code addon files..."
+      rm -rf "$DDEV_APPROOT/.ddev/drupal-claude-code/"
+      rm -rf "$DDEV_APPROOT/.ddev/.claude/"
+      rm -f "$DDEV_APPROOT/.ddev/config.drupal-claude-code.yaml"
+      rm -f "$DDEV_APPROOT/.ddev/commands/web/claude"
+      rm -f "$DDEV_APPROOT/.ddev/web-build/Dockerfile.drupal-claude-code"
+      rm -f "$DDEV_APPROOT/.ddev/web-build/claude-code.gitignore"
+      echo "NOTE: CLAUDE.md and .serena/ in project root were preserved."
