@@ -5,7 +5,7 @@
  * Crea el modelo de contenido (MER v2 → Drupal 11). Idempotente.
  *
  * Uso (desde la raíz del repositorio):
- *   ddev drush php:script scripts/crear_modelo.php
+ *   ddev drush php:script scripts/crear_modelo.php.
  *
  * Fuente de verdad de los nombres: docs/drupal/modelo-de-contenido.md.
  * Orden: 1) vocabularios, 2) tipos de contenido, 3) paragraphs, 4) media,
@@ -13,8 +13,6 @@
  * Lo que ya existe no se toca: se puede correr las veces que haga falta.
  */
 
-use Drupal\Core\Entity\Entity\EntityFormDisplay;
-use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\media\Entity\MediaType;
@@ -95,31 +93,40 @@ $ref_termino = fn(string $etiqueta, array $vocabularios, array $extra = []): arr
   'tipo' => 'entity_reference',
   'etiqueta' => $etiqueta,
   'storage' => ['target_type' => 'taxonomy_term'],
-  'instancia' => ['handler' => 'default:taxonomy_term', 'handler_settings' => [
-    'target_bundles' => array_combine($vocabularios, $vocabularios),
-    'sort' => ['field' => 'name', 'direction' => 'asc'],
-    'auto_create' => FALSE,
-  ]],
+  'instancia' => [
+    'handler' => 'default:taxonomy_term',
+    'handler_settings' => [
+      'target_bundles' => array_combine($vocabularios, $vocabularios),
+      'sort' => ['field' => 'name', 'direction' => 'asc'],
+      'auto_create' => FALSE,
+    ],
+  ],
 ] + $extra;
 $ref_nodo = fn(string $etiqueta, array $tipos, array $extra = []): array => [
   'tipo' => 'entity_reference',
   'etiqueta' => $etiqueta,
   'storage' => ['target_type' => 'node'],
-  'instancia' => ['handler' => 'default:node', 'handler_settings' => [
-    'target_bundles' => array_combine($tipos, $tipos),
-    'sort' => ['field' => '_none', 'direction' => 'ASC'],
-    'auto_create' => FALSE,
-  ]],
+  'instancia' => [
+    'handler' => 'default:node',
+    'handler_settings' => [
+      'target_bundles' => array_combine($tipos, $tipos),
+      'sort' => ['field' => '_none', 'direction' => 'ASC'],
+      'auto_create' => FALSE,
+    ],
+  ],
 ] + $extra;
 $ref_media = fn(string $etiqueta, array $tipos, array $extra = []): array => [
   'tipo' => 'entity_reference',
   'etiqueta' => $etiqueta,
   'storage' => ['target_type' => 'media'],
-  'instancia' => ['handler' => 'default:media', 'handler_settings' => [
-    'target_bundles' => array_combine($tipos, $tipos),
-    'sort' => ['field' => '_none', 'direction' => 'ASC'],
-    'auto_create' => FALSE,
-  ]],
+  'instancia' => [
+    'handler' => 'default:media',
+    'handler_settings' => [
+      'target_bundles' => array_combine($tipos, $tipos),
+      'sort' => ['field' => '_none', 'direction' => 'ASC'],
+      'auto_create' => FALSE,
+    ],
+  ],
   'widget' => ['type' => 'media_library_widget', 'settings' => ['media_types' => []]],
 ] + $extra;
 $parrafos = fn(string $etiqueta, string $tipo_paragraph, string $singular, string $plural): array => [
@@ -127,27 +134,36 @@ $parrafos = fn(string $etiqueta, string $tipo_paragraph, string $singular, strin
   'etiqueta' => $etiqueta,
   'cardinalidad' => -1,
   'storage' => ['target_type' => 'paragraph'],
-  'instancia' => ['handler' => 'default:paragraph', 'handler_settings' => [
-    'target_bundles' => [$tipo_paragraph => $tipo_paragraph],
-    'negate' => 0,
-    'target_bundles_drag_drop' => [$tipo_paragraph => ['weight' => 0, 'enabled' => TRUE]],
-  ]],
-  'widget' => ['type' => 'paragraphs', 'settings' => [
-    'title' => $singular,
-    'title_plural' => $plural,
-    'edit_mode' => 'open',
-    'closed_mode' => 'summary',
-    'autocollapse' => 'none',
-    'closed_mode_threshold' => 0,
-    'add_mode' => 'button',
-    'form_display_mode' => 'default',
-    'default_paragraph_type' => $tipo_paragraph,
-    'features' => ['duplicate' => 'duplicate', 'collapse_edit_all' => 'collapse_edit_all'],
-  ]],
-  'formatter' => ['type' => 'entity_reference_revisions_entity_view', 'settings' => [
-    'view_mode' => 'default',
-    'link' => FALSE,
-  ]],
+  'instancia' => [
+    'handler' => 'default:paragraph',
+    'handler_settings' => [
+      'target_bundles' => [$tipo_paragraph => $tipo_paragraph],
+      'negate' => 0,
+      'target_bundles_drag_drop' => [$tipo_paragraph => ['weight' => 0, 'enabled' => TRUE]],
+    ],
+  ],
+  'widget' => [
+    'type' => 'paragraphs',
+    'settings' => [
+      'title' => $singular,
+      'title_plural' => $plural,
+      'edit_mode' => 'open',
+      'closed_mode' => 'summary',
+      'autocollapse' => 'none',
+      'closed_mode_threshold' => 0,
+      'add_mode' => 'button',
+      'form_display_mode' => 'default',
+      'default_paragraph_type' => '_none',
+      'features' => ['duplicate' => 'duplicate', 'collapse_edit_all' => 'collapse_edit_all'],
+    ],
+  ],
+  'formatter' => [
+    'type' => 'entity_reference_revisions_entity_view',
+    'settings' => [
+      'view_mode' => 'default',
+      'link' => FALSE,
+    ],
+  ],
 ];
 $imagen = fn(string $etiqueta, string $directorio, array $extra = []): array => [
   'tipo' => 'image',
@@ -403,14 +419,26 @@ $campos['node'] = [
     'field_actividades' => $largo_texto('Actividades'),
     'field_recursos' => $texto('Recursos', [], 250),
     'field_hallazgos' => $ref_nodo('Hallazgos que atiende', ['hallazgo'], $multiple + [
-      'widget' => ['type' => 'entity_reference_autocomplete', 'settings' => [
-        'match_operator' => 'CONTAINS', 'match_limit' => 10, 'size' => 60, 'placeholder' => '',
-      ]],
+      'widget' => [
+        'type' => 'entity_reference_autocomplete',
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'match_limit' => 10,
+          'size' => 60,
+          'placeholder' => '',
+        ],
+      ],
     ]),
     'field_responsables' => $ref_termino('Responsables', ['responsable'], $multiple + [
-      'widget' => ['type' => 'entity_reference_autocomplete_tags', 'settings' => [
-        'match_operator' => 'CONTAINS', 'match_limit' => 10, 'size' => 60, 'placeholder' => '',
-      ]],
+      'widget' => [
+        'type' => 'entity_reference_autocomplete_tags',
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'match_limit' => 10,
+          'size' => 60,
+          'placeholder' => '',
+        ],
+      ],
     ]),
     'field_indicadores' => $parrafos('Indicadores', 'indicador', 'Indicador', 'Indicadores'),
   ],
@@ -477,7 +505,6 @@ $campos['media'] = [
 // ---------------------------------------------------------------------------
 // Ejecución de los pasos 1 a 4: contenedores (bundles).
 // ---------------------------------------------------------------------------
-$etapa = 'Vocabularios';
 foreach ($vocabularios as $id => $nombre) {
   if (!Vocabulary::load($id)) {
     Vocabulary::create(['vid' => $id, 'name' => $nombre, 'description' => ''])->save();
@@ -586,15 +613,24 @@ $widget_por_tipo = [
   'boolean' => ['type' => 'boolean_checkbox', 'settings' => ['display_label' => TRUE]],
   'list_string' => ['type' => 'options_select', 'settings' => []],
   'datetime' => ['type' => 'datetime_default', 'settings' => []],
-  'image' => ['type' => 'image_image', 'settings' => [
-    'progress_indicator' => 'throbber',
-    'preview_image_style' => 'thumbnail',
-  ]],
+  'image' => [
+    'type' => 'image_image',
+    'settings' => [
+      'progress_indicator' => 'throbber',
+      'preview_image_style' => 'thumbnail',
+    ],
+  ],
   'link' => ['type' => 'link_default', 'settings' => ['placeholder_url' => '', 'placeholder_title' => '']],
 ];
-$widget_ref_nodo = ['type' => 'entity_reference_autocomplete', 'settings' => [
-  'match_operator' => 'CONTAINS', 'match_limit' => 10, 'size' => 60, 'placeholder' => '',
-]];
+$widget_ref_nodo = [
+  'type' => 'entity_reference_autocomplete',
+  'settings' => [
+    'match_operator' => 'CONTAINS',
+    'match_limit' => 10,
+    'size' => 60,
+    'placeholder' => '',
+  ],
+];
 // Vocabularios pequeños (catálogos) se eligen de una lista; `elemento_modelo`
 // es extenso y se busca con autocompletado.
 $widget_ref_termino = fn(array $objetivos): array => in_array('elemento_modelo', $objetivos, TRUE)
@@ -604,14 +640,33 @@ $widget_ref_termino = fn(array $objetivos): array => in_array('elemento_modelo',
 $formatter_por_tipo = [
   'string' => ['type' => 'string', 'settings' => ['link_to_entity' => FALSE]],
   'text_long' => ['type' => 'text_default', 'settings' => []],
-  'boolean' => ['type' => 'boolean', 'settings' => ['format' => 'default', 'format_custom_false' => '', 'format_custom_true' => '']],
+  'boolean' => [
+    'type' => 'boolean',
+    'settings' => ['format' => 'default', 'format_custom_false' => '', 'format_custom_true' => ''],
+  ],
   'list_string' => ['type' => 'list_default', 'settings' => []],
-  'datetime' => ['type' => 'datetime_custom', 'settings' => ['date_format' => 'd/m/Y', 'timezone_override' => '']],
-  'integer' => ['type' => 'number_integer', 'settings' => ['thousand_separator' => '', 'prefix_suffix' => TRUE]],
-  'image' => ['type' => 'image', 'settings' => ['image_link' => '', 'image_style' => '', 'image_loading' => ['attribute' => 'lazy']]],
-  'link' => ['type' => 'link', 'settings' => [
-    'trim_length' => 80, 'url_only' => FALSE, 'url_plain' => FALSE, 'rel' => '', 'target' => '',
-  ]],
+  'datetime' => [
+    'type' => 'datetime_custom',
+    'settings' => ['date_format' => 'd/m/Y', 'timezone_override' => ''],
+  ],
+  'integer' => [
+    'type' => 'number_integer',
+    'settings' => ['thousand_separator' => '', 'prefix_suffix' => TRUE],
+  ],
+  'image' => [
+    'type' => 'image',
+    'settings' => ['image_link' => '', 'image_style' => '', 'image_loading' => ['attribute' => 'lazy']],
+  ],
+  'link' => [
+    'type' => 'link',
+    'settings' => [
+      'trim_length' => 80,
+      'url_only' => FALSE,
+      'url_plain' => FALSE,
+      'rel' => '',
+      'target' => '',
+    ],
+  ],
   'entity_reference' => ['type' => 'entity_reference_label', 'settings' => ['link' => TRUE]],
 ];
 
@@ -669,11 +724,20 @@ foreach ($campos as $tipo_entidad => $por_bundle) {
     if ($tipo_entidad === 'media') {
       $origen = MediaType::load($bundle)->getSource()->getConfiguration()['source_field'] ?? NULL;
       if ($origen && !$form->getComponent($origen)) {
-        $form->setComponent($origen, ['type' => 'file_generic', 'weight' => -4, 'settings' => ['progress_indicator' => 'throbber']]);
+        $form->setComponent($origen, [
+          'type' => 'file_generic',
+          'weight' => -4,
+          'settings' => ['progress_indicator' => 'throbber'],
+        ]);
         $form_cambiado = TRUE;
       }
       if ($origen && !$vista->getComponent($origen)) {
-        $vista->setComponent($origen, ['type' => 'file_default', 'weight' => -4, 'label' => 'visually_hidden', 'settings' => ['use_description_as_link_text' => TRUE]]);
+        $vista->setComponent($origen, [
+          'type' => 'file_default',
+          'weight' => -4,
+          'label' => 'visually_hidden',
+          'settings' => ['use_description_as_link_text' => TRUE],
+        ]);
         $vista_cambiada = TRUE;
       }
     }
@@ -699,16 +763,28 @@ foreach ($campos as $tipo_entidad => $por_bundle) {
         $form->setComponent($nombre, $widget + ['weight' => $peso]);
         $form_cambiado = TRUE;
       }
+      elseif ($tipo === 'entity_reference_revisions') {
+        // Sin paragraph por defecto: no se fuerza una fila vacía al crear.
+        $actual = $form->getComponent($nombre);
+        if ($actual && ($actual['settings']['default_paragraph_type'] ?? NULL) !== '_none') {
+          $actual['settings']['default_paragraph_type'] = '_none';
+          $form->setComponent($nombre, $actual);
+          $form_cambiado = TRUE;
+        }
+      }
 
       if (!$vista->getComponent($nombre)) {
         $formatter = $spec['formatter'] ?? $formatter_por_tipo[$tipo] ?? NULL;
         if ($tipo === 'decimal') {
-          $formatter = ['type' => 'number_decimal', 'settings' => [
-            'thousand_separator' => '',
-            'decimal_separator' => ',',
-            'scale' => $spec['storage']['scale'],
-            'prefix_suffix' => TRUE,
-          ]];
+          $formatter = [
+            'type' => 'number_decimal',
+            'settings' => [
+              'thousand_separator' => '',
+              'decimal_separator' => ',',
+              'scale' => $spec['storage']['scale'],
+              'prefix_suffix' => TRUE,
+            ],
+          ];
         }
         $vista->setComponent($nombre, $formatter + [
           'weight' => $peso,
