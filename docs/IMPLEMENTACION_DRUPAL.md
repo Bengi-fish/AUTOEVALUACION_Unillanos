@@ -28,6 +28,9 @@ Todas las fases siguen **el mismo ciclo** (sección 2). Cada fase indica qué ha
 3. **Roles:** quién edita qué. Por ejemplo, si cada director de programa edita solo lo suyo.
 4. **Datos oficiales:** códigos SNIES, resoluciones de registro calificado y acreditación, y municipio de cada sede.
 5. **Reglas de la escala:** cómo se clasifica una nota que cae entre rangos (por ejemplo 4,75 o 3,95). La Tabla 3.1 del informe deja esos huecos.
+   - Implementado provisionalmente (Fase 4), **pendiente de confirmar con Acreditación**: el grado se calcula redondeando la nota a un decimal antes de compararla con los rangos.
+   - Implementado provisionalmente, **pendiente de confirmar con Acreditación**: el destino sugerido de un hallazgo es `plan_mejoramiento` si la valoración es menor que 4, `plan_accion` si es exactamente 4 y `ninguno` si es mayor que 4 (siempre editable).
+   - **Pendiente de confirmar con Acreditación:** qué pasa con "=4" cuando las valoraciones son decimales (por ejemplo 4,27 en un factor o característica). Hoy solo 4,00 exacto va a `plan_accion`; 4,27 sugiere `ninguno`.
 6. **Hallazgos de otros programas:** por ahora solo existe el informe de Ingeniería Electrónica.
 
 **Versión de Drupal:** Drupal **11** (rama estable con soporte largo y con todos los módulos que usamos). Si cuando empiecen ya salió Drupal 12, quédense en 11 hasta que `webform`, `paragraphs` y los módulos de migración publiquen versiones estables para 12.
@@ -472,6 +475,11 @@ términos y luego padre/equivalencia), `programas`, `procesos`, `valoraciones`, 
 `seguimientos`. Usa `migration_lookup` para las referencias y las claves `id` de los CSV como
 identificadores de origen. Hazlo por programa: la carpeta de importación es un parámetro, para poder
 agregar programas sin copiar YAML. Habilita el módulo, importa el grupo e informa `migrate:status`.
+Las migraciones NO validan las entidades al guardarlas (no actives `validate` en ellas): las
+restricciones de `unillanos_autoeval` se comprueban después, con el script de validación posterior.
+Escribe drupal/scripts/validar_importacion.php: carga las entidades importadas (valoracion, proceso,
+programa, elemento_modelo, seguimiento), llama a validate() en cada una y lista las violaciones
+(tipo, id, título, campo, mensaje) sin modificar nada ni guardar.
 Si algo falla, muéstrame `migrate:messages <id>` y espera antes de hacer rollback.
 Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
@@ -482,6 +490,7 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ddev drush en -y unillanos_migrate
 ddev drush migrate:status --group=unillanos
 ddev drush migrate:import --group=unillanos
+ddev drush php:script drupal/scripts/validar_importacion.php   # lista violaciones; debe salir vacío
 # si algo sale mal (previa confirmación):
 ddev drush migrate:rollback --group=unillanos
 ddev drush migrate:reset-status <id_migracion>
@@ -489,7 +498,7 @@ ddev drush migrate:reset-status <id_migracion>
 
 **Tú verificas:** en la interfaz, el programa Ingeniería Electrónica tiene su proceso, 12 valoraciones de factor, el plan con 17 metas y sus seguimientos. Compara 3 o 4 cifras con el informe (valoración global 4,508 · 90 %).
 
-**Hecho cuando:** `migrate:status` muestra todo importado sin errores y lo anterior se cumple.
+**Hecho cuando:** `migrate:status` muestra todo importado sin errores, `validar_importacion.php` no lista violaciones (o las que lista están explicadas) y lo anterior se cumple.
 
 **Commit:** puede ir en dos commits (CSV de hallazgos; módulo y migraciones) o en uno, pero con rutas explícitas (`git add datos drupal`).
 

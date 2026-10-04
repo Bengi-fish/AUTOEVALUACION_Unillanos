@@ -1,0 +1,9 @@
+name: 'Unillanos Autoevaluación'
+type: module
+description: 'Reglas de negocio del Sistema de Información de Autoevaluación: grado de cumplimiento, validaciones, avance de metas y destino de hallazgos.'
+package: Unillanos
+core_version_requirement: ^11
+dependencies:
+  - drupal:node
+  - drupal:options
+  - drupal:taxonomy

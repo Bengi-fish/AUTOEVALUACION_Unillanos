@@ -1,0 +1,15 @@
+services:
+  unillanos_autoeval.calculador_grado:
+    class: Drupal\unillanos_autoeval\Service\CalculadorGrado
+    arguments: ['@entity_type.manager']
+  Drupal\unillanos_autoeval\Service\CalculadorGrado: '@unillanos_autoeval.calculador_grado'
+
+  unillanos_autoeval.avance_meta:
+    class: Drupal\unillanos_autoeval\Service\AvanceMeta
+    arguments: ['@entity_type.manager']
+  Drupal\unillanos_autoeval\Service\AvanceMeta: '@unillanos_autoeval.avance_meta'
+
+  unillanos_autoeval.sugerencia_destino:
+    class: Drupal\unillanos_autoeval\Service\SugerenciaDestino
+    arguments: ['@entity_type.manager']
+  Drupal\unillanos_autoeval\Service\SugerenciaDestino: '@unillanos_autoeval.sugerencia_destino'

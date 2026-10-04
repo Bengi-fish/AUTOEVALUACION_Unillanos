@@ -123,7 +123,7 @@ Elementos: `proceso` (entidad → nodo `proceso`) · `elemento` (término `eleme
 1. `hook_ENTITY_TYPE_presave()` de `valoracion`: calcula `field_grado` con los rangos de `grado_cumplimiento`. Los rangos de la Tabla 3.1 dejan huecos (4,7–4,8; 3,9–4,0): se redondea a 1 decimal antes de comparar. Confirmar la regla con Acreditación.
 2. Restricciones de validación: (proceso, elemento) único en `valoracion`; `proceso` con sede **o** programa.
 3. Servicio `AvanceMeta`: avance de una meta = último `seguimiento.field_avance` verificado; avance del plan = Σ(peso × avance).
-4. Regla del informe: hallazgo con valoración < 4 → `field_destino = plan_mejoramiento`; = 4 → `plan_accion` (sugerencia al crear, editable).
+4. Regla del informe: hallazgo con valoración < 4 → `field_destino = plan_mejoramiento`; = 4 → `plan_accion`; > 4 → `ninguno` (sugerencia al crear, editable; pendiente de confirmar con Acreditación). Si el elemento del hallazgo no tiene valoración propia, se usa la de su ancestro más cercano.
 
 ## Páginas del prototipo → Drupal
 
