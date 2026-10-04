@@ -29,3 +29,6 @@ node_modules/
 
 # --- Claude Code: ajustes locales de cada persona ---
 .claude/settings.local.json
+
+# --- Serena: memoria local, no se versiona ---
+.serena/

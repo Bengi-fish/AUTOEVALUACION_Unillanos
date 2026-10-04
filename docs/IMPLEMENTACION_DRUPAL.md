@@ -1,8 +1,10 @@
-# Guía de implementación en Drupal · paso a paso (trabajo individual)
+# Guía de implementación en Drupal · paso a paso
 
 Sistema de Información de Autoevaluación · Universidad de los Llanos
 
-Esta guía lleva el proyecto desde el repositorio actual (prototipo + MER + documentos fuente) hasta un sitio Drupal funcionando en tu computador, con el contenido real de Ingeniería Electrónica cargado. Está pensada para hacerla con **Claude Code** abierto en la raíz del repositorio: cada fase trae los comandos que corres tú y el *prompt* que le das a Claude.
+Esta guía lleva el proyecto desde el repositorio (prototipo + MER + documentos fuente) hasta un sitio Drupal funcionando en tu computador, con el contenido real de Ingeniería Electrónica cargado. Se trabaja con **Claude Code** abierto en la raíz del repositorio, dentro de Ubuntu (WSL).
+
+Todas las fases siguen **el mismo ciclo** (sección 2). Cada fase indica qué hace Claude, qué haces tú y cómo se sabe que terminó. Si algo no está en el ciclo, no se hace.
 
 ---
 
@@ -28,7 +30,7 @@ Esta guía lleva el proyecto desde el repositorio actual (prototipo + MER + docu
 5. **Reglas de la escala:** cómo se clasifica una nota que cae entre rangos (por ejemplo 4,75 o 3,95). La Tabla 3.1 del informe deja esos huecos.
 6. **Hallazgos de otros programas:** por ahora solo existe el informe de Ingeniería Electrónica.
 
-**Versión de Drupal:** Drupal **11** (la rama estable con soporte largo y con todos los módulos que usamos). Si cuando empiecen ya salió Drupal 12, quédense en 11 hasta que `webform`, `paragraphs` y los módulos de migración publiquen versiones estables para 12.
+**Versión de Drupal:** Drupal **11** (rama estable con soporte largo y con todos los módulos que usamos). Si cuando empiecen ya salió Drupal 12, quédense en 11 hasta que `webform`, `paragraphs` y los módulos de migración publiquen versiones estables para 12.
 
 ---
 
@@ -39,18 +41,11 @@ AUTOEVALUACION_Unillanos/
 ├── CLAUDE.md                  ← contexto que Claude Code lee al abrir el proyecto
 ├── README.md
 ├── .gitignore
-├── .ddev/                     ← (fase 1) entorno local, se crea con `ddev config`
+├── .ddev/                     ← entorno local (se crea con `ddev config`)
 ├── docs/
 │   ├── IMPLEMENTACION_DRUPAL.md   ← esta guía
 │   ├── fuentes/               ← documentos que nos entregaron (no se editan)
-│   │   ├── acuerdo-cesu-001-2025.docx
-│   │   ├── informe-autoevaluacion-2022-ingenieria-electronica.pdf
-│   │   └── plan-mejoramiento-ingenieria-electronica-2024-2-2030.xlsx
-│   ├── mer/
-│   │   ├── MER.md             ← MER en texto (Mermaid, GitHub lo dibuja)
-│   │   ├── diccionario-datos.md
-│   │   ├── MER-v2.png         ← exportado de Canva
-│   │   └── MER-v2.pdf         ← exportado de Canva
+│   ├── mer/                   ← MER.md, diccionario-datos.md, MER-v2.png / .pdf
 │   └── drupal/
 │       └── modelo-de-contenido.md ← MER → tipos de contenido, campos, nombres de máquina
 ├── datos/
@@ -58,26 +53,176 @@ AUTOEVALUACION_Unillanos/
 │   ├── importacion/<programa>/← datos de cada programa (CSV)
 │   └── herramientas/          ← conversor Excel FO-GCL-20 → CSV
 ├── plantilla/                 ← prototipo HTML/CSS/JS (referencia visual, no se borra)
-└── drupal/                    ← (fase 1) proyecto Drupal: composer.json, web/, config/sync/
+└── drupal/                    ← proyecto Drupal: composer.json, web/, config/sync/
 ```
 
 Reglas de oro:
 
 - **Lo que va a Git:** código propio (`drupal/web/modules/custom`, `drupal/web/themes/custom`), `composer.json` y `composer.lock`, la configuración exportada (`drupal/config/sync`), los CSV y la documentación.
-- **Lo que NO va a Git:** `vendor/`, el núcleo de Drupal y los módulos descargados (se reinstalan con `composer install`), la base de datos y los archivos subidos (`sites/default/files`). El `.gitignore` ya lo cubre.
-- **El contenido no se copia a mano entre computadores:** se reconstruye importando los CSV (fase 5). Por eso tu compañero podrá tener el mismo sitio con dos comandos.
+- **Lo que NO va a Git:** `vendor/`, el núcleo de Drupal y los módulos descargados (se reinstalan con `composer install`), la base de datos, los archivos subidos (`sites/default/files`) y `.serena/`. El `.gitignore` ya lo cubre.
+- **El contenido no se copia a mano entre computadores:** se reconstruye importando los CSV (fase 5).
 
 ---
 
-## 2. Fase 0 · Preparar tu computador (una sola vez)
+## 2. El ciclo de trabajo (igual en todas las fases)
 
-Instala:
+Cada fase es una rama, un conjunto de cambios verificado y un merge a `main`. Reparto de responsabilidades:
 
-1. **Git** y tu cuenta de GitHub configurada (`git config --global user.name "…"` y `user.email`).
-2. **Docker**: Docker Desktop (Windows/Mac) u OrbStack (Mac). En Windows usa **WSL2** y trabaja dentro de la carpeta de Linux (`~/proyectos/...`), no en `C:\`.
-3. **DDEV**: sigue https://ddev.readthedocs.io/en/stable/users/install/ . Te da PHP, base de datos, Composer y Drush sin instalarlos a mano.
-4. **Claude Code** en la terminal, o la extensión de VS Code.
-5. **Python 3** y `pip install openpyxl` (solo para el conversor del Excel).
+| Quién | Qué hace |
+|---|---|
+| **Claude** | Crea la rama, instala, genera código y configuración, corre la verificación estándar y **propone** el commit. |
+| **Tú** | Preparas el punto de partida, revisas el resultado, confirmas el commit, y haces `push` y `merge`. |
+
+Claude nunca hace `push`, `merge` ni cambios en `main`.
+
+### 2.1 Antes de empezar la fase [TÚ]
+
+```bash
+cd ~/proyectos/AUTOEVALUACION_Unillanos
+git checkout main
+git pull
+git status                  # debe decir "working tree clean"
+```
+
+Si `git status` no está limpio, resuélvelo antes de seguir. Si la fase lo indica, haz la copia de seguridad (sección 2.7). Después abre Claude:
+
+```bash
+claude
+```
+
+Una sesión de Claude por fase. Si traes una sesión de la fase anterior, ciérrala con `/exit` y abre una nueva: el contexto del proyecto lo recupera de `CLAUDE.md`.
+
+### 2.2 Reglas del ciclo (Claude las aplica en todas las fases)
+
+Cada prompt de fase termina con la frase "Aplica las REGLAS DEL CICLO de la sección 2.2 de `docs/IMPLEMENTACION_DRUPAL.md`". Estas son las reglas:
+
+```
+REGLAS DEL CICLO
+1. Rama: crea la rama de la fase desde main actualizado. Nunca trabajes sobre main.
+2. Alcance: haz solo lo que pide esta fase. Lo que quede fuera, anótalo y avísame.
+3. Verificación: al terminar corre la verificación estándar (sección 2.4) y muéstrame el resultado.
+4. Commit: antes de commitear muéstrame `git status --short`, un resumen de cambios y el mensaje
+   propuesto, y espera mi confirmación. Usa `git add` con rutas explícitas, nunca `git add -A`.
+5. Sin firmas: el mensaje de commit no lleva Co-Authored-By, Claude-Session, "Generated with
+   Claude Code" ni ninguna atribución a Claude. Usa mi identidad de Git; no uses -c user.name
+   ni -c user.email.
+6. No hagas git push, merge, rebase ni cambios en main. Eso lo hago yo.
+7. Pregunta antes de lo destructivo: ddev delete, drush sql:drop, migrate:rollback del grupo
+   completo, push --force, borrar archivos de docs/fuentes.
+8. No imprimas enlaces de `drush uli` ni contraseñas.
+9. Termina con una lista corta: qué hiciste, qué verificaste, qué falló o quedó pendiente.
+```
+
+### 2.3 Qué hace Claude en cada fase
+
+1. Lee `CLAUDE.md` y los documentos que cita el prompt.
+2. Crea la rama de la fase.
+3. Ejecuta el trabajo del prompt.
+4. Corre la verificación estándar (2.4) y los comandos de verificación propios de la fase.
+5. Propone el commit (archivos + mensaje) y **se detiene**.
+
+### 2.4 Verificación estándar (la corre Claude al final de cada fase)
+
+```bash
+ddev drush cr
+ddev drush cex -y
+ddev drush config:status                                  # sin diferencias
+ddev drush status                                         # base de datos conectada, Drupal 11.x
+curl -sI https://autoeval-unillanos.ddev.site | head -1   # 200 o 302
+git status --short                                        # solo los archivos esperados de la fase
+```
+
+Si `config:status` muestra diferencias, la fase **no está terminada**: la configuración no quedó exportada y no llegaría a GitHub ni a tu compañero.
+
+### 2.5 Qué revisas tú antes de confirmar [TÚ]
+
+1. Lees el informe de Claude: lista de lo hecho, resultado de la verificación y pendientes.
+2. Abres el sitio (`ddev launch`) y compruebas el criterio **"Hecho cuando"** de la fase.
+3. Miras el tamaño del cambio: `git status --short` debe mostrar decenas de archivos, no miles. Si ves `vendor/`, `web/core/` o `settings.ddev.php`, detente.
+4. Lees el mensaje de commit propuesto (sin firmas) y respondes "confirmo el commit". Si prefieres hacerlo tú:
+
+```bash
+git add <rutas>
+git commit -m "Fase N: ..."
+```
+
+### 2.6 Push y merge a `main` [TÚ]
+
+Cada fase termina con este bloque, con el nombre de su rama:
+
+```bash
+git push -u origin <rama-de-la-fase>
+git checkout main
+git pull
+git merge <rama-de-la-fase>
+git push
+git branch -d <rama-de-la-fase>
+```
+
+Con tu compañero en el proyecto, el merge se hace con **Pull Request** en GitHub (botón "Compare & pull request", revisión, "Merge pull request") y luego `git checkout main && git pull`. No empieces la fase siguiente sin haber fusionado la anterior: cada rama nueva debe salir de un `main` que ya contenga lo anterior.
+
+Si `git push` pide credenciales, usa un token personal de GitHub o `gh auth login`; la contraseña de la cuenta ya no funciona.
+
+### 2.7 Copia de seguridad (antes de las fases 3, 5 y 8) [TÚ]
+
+Son las que más escriben en la base de datos. La copia queda **fuera** del repositorio:
+
+```bash
+mkdir -p ~/respaldos
+ddev export-db --file=$HOME/respaldos/antes-fase-N.sql.gz
+```
+
+### 2.8 Si algo sale mal (antes del commit)
+
+| Situación | Qué hacer |
+|---|---|
+| Quieres deshacer cambios en archivos versionados | `git restore .` |
+| Hay archivos nuevos que no quieres | `git clean -nd` (solo muestra); si es lo esperado, `git clean -fd` |
+| La base de datos quedó mal | `ddev import-db --file=$HOME/respaldos/antes-fase-N.sql.gz`, luego `ddev drush cr` |
+| Abandonar la fase completa | `git checkout main` y `git branch -D <rama-de-la-fase>` |
+| No entiendes un error | Pégalo a Claude: "Lee docs/IMPLEMENTACION_DRUPAL.md fase N y resuelve este error: …". Sin tocar `main`. |
+
+---
+
+## 3. Mapa de fases
+
+| Fase | Rama | Qué entrega | Hecho cuando | Respaldo |
+|---|---|---|---|---|
+| 0 | (una vez) | Computador preparado | Comandos de comprobación OK | No |
+| 1 | `fase-1-instalacion` | Drupal 11 con DDEV | El sitio abre y `config/sync` tiene `.yml` | No |
+| 2 | `fase-2-modulos` | Módulos contrib y ajustes regionales | `config:status` sin diferencias | No |
+| 3 | `fase-3-modelo` | Tipos de contenido, taxonomías, paragraphs, media | 7 vocabularios, 8 tipos, 3 paragraphs, media `documento` | Sí |
+| 4 | `fase-4-reglas` | Módulo `unillanos_autoeval` | Grado se calcula; pruebas pasan | No |
+| 5 | `fase-5-importacion` | Migraciones y datos de Ingeniería Electrónica | `migrate:status` sin errores; 17 metas | Sí |
+| 6 | `fase-6-tema` | Tema `unillanos` desde la plantilla | Se ve igual que el prototipo | No |
+| 7 | `fase-7-vistas` | Vistas y páginas | 6 páginas con datos reales | No |
+| 8 | `fase-8-webform-roles` | Formulario Participa, roles y permisos | Cada rol ve solo lo suyo | Sí |
+| 9 | `fase-9-revision` | Revisión final | Lista de la sección 12 completa | No |
+
+---
+
+## 4. Fase 0 · Preparar tu computador (una sola vez)
+
+Instala, en Ubuntu (WSL2) y con el repositorio dentro de `~/proyectos/` (no en `C:\`):
+
+1. **Git** y tu identidad:
+   ```bash
+   git config --global user.name "Tu Nombre"
+   git config --global user.email "tu-correo@..."
+   git config --global --list | grep user      # revisa que el correo esté bien escrito
+   ```
+2. **Docker Desktop** abierto en Windows, con la integración de WSL activada.
+3. **DDEV**: https://ddev.readthedocs.io/en/stable/users/install/
+4. **Python 3 y openpyxl** (solo para el conversor del Excel):
+   ```bash
+   sudo apt update && sudo apt install -y python3 python3-pip python3-venv python3-openpyxl
+   ```
+5. **Claude Code** en Ubuntu:
+   ```bash
+   curl -fsSL https://claude.ai/install.sh | bash
+   ```
+   Cierra y abre la terminal; si `claude` no se encuentra: `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc`.
+6. **Acceso a GitHub** para `git push`: `gh auth login` o un token personal. Tu usuario debe tener permiso de escritura en el repositorio.
 
 Comprueba:
 
@@ -85,148 +230,199 @@ Comprueba:
 git --version
 docker --version
 ddev version
-python3 -c "import openpyxl; print('ok')"
+python3 -c "import openpyxl; print('openpyxl ok')"
+claude --version
 ```
 
-Clona el repositorio (si no lo tienes ya) y crea una rama de trabajo:
+Clona el repositorio:
 
 ```bash
+mkdir -p ~/proyectos && cd ~/proyectos
 git clone https://github.com/Bengi-fish/AUTOEVALUACION_Unillanos.git
 cd AUTOEVALUACION_Unillanos
-git checkout -b fase-1-instalacion
 ```
-
-> **Ritmo de trabajo:** una rama por fase (`fase-1-instalacion`, `fase-2-modulos`…). Al terminar la fase: `drush cex`, commit, push y *pull request* a `main`. Aunque trabajes solo, así queda un historial limpio y tu compañero podrá revisar cada paso.
 
 ---
 
-## 3. Fase 1 · Crear el proyecto Drupal con DDEV
+## 5. Fase 1 · Crear el proyecto Drupal con DDEV
 
-El entorno DDEV se configura en la **raíz del repositorio** y Drupal vive en la carpeta `drupal/`. Así el contenedor también ve `datos/` y `docs/`, que son los que usa la importación.
+**Rama:** `fase-1-instalacion`. Esta fase se hace con comandos directos porque Claude Code todavía no está dentro del proyecto. Cuando se repite en otro computador, `ddev composer install` y `ddev drush si --existing-config` reemplazan casi todo (sección 15).
+
+El entorno DDEV se configura en la **raíz del repositorio** y Drupal vive en `drupal/`. Así el contenedor también ve `datos/` y `docs/`.
+
+**[TÚ]**
 
 ```bash
-# desde la raíz del repositorio
+git checkout -b fase-1-instalacion
 ddev config --project-type=drupal11 --project-name=autoeval-unillanos \
   --docroot=drupal/web --composer-root=drupal
 ddev start
 ddev composer create-project "drupal/recommended-project:^11"
 ddev composer require drush/drush
-```
-
-Configura la carpeta de configuración **antes** de instalar. Abre `drupal/web/sites/default/settings.php` y agrega al final, **antes** del bloque que incluye `settings.ddev.php`:
-
-```php
-$settings['config_sync_directory'] = '../config/sync';
+mkdir -p drupal/config/sync
 ```
 
 Instala Drupal en español:
 
 ```bash
-mkdir -p drupal/config/sync
 ddev drush site:install standard --locale=es \
   --site-name="Autoevaluación Unillanos" --account-name=admin --account-pass=admin -y
-ddev drush config:export -y
-ddev launch          # abre el sitio
-ddev drush uli       # enlace para entrar como admin
 ```
 
-**Hecho cuando:** el sitio abre en `https://autoeval-unillanos.ddev.site`, la interfaz está en español y `drupal/config/sync` tiene archivos `.yml`.
+Indica a Drupal dónde guardar la configuración (al final de `settings.php`; si el archivo está en solo lectura, primero `chmod u+w`):
 
 ```bash
-git add .ddev drupal/composer.json drupal/composer.lock drupal/config drupal/web/sites/default/settings.php
+chmod u+w drupal/web/sites/default/settings.php
+echo "\$settings['config_sync_directory'] = '../config/sync';" >> drupal/web/sites/default/settings.php
+ddev drush config:export -y
+ddev launch                  # abre el sitio
+```
+
+**Complemento de Claude Code para DDEV (opcional).** Instala Serena y memorias para Drupal. Crea su propio `CLAUDE.md` y puede pisar el nuestro, así que haz copia antes y concilia después:
+
+```bash
+cp CLAUDE.md CLAUDE.proyecto.md
+ddev add-on get lexsoft00/ddev-drupal-claude-code
+ddev restart
+```
+
+Después, pide a Claude que deje **un solo** `CLAUDE.md` coherente: todo con `ddev ...` desde la raíz, rutas `/var/www/html/drupal/web` y `/var/www/html/drupal/config/sync`, versiones reales de PHP y MariaDB (`ddev describe`), y sin perder las secciones de reglas del dominio y convenciones. Borra `CLAUDE.proyecto.md` cuando termine.
+
+**Hecho cuando:** el sitio abre en `https://autoeval-unillanos.ddev.site`, la interfaz está en español, `drupal/config/sync` tiene archivos `.yml` y `ddev drush config:status` no muestra diferencias.
+
+**Commit** (con rutas explícitas):
+
+```bash
+git status --short           # revisa: nada de vendor/, web/core/ ni settings.ddev.php
+git add .ddev .claudeignore drupal CLAUDE.md .gitignore
 git commit -m "Fase 1: proyecto Drupal 11 con DDEV"
 ```
 
-> Si `ddev composer create-project` se queja de que la carpeta no está vacía, revisa que `drupal/` no exista antes de correrlo. Si el error sigue, pídele a Claude Code: *"Lee docs/IMPLEMENTACION_DRUPAL.md fase 1 y resuelve este error de DDEV: …"*.
+**Push y merge:** bloque de la sección 2.6 con `fase-1-instalacion`.
+
+> Si `ddev composer create-project` dice que la carpeta no está vacía, revisa que `drupal/` no exista antes de correrlo.
 
 ---
 
-## 4. Fase 2 · Módulos y configuración base
+## 6. Fase 2 · Módulos y configuración base
 
-```bash
-git checkout -b fase-2-modulos
-ddev composer require drupal/admin_toolbar drupal/pathauto drupal/paragraphs drupal/field_group \
-  drupal/auto_entitylabel drupal/webform drupal/migrate_plus drupal/migrate_tools \
-  drupal/migrate_source_csv drupal/better_exposed_filters
-ddev drush en -y admin_toolbar admin_toolbar_tools pathauto paragraphs field_group auto_entitylabel \
-  webform webform_ui migrate_plus migrate_tools migrate_source_csv better_exposed_filters \
-  media media_library datetime link options
-ddev drush locale:check && ddev drush locale:update
-ddev drush config:export -y
+**Rama:** `fase-2-modulos` · **Respaldo:** no.
+
+**Claude ejecuta.** Prompt:
+
+```
+Lee CLAUDE.md y docs/IMPLEMENTACION_DRUPAL.md (sección 6). Ejecuta la Fase 2 en la rama fase-2-modulos.
+
+1. Antes de instalar, comprueba que webform y migrate_source_csv tengan versión compatible con la
+   versión de Drupal instalada. Si alguno no la tiene, avísame y espera; no lo fuerces.
+2. Instala con `ddev composer require`: drupal/admin_toolbar drupal/pathauto drupal/paragraphs
+   drupal/field_group drupal/auto_entitylabel drupal/webform drupal/migrate_plus drupal/migrate_tools
+   drupal/migrate_source_csv drupal/better_exposed_filters.
+3. Habilita con `ddev drush en -y`: admin_toolbar admin_toolbar_tools pathauto paragraphs field_group
+   auto_entitylabel webform webform_ui migrate_plus migrate_tools migrate_source_csv
+   better_exposed_filters media media_library datetime link options.
+4. Traducciones: `ddev drush locale:check && ddev drush locale:update`.
+5. Configuración regional por drush (no por la interfaz):
+   ddev drush config:set system.date country.default CO -y
+   ddev drush config:set system.date first_day 1 -y
+   ddev drush config:set core.date_format.short pattern 'd/m/Y' -y
+   Verifica que la zona horaria sea America/Bogota y que el registro de usuarios sea solo por
+   administradores (user.settings register: admin_only).
+6. Crea `.claude/settings.json` (se versiona, a diferencia de settings.local.json) con
+   {"attribution": {"commit": "", "pr": ""}, "includeCoAuthoredBy": false}
+   para que Claude no firme commits ni pull requests.
+7. Si el menú de administración queda duplicado entre admin_toolbar y el módulo navigation del
+   núcleo, dime cuál prefieres antes de desactivar nada.
+Mensaje de commit: "Fase 2: módulos contrib y configuración regional".
+Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
 
-Configura a mano, en la interfaz:
+**Tú verificas:** entras con `ddev drush uli` y compruebas que aparece la barra de administración y que Estructura → Webform existe.
 
-- **Regional:** zona horaria `America/Bogota`, país Colombia, primer día de la semana lunes.
-- **Formato de fecha** corto `d/m/Y`.
-- Desactiva el registro libre de usuarios (solo administradores crean cuentas).
+**Hecho cuando:** los módulos están habilitados, `config:status` sin diferencias y el sitio responde.
 
-Luego exporta la configuración y haz commit:
-
-```bash
-ddev drush cex -y
-git add drupal && git commit -m "Fase 2: módulos contrib y configuración regional"
-```
+**Push y merge:** sección 2.6 con `fase-2-modulos`.
 
 ---
 
-## 5. Fase 3 · Modelo de contenido (MER → Drupal)
+## 7. Fase 3 · Modelo de contenido (MER → Drupal)
 
-Aquí se crean los vocabularios, tipos de contenido, paragraphs, el media `documento` y los campos. Todo está especificado en `docs/drupal/modelo-de-contenido.md`.
+**Rama:** `fase-3-modelo` · **Respaldo:** sí (sección 2.7, `antes-fase-3`).
 
-**Estrategia recomendada:** Claude Code escribe un script PHP **idempotente** (se puede correr varias veces sin duplicar nada) que crea toda la estructura con la Entity API. Tú lo revisas, lo corres y exportas la configuración. Es más rápido y menos propenso a errores que crear 150 campos a mano, y queda documentado.
+Aquí se crean los vocabularios, tipos de contenido, paragraphs, el media `documento` y los campos. Todo está especificado en `docs/drupal/modelo-de-contenido.md`. Claude escribe un script PHP **idempotente** (se puede correr varias veces sin duplicar nada) que crea la estructura con la Entity API. Es más rápido y menos propenso a errores que crear 150 campos a mano, y queda documentado.
 
-```bash
-git checkout -b fase-3-modelo
+**Claude ejecuta.** Prompt:
+
+```
+Lee CLAUDE.md, docs/mer/MER.md y docs/drupal/modelo-de-contenido.md. Ejecuta la Fase 3 en la rama
+fase-3-modelo. Crea drupal/scripts/crear_modelo.php, un script idempotente para
+`ddev drush php:script` que cree, en este orden: 1) los vocabularios, 2) el nodo `lineamiento` y luego
+los demás tipos de contenido, 3) los tipos de paragraph, 4) el tipo de media `documento`, 5) todos los
+campos con su almacenamiento, instancia, etiqueta en español, obligatoriedad, cardinalidad y valores
+permitidos, 6) la visualización de formulario y la visualización por defecto de cada campo.
+No crees vistas ni el webform todavía. Los nombres de máquina deben ser exactamente los del documento.
+Córrelo dos veces para comprobar que no duplica nada. Al final muestra un resumen de lo creado.
+Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
 
-Prompt para Claude Code:
-
-> Lee `CLAUDE.md`, `docs/mer/MER.md` y `docs/drupal/modelo-de-contenido.md`. Crea `drupal/scripts/crear_modelo.php`, un script idempotente para `ddev drush php:script` que cree, en este orden: 1) los vocabularios, 2) el nodo `lineamiento` y luego los demás tipos de contenido, 3) los tipos de paragraph, 4) el tipo de media `documento`, 5) todos los campos con su almacenamiento, instancia, etiqueta en español, obligatoriedad, cardinalidad y valores permitidos, 6) la visualización de formulario y la visualización por defecto de cada campo. No crees vistas ni el webform todavía. Al final muestra un resumen de lo creado. Después dime los comandos para correrlo y verificarlo.
-
-Corre y verifica:
+**Claude verifica** (además de la verificación estándar):
 
 ```bash
 ddev drush php:script drupal/scripts/crear_modelo.php
-ddev drush cr
-ddev drush field:info node programa     # campos del programa (ajusta el nombre del comando si tu Drush usa otro)
-ddev drush cex -y
+ddev drush php:eval 'print_r(array_keys(\Drupal\taxonomy\Entity\Vocabulary::loadMultiple()));'
+ddev drush php:eval 'print_r(array_keys(\Drupal\node\Entity\NodeType::loadMultiple()));'
+ddev drush php:eval 'print_r(array_keys(\Drupal\paragraphs\Entity\ParagraphsType::loadMultiple()));'
+ddev drush php:eval 'print_r(array_keys(\Drupal\media\Entity\MediaType::loadMultiple()));'
 ```
 
-Revisa en la interfaz (Estructura → Tipos de contenido / Taxonomía / Tipos de párrafo) que los nombres coincidan con el documento. Crea a mano un programa y un proceso de prueba y bórralos.
+**Tú verificas:** en la interfaz (Estructura → Tipos de contenido / Taxonomía / Tipos de párrafo) los nombres coinciden con el documento. Crea a mano un programa y un proceso de prueba y bórralos.
 
-**Hecho cuando:** existen los 7 vocabularios, 8 tipos de contenido, 3 paragraphs y el media `documento`; `drush cex` no muestra cambios pendientes.
+**Hecho cuando:** existen los 7 vocabularios, 8 tipos de contenido, 3 paragraphs y el media `documento`; el script corrido por segunda vez no cambia nada y `config:status` queda sin diferencias.
 
-```bash
-git add drupal && git commit -m "Fase 3: modelo de contenido según MER v2"
-```
+**Push y merge:** sección 2.6 con `fase-3-modelo`.
 
 ---
 
-## 6. Fase 4 · Módulo propio `unillanos_autoeval` (reglas de negocio)
+## 8. Fase 4 · Módulo propio `unillanos_autoeval` (reglas de negocio)
 
-```bash
-git checkout -b fase-4-reglas
+**Rama:** `fase-4-reglas` · **Respaldo:** no.
+
+**Claude ejecuta.** Prompt:
+
+```
+Lee CLAUDE.md y la sección "Lógica del módulo" de docs/drupal/modelo-de-contenido.md. Ejecuta la
+Fase 4 en la rama fase-4-reglas. Crea el módulo drupal/web/modules/custom/unillanos_autoeval:
+cálculo de `field_grado` en el presave de `valoracion`, restricciones de validación (proceso +
+elemento únicos; proceso con sede o programa, no ambos), servicio `AvanceMeta` y sugerencia de
+`field_destino` en hallazgos. Sigue los estándares de código de Drupal, con comentarios en español.
+Agrega pruebas Kernel para el cálculo del grado con los valores de datos/semillas/grados_cumplimiento.csv
+(5.0 → Pleno, 4.27 → Alto, 3.5 → Aceptable, 2.8 → Insatisfactorio, 2.0 → No se cumple).
+Habilita el módulo, corre las pruebas y exporta la configuración.
+Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
 
-Prompt para Claude Code:
-
-> Crea el módulo `drupal/web/modules/custom/unillanos_autoeval` según la sección "Lógica del módulo" de `docs/drupal/modelo-de-contenido.md`: cálculo de `field_grado` en el presave de `valoracion`, restricciones de validación (proceso + elemento únicos; proceso con sede o programa, no ambos), servicio `AvanceMeta` y sugerencia de `field_destino` en hallazgos. Sigue los estándares de código de Drupal, con comentarios en español. Agrega pruebas Kernel para el cálculo del grado con los valores de `datos/semillas/grados_cumplimiento.csv` (5.0 → Pleno, 4.27 → Alto, 3.5 → Aceptable, 2.8 → Insatisfactorio, 2.0 → No se cumple).
+**Claude verifica:**
 
 ```bash
 ddev drush en -y unillanos_autoeval
-ddev exec -d /var/www/html/drupal vendor/bin/phpunit -c web/core web/modules/custom/unillanos_autoeval   # si Claude configuró las pruebas
-ddev drush cex -y
-git add drupal && git commit -m "Fase 4: módulo unillanos_autoeval con reglas del modelo"
+ddev exec -d /var/www/html/drupal vendor/bin/phpunit -c web/core web/modules/custom/unillanos_autoeval
 ```
+
+**Tú verificas:** creas una valoración de prueba con nota 4,27 y compruebas que el grado sale "Alto" sin digitarlo. Bórrala después.
+
+**Hecho cuando:** las pruebas pasan, el módulo está habilitado y `config:status` queda sin diferencias.
+
+**Push y merge:** sección 2.6 con `fase-4-reglas`.
 
 ---
 
-## 7. Fase 5 · Importar los datos (CSV → Drupal con Migrate)
+## 9. Fase 5 · Importar los datos (CSV → Drupal con Migrate)
 
-Los datos entran **siempre** por importación, nunca a mano. Así cualquier persona reconstruye el mismo sitio.
+**Rama:** `fase-5-importacion` · **Respaldo:** sí (`antes-fase-5`).
 
-### 7.1 Preparar los CSV de un programa
+Los datos entran **siempre** por importación, nunca a mano. Así cualquier persona reconstruye el mismo sitio. Esta fase tiene tres pasos, y entre ellos hay revisión tuya.
+
+### 9.1 Preparar los CSV de un programa [TÚ]
 
 Los de Ingeniería Electrónica ya están en `datos/importacion/ingenieria-electronica/`. Para otro programa que llegue con su Excel FO-GCL-20:
 
@@ -234,92 +430,168 @@ Los de Ingeniería Electrónica ya están en `datos/importacion/ingenieria-elect
 python3 datos/herramientas/plan_excel_a_csv.py "docs/fuentes/<plan-del-programa>.xlsx" datos/importacion/<slug-del-programa>/
 ```
 
-Después revisa a mano:
+Revisa a mano:
 
 - `responsables.csv`: unifica los nombres repetidos o mal escritos, por ejemplo "Profsores" y "Profesores", o "Dirección General de Investigación" y "Dirección General de Investigaciones".
 - `equivalencias_factores_plan.csv`: asigna a cada texto de factor del Excel su elemento del modelo. Ojo: algunos planes usan la numeración de factores de 2013.
 - `valoraciones_factores.csv` y `proceso.csv`: se llenan a partir del informe del programa.
 
-### 7.2 Extraer fortalezas y aspectos por mejorar del informe (con Claude)
+### 9.2 Extraer fortalezas y aspectos por mejorar del informe
 
-Prompt:
+**Claude ejecuta.** Prompt (rama `fase-5-importacion`, sin commit todavía):
 
-> Lee `docs/fuentes/informe-autoevaluacion-2022-ingenieria-electronica.pdf`. Para cada factor (1 a 12) extrae la tabla "Fortalezas / Aspectos por mejorar" y genera `datos/importacion/ingenieria-electronica/hallazgos_informe.csv` con las columnas `id,proceso_id,elemento_id,tipo,descripcion,origen,destino,destacado`. Usa `proceso_id=PR-IE-2022`, `elemento_id` = `CNA20-Fxx`, `tipo` = `fortaleza` o `aspecto_por_mejorar` y `origen=autoevaluacion`. Copia el texto tal cual, sin resumir. Al final dime cuántas filas salieron por factor para que yo las compare con el PDF.
+```
+Lee docs/fuentes/informe-autoevaluacion-2022-ingenieria-electronica.pdf. Para cada factor (1 a 12)
+extrae la tabla "Fortalezas / Aspectos por mejorar" y genera
+datos/importacion/ingenieria-electronica/hallazgos_informe.csv con las columnas
+`id,proceso_id,elemento_id,tipo,descripcion,origen,destino,destacado`. Usa `proceso_id=PR-IE-2022`,
+`elemento_id` = `CNA20-Fxx`, `tipo` = `fortaleza` o `aspecto_por_mejorar` y `origen=autoevaluacion`.
+Copia el texto tal cual, sin resumir. Al final dime cuántas filas salieron por factor para que yo las
+compare con el PDF.
+Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
+```
 
-Coteja las cifras con el PDF antes de seguir. Si esta revisión se salta, un error del informe termina publicado en el sitio.
+**[TÚ]** Coteja las cifras por factor con el PDF antes de seguir. Si esta revisión se salta, un error del informe termina publicado en el sitio.
 
-### 7.3 Migraciones
+### 9.3 Migraciones
 
-Prompt:
+**Claude ejecuta.** Prompt:
 
-> Crea el módulo `drupal/web/modules/custom/unillanos_migrate` con migraciones YAML (grupo `unillanos`, fuente `csv` de migrate_source_csv) que lean `/var/www/html/datos/...`. Orden: `sedes`, `facultades`, `estamentos`, `grados`, `responsables`, `proyectos`, `lineamientos`, `elementos_modelo` (dos pasadas: términos y luego padre/equivalencia), `programas`, `procesos`, `valoraciones`, `hallazgos_informe`, `hallazgos_plan`, `planes`, `metas` (con indicadores y programación anual como paragraphs), `seguimientos`. Usa `migration_lookup` para las referencias y las claves `id` de los CSV como identificadores de origen. Hazlo por programa: la carpeta de importación es un parámetro, para poder agregar programas sin copiar YAML.
+```
+Crea el módulo drupal/web/modules/custom/unillanos_migrate con migraciones YAML (grupo `unillanos`,
+fuente `csv` de migrate_source_csv) que lean /var/www/html/datos/... Orden: `sedes`, `facultades`,
+`estamentos`, `grados`, `responsables`, `proyectos`, `lineamientos`, `elementos_modelo` (dos pasadas:
+términos y luego padre/equivalencia), `programas`, `procesos`, `valoraciones`, `hallazgos_informe`,
+`hallazgos_plan`, `planes`, `metas` (con indicadores y programación anual como paragraphs),
+`seguimientos`. Usa `migration_lookup` para las referencias y las claves `id` de los CSV como
+identificadores de origen. Hazlo por programa: la carpeta de importación es un parámetro, para poder
+agregar programas sin copiar YAML. Habilita el módulo, importa el grupo e informa `migrate:status`.
+Si algo falla, muéstrame `migrate:messages <id>` y espera antes de hacer rollback.
+Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
+```
+
+**Claude verifica:**
 
 ```bash
 ddev drush en -y unillanos_migrate
 ddev drush migrate:status --group=unillanos
 ddev drush migrate:import --group=unillanos
-# si algo sale mal:
+# si algo sale mal (previa confirmación):
 ddev drush migrate:rollback --group=unillanos
 ddev drush migrate:reset-status <id_migracion>
 ```
 
-**Hecho cuando:** `migrate:status` muestra todo importado sin errores y en la interfaz el programa Ingeniería Electrónica tiene su proceso, 12 valoraciones de factor, el plan con 17 metas y sus seguimientos.
+**Tú verificas:** en la interfaz, el programa Ingeniería Electrónica tiene su proceso, 12 valoraciones de factor, el plan con 17 metas y sus seguimientos. Compara 3 o 4 cifras con el informe (valoración global 4,508 · 90 %).
 
-```bash
-ddev drush cex -y
-git add drupal datos && git commit -m "Fase 5: importación de catálogos y datos de Ingeniería Electrónica"
+**Hecho cuando:** `migrate:status` muestra todo importado sin errores y lo anterior se cumple.
+
+**Commit:** puede ir en dos commits (CSV de hallazgos; módulo y migraciones) o en uno, pero con rutas explícitas (`git add datos drupal`).
+
+**Push y merge:** sección 2.6 con `fase-5-importacion`.
+
+---
+
+## 10. Fase 6 · Tema visual desde el prototipo
+
+**Rama:** `fase-6-tema` · **Respaldo:** no.
+
+**Claude ejecuta.** Prompt:
+
+```
+Ejecuta la Fase 6 en la rama fase-6-tema. Genera el tema con
+`ddev exec -d /var/www/html/drupal/web php core/scripts/drupal generate-theme unillanos --path themes/custom`,
+habilítalo y ponlo por defecto (`ddev drush theme:enable unillanos` y
+`ddev drush config:set system.theme default unillanos -y`).
+Convierte plantilla/ en el tema drupal/web/themes/custom/unillanos. 1) Copia `style.css` en `css/` y
+`app.js` en `js/`, y declara una librería global. 2) Adapta `app.js` a `Drupal.behaviors.unillanos`
+usando `once()`, sin cambiar la lógica de las pestañas animadas, el medidor ni el filtro del plan.
+3) Crea `page.html.twig` con el encabezado, el menú plano y el pie del prototipo, más las regiones
+necesarias. 4) Crea plantillas para `node--programa--full`, `node--proceso--full` y
+`views-view--plan` que reproduzcan el HTML del prototipo con los atributos `data-ua-views`,
+`data-routes` y `data-view`. 5) Copia los logos de plantilla/assets. No uses datos de
+`datos-ejemplo.js`: todo debe salir de los campos de Drupal. Respeta `prefers-reduced-motion`.
+Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
 
+**[TÚ] verificas:** abres `plantilla/programa-ejemplo.html` y el nodo del programa en Drupal, lado a lado, en escritorio (1440 px) y en móvil (390 px). Pruebas las pestañas animadas con el teclado.
+
+**Hecho cuando:** el sitio se ve y se comporta como el prototipo, con datos reales, y `config:status` queda sin diferencias.
+
+**Push y merge:** sección 2.6 con `fase-6-tema`.
+
 ---
 
-## 8. Fase 6 · Tema visual desde el prototipo
+## 11. Fase 7 · Vistas y páginas · Fase 8 · Participa, roles y permisos
 
-```bash
-git checkout -b fase-6-tema
-ddev exec -d /var/www/html/drupal/web php core/scripts/drupal generate-theme unillanos --path themes/custom
-ddev drush theme:enable unillanos && ddev drush config:set system.theme default unillanos -y
+### Fase 7 · Vistas y páginas
+
+**Rama:** `fase-7-vistas` · **Respaldo:** no.
+
+**Claude ejecuta.** Prompt:
+
+```
+Ejecuta la Fase 7 en la rama fase-7-vistas. Con la tabla "Páginas del prototipo → Drupal" de
+docs/drupal/modelo-de-contenido.md, crea las vistas `programas` (página con filtros expuestos),
+`valoraciones_proceso` (bloque por factor y característica, con argumento proceso),
+`hallazgos_proceso`, `plan_mejoramiento` (bloque filtrable por factor a través de los hallazgos),
+`documentos` (página con pestañas por categoría) y los bloques de la portada. Configura Pathauto:
+`/programas/[node:field_clave]`, `/procesos/[node:nid]`. Exporta la configuración.
+Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
 
-Prompt:
+**[TÚ] verificas:** recorres las 6 páginas del prototipo en Drupal y pruebas el enlace "ver acciones de este factor".
 
-> Convierte `plantilla/` en el tema `drupal/web/themes/custom/unillanos`. 1) Copia `style.css` en `css/` y `app.js` en `js/`, y declara una librería global. 2) Adapta `app.js` a `Drupal.behaviors.unillanos` usando `once()`, sin cambiar la lógica de las pestañas animadas, el medidor ni el filtro del plan. 3) Crea `page.html.twig` con el encabezado, el menú plano y el pie del prototipo, más las regiones necesarias. 4) Crea plantillas para `node--programa--full`, `node--proceso--full` y `views-view--plan` que reproduzcan el HTML del prototipo con los atributos `data-ua-views`, `data-routes` y `data-view`. 5) Copia los logos de `plantilla/assets`. No uses datos de `datos-ejemplo.js`: todo debe salir de los campos de Drupal. Respeta `prefers-reduced-motion`.
+**Hecho cuando:** las 6 páginas existen con datos reales y ese enlace abre el plan ya filtrado.
 
-Compara lado a lado `plantilla/programa-ejemplo.html` con el nodo del programa en Drupal, en escritorio y en móvil.
+**Push y merge:** sección 2.6 con `fase-7-vistas`.
+
+### Fase 8 · Participa, roles y permisos
+
+**Rama:** `fase-8-webform-roles` · **Respaldo:** sí (`antes-fase-8`).
+
+**Claude ejecuta.** Prompt:
+
+```
+Ejecuta la Fase 8 en la rama fase-8-webform-roles. Crea el webform `participa` según
+docs/drupal/modelo-de-contenido.md (incluye consentimiento obligatorio, `estado_gestion` y
+`respuesta` solo para administradores) y colócalo en `/participa`. Crea los roles
+`editor_autoevaluacion` (gestiona procesos, valoraciones, hallazgos, planes, metas y seguimientos),
+`editor_documentos` (media) y `gestor_participacion` (envíos del webform). Anónimos: solo ver
+contenido publicado y enviar el formulario. Exporta la configuración y lista los permisos de cada rol.
+Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
+```
+
+**[TÚ] verificas:** envías una recomendación como usuario anónimo (ventana privada) y luego la gestionas como `gestor_participacion`. Compruebas que un anónimo no ve `/admin`.
+
+**Hecho cuando:** el formulario funciona, cada rol ve solo lo suyo y `config:status` queda sin diferencias.
+
+**Push y merge:** sección 2.6 con `fase-8-webform-roles`.
 
 ---
 
-## 9. Fase 7 · Vistas y páginas
+## 12. Fase 9 · Revisión antes de mostrar
 
-Prompt:
+**Rama:** `fase-9-revision` (solo si hay correcciones).
 
-> Con la tabla "Páginas del prototipo → Drupal" de `docs/drupal/modelo-de-contenido.md`, crea las vistas `programas` (página con filtros expuestos), `valoraciones_proceso` (bloque por factor y característica, con argumento proceso), `hallazgos_proceso`, `plan_mejoramiento` (bloque filtrable por factor a través de los hallazgos), `documentos` (página con pestañas por categoría) y los bloques de la portada. Configura Pathauto: `/programas/[node:field_clave]`, `/procesos/[node:nid]`. Exporta la configuración.
-
-**Hecho cuando:** las 6 páginas del prototipo existen en Drupal con datos reales y el enlace "ver acciones de este factor" abre el plan ya filtrado.
-
----
-
-## 10. Fase 8 · Participa, roles y permisos
-
-Prompt:
-
-> Crea el webform `participa` según `docs/drupal/modelo-de-contenido.md` (incluye consentimiento obligatorio, `estado_gestion` y `respuesta` solo para administradores) y colócalo en `/participa`. Crea los roles `editor_autoevaluacion` (gestiona procesos, valoraciones, hallazgos, planes, metas y seguimientos), `editor_documentos` (media) y `gestor_participacion` (envíos del webform). Anónimos: solo ver contenido publicado y enviar el formulario. Exporta la configuración.
-
-Prueba enviar una recomendación como usuario anónimo y luego gestionarla como `gestor_participacion`.
-
----
-
-## 11. Fase 9 · Revisión antes de mostrar
+Marca cada punto. Los comandos los puede correr Claude; la revisión visual es tuya.
 
 - [ ] `ddev drush cex` sin cambios pendientes y `git status` limpio.
-- [ ] Reinstalación en limpio: `ddev drush si --existing-config -y && ddev drush migrate:import --group=unillanos` deja el sitio igual.
+- [ ] Reinstalación en limpio: `ddev drush si --existing-config -y && ddev drush migrate:import --group=unillanos` deja el sitio igual (¡previa copia de seguridad y confirmación: es destructivo!).
 - [ ] Las cifras del sitio coinciden con el informe (valoración global 4,508 · 90 %, tabla 5.1) y con el Excel (17 metas, pesos de 1/17).
 - [ ] Accesibilidad: contraste, navegación con teclado por las pestañas, textos alternativos en imágenes.
 - [ ] Móvil (390 px) y escritorio (1440 px) comparados con `plantilla/`.
-- [ ] Copia de seguridad: `ddev export-db --file=respaldo.sql.gz` guardada **fuera** del repositorio.
+- [ ] Copia de seguridad: `ddev export-db --file=$HOME/respaldos/final.sql.gz` guardada **fuera** del repositorio.
+- [ ] Documentación al día: `README.md`, `CLAUDE.md` y los tres documentos del MER reflejan lo implementado.
+
+### Registro de avance
+
+Marca cada fase cuando ya esté fusionada en `main`:
+
+- [ ] Fase 1 · [ ] Fase 2 · [ ] Fase 3 · [ ] Fase 4 · [ ] Fase 5 · [ ] Fase 6 · [ ] Fase 7 · [ ] Fase 8 · [ ] Fase 9
 
 ---
 
-## 12. Comandos de todos los días
+## 13. Comandos de todos los días
 
 ```bash
 ddev start                    # encender el entorno
@@ -330,26 +602,29 @@ ddev drush cim -y             # importar configuración (después de un git pull
 ddev composer install         # después de un git pull que cambió composer.lock
 ddev drush updb -y            # actualizar la base de datos tras actualizar módulos
 ddev drush watchdog:show      # ver errores recientes
-ddev stop                     # apagar
+ddev stop                     # apagar (los contenedores del ruteador pueden seguir; es normal)
 ```
 
 Después de cada `git pull`, en este orden: `ddev composer install` → `ddev drush updb -y` → `ddev drush cim -y` → `ddev drush cr`.
 
-## 13. Problemas frecuentes
+## 14. Problemas frecuentes
 
 | Síntoma | Solución |
 |---|---|
+| `git push`: "Password authentication is not supported" | Usa `gh auth login` o un token personal de GitHub. Si da 403, falta permiso de escritura en el repositorio. |
+| `git pull` dice "Already up to date" pero falta la fase anterior | La rama no se fusionó. Haz el merge (sección 2.6) o el Pull Request. |
+| `git status` muestra `M CLAUDE.md` tras instalar el complemento de DDEV | El complemento antepone su texto. Pide a Claude que concilie un solo `CLAUDE.md` (fase 1). |
+| Claude Code firma los commits | Verifica que exista `.claude/settings.json` (fase 2) y que el prompt incluya las REGLAS DEL CICLO. |
 | `drush cim` quiere borrar cosas que creaste | Creaste algo en la interfaz y no lo exportaste. Corre `drush cex` primero, haz commit y vuelve a importar. |
 | "Configuration … depends on … that will not exist" | Falta habilitar un módulo: `drush en <módulo>` y repite. |
 | La importación deja referencias vacías | El orden de las migraciones está mal o el `id` del CSV no coincide. Revisa `migrate:messages <id>`. |
 | El sitio se ve sin estilos | `drush cr` y revisa que la librería del tema esté declarada en `unillanos.libraries.yml`. |
 | Docker lento en Windows | Asegúrate de que el repositorio esté dentro de WSL2 (`/home/...`), no en `/mnt/c/...`. |
+| `.git/index.lock` impide commits | Si no hay otro git corriendo: `rm .git/index.lock`. |
 
-## 14. Cuando entre tu compañero (adelanto)
+## 15. Cuando entre tu compañero (adelanto)
 
-Lo que ya deja listo esta guía para trabajar en equipo:
-
-1. **Su instalación completa:** clona el repositorio, corre `ddev start`, `ddev composer install`, `ddev drush si --existing-config -y` y `ddev drush migrate:import --group=unillanos`, y tiene el mismo sitio.
-2. **Trabajo en ramas y *pull requests*:** protejan `main` en GitHub (Settings → Branches) para que nada entre sin revisión.
+1. **Su instalación completa:** clona el repositorio y corre `ddev start`, `ddev composer install`, `ddev drush si --existing-config -y` y `ddev drush migrate:import --group=unillanos`. Tiene el mismo sitio.
+2. **Pull Requests obligatorios:** protejan `main` en GitHub (Settings → Branches) para que nada entre sin revisión. El merge de la sección 2.6 pasa a ser el botón "Merge pull request".
 3. **Reparto por carpetas para no pisarse:** uno toma el tema (`themes/custom`) y el otro el modelo, las migraciones y las vistas (`modules/custom`, `config/sync`). La configuración es el punto de choque: avisen antes de exportarla y hagan `git pull` + `drush cim` antes de empezar cada día.
-4. **Mismo contexto para los dos:** `CLAUDE.md` y estos documentos hacen que Claude Code trabaje igual en los dos computadores.
+4. **Mismo contexto para los dos:** `CLAUDE.md`, `.claude/settings.json` y estos documentos hacen que Claude Code trabaje igual en los dos computadores.
