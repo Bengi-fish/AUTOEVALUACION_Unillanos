@@ -66,7 +66,6 @@ La lógica que Drupal no trae se programa en el módulo propio **`unillanos_auto
 | | `field_tipo_elemento` | Lista (texto) | `factor`, `caracteristica`, `aspecto`, `condicion` |
 | | `field_numero` | Entero | |
 | | `field_propio` | Booleano | aspecto agregado por la Universidad |
-| | `field_equivale_a` | Referencia → término `elemento_modelo` | |
 | | (descripción del término) | | = `descripcion` |
 
 ## Tipos de contenido (nodos)

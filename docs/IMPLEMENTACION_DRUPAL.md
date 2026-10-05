@@ -471,7 +471,7 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 Crea el módulo drupal/web/modules/custom/unillanos_migrate con migraciones YAML (grupo `unillanos`,
 fuente `csv` de migrate_source_csv) que lean /var/www/html/datos/... Orden: `sedes`, `facultades`,
 `estamentos`, `grados`, `responsables`, `proyectos`, `lineamientos`, `elementos_modelo` (dos pasadas:
-términos y luego padre/equivalencia), `programas`, `procesos`, `valoraciones`, `hallazgos_informe`,
+términos y luego el padre), `programas`, `procesos`, `valoraciones`, `hallazgos_informe`,
 `hallazgos_plan`, `planes`, `metas` (con indicadores y programación anual como paragraphs),
 `seguimientos`. Usa `migration_lookup` para las referencias y las claves `id` de los CSV como
 identificadores de origen. Hazlo por programa: la carpeta de importación es un parámetro, para poder

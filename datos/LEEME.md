@@ -5,7 +5,7 @@
 | Archivo | Origen | Notas |
 |---|---|---|
 | `lineamientos.csv` | Acuerdo CESU 02 de 2020, Acuerdo CESU 01 de 2025, Decreto 1330 de 2019 | `id` es la clave usada por los demás CSV. |
-| `elementos_modelo.csv` | Informe IE 2018-2022 (índice) y Acuerdo CESU 01 de 2025 | CNA 2020: 12 factores + 48 características. CESU 2025: 12 + 51 + 70 aspectos. Decreto 1330: 6 condiciones institucionales + 9 de programa. `equivale_a_id` (CESU 2025 → CNA 2020, factores 1–11) es una **propuesta**: validar con Acreditación. |
+| `elementos_modelo.csv` | Informe IE 2018-2022 (índice) y Acuerdo CESU 01 de 2025 | CNA 2020: 12 factores + 48 características. CESU 2025: 12 + 51 + 70 aspectos. Decreto 1330: 6 condiciones institucionales + 9 de programa. No hay equivalencias entre modelos (se retiró `equivale_a_id`): cada proceso conserva sus datos en su modelo. Los nombres CNA 2020 se contrastaron con el Acuerdo CESU 02 de 2020. |
 | `grados_cumplimiento.csv` | Tabla 3.1 del informe | El informe pone Insatisfactorio en 2,6–3,0; aquí se dejó 2,6–2,9 para no chocar con Aceptable. |
 | `estamentos.csv` | Metodología del informe | |
 | `sedes.csv` | Informe (sedes San Antonio, Barcelona y Emporio) | Falta el municipio de cada sede. |

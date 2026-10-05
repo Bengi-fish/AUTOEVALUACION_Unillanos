@@ -80,7 +80,6 @@ erDiagram
         varchar(250) nombre
         text descripcion
         bool propio
-        int equivale_a_id FK
     }
     GRADO_CUMPLIMIENTO {
         int id PK
@@ -269,7 +268,7 @@ erDiagram
 
 ## Decisiones clave del modelo
 
-1. **Un solo catálogo jerárquico (`ELEMENTO_MODELO`)** para factor → característica → aspecto, y también para las condiciones de calidad del registro calificado. `padre_id` arma el árbol; `lineamiento_id` dice a qué modelo pertenece (CNA 2020, CESU 01 de 2025, condiciones del Decreto 1330, etc.). `propio = true` marca aspectos que la Universidad agrega; `equivale_a_id` relaciona un elemento con su equivalente en otro lineamiento (para comparar procesos de distintos años).
+1. **Un solo catálogo jerárquico (`ELEMENTO_MODELO`)** para factor → característica → aspecto, y también para las condiciones de calidad del registro calificado. `padre_id` arma el árbol; `lineamiento_id` dice a qué modelo pertenece (CNA 2020, CESU 01 de 2025, condiciones del Decreto 1330, etc.). `propio = true` marca aspectos que la Universidad agrega. No hay equivalencias entre modelos: los datos de cada proceso se quedan en el modelo con el que se hizo.
 2. **`VALORACION` solo a nivel de factor y característica** (y estado de cumplimiento para condiciones). Las valoraciones de aspectos no se guardan: el informe solo publica factor/característica. `grado_id` se calcula con la escala `GRADO_CUMPLIMIENTO`.
 3. **`HALLAZGO`** guarda fortalezas y aspectos por mejorar del informe (tablas por factor). `origen` = determinación del CNA o proceso de autoevaluación; `destino` = plan de mejoramiento (valoración < 4) o plan de acción del programa (valoración = 4).
 4. **Plan de mejoramiento = estructura del Excel FO-GCL-20**: `PLAN_MEJORAMIENTO` (encabezado) → `META` (fila con peso, tipo de meta, actividades, recursos) → `INDICADOR` (una meta puede tener varios) → `PROGRAMACION_ANUAL` (año 1..7, programado y logrado). `SEGUIMIENTO` es cada hoja semestral (2024-2 … 2030-2). Una meta atiende uno o varios hallazgos (N:M) y la ejecutan uno o varios responsables (N:M).

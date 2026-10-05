@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.elemento_modelo.field_clave
-    - field.field.taxonomy_term.elemento_modelo.field_equivale_a
     - field.field.taxonomy_term.elemento_modelo.field_lineamiento
     - field.field.taxonomy_term.elemento_modelo.field_numero
     - field.field.taxonomy_term.elemento_modelo.field_propio
@@ -31,16 +30,6 @@ content:
     weight: 1
     region: content
     settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_equivale_a:
-    type: entity_reference_autocomplete
-    weight: 6
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

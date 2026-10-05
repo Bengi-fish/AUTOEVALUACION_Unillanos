@@ -274,9 +274,6 @@ $campos['taxonomy_term'] = [
     'field_propio' => $booleano('Propio de la Universidad', FALSE, [
       'descripcion' => 'Marcar si es un aspecto agregado por la Universidad.',
     ]),
-    'field_equivale_a' => $ref_termino('Equivale a', ['elemento_modelo'], [
-      'descripcion' => 'Elemento equivalente en otro lineamiento.',
-    ]),
   ],
 ];
 

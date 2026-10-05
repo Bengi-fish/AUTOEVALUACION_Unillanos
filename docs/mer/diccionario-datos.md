@@ -77,7 +77,6 @@ Factor, característica, aspecto o condición.
 | `nombre` | `varchar(250)` |  |
 | `descripcion` | `text` |  |
 | `propio` | `bool` |  |
-| `equivale_a_id` | `int` | FK |
 
 ### `GRADO_CUMPLIMIENTO` · Grado de cumplimiento
 
