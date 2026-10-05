@@ -9,8 +9,12 @@
  *
  * Las migraciones no validan al guardar; aquí se comprueban las restricciones
  * de unillanos_autoeval (valoración única, proceso con sede o programa, clave
- * única, estado por tipo) y las de los campos. Lista cada violación con tipo,
- * id, título, campo y mensaje.
+ * única, estado por tipo, modelo del proceso) y las de los campos. Lista cada
+ * violación con tipo, id, título, campo y mensaje.
+ *
+ * Es un ERROR que el proceso declare un modelo no permitido, o que el elemento
+ * de una valoración o de un hallazgo (o los de los hallazgos de una meta) no
+ * pertenezca al modelo de su proceso (restricción UnillanosModeloDelProceso).
  *
  * Además comprueba que cada programa tenga modalidad y sede (no son
  * obligatorias en el campo porque el catálogo aún no las trae). Es un ERROR
@@ -21,7 +25,7 @@ $entidades = \Drupal::entityTypeManager();
 
 // Qué se valida: tipo de entidad => bundles.
 $objetivos = [
-  'node' => ['valoracion', 'proceso', 'programa', 'seguimiento'],
+  'node' => ['proceso', 'programa', 'valoracion', 'hallazgo', 'plan_mejoramiento', 'meta', 'seguimiento'],
   'taxonomy_term' => ['elemento_modelo'],
 ];
 
