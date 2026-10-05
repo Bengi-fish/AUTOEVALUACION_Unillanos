@@ -32,19 +32,29 @@ This is a Drupal 11 project. Drupal is an open source content management platfor
 
 #### PHPCS - Coding Standards
 ```bash
-# Run from the Composer root (drupal/); ddev exec does this by default.
-ddev exec vendor/bin/phpcs --standard=Drupal,DrupalPractice web/modules/custom/MODULE_NAME/
+# `ddev exec` starts at the repository root, not at the Composer root, so
+# enter `drupal/` first. The same applies to PHPStan and PHPUnit.
+ddev exec "cd drupal && vendor/bin/phpcs --standard=Drupal,DrupalPractice web/modules/custom/MODULE_NAME/"
 
 # Auto-fix
-ddev exec vendor/bin/phpcbf --standard=Drupal,DrupalPractice web/modules/custom/MODULE_NAME/
+ddev exec "cd drupal && vendor/bin/phpcbf --standard=Drupal,DrupalPractice web/modules/custom/MODULE_NAME/"
+
+# Scripts (drupal/scripts/) are also checked with PHPCS
+ddev exec "cd drupal && vendor/bin/phpcs --standard=Drupal,DrupalPractice scripts/"
 ```
 **Must pass with zero errors.**
 
 #### PHPStan - Static Analysis (Level 5)
 ```bash
-ddev exec vendor/bin/phpstan analyze web/modules/custom/MODULE_NAME/
+ddev exec "cd drupal && vendor/bin/phpstan analyze --level=5 --no-progress web/modules/custom/MODULE_NAME/"
 ```
+**Always pass `--level=5`**: the project has no phpstan config file, so without the flag PHPStan runs at level 0 and reports almost nothing.
 **Must pass with zero errors.**
+
+#### PHPUnit - Kernel tests
+```bash
+ddev exec "cd drupal && SIMPLETEST_DB=mysql://db:db@db/db SIMPLETEST_BASE_URL=http://localhost vendor/bin/phpunit -c web/core web/modules/custom/unillanos_autoeval/tests"
+```
 
 ### Workflow
 1. Write/modify code
@@ -340,7 +350,8 @@ DDEV, configurado en la raíz del repositorio (`composer_root: drupal`, `docroot
 - Las valoraciones se guardan solo para factor y característica. En condiciones de registro calificado se guarda el estado (cumple / cumple parcialmente / no cumple) más el documento soporte.
 - Aspectos valorados por debajo de 4 van al plan de mejoramiento; los valorados en 4 van al plan de acción del programa.
 - En el Excel FO-GCL-20 una meta puede atender varias oportunidades de mejora y tener varios indicadores, con programación anual de 2024 a 2030. Las hojas `2024-2` … `2030-2` son seguimientos semestrales.
-- Algunos planes nombran factores con la numeración CNA 2013 (p. ej. "Factor 5 - Visibilidad"). Para eso existe `equivalencias_factores_plan.csv`.
+- **El modelo se declara por proceso.** Cada proceso guarda en `field_lineamiento` el modelo con el que se hizo (Acuerdo CESU 02 de 2020 o Acuerdo CESU 01 de 2025; el Decreto 1330 no es modelo de proceso). Ingeniería Electrónica (PR-IE-2022) usa el 2020; los procesos nuevos usan el 2025. Las valoraciones, hallazgos y metas de un proceso solo pueden usar elementos de su modelo (restricción `UnillanosModeloDelProceso`). **No hay equivalencias entre el modelo 2020 y el 2025**: los datos de cada proceso se quedan en su modelo.
+- Algunos planes nombran factores con la numeración CNA 2013 (p. ej. "Factor 5 - Visibilidad"). Para eso existe `equivalencias_factores_plan.csv`, que traduce esos textos a códigos CNA 2020 solo para importar el plan. El informe IE 2018-2022 respalda cada fila (ver `docs/pendientes-acreditacion.md`).
 
 ## Antes de hacer algo destructivo, pregunta
 `ddev delete`, `drush sql:drop`, `drush si` sobre una base con contenido, `migrate:rollback` de todo el grupo, `git push --force`, o borrar archivos de `docs/fuentes/`.

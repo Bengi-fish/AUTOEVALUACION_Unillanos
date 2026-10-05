@@ -1,6 +1,6 @@
 # Pendientes con Acreditación
 
-Resultado de una revisión de solo lectura del repositorio. Recoge de dónde salen las equivalencias de factores del plan de mejoramiento y la regla de destino de los hallazgos, y qué falta confirmar.
+Recoge de dónde salen las equivalencias de factores del plan de mejoramiento y la regla de destino de los hallazgos, y qué falta confirmar. Solo quedan abiertos la regla del 4 y el redondeo (sección 4).
 
 ## 1. Fuentes de factores y elementos
 
@@ -8,80 +8,66 @@ Los 210 elementos están en `datos/semillas/elementos_modelo.csv`:
 
 | Lineamiento | Cantidad |
 |---|---|
-| CNA 2020 | 12 factores + 48 características |
-| CESU 2025 | 12 factores + 51 características + 70 aspectos |
+| CNA 2020 (Acuerdo CESU 02 de 2020) | 12 factores + 48 características |
+| CESU 2025 (Acuerdo CESU 01 de 2025) | 12 factores + 51 características + 70 aspectos |
 | Decreto 1330 | 17 condiciones |
 
-Los lineamientos están en `datos/semillas/lineamientos.csv` (Acuerdo CESU 02 de 2020, Acuerdo CESU 01 de 2025, Decreto 1330 de 2019).
+Los lineamientos están en `datos/semillas/lineamientos.csv`.
 
-Según `datos/LEEME.md`, `elementos_modelo.csv` viene del índice del informe IE 2018-2022 y del Acuerdo CESU 01 de 2025. Los nombres del CNA 2020 se contrastaron después con el Acuerdo 02 de 2020 (`docs/fuentes/acuerdo-cesu-002-2020.pdf`, capítulo de programas): 12 factores y 48 características coinciden; solo se corrigió C45 a "Financiación del programa académico".
+**Decisión de diseño: el modelo se declara por proceso.** Cada proceso guarda en `field_lineamiento` el modelo con el que se hizo, y sus valoraciones, hallazgos y metas solo pueden usar elementos de ese modelo. Ingeniería Electrónica (PR-IE-2022) usa el Acuerdo CESU 02 de 2020; los procesos nuevos usarán el Acuerdo CESU 01 de 2025. **No hay equivalencias entre el modelo 2020 y el 2025**: los datos de cada proceso se quedan en su modelo (se retiró `equivale_a_id`).
 
-No hay equivalencias entre modelos: se retiró `equivale_a_id` / `field_equivale_a` de `elemento_modelo`. Las `equivalencias_factores_plan.csv` son otra cosa: traducen textos de numeración 2013 del Excel del plan a códigos CNA 2020.
+Los nombres del CNA 2020 se contrastaron con el Acuerdo CESU 02 de 2020 (`docs/fuentes/acuerdo-cesu-002-2020.pdf`, capítulo de programas, págs. 24 a 33): 12 factores y 48 características coinciden. Solo se corrigió C45 a "Financiación del programa académico".
 
-Documentos en el repositorio:
+Documentos en el repositorio (`docs/fuentes/`):
 
-- `docs/fuentes/informe-autoevaluacion-2022-ingenieria-electronica.pdf`: informe de autoevaluación. Origen de `valoraciones_factores.csv` y `proceso.csv` (Tabla 5.1).
-- `docs/fuentes/plan-mejoramiento-ingenieria-electronica-2024-2-2030.xlsx`: plan de mejoramiento. Origen de `metas.csv`, `hallazgos_plan.csv` y los demás CSV del plan.
-- `docs/fuentes/acuerdo-cesu-001-2025.docx`: Acuerdo CESU 01 de 2025.
+- `informe-autoevaluacion-2022-ingenieria-electronica.pdf`: origen de `valoraciones_factores.csv` y `proceso.csv` (Tabla 5.1).
+- `plan-mejoramiento-ingenieria-electronica-2024-2-2030.xlsx`: origen de `metas.csv`, `hallazgos_plan.csv` y los demás CSV del plan.
+- `acuerdo-cesu-001-2025.docx` y `acuerdo-cesu-002-2020.pdf`.
 
-No están cargados: el Decreto 1330 y el modelo CNA 2013. El Acuerdo CESU 02 de 2020 sí está (`acuerdo-cesu-002-2020.pdf`).
+No están cargados: el Decreto 1330 y el modelo CNA 2013.
 
-## 2. Cómo se hizo la conversión de factores
+## 2. Equivalencias de factores del plan: respaldadas por el informe
 
-- Archivo: `datos/importacion/ingenieria-electronica/equivalencias_factores_plan.csv` (9 filas, manual, creado en el commit `3dc8377`).
-- El emparejamiento es por texto completo y exacto, no por número ni por prefijo. Lo hace el plugin `unillanos_equivalencia` (`unillanos_migrate/.../Equivalencia.php`) desde `migrations/hallazgos_plan.yml`.
-- Si el destino está vacío, el resultado es NULL (caso "Todos los factores").
-- Ninguna fila cita un documento oficial. Las notas del CSV dicen que el plan usa la numeración 2013, pero ese modelo no está en el repositorio.
+`datos/importacion/ingenieria-electronica/equivalencias_factores_plan.csv` (9 filas) traduce los textos de factor del Excel del plan, que usan la numeración CNA 2013, a códigos CNA 2020. **No es una equivalencia entre modelos del sistema**: solo sirve para importar el plan. El emparejamiento es por texto completo y exacto, lo hace el plugin `unillanos_equivalencia` desde `migrations/hallazgos_plan.yml`, y un destino vacío da NULL.
 
-Casos dudosos (línea del CSV):
-
-- Línea 7: "Factor 9 - Impacto de los egresados en el medio" → `CNA20-F04` ("equivale al factor 4 de 2020").
-- Línea 8: "Factor 9. Bienestar de la Comunidad Académica del Programa" → `CNA20-F09`.
-- Línea 4: "Factor 5 - Visibilidad nacional e internacional" → `CNA20-F07`.
-- Línea 9: "Factor 10 - Recursos físicos y financieros" → `CNA20-F12`. En 2020 el F12 es "Recursos físicos y tecnológicos" y la financiación está en el F11.
-- Línea 10: "Todos los factores" → sin elemento (meta transversal).
-
-## 3. Tabla de verificación
+El informe lo confirma. La introducción (pág. 14 del PDF) dice que el proceso 2018–2022 se hizo con el Acuerdo CESU 02 de 2020 y los lineamientos 2013 se usaron en 2017. Las tablas "Balance Proceso Autoevaluación 2017 vs 2022" comparan los factores de una y otra numeración.
 
 | Texto del plan | Código asignado | Certeza |
 |---|---|---|
-| Factor 9. Bienestar de la Comunidad Académica del Programa | CNA20-F09 | Deducido por el nombre |
-| Factor 9 - Impacto de los egresados en el medio | CNA20-F04 | Dudoso: depende de la numeración 2013, no cargada |
-| Factor 5 - Visibilidad nacional e internacional | CNA20-F07 | Deducido por el nombre |
-| Factor 10 - Recursos físicos y financieros | CNA20-F12 | Dudoso: el nombre mezcla F12 y F11 de 2020 |
-| Todos los factores | (vacío) | Decisión de diseño, sin documento |
+| Factor 9. Bienestar de la Comunidad Académica del Programa | CNA20-F09 | Mismo nombre y número en 2020 |
+| Factor 9 - Impacto de los egresados en el medio | CNA20-F04 | Respaldado por el informe: Factor 9 de 2013 equivale al F04 (Balance, pág. 127) |
+| Factor 5 - Visibilidad nacional e internacional | CNA20-F07 | Respaldado por el informe: Factor 5 de 2013 equivale al F07 (Balance, pág. 172) |
+| Factor 10 - Recursos físicos y financieros | CNA20-F12 | Respaldado por el informe: lo físico va al F12 (pág. 225) y lo financiero al F11 (pág. 219). Las metas de laboratorios son de lo físico |
+| Todos los factores | (vacío) | Decisión de diseño: meta transversal, sin elemento |
 
-Se reimportarían las metas M14, M15 y M16 y los hallazgos H13 y H14 si alguna equivalencia cambia.
+## 3. Cómo se hizo la conversión
 
-## 4. Origen de la regla de destino y del redondeo
+- Archivo manual creado en el commit `3dc8377`; las notas se actualizaron con las páginas del informe.
+- Si una equivalencia cambia, se reimportan las metas M14, M15 y M16 y los hallazgos H13 y H14.
 
-No hay fuente documental. Es una decisión de diseño, marcada como "pendiente de confirmar con Acreditación".
+## 4. Pendiente: regla del 4 y redondeo
 
-- Regla de destino (< 4 `plan_mejoramiento`, = 4 `plan_accion`, > 4 `ninguno`): `docs/drupal/modelo-de-contenido.md:126`, `docs/mer/MER.md:274`, `CLAUDE.md:341`, `docs/IMPLEMENTACION_DRUPAL.md:32-33`. Código: `unillanos_autoeval/src/Service/SugerenciaDestino.php:55`.
-- Redondeo a un decimal: `docs/drupal/modelo-de-contenido.md:123` y `docs/IMPLEMENTACION_DRUPAL.md:31`. Código: `CalculadorGrado.php:50-53`. Resuelve los huecos de la Tabla 3.1 (4,7–4,8 y 3,9–4,0).
-- `modelo-de-contenido.md:126` dice "Regla del informe", pero no se pudo comprobar en el PDF.
+Sin fuente documental. Es una decisión de diseño marcada como "pendiente de confirmar con Acreditación".
+
+- Regla de destino (< 4 `plan_mejoramiento`, = 4 `plan_accion`, > 4 `ninguno`): `docs/drupal/modelo-de-contenido.md`, `docs/mer/MER.md`, `CLAUDE.md` y `docs/IMPLEMENTACION_DRUPAL.md`. Código: `unillanos_autoeval/src/Service/SugerenciaDestino.php`.
+- Redondeo a un decimal: `docs/drupal/modelo-de-contenido.md` y `docs/IMPLEMENTACION_DRUPAL.md`. Código: `CalculadorGrado.php`. Resuelve los huecos de la Tabla 3.1 (4,7–4,8 y 3,9–4,0).
 - El redondeo se aplica al grado, no al destino: `SugerenciaDestino` compara el valor exacto (3,96 va a `plan_mejoramiento`; 4,27 va a `ninguno`).
-- `plan_excel_a_csv.py:170` fija `destino = plan_mejoramiento` para las oportunidades del plan, por la naturaleza del archivo, no por la regla del 4.
+- `plan_excel_a_csv.py` fija `destino = plan_mejoramiento` para las oportunidades del plan, por la naturaleza del archivo, no por la regla del 4.
+- `modelo-de-contenido.md` dice "Regla del informe", pero no se pudo comprobar en el PDF.
 
-## 5. Punto para Acreditación
+**Preguntas para Acreditación institucional / oficina de autoevaluación** (los archivos no nombran una dependencia ni una persona; hay que confirmarla):
 
-**Con quién:** Acreditación institucional / oficina de autoevaluación. Los archivos no nombran una dependencia ni una persona, así que hay que confirmarla.
+1. Un hallazgo valorado en menos de 4 va al plan de mejoramiento, igual a 4 al plan de acción y más de 4 a ninguno. ¿Es correcto?
+2. ¿Un 4,27 cuenta como "igual a 4" o como "mayor que 4"? ¿Y un 3,96?
+3. Para el grado (Pleno, Alto, etc.), ¿se redondea la nota a un decimal antes de compararla con la escala?
 
-**Qué tener a mano:** el modelo CNA 2013 y el Acuerdo CESU 02 de 2020 (no están en el repositorio), el informe `docs/fuentes/informe-autoevaluacion-2022-ingenieria-electronica.pdf` y el plan `docs/fuentes/plan-mejoramiento-ingenieria-electronica-2024-2-2030.xlsx`.
+## 5. Pendientes técnicos del modelo por proceso
 
-**Preguntas:**
+No requieren a Acreditación. Quedan para fases posteriores.
 
-1. ¿El plan usa la numeración de factores de 2013? ¿"Factor 5 - Visibilidad" equivale al factor 7 de 2020?
-2. ¿"Factor 9 - Impacto de los egresados" equivale al factor 4 de 2020?
-3. ¿"Factor 10 - Recursos físicos y financieros" va al factor 12 (físicos y tecnológicos) o al 11 (financiación)?
-4. ¿"Todos los factores" se deja como meta transversal, sin factor?
-5. Un hallazgo valorado en menos de 4 va al plan de mejoramiento, igual a 4 al plan de acción y más de 4 a ninguno. ¿Es correcto?
-6. ¿Un 4,27 cuenta como "igual a 4" o como "mayor que 4"? ¿Y un 3,96?
-7. Para el grado (Pleno, Alto, etc.), ¿se redondea la nota a un decimal antes de compararla con la escala?
-
-## Lo que no se pudo determinar
-
-- Qué dice el informe en PDF (no hay lector de PDF en el entorno) ni el .docx del Acuerdo CESU 2025.
-- Si la numeración 2013 que afirma el CSV es correcta.
-- Quién decidió cada equivalencia (el repositorio no lo registra).
-- Con qué dependencia o persona de Acreditación hablar.
+- **PHPStan en scripts (baja prioridad):** `drupal/scripts/crear_modelo.php` tiene 2 errores previos de nivel 5, en las líneas ~554 y ~555 (`FieldStorageDefinitionInterface::save()` y `FieldConfigInterface::setLabel()`). Los scripts quedan fuera de la compuerta de PHPStan hasta corregirlos.
+- **Webform de participación (Fase 8):** su elemento `elemento` no se filtra por el modelo del proceso.
+- **Decreto 1330:** la restricción del modelo del proceso (`UnillanosModeloDelProceso`, servicio `ModeloProceso`) solo admite lineamientos de tipo `acreditacion`, así que excluye el Decreto 1330. Si se necesitan procesos de registro calificado, hay que ampliarla.
+- **Catálogo CESU 2025:** comparar fila por fila `elementos_modelo.csv` (12 factores, 51 características y 70 aspectos) contra el Acuerdo CESU 01 de 2025 cuando se cree el primer proceso con ese modelo. El CNA 2020 ya se contrastó con el Acuerdo 02 de 2020.
+- **Autor de los contenidos importados:** salen con autor "Anónimo (no verificado)". Decidir en la Fase 7 o la 9 si se les asigna un usuario.
+- **Título de los procesos (Fase 7):** configurar el título automático. Los procesos deben tener un título corto y reconocible; el nombre largo actual ("Autoevaluación con fines de renovación de la acreditación en alta calidad 2018–2022") hace incómoda la búsqueda por autocompletado, que busca por título.

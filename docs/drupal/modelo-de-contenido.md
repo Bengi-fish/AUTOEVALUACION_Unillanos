@@ -79,7 +79,7 @@ La lógica que Drupal no trae se programa en el módulo propio **`unillanos_auto
 `field_norma` (texto) · `field_ambito` (lista: `programa`, `unidad_academica`, `institucional`) · `field_tipo_proceso` (lista, ver abajo) · `field_vigente_desde` (fecha).
 
 ### `proceso`
-`field_tipo_proceso` (lista: `registro_calificado`, `acreditacion`, `renovacion_acreditacion`, `acreditacion_internacional`) · `field_ambito` (lista como en lineamiento) · `field_sede` (→ `sede`, procesos institucionales) · `field_programa` (→ `programa`) · `field_lineamiento` (→ `lineamiento`, obligatorio) · `field_periodo_evaluado` (texto, ej. `2018–2022`) · `field_fase_actual` (entero 1–n) · `field_estado` (lista: `planeado`, `en_curso`, `finalizado`) · `field_resultado` (texto) · `field_participaciones` (Paragraphs → `participacion`).
+`field_tipo_proceso` (lista: `registro_calificado`, `acreditacion`, `renovacion_acreditacion`, `acreditacion_internacional`) · `field_ambito` (lista como en lineamiento) · `field_sede` (→ `sede`, procesos institucionales) · `field_programa` (→ `programa`) · `field_lineamiento` (→ `lineamiento`, obligatorio; es el **modelo** con el que se hizo el proceso, solo `Acuerdo CESU 02 de 2020` o `Acuerdo CESU 01 de 2025`) · `field_periodo_evaluado` (texto, ej. `2018–2022`) · `field_fase_actual` (entero 1–n) · `field_estado` (lista: `planeado`, `en_curso`, `finalizado`) · `field_resultado` (texto) · `field_participaciones` (Paragraphs → `participacion`).
 Regla: exactamente uno de `field_sede` o `field_programa` (validación en `unillanos_autoeval`).
 
 ### `valoracion`
@@ -120,9 +120,21 @@ Elementos: `proceso` (entidad → nodo `proceso`) · `elemento` (término `eleme
 ## Lógica del módulo `unillanos_autoeval`
 
 1. `hook_ENTITY_TYPE_presave()` de `valoracion`: calcula `field_grado` con los rangos de `grado_cumplimiento`. Los rangos de la Tabla 3.1 dejan huecos (4,7–4,8; 3,9–4,0): se redondea a 1 decimal antes de comparar. Confirmar la regla con Acreditación.
-2. Restricciones de validación: (proceso, elemento) único en `valoracion`; `proceso` con sede **o** programa.
+2. Restricciones de validación: (proceso, elemento) único en `valoracion`; `proceso` con sede **o** programa; **modelo del proceso** (`UnillanosModeloDelProceso`): el `field_lineamiento` del proceso debe ser un lineamiento de tipo `acreditacion`; el `field_elemento` de una valoración o un hallazgo (y los de los hallazgos de una meta, por su plan) debe pertenecer al lineamiento del proceso; un hallazgo sin elemento es válido; no se cambia el modelo de un proceso que ya tiene elementos de otro. El servicio `ModeloProceso` centraliza la consulta.
 3. Servicio `AvanceMeta`: avance de una meta = último `seguimiento.field_avance` verificado; avance del plan = Σ(peso × avance).
 4. Regla del informe: hallazgo con valoración < 4 → `field_destino = plan_mejoramiento`; = 4 → `plan_accion`; > 4 → `ninguno` (sugerencia al crear, editable; pendiente de confirmar con Acreditación). Si el elemento del hallazgo no tiene valoración propia, se usa la de su ancestro más cercano.
+
+## Modelo por proceso y presentación por factores (Fase 7)
+
+El modelo se declara por proceso; no hay equivalencias entre el modelo 2020 y el 2025. Selector de formularios: en `valoracion` y `hallazgo`, el autocompletado de `field_elemento` usa el plugin de selección `unillanos_elemento_modelo` con el lineamiento del proceso elegido (se refresca por AJAX al cambiar el proceso).
+
+Datos para una vista de la Fase 7 (todo existe ya, sin campos nuevos):
+
+- Modelo del proceso: `proceso.field_lineamiento`.
+- Elemento: `valoracion.field_elemento` / `hallazgo.field_elemento` → término `elemento_modelo`, con `field_lineamiento`, `field_tipo_elemento` y `field_numero`.
+- Factor padre: el padre nativo del término (relación "Padre" de la taxonomía); los factores no tienen padre.
+
+Una vista por factores filtra por el proceso (filtro contextual `field_proceso`) y agrupa por el factor padre del elemento, ordenado por `field_numero`. No necesita filtrar por modelo: la restricción garantiza que los elementos son del modelo del proceso. Para listar los factores de un proceso, se filtra `elemento_modelo` con `field_tipo_elemento = factor` y `field_lineamiento` igual al `field_lineamiento` del proceso.
 
 ## Páginas del prototipo → Drupal
 

@@ -19,6 +19,7 @@ Todas las fases siguen **el mismo ciclo** (sección 2). Cada fase indica qué ha
 | Diseño visual y comportamiento (prototipo) | Listo | `plantilla/` |
 | Estructura del plan de mejoramiento (FO-GCL-20) | Listo, con conversor a CSV | `docs/fuentes/` + `datos/herramientas/` |
 | Modelo CNA 2020 (12 factores, 48 características) y CESU 01 de 2025 (12 / 51 / 70) | Listo como CSV | `datos/semillas/elementos_modelo.csv` |
+| Modelo por proceso: 2020 para Ingeniería Electrónica, 2025 para los procesos nuevos, sin equivalencias entre modelos | Listo (validación, selector y pruebas) | `unillanos_autoeval`, `docs/drupal/modelo-de-contenido.md` |
 | Datos reales de un programa (Ingeniería Electrónica) | Valoraciones por factor + plan completo | `datos/importacion/ingenieria-electronica/` |
 
 **Pendiente por confirmar con la Universidad.** Nada de esto bloquea el trabajo local, pero sí la puesta en producción:
@@ -443,7 +444,7 @@ Revisa a mano:
 
 - `responsables.csv`: catálogo canónico (`id`, `nombre`, `tipo`, `sigla`), sin duplicados.
 - `equivalencias_responsables.csv` (`variante`, `id`): mapea cada texto de `metas.csv` al responsable canónico, sin distinguir mayúsculas ni espacios. Aquí se unifican "Profsores" → "Profesores" o "Dirección General de Investigación" → "Dirección General de Investigaciones".
-- `equivalencias_factores_plan.csv`: asigna a cada texto de factor del Excel su elemento del modelo. Ojo: algunos planes usan la numeración de factores de 2013.
+- `equivalencias_factores_plan.csv`: asigna a cada texto de factor del Excel su elemento del modelo. Ojo: algunos planes usan la numeración de factores de 2013; el informe IE 2018-2022 respalda cada fila (ver `docs/pendientes-acreditacion.md`). Esto no es una equivalencia entre modelos del sistema.
 - `valoraciones_factores.csv` y `proceso.csv`: se llenan a partir del informe del programa.
 
 ### 9.2 Extraer fortalezas y aspectos por mejorar del informe
