@@ -1,0 +1,13 @@
+id: proyectos
+label: 'Proyectos institucionales'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/proyectos_institucionales.csv'
+  ids: [id]
+process:
+  name: nombre
+  field_activo: activo
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: proyecto_institucional

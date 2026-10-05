@@ -1,0 +1,12 @@
+id: estamentos
+label: 'Estamentos'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/estamentos.csv'
+  ids: [id]
+process:
+  name: nombre
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: estamento

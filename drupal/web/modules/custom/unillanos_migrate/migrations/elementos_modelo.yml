@@ -1,0 +1,31 @@
+id: elementos_modelo
+label: 'Elementos del modelo (términos)'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/elementos_modelo.csv'
+  ids: [id]
+process:
+  name: nombre
+  description/value: descripcion
+  description/format:
+    plugin: default_value
+    default_value: plain_text
+  field_clave: id
+  field_lineamiento:
+    plugin: migration_lookup
+    migration: lineamientos
+    source: lineamiento_id
+    no_stub: true
+  field_tipo_elemento: tipo
+  field_numero:
+    plugin: skip_on_empty
+    method: process
+    source: numero
+  field_propio: propio
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: elemento_modelo
+migration_dependencies:
+  required:
+    - lineamientos

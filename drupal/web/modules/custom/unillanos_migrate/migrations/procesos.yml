@@ -1,0 +1,44 @@
+id: procesos
+label: 'Procesos'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/proceso.csv'
+  ids: [id]
+process:
+  title: nombre
+  field_tipo_proceso: tipo
+  field_ambito: ambito
+  field_programa:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: programa_id
+    -
+      plugin: migration_lookup
+      migration: programas
+      no_stub: true
+  field_lineamiento:
+    plugin: migration_lookup
+    migration: lineamientos
+    source: lineamiento_id
+    no_stub: true
+  field_periodo_evaluado: periodo_evaluado
+  field_fase_actual:
+    plugin: skip_on_empty
+    method: process
+    source: fase_actual
+  field_estado: estado
+  field_resultado:
+    plugin: skip_on_empty
+    method: process
+    source: resultado
+  status: publicado
+destination:
+  plugin: 'entity:node'
+  default_bundle: proceso
+migration_dependencies:
+  required:
+    - programas
+    - lineamientos

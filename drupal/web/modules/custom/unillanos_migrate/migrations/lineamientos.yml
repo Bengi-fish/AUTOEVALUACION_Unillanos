@@ -1,0 +1,17 @@
+id: lineamientos
+label: 'Lineamientos'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/lineamientos.csv'
+  ids: [id]
+process:
+  title: nombre
+  field_norma: norma
+  field_ambito: ambito
+  field_tipo_proceso: tipo_proceso
+  field_vigente_desde: vigente_desde
+  status: activo
+destination:
+  plugin: 'entity:node'
+  default_bundle: lineamiento

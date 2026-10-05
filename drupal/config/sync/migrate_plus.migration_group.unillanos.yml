@@ -1,0 +1,12 @@
+uuid: 1b9c3fe2-4205-4f7d-9ddc-76a1f2d79b3c
+langcode: es
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: wpR3iYI2BStlVNvdX-UdIOXZUDZO80blHv8TqPCvQno
+id: unillanos
+label: Unillanos
+description: 'Catálogos comunes y datos de cada programa, leídos desde datos/ (CSV).'
+source_type: 'Archivos CSV'
+module: null
+shared_configuration: {  }

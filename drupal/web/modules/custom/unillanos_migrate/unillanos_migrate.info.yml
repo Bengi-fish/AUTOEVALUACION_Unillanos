@@ -1,0 +1,15 @@
+name: 'Unillanos Migraciones'
+type: module
+description: 'Migraciones CSV → Drupal del Sistema de Información de Autoevaluación (grupo unillanos).'
+package: Unillanos
+core_version_requirement: ^11
+dependencies:
+  - drupal:migrate
+  - drupal:node
+  - drupal:taxonomy
+  - entity_reference_revisions:entity_reference_revisions
+  - migrate_plus:migrate_plus
+  - migrate_source_csv:migrate_source_csv
+  - migrate_tools:migrate_tools
+  - paragraphs:paragraphs
+  - unillanos_autoeval:unillanos_autoeval

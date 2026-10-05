@@ -1,0 +1,25 @@
+id: indicadores
+label: 'Indicadores de las metas (paragraphs)'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/indicadores.csv'
+  # El primer identificador es la meta: así la meta encuentra a sus indicadores.
+  ids: [meta_id, id]
+process:
+  field_nombre: nombre
+  field_linea_base:
+    plugin: skip_on_empty
+    method: process
+    source: linea_base
+  field_programacion:
+    plugin: unillanos_hijos_migrados
+    source: id
+    migracion: 'programacion_anual:%programa%'
+destination:
+  plugin: 'entity_reference_revisions:paragraph'
+  default_bundle: indicador
+migration_dependencies:
+  required:
+    - 'programacion_anual:%programa%'

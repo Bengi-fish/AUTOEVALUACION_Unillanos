@@ -1,0 +1,65 @@
+id: programas
+label: 'Programas académicos'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/programas.csv'
+  ids: [id]
+process:
+  title: nombre
+  field_clave: id
+  field_codigo_snies:
+    plugin: skip_on_empty
+    method: process
+    source: codigo_snies
+  field_nivel: nivel
+  field_modalidad:
+    plugin: skip_on_empty
+    method: process
+    source: modalidad
+  field_facultad:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: facultad_id
+    -
+      plugin: migration_lookup
+      migration: facultades
+      no_stub: true
+  field_sede:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: sede_id
+    -
+      plugin: migration_lookup
+      migration: sedes
+      no_stub: true
+  field_director:
+    plugin: skip_on_empty
+    method: process
+    source: director
+  field_resolucion_registro:
+    plugin: skip_on_empty
+    method: process
+    source: resolucion_registro
+  field_registro_hasta:
+    plugin: skip_on_empty
+    method: process
+    source: registro_hasta
+  field_resolucion_acreditacion:
+    plugin: skip_on_empty
+    method: process
+    source: resolucion_acreditacion
+  field_acreditacion_hasta:
+    plugin: skip_on_empty
+    method: process
+    source: acreditacion_hasta
+  status: activo
+destination:
+  plugin: 'entity:node'
+  default_bundle: programa
+migration_dependencies:
+  required:
+    - facultades
+    - sedes

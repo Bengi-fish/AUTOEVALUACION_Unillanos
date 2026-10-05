@@ -1,0 +1,53 @@
+id: hallazgos_plan
+label: 'Hallazgos del plan de mejoramiento'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/hallazgos_plan.csv'
+  ids: [id]
+process:
+  title:
+    plugin: substr
+    source: descripcion
+    start: 0
+    length: 120
+  field_proceso:
+    plugin: migration_lookup
+    migration: 'procesos:%programa%'
+    source: proceso_id
+    no_stub: true
+  # Texto completo del factor (no por prefijo), según equivalencias_factores_plan.csv.
+  field_elemento:
+    -
+      plugin: unillanos_equivalencia
+      source: factor_texto
+      archivo: '%datos%/importacion/%carpeta%/equivalencias_factores_plan.csv'
+      desde: factor_texto
+      hasta: elemento_id
+    -
+      plugin: skip_on_empty
+      method: process
+    -
+      plugin: migration_lookup
+      migration: elementos_modelo
+      no_stub: true
+  field_tipo_hallazgo: tipo
+  body/value: descripcion
+  body/format:
+    plugin: default_value
+    default_value: plain_text
+  field_origen:
+    plugin: static_map
+    source: origen
+    map:
+      'Determinación del CNA': determinacion_cna
+      'Proceso de autoevaluación': autoevaluacion
+  field_destino: destino
+destination:
+  plugin: 'entity:node'
+  default_bundle: hallazgo
+migration_dependencies:
+  required:
+    - 'procesos:%programa%'
+    - elementos_modelo

@@ -1,0 +1,40 @@
+id: elementos_modelo_relaciones
+label: 'Elementos del modelo (padre y equivalencia)'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/elementos_modelo.csv'
+  ids: [id]
+process:
+  tid:
+    plugin: migration_lookup
+    migration: elementos_modelo
+    source: id
+    no_stub: true
+  parent:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: padre_id
+    -
+      plugin: migration_lookup
+      migration: elementos_modelo
+      no_stub: true
+  field_equivale_a:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: equivale_a_id
+    -
+      plugin: migration_lookup
+      migration: elementos_modelo
+      no_stub: true
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: elemento_modelo
+  overwrite_properties:
+    - parent
+    - field_equivale_a
+migration_dependencies:
+  required:
+    - elementos_modelo

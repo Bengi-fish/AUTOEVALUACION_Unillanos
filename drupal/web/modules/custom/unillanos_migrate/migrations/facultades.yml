@@ -1,0 +1,13 @@
+id: facultades
+label: 'Facultades'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/facultades.csv'
+  ids: [id]
+process:
+  name: nombre
+  field_sigla: sigla
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: facultad

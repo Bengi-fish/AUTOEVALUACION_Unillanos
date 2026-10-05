@@ -298,9 +298,12 @@ $campos['node'] = [
       'virtual' => 'Virtual',
       'dual' => 'Dual',
       'hibrida' => 'Híbrida',
-    ], $requerido),
+    ]),
     'field_facultad' => $ref_termino('Facultad', ['facultad'], $requerido),
-    'field_sede' => $ref_termino('Sede', ['sede'], $requerido),
+    // Modalidad y sede no son obligatorias en el campo: el catálogo de
+    // programas aún no las trae. validar_importacion.php las exige a los
+    // programas con datos importados y avisa en los demás.
+    'field_sede' => $ref_termino('Sede', ['sede']),
     'field_director' => $texto('Director', [], 150),
     'field_resolucion_registro' => $texto('Resolución de registro calificado', [], 60),
     'field_registro_hasta' => $fecha('Registro calificado vigente hasta'),

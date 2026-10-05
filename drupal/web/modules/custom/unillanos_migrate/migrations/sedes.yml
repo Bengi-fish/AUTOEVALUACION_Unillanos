@@ -1,0 +1,17 @@
+id: sedes
+label: 'Sedes'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/sedes.csv'
+  ids: [id]
+process:
+  name: nombre
+  field_municipio:
+    plugin: skip_on_empty
+    method: process
+    source: municipio
+  field_activa: activa
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: sede

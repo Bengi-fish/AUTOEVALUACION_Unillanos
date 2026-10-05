@@ -1,0 +1,38 @@
+id: valoraciones
+label: 'Valoraciones de factor'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/valoraciones_factores.csv'
+  ids: [proceso_id, elemento_id]
+process:
+  title:
+    plugin: concat
+    source:
+      - proceso_id
+      - elemento_id
+    delimiter: ' · '
+  field_proceso:
+    plugin: migration_lookup
+    migration: 'procesos:%programa%'
+    source: proceso_id
+    no_stub: true
+  field_elemento:
+    plugin: migration_lookup
+    migration: elementos_modelo
+    source: elemento_id
+    no_stub: true
+  field_valoracion: valoracion
+  field_porcentaje:
+    plugin: skip_on_empty
+    method: process
+    source: porcentaje
+destination:
+  plugin: 'entity:node'
+  default_bundle: valoracion
+migration_dependencies:
+  required:
+    - 'procesos:%programa%'
+    - elementos_modelo_relaciones
+    - grados

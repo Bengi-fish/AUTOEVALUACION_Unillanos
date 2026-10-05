@@ -1,0 +1,48 @@
+id: planes
+label: 'Planes de mejoramiento'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/plan.csv'
+  ids: [id]
+  constants:
+    titulo: 'Plan de mejoramiento'
+process:
+  title:
+    plugin: concat
+    source:
+      - constants/titulo
+      - programa
+      - periodo
+    delimiter: ' · '
+  field_proceso:
+    plugin: migration_lookup
+    migration: 'procesos:%programa%'
+    source: proceso_id
+    no_stub: true
+  field_tipo_plan:
+    plugin: static_map
+    source: tipo
+    map:
+      'De programa': programa
+      'Institucional': institucional
+  field_codigo_formato: codigo_formato
+  field_version_formato: version_formato
+  field_periodo: periodo
+  field_fecha_suscripcion:
+    plugin: unillanos_fecha_es
+    source: fecha_suscripcion
+  field_alta_calidad:
+    plugin: static_map
+    source: alta_calidad
+    map:
+      'Acreditación': acreditacion
+      'Reacreditación': reacreditacion
+      'No aplica': no_aplica
+destination:
+  plugin: 'entity:node'
+  default_bundle: plan_mejoramiento
+migration_dependencies:
+  required:
+    - 'procesos:%programa%'

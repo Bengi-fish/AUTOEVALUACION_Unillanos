@@ -1,0 +1,50 @@
+id: seguimientos
+label: 'Seguimientos semestrales'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/seguimientos.csv'
+  ids: [meta_id, periodo]
+  constants:
+    estado: reportado
+process:
+  title:
+    plugin: concat
+    source:
+      - meta_id
+      - periodo
+    delimiter: ' · '
+  field_meta:
+    plugin: migration_lookup
+    migration: 'metas:%programa%'
+    source: meta_id
+    no_stub: true
+  field_periodo: periodo
+  field_avance:
+    plugin: skip_on_empty
+    method: process
+    source: avance
+  field_actividades/value: actividades
+  field_actividades/format:
+    plugin: default_value
+    default_value: plain_text
+  field_medios_verificacion/value: medios_verificacion
+  field_medios_verificacion/format:
+    plugin: default_value
+    default_value: plain_text
+  field_verificacion/value: verificacion
+  field_verificacion/format:
+    plugin: default_value
+    default_value: plain_text
+  field_observaciones/value: observaciones
+  field_observaciones/format:
+    plugin: default_value
+    default_value: plain_text
+  field_estado: constants/estado
+destination:
+  plugin: 'entity:node'
+  default_bundle: seguimiento
+migration_dependencies:
+  required:
+    - 'metas:%programa%'

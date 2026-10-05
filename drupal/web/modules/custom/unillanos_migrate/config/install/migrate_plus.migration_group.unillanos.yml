@@ -1,0 +1,5 @@
+id: unillanos
+label: 'Unillanos'
+description: 'Catálogos comunes y datos de cada programa, leídos desde datos/ (CSV).'
+source_type: 'Archivos CSV'
+shared_configuration: {  }

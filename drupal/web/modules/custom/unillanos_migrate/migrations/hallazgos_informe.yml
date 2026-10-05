@@ -1,0 +1,58 @@
+id: hallazgos_informe
+label: 'Hallazgos del informe de autoevaluación'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/hallazgos_informe.csv'
+  ids: [id]
+process:
+  title:
+    plugin: substr
+    source: descripcion
+    start: 0
+    length: 120
+  field_proceso:
+    plugin: migration_lookup
+    migration: 'procesos:%programa%'
+    source: proceso_id
+    no_stub: true
+  field_elemento:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: elemento_id
+    -
+      plugin: migration_lookup
+      migration: elementos_modelo
+      no_stub: true
+  field_tipo_hallazgo: tipo
+  body/value: descripcion
+  body/format:
+    plugin: default_value
+    default_value: plain_text
+  field_origen: origen
+  # Si va vacío, unillanos_autoeval sugiere el destino según la valoración al
+  # crear el hallazgo. Al actualizar no se toca (ver overwrite_properties).
+  field_destino:
+    plugin: skip_on_empty
+    method: process
+    source: destino
+  field_destacado: destacado
+destination:
+  plugin: 'entity:node'
+  default_bundle: hallazgo
+  # Al actualizar se conserva field_destino (sugerido o editado a mano).
+  overwrite_properties:
+    - title
+    - field_proceso
+    - field_elemento
+    - field_tipo_hallazgo
+    - body
+    - field_origen
+    - field_destacado
+migration_dependencies:
+  required:
+    - 'procesos:%programa%'
+    - 'valoraciones:%programa%'
+    - elementos_modelo

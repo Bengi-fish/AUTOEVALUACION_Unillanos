@@ -1,0 +1,16 @@
+id: grados
+label: 'Grados de cumplimiento'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/grados_cumplimiento.csv'
+  ids: [id]
+process:
+  name: nombre
+  weight: orden
+  field_valoracion_min: valoracion_min
+  field_valoracion_max: valoracion_max
+  field_porcentaje_min: porcentaje_min
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: grado_cumplimiento

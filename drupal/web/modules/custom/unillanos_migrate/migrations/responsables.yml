@@ -1,0 +1,27 @@
+id: responsables
+label: 'Responsables'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/responsables.csv'
+  ids: [id]
+process:
+  # Si ya existe un responsable con ese nombre (de otro programa), se reutiliza.
+  tid:
+    plugin: entity_lookup
+    source: nombre
+    entity_type: taxonomy_term
+    bundle_key: vid
+    bundle: responsable
+    value_key: name
+    ignore_case: true
+  name: nombre
+  field_tipo_responsable: tipo
+  field_sigla:
+    plugin: skip_on_empty
+    method: process
+    source: sigla
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: responsable

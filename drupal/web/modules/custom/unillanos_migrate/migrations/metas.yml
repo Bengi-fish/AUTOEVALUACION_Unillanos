@@ -1,0 +1,102 @@
+id: metas
+label: 'Metas del plan de mejoramiento'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/metas.csv'
+  ids: [id]
+  constants:
+    prefijo: 'Meta'
+process:
+  title:
+    plugin: concat
+    source:
+      - constants/prefijo
+      - codigo
+    delimiter: ' '
+  field_plan:
+    plugin: migration_lookup
+    migration: 'planes:%programa%'
+    source: plan_id
+    no_stub: true
+  field_numero: numero
+  field_codigo: codigo
+  body/value: descripcion
+  body/format:
+    plugin: default_value
+    default_value: plain_text
+  # Si el nombre no coincide con un proyecto del catálogo, queda vacío.
+  field_proyecto:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: proyecto
+    -
+      plugin: entity_lookup
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: proyecto_institucional
+      value_key: name
+      ignore_case: true
+  field_tipo_meta:
+    plugin: static_map
+    source: tipo_meta
+    map:
+      'Institucional': institucional
+      'Programa': programa
+      'Institucional / Programa': institucional_programa
+  field_peso: peso
+  field_actividades/value: actividades
+  field_actividades/format:
+    plugin: default_value
+    default_value: plain_text
+  field_recursos:
+    plugin: skip_on_empty
+    method: process
+    source: recursos
+  field_hallazgos:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: hallazgos
+    -
+      plugin: explode
+      delimiter: '|'
+    -
+      plugin: migration_lookup
+      migration: 'hallazgos_plan:%programa%'
+      no_stub: true
+  # Comparación sin distinguir mayúsculas ni espacios, según equivalencias_responsables.csv.
+  field_responsables:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: responsables
+    -
+      plugin: explode
+      delimiter: '|'
+    -
+      plugin: unillanos_equivalencia
+      archivo: '%datos%/importacion/%carpeta%/equivalencias_responsables.csv'
+      desde: variante
+      hasta: id
+      normalizar: true
+    -
+      plugin: migration_lookup
+      migration: 'responsables:%programa%'
+      no_stub: true
+  field_indicadores:
+    plugin: unillanos_hijos_migrados
+    source: id
+    migracion: 'indicadores:%programa%'
+destination:
+  plugin: 'entity:node'
+  default_bundle: meta
+migration_dependencies:
+  required:
+    - 'planes:%programa%'
+    - 'hallazgos_plan:%programa%'
+    - 'responsables:%programa%'
+    - 'indicadores:%programa%'
+    - proyectos

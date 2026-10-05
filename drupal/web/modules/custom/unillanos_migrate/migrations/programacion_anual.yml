@@ -1,0 +1,21 @@
+id: programacion_anual
+label: 'Programación anual de indicadores (paragraphs)'
+migration_group: unillanos
+unillanos_por_programa: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/programacion_anual.csv'
+  ids: [indicador_id, anio]
+process:
+  field_anio: anio
+  field_programado:
+    plugin: skip_on_empty
+    method: process
+    source: programado
+  field_logrado:
+    plugin: skip_on_empty
+    method: process
+    source: logrado
+destination:
+  plugin: 'entity_reference_revisions:paragraph'
+  default_bundle: programacion_anual
