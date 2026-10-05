@@ -13,3 +13,8 @@ services:
     class: Drupal\unillanos_autoeval\Service\SugerenciaDestino
     arguments: ['@entity_type.manager']
   Drupal\unillanos_autoeval\Service\SugerenciaDestino: '@unillanos_autoeval.sugerencia_destino'
+
+  unillanos_autoeval.modelo_proceso:
+    class: Drupal\unillanos_autoeval\Service\ModeloProceso
+    arguments: ['@entity_type.manager']
+  Drupal\unillanos_autoeval\Service\ModeloProceso: '@unillanos_autoeval.modelo_proceso'

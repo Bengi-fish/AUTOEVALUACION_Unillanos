@@ -323,7 +323,11 @@ $campos['node'] = [
     'field_programa' => $ref_nodo('Programa', ['programa'], [
       'descripcion' => 'Solo para procesos de programa. Sede o programa, no ambos.',
     ]),
-    'field_lineamiento' => $ref_nodo('Lineamiento', ['lineamiento'], $requerido + [
+    // El modelo se declara por proceso. Solo se permiten los lineamientos de
+    // tipo `acreditacion` (Acuerdo CESU 02 de 2020 y Acuerdo CESU 01 de 2025);
+    // lo hace cumplir la restricción UnillanosModeloDelProceso y el selector.
+    'field_lineamiento' => $ref_nodo('Modelo (lineamiento)', ['lineamiento'], $requerido + [
+      'descripcion' => 'Modelo con el que se hizo el proceso. Sus factores y elementos se muestran y validan según este modelo.',
       'widget' => ['type' => 'options_select', 'settings' => []],
     ]),
     'field_periodo_evaluado' => $texto('Periodo evaluado', ['descripcion' => 'Ej.: 2018–2022.'], 20),

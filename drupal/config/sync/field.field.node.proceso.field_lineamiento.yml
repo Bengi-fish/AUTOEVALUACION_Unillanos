@@ -10,8 +10,8 @@ id: node.proceso.field_lineamiento
 field_name: field_lineamiento
 entity_type: node
 bundle: proceso
-label: Lineamiento
-description: ''
+label: 'Modelo (lineamiento)'
+description: 'Modelo con el que se hizo el proceso. Sus factores y elementos se muestran y validan según este modelo.'
 required: true
 translatable: true
 default_value: {  }

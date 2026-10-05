@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\unillanos_autoeval\Kernel;
 
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\KernelTestBase;
@@ -44,7 +45,17 @@ abstract class UnillanosKernelTestBase extends KernelTestBase {
     foreach (['grado_cumplimiento', 'elemento_modelo', 'sede'] as $vid) {
       Vocabulary::create(['vid' => $vid, 'name' => $vid])->save();
     }
-    foreach (['programa', 'proceso', 'valoracion', 'hallazgo', 'plan_mejoramiento', 'meta', 'seguimiento'] as $tipo) {
+    $tipos = [
+      'lineamiento',
+      'programa',
+      'proceso',
+      'valoracion',
+      'hallazgo',
+      'plan_mejoramiento',
+      'meta',
+      'seguimiento',
+    ];
+    foreach ($tipos as $tipo) {
       NodeType::create(['type' => $tipo, 'name' => $tipo])->save();
     }
 
@@ -57,6 +68,13 @@ abstract class UnillanosKernelTestBase extends KernelTestBase {
       'scale' => 1,
     ]);
     $this->crearCampo('taxonomy_term', 'elemento_modelo', 'field_clave', 'string');
+    $this->crearCampo('taxonomy_term', 'elemento_modelo', 'field_lineamiento', 'entity_reference', ['target_type' => 'node']);
+
+    $this->crearCampo('node', 'lineamiento', 'field_norma', 'string');
+    $this->crearCampo('node', 'lineamiento', 'field_tipo_proceso', 'list_string', [
+      'allowed_values' => ['acreditacion' => 'Acreditación', 'registro_calificado' => 'Registro calificado'],
+    ]);
+    $this->crearCampo('node', 'proceso', 'field_lineamiento', 'entity_reference', ['target_type' => 'node']);
 
     $this->crearCampo('node', 'programa', 'field_clave', 'string');
     $this->crearCampo('node', 'proceso', 'field_sede', 'entity_reference', ['target_type' => 'taxonomy_term']);
@@ -87,7 +105,9 @@ abstract class UnillanosKernelTestBase extends KernelTestBase {
       ],
     ]);
 
+    $this->crearCampo('node', 'plan_mejoramiento', 'field_proceso', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('node', 'meta', 'field_plan', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('node', 'meta', 'field_hallazgos', 'entity_reference', ['target_type' => 'node'], FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED);
     $this->crearCampo('node', 'meta', 'field_peso', 'decimal', ['precision' => 6, 'scale' => 4]);
     $this->crearCampo('node', 'seguimiento', 'field_meta', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('node', 'seguimiento', 'field_periodo', 'string');
@@ -107,14 +127,17 @@ abstract class UnillanosKernelTestBase extends KernelTestBase {
    *   Tipo de campo.
    * @param array $ajustes
    *   Ajustes del almacenamiento.
+   * @param int $cardinalidad
+   *   Cardinalidad del campo.
    */
-  protected function crearCampo(string $tipo_entidad, string $bundle, string $nombre, string $tipo_campo, array $ajustes = []): void {
+  protected function crearCampo(string $tipo_entidad, string $bundle, string $nombre, string $tipo_campo, array $ajustes = [], int $cardinalidad = 1): void {
     if (!FieldStorageConfig::loadByName($tipo_entidad, $nombre)) {
       FieldStorageConfig::create([
         'field_name' => $nombre,
         'entity_type' => $tipo_entidad,
         'type' => $tipo_campo,
         'settings' => $ajustes,
+        'cardinality' => $cardinalidad,
       ])->save();
     }
     FieldConfig::create([
@@ -147,16 +170,37 @@ abstract class UnillanosKernelTestBase extends KernelTestBase {
 
   /**
    * Crea un término de elemento del modelo.
+   *
+   * @param string $nombre
+   *   Nombre del elemento.
+   * @param string $clave
+   *   Clave de importación del elemento.
+   * @param array $padres
+   *   IDs de los términos padre.
+   * @param int|string|null $lineamiento
+   *   ID del lineamiento (modelo) al que pertenece, si se indica.
    */
-  protected function crearElemento(string $nombre, string $clave, array $padres = []): Term {
+  protected function crearElemento(string $nombre, string $clave, array $padres = [], int|string|NULL $lineamiento = NULL): Term {
     $termino = Term::create([
       'vid' => 'elemento_modelo',
       'name' => $nombre,
       'field_clave' => $clave,
       'parent' => $padres,
+      'field_lineamiento' => $lineamiento,
     ]);
     $termino->save();
     return $termino;
+  }
+
+  /**
+   * Crea un lineamiento (modelo) con su norma y tipo de proceso.
+   */
+  protected function crearLineamiento(string $norma, string $tipo_proceso = 'acreditacion'): Node {
+    return $this->crearNodo('lineamiento', [
+      'title' => $norma,
+      'field_norma' => $norma,
+      'field_tipo_proceso' => $tipo_proceso,
+    ]);
   }
 
   /**
