@@ -1,0 +1,86 @@
+id,proceso_id,elemento_id,tipo,descripcion,origen,destino,destacado
+HI01,PR-IE-2022,CNA20-F01,fortaleza,"El PEP es coherente con los lineamientos y políticas institucionales, actualizado a la luz de la normativa vigente del MEN y las tendencias y líneas de desarrollo nacionales e internacionales.",autoevaluacion,,0
+HI02,PR-IE-2022,CNA20-F01,fortaleza,Procesos de autorregulación y autoevaluación permanentes que permiten la mejora continua del Programa,autoevaluacion,,0
+HI03,PR-IE-2022,CNA20-F01,fortaleza,Transformaciones en el sector productivo que le permiten el reconocimiento de los egresados y reafirmar la pertinencia social del Programa.,autoevaluacion,,0
+HI04,PR-IE-2022,CNA20-F01,aspecto_por_mejorar,Actualizar el estudio de contexto disciplinar.,autoevaluacion,,0
+HI05,PR-IE-2022,CNA20-F01,aspecto_por_mejorar,Mantener la actualización de la medición de los impactos de las funciones misionales.,autoevaluacion,,0
+HI06,PR-IE-2022,CNA20-F01,aspecto_por_mejorar,Articular al hacer del programa en las funciones misionales proyectos a nivel nacional e internacional con convenios de cooperación.,autoevaluacion,,0
+HI07,PR-IE-2022,CNA20-F02,fortaleza,Aumento de la participación de los estudiantes en actividades de investigación y desarrollo tecnológico,autoevaluacion,,0
+HI08,PR-IE-2022,CNA20-F02,fortaleza,"Aumento de la participación de los estudiantes en pasantías que permitió el relacionamiento nacional e internacional, teniendo estudiantes en Taiwán y empresas a nivel internacional como Huawei.",autoevaluacion,,0
+HI09,PR-IE-2022,CNA20-F02,fortaleza,Orientación y seguimiento a estudiantes desde el PREU que ha permitido la graduación de los estudiantes en el tiempo estipulado por el programa e institución y disminuir la tasa de deserción.,autoevaluacion,,0
+HI10,PR-IE-2022,CNA20-F02,fortaleza,Pruebas Saber Pro por encima de la media nacional y del grupo de referencia.,autoevaluacion,,0
+HI11,PR-IE-2022,CNA20-F02,fortaleza,Los diferentes estímulos que la institución le otorga a los estudiantes han permitido el fortalecimiento del Programa a partir de los logros de los estudiantes que inciden en el mejoramiento de los indicadores del programa.,autoevaluacion,,0
+HI12,PR-IE-2022,CNA20-F02,aspecto_por_mejorar,Seguimiento y evaluación al modelo de evaluación de impactos y sus indicadores.,autoevaluacion,,0
+HI13,PR-IE-2022,CNA20-F02,aspecto_por_mejorar,Continuar el fomento de la participación de los estudiantes en las diferentes actividades de Bienestar.,autoevaluacion,,0
+HI14,PR-IE-2022,CNA20-F02,aspecto_por_mejorar,Evaluación y seguimiento al plan de assessment y su medición,autoevaluacion,,0
+HI15,PR-IE-2022,CNA20-F02,aspecto_por_mejorar,Continuar con el fortalecimiento del repositorio de evidencias sobre las actividades realizadas por los estudiantes.,autoevaluacion,,0
+HI16,PR-IE-2022,CNA20-F03,fortaleza,"9 Docentes investigadores reconocidos MinCiencias así: 1 investigador Senior, 2 Investigadores Asociados y 6 Investigadores Junior.",autoevaluacion,,0
+HI17,PR-IE-2022,CNA20-F03,fortaleza,"Prestaron servicios al programa en promedio 51 docentes de los cuales 29 son TC cuya formación es la siguiente: 6 doctores, 19 Magísteres y 4 Especialización. El 76% tienen formación relacionada con el área de conocimiento del Programa.",autoevaluacion,,0
+HI18,PR-IE-2022,CNA20-F03,fortaleza,"5 grupos de Investigación categorizados MinCiencias: MACRYPT (B), GITECX (C), Sistemas Dinámicos (C), EYSI (C) y GITEM (C), a los que se adscriben los docentes prestan servicios al programa",autoevaluacion,,0
+HI19,PR-IE-2022,CNA20-F03,fortaleza,Aumento de la productividad de los docentes,autoevaluacion,,0
+HI20,PR-IE-2022,CNA20-F03,aspecto_por_mejorar,Incrementar el número de los docentes de planta en relación con los docentes catedráticos que superan el indicador propuesto,autoevaluacion,,0
+HI21,PR-IE-2022,CNA20-F03,aspecto_por_mejorar,Incrementar las horas de dedicación a la investigación y a la proyección social,autoevaluacion,,0
+HI22,PR-IE-2022,CNA20-F03,aspecto_por_mejorar,"Gestión del reconocimiento por méritos y el ascenso en el escalafón docente, asegurando su aplicación de manera igualitaria tanto para los docentes de planta como para los docentes ocasionales.",autoevaluacion,,0
+HI23,PR-IE-2022,CNA20-F04,fortaleza,Los estudios y seguimientos permanentes que la Institución y el Programa realiza a los egresados.,autoevaluacion,,0
+HI24,PR-IE-2022,CNA20-F04,fortaleza,"La pertinencia y actualización permanente del proyecto Educativo del Programa en relación con el perfil de formación, las competencias y las posibilidades de la formación para el desarrollo profesional y laboral de los egresados.",autoevaluacion,,0
+HI25,PR-IE-2022,CNA20-F04,fortaleza,"El aporte positivo de los egresados a la transformación del medio social, académico, científico y cultural, a partir de la solución de problemas e innovación tecnológica y científica.",autoevaluacion,,0
+HI26,PR-IE-2022,CNA20-F04,fortaleza,El reconocimiento positivo que tienen los empleadores sobre el desempeño de los egresados y su aporte en la solución de los problemas del contexto.,autoevaluacion,,0
+HI27,PR-IE-2022,CNA20-F04,aspecto_por_mejorar,Se debe mantener la periodicidad de actualización de los estudios de contexto e impacto de egresados en 3 años como establece el indicador y mantener la base de datos actualizada.,autoevaluacion,,0
+HI28,PR-IE-2022,CNA20-F04,aspecto_por_mejorar,Evaluación del Modelo de impacto y sus resultados en lo relacionado con los egresados.,autoevaluacion,,0
+HI29,PR-IE-2022,CNA20-F04,aspecto_por_mejorar,Fortalecer la integración de los egresados a las dinámicas del programa que vaya más allá de la aplicación de encuestas y reuniones de consulta.,autoevaluacion,,0
+HI30,PR-IE-2022,CNA20-F05,fortaleza,Horizonte del Programa actualizado en correspondencia con las necesidades del contexto.,autoevaluacion,,0
+HI31,PR-IE-2022,CNA20-F05,fortaleza,"Enfoque integral y actualizado del currículo, a través de ajustes y actualizaciones, en alineación con las competencias establecidas por ABET. y líneas de profundización acorde con las necesidades del contexto.",autoevaluacion,,0
+HI32,PR-IE-2022,CNA20-F05,fortaleza,"Flexibilidad curricular y adaptabilidad permitiendo a los estudiantes adaptar su formación según sus necesidades e intereses. Esto impulsa la participación en pasantías, proyectos de investigación y movilidad académica, brindando oportunidades de desarrollo relevante en su formación. Y la articulación de profesores y estudiantes con el sector productivo.",autoevaluacion,,0
+HI33,PR-IE-2022,CNA20-F05,fortaleza,"Estrategias de interdisciplinariedad que permiten la movilidad estudiantil, la articulación con el sector productivo a través de las opciones de grado y proyectos de investigación y de proyección social.",autoevaluacion,,0
+HI34,PR-IE-2022,CNA20-F05,fortaleza,Procesos de autoevaluación y autorregulación que permiten la mejora continua del programa.,autoevaluacion,,0
+HI35,PR-IE-2022,CNA20-F05,aspecto_por_mejorar,Evaluación del Modelo de impacto y sus indicadores,autoevaluacion,,0
+HI36,PR-IE-2022,CNA20-F05,aspecto_por_mejorar,Socialización permanente del PEP y sus resultados a toda la comunidad del Programa,autoevaluacion,,0
+HI37,PR-IE-2022,CNA20-F05,aspecto_por_mejorar,Continuar con la implementación del plan de assessment y su medición,autoevaluacion,,0
+HI38,PR-IE-2022,CNA20-F06,fortaleza,Política Institucional de permanencia y graduación que favorece el proceso formativo de los estudiantes.,autoevaluacion,,0
+HI39,PR-IE-2022,CNA20-F06,fortaleza,"Disminución de la tasa de deserción por periodo, pasando del 17,47% en 2018-1 al 8,91% en 2022-2 y Disminución de la tasa de deserción interanual, pasando del 13,19% en 2018 al 9,04% en 2022.",autoevaluacion,,0
+HI40,PR-IE-2022,CNA20-F06,fortaleza,Aumentó en la graduación manteniendo el tiempo de graduación acorde con los establecido por el Programa.,autoevaluacion,,0
+HI41,PR-IE-2022,CNA20-F06,fortaleza,"Existencia del Sistema de Alertas Tempranas para la Prevención de la Deserción Estudiantil, que permite realizar el análisis constante de los resultados y de los aspectos curriculares, permitiendo ajustes y mejoras enfocados en el desempeño académico, la permanencia y la graduación de los estudiantes. que permitió ejecutar las siguientes acciones: La asignación de 80 auxiliares docentes, que atendieron en promedio 3,5 veces a estudiantes del Programa. Se identificó 10 cursos con alta repitencia, se intervino a los estudiantes donde se dio asistencia teniendo una participación hasta de 18 veces por estudiante. Se aumentó el promedio de los estudiantes intervenidos. Se obtuvieron 493 participaciones en consejerías académicas, administrativas, psicológicas, entre otras. y se realizaron 5 direccionamientos internos de urgencia.",autoevaluacion,,0
+HI42,PR-IE-2022,CNA20-F06,aspecto_por_mejorar,Evaluación del Modelo de impacto y sus indicadores,autoevaluacion,,0
+HI43,PR-IE-2022,CNA20-F06,aspecto_por_mejorar,Trabajar mancomunadamente con el PREU para el seguimiento y evaluación de los estudiantes intervenidos que se encuentran en alto riesgo.,autoevaluacion,,0
+HI44,PR-IE-2022,CNA20-F07,fortaleza,El nivel de inglés de los estudiantes es superior al grupo de referencia y ha ido mejorando.,autoevaluacion,,0
+HI45,PR-IE-2022,CNA20-F07,fortaleza,Los convenios suscritos representan oportunidades de intercambios y cooperación académica para estudiantes y profesores.,autoevaluacion,,0
+HI46,PR-IE-2022,CNA20-F07,fortaleza,La actualización curricular permanente a la luz de la normatividad interna y externa y los cambios del contexto permite contar con un PEP coherente y pertinente a las necesidades exigidas a nivel normativo y de contexto.,autoevaluacion,,0
+HI47,PR-IE-2022,CNA20-F07,fortaleza,Buena participación de profesores y estudiantes en movilidad saliente y entrante.,autoevaluacion,,0
+HI48,PR-IE-2022,CNA20-F07,fortaleza,Profesores certificados con el examen Linguaskill administrado por Cambridge,autoevaluacion,,0
+HI49,PR-IE-2022,CNA20-F07,aspecto_por_mejorar,Aumentar la realización de proyectos de cooperación nacional e internacional y la articulación de los docentes y estudiantes.,autoevaluacion,,0
+HI50,PR-IE-2022,CNA20-F07,aspecto_por_mejorar,Aumentar la participación de docentes y estudiantes en movilidad saliente y entrante.,autoevaluacion,,0
+HI51,PR-IE-2022,CNA20-F07,aspecto_por_mejorar,Realizar seguimiento y análisis periódicos de los efectos y variables del modelo de impacto.,autoevaluacion,,0
+HI52,PR-IE-2022,CNA20-F07,aspecto_por_mejorar,Continuar con las estrategias institucionales para fortalecer los niveles de inglés de los profesores.,autoevaluacion,,0
+HI53,PR-IE-2022,CNA20-F08,fortaleza,5 de grupos de investigación clasificados por MinCiencias en B y C. Dos nuevos grupos de investigación fueron categorizados y uno subió de categoría.,autoevaluacion,,0
+HI54,PR-IE-2022,CNA20-F08,fortaleza,"9 docentes investigadores reconocidos MinCiencias así: 1 investigador Senior, 2 Investigadores Asociados y 6 Investigadores Junior.",autoevaluacion,,0
+HI55,PR-IE-2022,CNA20-F08,fortaleza,"Diferentes opciones de grado que involucran participación en proyectos de investigación y extensión a los estudiantes como: EPI, Monografía, trabajo de investigación y EPPS.",autoevaluacion,,0
+HI56,PR-IE-2022,CNA20-F08,fortaleza,5 semilleros de investigación,autoevaluacion,,0
+HI57,PR-IE-2022,CNA20-F08,fortaleza,"Aumento en la productividad de los docentes principalmente en artículos indexados en Scopus. Incluyen 51 artículos en revista indexada. 15 productos de software,7 proyectos de investigación y 3 proyectos de proyección social.",autoevaluacion,,0
+HI58,PR-IE-2022,CNA20-F08,aspecto_por_mejorar,Fomentar la participación en proyectos de investigación y de extensión financiados con recursos externos,autoevaluacion,,0
+HI59,PR-IE-2022,CNA20-F08,aspecto_por_mejorar,"Ampliar los tipos de productos en la producción de los profesores (Publicación de libros y capítulos de libro de investigación, patentes y diseños industriales, entre otros).",autoevaluacion,,0
+HI60,PR-IE-2022,CNA20-F08,aspecto_por_mejorar,"Fomentar la participación de los estudiantes en actividades de investigación incluyendo grupos y semilleros de investigación y opciones de grado como EPI, monografía, y trabajo de investigación.",autoevaluacion,,0
+HI61,PR-IE-2022,CNA20-F09,fortaleza,Análisis permanente de la comunidad académica de las condiciones de bienestar en los escenarios de práctica.,autoevaluacion,,0
+HI62,PR-IE-2022,CNA20-F09,fortaleza,Análisis permanente de la participación de la comunidad del programa en los planes y las actividades de bienestar.,autoevaluacion,,0
+HI63,PR-IE-2022,CNA20-F09,fortaleza,Portafolio de Servicios de bienestar Institucional actualizado a las necesidades de la comunidad de la Universidad.,autoevaluacion,,0
+HI64,PR-IE-2022,CNA20-F09,fortaleza,"La infraestructura, los espacios y servicios de bienestar son de calidad y pertinentes",autoevaluacion,,0
+HI65,PR-IE-2022,CNA20-F09,aspecto_por_mejorar,"Aumentar el porcentaje de estudiantes, profesores y administrativos en actividades de Bienestar.",autoevaluacion,,0
+HI66,PR-IE-2022,CNA20-F10,fortaleza,"Se cuenta con recursos físicos y tecnológicos: bibliográficos, bases de datos, equipos, plataformas, aplicativos informáticos, sistemas de interconectividad, laboratorios, escenarios de simulación presenciales y digitales, de experimentación y de práctica, talleres, herramientas técnicas e insumos como apoyo para el proceso formativo.",autoevaluacion,,0
+HI67,PR-IE-2022,CNA20-F10,fortaleza,"Uso de Internet, Moodle y software especializado para facilitar el aprendizaje .",autoevaluacion,,0
+HI68,PR-IE-2022,CNA20-F10,aspecto_por_mejorar,Se debe incentivar el uso de los recursos bibliográficos para incrementar el % de estudiantes y profesores que los utilizan.,autoevaluacion,,0
+HI69,PR-IE-2022,CNA20-F10,aspecto_por_mejorar,"Gestionar y hacer seguimiento al plan de adquisiciones, mantenimiento, actualización y reposición de medios educativos",autoevaluacion,,0
+HI70,PR-IE-2022,CNA20-F10,aspecto_por_mejorar,Realizar seguimiento y análisis periódicos de los efectos y variables del modelo de impacto.,autoevaluacion,,0
+HI71,PR-IE-2022,CNA20-F11,fortaleza,Destacada participación de representantes de la comunidad académica en estructuras organizacionales definidas por la institución.,autoevaluacion,,0
+HI72,PR-IE-2022,CNA20-F11,fortaleza,Mecanismos existentes para la dirección y gestión del programa que contribuyen al mejoramiento.,autoevaluacion,,0
+HI73,PR-IE-2022,CNA20-F11,fortaleza,El programa de Ingeniería Electrónica destaca por su capacidad para utilizar de manera efectiva los sistemas de información y comunicación disponibles.,autoevaluacion,,0
+HI74,PR-IE-2022,CNA20-F11,fortaleza,"Se cuenta con mecanismos de gestión documental, organización, actualización y seguridad de los registros y archivos académicos de estudiantes, profesores, personal directivo y administrativo",autoevaluacion,,0
+HI75,PR-IE-2022,CNA20-F11,aspecto_por_mejorar,"Fortalecer la formación y capacitación del personal administrativo: Aunque se menciona que el programa cuenta con un recurso humano calificado, es importante invertir en la formación y capacitación continua del personal administrativo",autoevaluacion,,0
+HI76,PR-IE-2022,CNA20-F11,aspecto_por_mejorar,"Gestionar el incremento del apoyo a la investigación y proyección social: Aunque se menciona que el programa destina recursos para cubrir los objetivos misionales, como la investigación y proyección social, se puede fortalecer aún más este aspecto.",autoevaluacion,,0
+HI77,PR-IE-2022,CNA20-F11,aspecto_por_mejorar,"Gestionar y establecer plazos y mecanismos de monitoreo: Definir plazos claros y realistas para cada etapa del proceso de ejecución presupuestal, asegurando que todas las partes involucradas estén al tanto de los tiempos establecidos",autoevaluacion,,0
+HI78,PR-IE-2022,CNA20-F12,fortaleza,"El programa, de acuerdo al complejo de laboratorios proyectado por la Institución, tiene el potencial de aumentar su infraestructura física dentro del Campus Barcelona.",autoevaluacion,,0
+HI79,PR-IE-2022,CNA20-F12,fortaleza,Se cuenta con conectividad entre sus edificios a través de fibra óptica.,autoevaluacion,,0
+HI80,PR-IE-2022,CNA20-F12,fortaleza,Las aulas y salas informáticas que se utilizan cuentan con pantallas interactivas.,autoevaluacion,,0
+HI81,PR-IE-2022,CNA20-F12,fortaleza,Un laboratorio especializado de automatización y 3 laboratorios de electrónica.,autoevaluacion,,0
+HI82,PR-IE-2022,CNA20-F12,fortaleza,Se cuenta con recursos tecnológicos actualizados y pertinentes al proceso formativo.,autoevaluacion,,0
+HI83,PR-IE-2022,CNA20-F12,aspecto_por_mejorar,"Compra de licencias para software especializado como Labview, Proteus, e EAGLE.",autoevaluacion,,0
+HI84,PR-IE-2022,CNA20-F12,aspecto_por_mejorar,Compra de equipos especializados especialmente para el área de Telemática y Bioingeniería.,autoevaluacion,,0
+HI85,PR-IE-2022,CNA20-F12,aspecto_por_mejorar,Incrementar la cobertura y capacidad de la red inalámbrica.,autoevaluacion,,0
