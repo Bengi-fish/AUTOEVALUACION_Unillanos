@@ -653,7 +653,17 @@ Marca cada punto. Los comandos los puede correr Claude; la revisión visual es t
 
 Marca cada fase cuando ya esté fusionada en `main`:
 
-- [ ] Fase 1 · [ ] Fase 2 · [ ] Fase 3 · [ ] Fase 4 · [ ] Fase 5 · [ ] Fase 6 · [ ] Fase 7 · [ ] Fase 8 · [ ] Fase 9
+- [x] Fase 1 · [x] Fase 2 · [x] Fase 3 · [x] Fase 4 · [x] Fase 5 · [ ] Fase 6 · [ ] Fase 7 · [ ] Fase 8 · [ ] Fase 9
+
+**Siguiente:** Fase 6 (tema visual), rama `fase-6-tema` (sección 10).
+
+**Pendientes abiertos** (detalle en 9.5; ninguno bloquea la Fase 6):
+
+- Confirmar con Acreditación `proceso_id = PR-IE-2022` en el plan de Ingeniería Electrónica.
+- Verificar en el Excel el proyecto institucional de las metas M15 y M16 (candidatos PI10 y PI12).
+- Completar modalidad, sede, SNIES, director, resoluciones y municipio de la sede de los 40 programas.
+- Seguimientos en estado `reportado` y columnas de los CSV que no se importan: decidir qué hacer.
+- Fase 7: títulos de valoraciones y seguimientos con `auto_entitylabel` y Pathauto.
 
 ---
 
