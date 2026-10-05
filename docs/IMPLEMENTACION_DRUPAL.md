@@ -505,6 +505,54 @@ ddev drush migrate:reset-status <id_migracion>
 
 **Push y merge:** sección 2.6 con `fase-5-importacion`.
 
+### 9.4 Importar en otro equipo (paso reproducible)
+
+Con el repositorio actualizado (`git pull`) y el sitio levantado (`ddev start`):
+
+```bash
+ddev composer install
+ddev drush cim -y          # activa unillanos_migrate y crea el grupo `unillanos`
+ddev drush cr
+ddev drush migrate:import --group=unillanos
+ddev drush php:script drupal/scripts/validar_importacion.php
+```
+
+- La importación resuelve el orden por dependencias. Una segunda ejecución no cambia nada (`0 created, 0 updated`).
+- Para volver a leer los CSV después de corregirlos: `ddev drush migrate:import --group=unillanos --update`. En `hallazgos_informe` no se toca `field_destino` (sugerido por `unillanos_autoeval` o editado a mano).
+- Un programa nuevo se agrega creando su carpeta en `datos/importacion/<programa>/` con los CSV de 9.1 y corriendo `ddev drush cr`; las migraciones por programa (`procesos`, `valoraciones`, `hallazgos_informe`, `hallazgos_plan`, `planes`, `responsables`, `programacion_anual`, `indicadores`, `metas`, `seguimientos`) se replican solas, con id `<migración>:<carpeta con guiones bajos>`.
+- Si algo falla: `ddev drush migrate:messages <id>`. Las filas fallidas se reintentan con `--update`. No hagas `migrate:rollback` del grupo sin confirmar.
+- `validar_importacion.php` no modifica nada. Separa ERRORES (violaciones de validación y datos faltantes de programas con datos importados) de AVISOS (datos faltantes de los demás programas).
+
+### 9.5 Pendientes al cierre de la Fase 5
+
+Datos y decisiones que quedan abiertos. Ninguno bloquea el avance a la Fase 6.
+
+**Por confirmar con Acreditación o con el Excel**
+
+- [ ] `proceso_id = PR-IE-2022` en `plan.csv` y `hallazgos_plan.csv` es provisional. El plan habla del periodo "Autoevaluación con fines de calidad 2020-2023-1" (columna `proceso`); confirmar a qué proceso corresponde.
+- [ ] Proyecto institucional de las metas M15 y M16: pendiente de verificación en el Excel. Sus nombres no coinciden con el catálogo; los candidatos provisionales son PI10 (M15, laboratorios) y PI12 (M16, equipos). Por ahora quedan **sin proyecto** en Drupal; si se confirman, agregar la equivalencia y reimportar.
+- [ ] Seguimientos con estado `reportado`: provisional. El CSV no trae verificación (`verificacion` vacío) y solo 25 de los 51 tienen avance. Revisar el estado cuando haya verificación.
+- [ ] Regla de destino del hallazgo (< 4 plan de mejoramiento, = 4 plan de acción, > 4 ninguno), ya pendiente de confirmar. Con ella los 85 hallazgos del informe de Ingeniería Electrónica quedaron en `ninguno`, porque los 12 factores están por encima de 4.
+
+**Datos de los 40 programas por completar** (`datos/semillas/programas.csv` y `sedes.csv`)
+
+- [ ] Modalidad y sede de los 39 programas restantes (hoy son AVISOS en `validar_importacion.php`; en Ingeniería Electrónica son obligatorios).
+- [ ] Código SNIES, director, resoluciones de registro calificado y de acreditación (con sus fechas "vigente hasta") y municipio de cada sede.
+- [ ] Ingeniería Electrónica: modalidad `presencial` y sede `barcelona` se completaron con la ficha del informe (Tabla 1.1, pág. 17; la sede se dedujo de la dirección "Vda. Barcelona", confirmar). La misma tabla trae SNIES 4169, registro calificado (Resolución 25083 del 17 de nov de 2017), acreditación (Resolución 13202 del 17/07/2020) y ubicación en Villavicencio; aún no se cargaron.
+
+**Columnas de los CSV que no se importan** (el modelo no tiene dónde guardarlas)
+
+- [ ] `indicadores.csv`: `valor_base` y `total`.
+- [ ] `valoraciones_factores.csv`: `fuente`.
+- [ ] `plan.csv`: `director`, `programa`, `facultad`, `nivel` y `proceso` (texto; se usa `proceso_id`).
+- [ ] Decidir si alguna merece un campo nuevo (cambio de MER en los tres documentos).
+
+**Otros**
+
+- [ ] Títulos de valoraciones y seguimientos con ids (`PR-IE-2022 · CNA20-F01`, `M01 · 2024-2`) hasta configurar `auto_entitylabel` y Pathauto en la Fase 7.
+- [ ] `field_modalidad` y `field_sede` de `programa` ya no son obligatorios (cambio en `crear_modelo.php` y en la configuración). Volver a exigirlos cuando el catálogo de programas esté completo.
+- [ ] Se borraron dos términos de prueba (facultad tid 1 y sede tid 2) que duplicaban los del catálogo; no tenían ninguna referencia.
+
 ---
 
 ## 10. Fase 6 · Tema visual desde el prototipo
@@ -558,6 +606,8 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 **[TÚ] verificas:** recorres las 6 páginas del prototipo en Drupal y pruebas el enlace "ver acciones de este factor".
 
 **Hecho cuando:** las 6 páginas existen con datos reales y ese enlace abre el plan ya filtrado.
+
+**Pendiente heredado de la Fase 5:** configurar `auto_entitylabel` (títulos de `valoracion` y `seguimiento`, hoy con ids) junto con Pathauto.
 
 **Push y merge:** sección 2.6 con `fase-7-vistas`.
 
