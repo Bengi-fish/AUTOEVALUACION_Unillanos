@@ -1,0 +1,25 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Marcador de imagen
+status: stable
+group: Base
+description: 'Recuadro que reserva el espacio de una imagen con su proporción y tamaño sugerido. Se usa donde aún no hay fotografía.'
+props:
+  type: object
+  required:
+    - label
+  properties:
+    label:
+      type: string
+      title: Descripción de la imagen
+    size_label:
+      type: string
+      title: Tamaño sugerido
+      description: 'Por ejemplo «1200 × 750 px».'
+    ratio:
+      type: string
+      title: Proporción
+      enum:
+        - ''
+        - 4x3
+        - 16x10
+      default: ''

@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ * Banda de página con contenedor.
+ */
+#}
+{% set clases = ['ua-section'] %}
+{% if variant %}
+  {% set clases = clases|merge(['ua-section--' ~ variant]) %}
+{% endif %}
+{% if id %}
+  {% set attributes = attributes.setAttribute('id', id) %}
+{% endif %}
+<section{{ attributes.addClass(clases) }}>
+  <div class="ua-container">
+    {% block content %}{{ content }}{% endblock %}
+  </div>
+</section>

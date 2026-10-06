@@ -1,0 +1,27 @@
+/**
+ * Componente section.
+ */
+
+.ua-section {
+  padding: var(--espacio-8) 0;
+}
+
+.ua-section--alt {
+  background: var(--superficie-50);
+}
+
+@media (max-width: 860px) {
+
+  .ua-section {
+    padding: var(--espacio-7) 0;
+  }
+
+}
+
+.ua-subsection {
+  margin-top: var(--espacio-7);
+}
+
+.ua-section--tight {
+  padding-block: var(--espacio-6) var(--espacio-5);
+}

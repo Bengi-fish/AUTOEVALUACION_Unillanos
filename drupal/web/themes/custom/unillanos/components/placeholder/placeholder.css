@@ -1,0 +1,41 @@
+/**
+ * Componente placeholder.
+ */
+
+.ua-ph {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radio-md);
+  background-color: var(--superficie-100);
+  background-image: repeating-linear-gradient(135deg, transparent 0 14px, rgba(26,28,32,.035) 14px 28px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--tinta-500);
+  text-align: center;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+}
+
+.ua-ph__label {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  padding: 0 var(--espacio-3);
+}
+
+.ua-ph__size {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.ua-ph--4x3 {
+  aspect-ratio: 4 / 3;
+}
+
+.ua-ph--16x10 {
+  aspect-ratio: 16 / 10;
+}

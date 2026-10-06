@@ -1,0 +1,31 @@
+/**
+ * Componente section-head.
+ */
+
+.ua-section__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-5);
+  margin-bottom: var(--espacio-6);
+  flex-wrap: wrap;
+}
+
+.ua-section__head p {
+  max-width: 640px;
+  margin-top: var(--espacio-2);
+}
+
+.ua-panel-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--espacio-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--espacio-5);
+}
+
+.ua-panel-intro p {
+  max-width: 640px;
+  margin-top: var(--espacio-2);
+}

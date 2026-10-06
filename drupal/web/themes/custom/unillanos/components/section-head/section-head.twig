@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Encabezado de sección o introducción de panel.
+ */
+#}
+{% set nivel = heading|default('h2') %}
+<div{{ attributes.addClass(variant == 'panel' ? 'ua-panel-intro' : 'ua-section__head') }}>
+  <div>
+    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
+    <{{ nivel }} class="ua-h2">{{ title }}</{{ nivel }}>
+    {% if lead %}<p>{{ lead }}</p>{% endif %}
+  </div>
+  {% block right %}{{ right }}{% endblock %}
+</div>

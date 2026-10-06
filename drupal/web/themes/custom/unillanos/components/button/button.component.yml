@@ -1,0 +1,67 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Botón
+status: stable
+group: Base
+description: 'Botón o enlace con aspecto de botón. Con la variante «icono» es el botón redondo que solo muestra un ícono.'
+props:
+  type: object
+  required:
+    - label
+  properties:
+    label:
+      type: string
+      title: Texto
+      description: 'Texto visible. En la variante «icono» queda solo para lectores de pantalla.'
+    variant:
+      type: string
+      title: Variante
+      enum:
+        - ''
+        - primario
+        - secundario
+        - texto
+        - icono
+      default: primario
+    size:
+      type: string
+      title: Tamaño
+      enum:
+        - ''
+        - sm
+      default: ''
+    url:
+      type: string
+      title: Destino
+      description: 'Si existe se pinta un enlace; si no, un botón.'
+    type:
+      type: string
+      title: Tipo de botón
+      enum:
+        - ''
+        - button
+        - submit
+      default: button
+    icon:
+      type: string
+      title: Ícono
+      description: 'Nombre de un ícono del componente icon.'
+    icon_position:
+      type: string
+      title: Posición del ícono
+      enum:
+        - ''
+        - before
+        - after
+      default: before
+    icon_size:
+      type: string
+      title: Tamaño del ícono
+      enum:
+        - ''
+        - sm
+        - lg
+      default: ''
+    disabled:
+      type: boolean
+      title: Desactivado
+      default: false

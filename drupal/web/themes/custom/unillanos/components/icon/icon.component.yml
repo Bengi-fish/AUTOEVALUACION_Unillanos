@@ -1,0 +1,55 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Ícono
+status: stable
+group: Base
+description: 'Ícono SVG en línea del prototipo (decorativo, oculto a lectores de pantalla).'
+props:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      title: Nombre
+      description: 'Ícono del conjunto del prototipo.'
+      enum:
+        - arrow-right
+        - award
+        - book
+        - building
+        - calendar
+        - cap
+        - check
+        - chevron-down
+        - chevron-left
+        - chevron-right
+        - clipboard
+        - clock
+        - close
+        - download
+        - external
+        - file
+        - image
+        - info
+        - layers
+        - mail
+        - map-pin
+        - menu
+        - message
+        - mic
+        - phone
+        - scale
+        - search
+        - shield
+        - target
+        - user
+        - users
+    size:
+      type: string
+      title: Tamaño
+      description: 'Vacío para 20 px.'
+      enum:
+        - ''
+        - sm
+        - lg
+      default: ''

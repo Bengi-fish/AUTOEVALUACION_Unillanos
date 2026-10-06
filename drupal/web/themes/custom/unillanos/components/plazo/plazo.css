@@ -1,0 +1,64 @@
+/**
+ * Componente plazo.
+ */
+
+.ua-plazo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radio-sm);
+  white-space: nowrap;
+}
+
+.ua-plazo::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ua-plazo--corto {
+  background: var(--plazo-corto-fondo);
+  color: var(--plazo-corto-texto);
+}
+
+.ua-plazo--mediano {
+  background: var(--plazo-mediano-fondo);
+  color: var(--plazo-mediano-texto);
+}
+
+.ua-plazo--mediano::before {
+  border-radius: 2px;
+}
+
+.ua-plazo--largo {
+  background: var(--plazo-largo-fondo);
+  color: var(--plazo-largo-texto);
+}
+
+.ua-plazo--largo::before {
+  border-radius: 0;
+  transform: rotate(45deg);
+  width: 7px;
+  height: 7px;
+}
+
+.ua-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2) var(--espacio-5);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--tinta-500);
+}
+
+.ua-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}

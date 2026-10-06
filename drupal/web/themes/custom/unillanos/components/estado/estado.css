@@ -1,0 +1,29 @@
+/**
+ * Componente estado.
+ */
+
+.ua-estado {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 700;
+  border-radius: var(--radio-pill);
+  padding: 1px 10px;
+  white-space: nowrap;
+}
+
+.ua-estado--ok {
+  background: var(--exito-fondo);
+  color: var(--exito-texto);
+}
+
+.ua-estado--proceso {
+  background: var(--plazo-mediano-fondo);
+  color: var(--plazo-mediano-texto);
+}
+
+.ua-estado--pendiente {
+  background: var(--superficie-100);
+  color: var(--tinta-700);
+}

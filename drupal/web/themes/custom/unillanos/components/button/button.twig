@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * Botón o enlace con aspecto de botón.
+ *
+ * Los atributos adicionales (por ejemplo data-ua-*) llegan en `attributes`.
+ */
+#}
+{% set variante = variant|default('primario') %}
+{% if variante == 'icono' %}
+  {% set clases = ['ua-icon-btn'] %}
+{% else %}
+  {% set clases = ['ua-btn', 'ua-btn--' ~ variante] %}
+  {% if size == 'sm' %}
+    {% set clases = clases|merge(['ua-btn--sm']) %}
+  {% endif %}
+{% endif %}
+{% set icono %}
+  {%- if icon -%}
+    {% include 'unillanos:icon' with {name: icon, size: icon_size|default('')} only %}
+  {%- endif -%}
+{% endset %}
+{% set contenido %}
+  {%- if variante == 'icono' -%}
+    {{ icono }}<span class="ua-sr">{{ label }}</span>
+  {%- elseif icon_position == 'after' -%}
+    {{ label }}{{ icono }}
+  {%- else -%}
+    {{ icono }}{{ label }}
+  {%- endif -%}
+{% endset %}
+{% if url %}
+  {% if disabled %}
+    {% set attributes = attributes.setAttribute('aria-disabled', 'true') %}
+  {% endif %}
+  <a{{ attributes.addClass(clases).setAttribute('href', url) }}>{{ contenido }}</a>
+{% else %}
+  {% if disabled %}
+    {% set attributes = attributes.setAttribute('disabled', 'disabled') %}
+  {% endif %}
+  <button{{ attributes.addClass(clases).setAttribute('type', type|default('button')) }}>{{ contenido }}</button>
+{% endif %}

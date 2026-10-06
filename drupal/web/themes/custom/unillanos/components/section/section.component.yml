@@ -1,0 +1,24 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Sección
+status: stable
+group: Base
+description: 'Banda de página con el contenedor centrado. La variante «alt» lleva fondo gris y «tight» menos relleno vertical.'
+props:
+  type: object
+  properties:
+    variant:
+      type: string
+      title: Variante
+      enum:
+        - ''
+        - alt
+        - tight
+      default: ''
+    id:
+      type: string
+      title: Ancla
+      description: 'Identificador para enlaces internos (#id).'
+slots:
+  content:
+    title: Contenido
+    description: 'Todo lo que va dentro del contenedor.'
