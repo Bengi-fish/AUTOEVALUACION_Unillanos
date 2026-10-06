@@ -1,0 +1,39 @@
+# Tema Unillanos
+
+Tema del Sistema de Información de Autoevaluación de la Universidad de los
+Llanos. Se generó con el starterkit de core (`vendor/bin/dr generate-theme`) y
+se adaptó desde el prototipo `plantilla/` del repositorio.
+
+## Origen
+
+- Fuente visual: `plantilla/` en el commit `60eff63`. Es una referencia de solo
+  lectura: el port es de una sola vía y los cambios del prototipo se portan a
+  mano.
+- `plantilla/style.css` se repartió en `css/tokens.css`, `css/base.css`,
+  `css/motion.css` y un CSS por componente en `components/<nombre>/`. Se
+  descartó el CSS que ninguna de las 6 páginas usa (megamenú, filtros de
+  documentos, chip «Prototipo», variantes de botón sin uso).
+- CSS plano, sin compilación. Las clases `ua-*` y los atributos `data-ua-*`
+  del prototipo se conservan.
+
+## Tipografía
+
+DM Sans servida desde `fonts/` (variable, eje de peso, latin y latin-ext).
+Archivos de `@fontsource-variable/dm-sans` 5.3.0, licencia OFL 1.1
+(`fonts/OFL.txt`). La variante no trae el eje `opsz` que sí pedía el CSS de
+Google Fonts del prototipo, así que el ajuste óptico por tamaño no aplica.
+
+## Estructura
+
+- `css/`: tokens, fuentes, base global y movimiento compartido.
+- `components/`: componentes de directorio único (SDC), cada uno con su
+  `*.component.yml`, plantilla Twig, CSS y, si hace falta, JS.
+- `js/`: ayudas compartidas de movimiento (librería `unillanos/motion`).
+- `images/`: logos y favicon del prototipo.
+- `templates/`: plantillas del starterkit más las propias del tema.
+
+## Alcance
+
+El tema no trae plantillas de nodos ni vistas reales: esas llegan con los
+datos en la Fase 7. Los datos de ejemplo viven solo en el módulo
+`unillanos_guia` (`/guia-estilos`).

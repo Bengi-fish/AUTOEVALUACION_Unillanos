@@ -1,0 +1,61 @@
+/**
+ * Movimiento compartido: entrada de paneles, cascada y barras.
+ */
+
+.ua-pane.is-in-next {
+  animation: ua-in-next .55s cubic-bezier(.2,.8,.2,1) backwards;
+}
+
+.ua-pane.is-in-prev {
+  animation: ua-in-prev .55s cubic-bezier(.2,.8,.2,1) backwards;
+}
+
+.ua-pane.is-in-fade, .ua-panel.is-in-fade, [data-sub-panel].is-in-fade {
+  animation: ua-in-fade .4s ease backwards;
+}
+
+[data-sub-panel].is-in-next, .ua-panel.is-in-next {
+  animation: ua-in-next .5s cubic-bezier(.2,.8,.2,1) backwards;
+}
+
+[data-sub-panel].is-in-prev, .ua-panel.is-in-prev {
+  animation: ua-in-prev .5s cubic-bezier(.2,.8,.2,1) backwards;
+}
+
+@keyframes ua-in-next {
+  from { opacity: 0; transform: translateX(56px); filter: blur(8px); }
+}
+
+@keyframes ua-in-prev {
+  from { opacity: 0; transform: translateX(-56px); filter: blur(8px); }
+}
+
+@keyframes ua-in-fade {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+.ua-rise {
+  animation: ua-rise .65s cubic-bezier(.2,.8,.2,1) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms + 90ms);
+}
+
+@keyframes ua-rise {
+  from { opacity: 0; transform: translateY(22px) scale(.97); }
+}
+
+.is-in-next .ua-meter__fill, .is-in-prev .ua-meter__fill, .is-in-fade .ua-meter__fill {
+  transform-origin: left center;
+  animation: ua-fill 1s cubic-bezier(.2,.8,.2,1) .3s backwards;
+}
+
+@keyframes ua-fill {
+  from { transform: scaleX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  [data-sub-panel], .ua-rise {
+    animation: none !important;
+  }
+
+}
