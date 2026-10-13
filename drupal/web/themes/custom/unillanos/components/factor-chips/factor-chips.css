@@ -21,6 +21,9 @@
 
 .ua-factor-chip__n {
   flex: none;
+  /* DM Sans no trae cifras tabulares: el ancho mínimo (2ch, mayor que el par
+     más ancho) hace que todos los nombres arranquen en la misma columna. */
+  min-width: 2ch;
   font-weight: 700;
   color: var(--rojo-700);
   font-variant-numeric: tabular-nums;
