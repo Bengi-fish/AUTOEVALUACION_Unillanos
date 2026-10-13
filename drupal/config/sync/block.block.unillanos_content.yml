@@ -1,0 +1,22 @@
+uuid: bf4abf76-e296-4095-a8cc-b3aa08089918
+langcode: es
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - unillanos
+_core:
+  default_config_hash: erQSEZF2XUjNmgTl0uNRBzmg18ZGXwUcw2FhApoeuHk
+id: unillanos_content
+theme: unillanos
+region: content
+weight: 0
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Contenido principal de la página'
+  label_display: '0'
+  provider: system
+visibility: {  }

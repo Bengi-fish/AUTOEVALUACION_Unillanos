@@ -1,0 +1,22 @@
+uuid: 6ea15f1b-a458-4267-87e3-4dfc24893cd5
+langcode: es
+status: true
+dependencies:
+  theme:
+    - unillanos
+_core:
+  default_config_hash: nGE3EoPQQaQCuqTUtZgw0-KIzmrqdKDzdNQf2JyPUt4
+id: unillanos_primary_local_tasks
+theme: unillanos
+region: highlighted
+weight: -4
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: 'Solapas principales'
+  label_display: '0'
+  provider: core
+  primary: true
+  secondary: false
+visibility: {  }
