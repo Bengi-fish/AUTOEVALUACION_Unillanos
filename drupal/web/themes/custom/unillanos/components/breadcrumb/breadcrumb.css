@@ -1,0 +1,37 @@
+/**
+ * Componente breadcrumb.
+ */
+
+.ua-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--tinta-500);
+  margin-bottom: var(--espacio-6);
+}
+
+.ua .ua-breadcrumb a {
+  color: var(--tinta-500);
+  text-decoration: none;
+}
+
+.ua .ua-breadcrumb a:hover {
+  color: var(--rojo-700);
+  text-decoration: underline;
+}
+
+.ua-breadcrumb [aria-current] {
+  color: var(--tinta-900);
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+
+  .ua-breadcrumb {
+    margin-bottom: var(--espacio-4);
+  }
+
+}

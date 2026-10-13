@@ -22,4 +22,5 @@ props:
         - ''
         - 4x3
         - 16x10
+        - 3x1
       default: ''

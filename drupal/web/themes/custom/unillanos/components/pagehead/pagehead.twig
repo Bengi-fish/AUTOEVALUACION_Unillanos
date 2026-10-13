@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Cabecera de página interior.
+ */
+#}
+{% set nivel = (heading ~ '') in ['h1', 'h2', 'h3', 'h4'] ? heading : 'h1' %}
+<section{{ attributes.addClass('ua-pagehead') }}>
+  <div class="ua-container">
+    {% if breadcrumb %}
+      {% include 'unillanos:breadcrumb' with {items: breadcrumb} only %}
+    {% endif %}
+    <div class="ua-pagehead__row">{% block meta %}{{ meta }}{% endblock %}</div>
+    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
+    <{{ nivel }} class="ua-pagehead__title">{{ title }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
+    {% if lead %}<p class="ua-pagehead__lead">{{ lead }}</p>{% endif %}
+    {% block extra %}{{ extra }}{% endblock %}
+  </div>
+</section>

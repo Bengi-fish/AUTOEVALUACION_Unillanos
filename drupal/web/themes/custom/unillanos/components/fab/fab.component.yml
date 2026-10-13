@@ -1,0 +1,26 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Botón flotante
+status: stable
+group: Página base
+description: 'Botón flotante de recomendaciones, fijo en la esquina inferior derecha. En móvil solo muestra el ícono.'
+props:
+  type: object
+  required:
+    - label
+    - url
+  properties:
+    label:
+      type: string
+      title: Texto
+    url:
+      type: string
+      title: Destino
+    icon:
+      type: string
+      title: Ícono
+      description: 'Por defecto «message».'
+    static:
+      type: boolean
+      title: Estático
+      description: 'Sin posición fija; solo para mostrarlo en la guía de estilos.'
+      default: false

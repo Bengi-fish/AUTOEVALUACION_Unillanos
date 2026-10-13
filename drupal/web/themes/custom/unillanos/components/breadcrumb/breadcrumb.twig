@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * Migas de pan.
+ *
+ * Mismo filtro de URL que unillanos:button.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+<nav{{ attributes.addClass('ua-breadcrumb').setAttribute('aria-label', 'Ruta de navegación'|t) }}>
+  {%- for item in items -%}
+    {%- if loop.last -%}
+      <span aria-current="page">{{ item.title }}</span>
+    {%- else -%}
+      {%- if item.url and ((item.url ~ '') matches seguro) -%}
+        <a href="{{ item.url }}">{{ item.title }}</a>
+      {%- else -%}
+        <span>{{ item.title }}</span>
+      {%- endif -%}
+      {% include 'unillanos:icon' with {name: 'chevron-right', size: 'sm'} only %}
+    {%- endif -%}
+  {%- endfor -%}
+</nav>

@@ -137,7 +137,8 @@
   align-items: center;
   gap: var(--espacio-2);
   height: 44px;
-  width: 260px;
+  /* 280 px (el prototipo tiene 260): con 260 el marcador se recortaba. */
+  width: 280px;
   padding: 0 var(--espacio-3);
   border: 1px solid var(--tinta-400);
   border-radius: var(--radio-md);

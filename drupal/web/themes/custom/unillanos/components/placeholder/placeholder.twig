@@ -8,7 +8,8 @@
 {% if ratio %}
   {% set clases = clases|merge(['ua-ph--' ~ ratio]) %}
 {% endif %}
-{% set aria = 'Espacio para imagen: @label'|t({'@label': label}) %}
+{# Se concatena (sin marcador @label) para que el atributo se escape una vez. #}
+{% set aria = ('Espacio para imagen:'|t) ~ ' ' ~ label %}
 <div{{ attributes.addClass(clases).setAttribute('role', 'img').setAttribute('aria-label', aria) }}>
   {% include 'unillanos:icon' with {name: 'image', size: 'lg'} only %}
   <span class="ua-ph__label">{{ label }}</span>

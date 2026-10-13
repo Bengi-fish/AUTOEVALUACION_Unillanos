@@ -1,0 +1,66 @@
+/**
+ * Componente pagehead.
+ */
+
+.ua-pagehead {
+  background: var(--superficie-50);
+  border-bottom: 1px solid var(--borde);
+  padding: var(--espacio-6) 0 var(--espacio-7);
+}
+
+.ua-pagehead .ua-breadcrumb {
+  margin-bottom: var(--espacio-4);
+}
+
+.ua-pagehead__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-4);
+}
+
+.ua-pagehead__row:empty {
+  display: none;
+}
+
+.ua-pagehead__title {
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  margin-bottom: var(--espacio-3) !important;
+}
+
+.ua-pagehead__title span {
+  color: var(--Unillanos_Red);
+}
+
+.ua-pagehead__lead {
+  font-size: 18px;
+  line-height: 28px;
+  max-width: 720px;
+  color: var(--tinta-700);
+}
+
+@media (max-width: 860px) {
+
+  .ua-pagehead {
+    padding: var(--espacio-5) 0 var(--espacio-6);
+  }
+
+  .ua-pagehead__title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .ua-pagehead__lead {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+}
+
+.ua-pagehead .ua-eyebrow {
+  display: block;
+}

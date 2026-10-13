@@ -1,0 +1,5 @@
+name: 'Unillanos Guía de estilos'
+type: module
+description: 'Página /guia-estilos con todos los componentes del tema unillanos y datos de ejemplo. Solo para desarrollo y revisión visual: se desactiva antes de mostrar el sitio.'
+package: Unillanos
+core_version_requirement: ^11

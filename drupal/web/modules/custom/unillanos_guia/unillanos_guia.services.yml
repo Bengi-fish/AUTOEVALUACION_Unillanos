@@ -1,0 +1,5 @@
+services:
+  unillanos_guia.datos_ejemplo:
+    class: Drupal\unillanos_guia\Service\DatosEjemplo
+    arguments: ['%app.root%', '@extension.path.resolver']
+  Drupal\unillanos_guia\Service\DatosEjemplo: '@unillanos_guia.datos_ejemplo'

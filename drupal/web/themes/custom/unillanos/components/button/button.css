@@ -69,10 +69,21 @@
   font-size: 14px;
 }
 
-.ua-btn[disabled], .ua-btn[aria-disabled="true"] {
+.ua-btn[disabled], .ua-btn[aria-disabled="true"], .ua a.ua-btn[aria-disabled="true"] {
   background: var(--superficie-100);
   color: var(--tinta-500);
   border-color: transparent;
+  cursor: not-allowed;
+}
+
+.ua-btn[aria-disabled="true"], .ua-icon-btn[aria-disabled="true"] {
+  pointer-events: none;
+}
+
+.ua .ua-icon-btn[disabled], .ua .ua-icon-btn[aria-disabled="true"] {
+  border-color: var(--superficie-100);
+  background: var(--superficie-100);
+  color: var(--tinta-500);
   cursor: not-allowed;
 }
 

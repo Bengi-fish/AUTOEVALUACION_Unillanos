@@ -1,0 +1,64 @@
+{#
+/**
+ * @file
+ * Pie de página.
+ *
+ * Mismo filtro de URL que unillanos:button: un destino no válido o ausente
+ * se imprime sin enlace.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+<footer{{ attributes.addClass('ua-footer') }}>
+  <div class="ua-footer__brand">
+    <div class="ua-container">
+      {% include 'unillanos:logos' with {large: true} only %}
+      <p class="ua-footer__inst"><strong>{{ institution|default('Universidad de los Llanos'|t) }}</strong><span>{{ institution_note|default('Sedes Villavicencio y Granada · Meta, Colombia'|t) }}</span></p>
+    </div>
+  </div>
+  <div class="ua-footer__rule"></div>
+  <div class="ua-container">
+    <div class="ua-footer__top">
+      <div>
+        <p class="ua-footer__name">{{ title|default('Sistema de Información de Autoevaluación Institucional'|t) }}</p>
+        {% if description %}<p>{{ description }}</p>{% endif %}
+      </div>
+      {% for columna in columns %}
+        <div>
+          <h3>{{ columna.title }}</h3>
+          <ul class="ua-footer__links" role="list">
+            {% for enlace in columna.links %}
+              <li>{% if enlace.url and ((enlace.url ~ '') matches seguro) %}<a href="{{ enlace.url }}">{{ enlace.title }}</a>{% else %}{{ enlace.title }}{% endif %}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+      {% if contact %}
+        <div>
+          <h3>{{ contact_title|default('Contacto'|t) }}</h3>
+          <ul class="ua-footer__contact" role="list">
+            {% for dato in contact %}
+              <li>
+                {%- include 'unillanos:icon' with {name: dato.icon} only -%}
+                <span>{% for linea in dato.lines %}{{ linea }}{% if not loop.last %}<br>{% endif %}{% endfor %}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+    <div class="ua-footer__bottom">
+      <span>{{ legal }}</span>
+      {% if legal_links %}
+        <span class="ua-footer__legal-links">
+          {%- for enlace in legal_links -%}
+            {%- if enlace.url and ((enlace.url ~ '') matches seguro) -%}
+              <a href="{{ enlace.url }}">{{ enlace.title }}</a>
+            {%- else -%}
+              <span>{{ enlace.title }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</footer>

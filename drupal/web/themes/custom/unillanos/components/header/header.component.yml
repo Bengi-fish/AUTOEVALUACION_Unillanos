@@ -1,0 +1,51 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Encabezado
+status: stable
+group: Página base
+description: 'Encabezado del sitio: enlace para saltar al contenido, fila de tres logos con el nombre del sistema, herramientas (búsqueda opcional, ingreso, botón del menú móvil) y el menú principal en el slot nav.'
+props:
+  type: object
+  properties:
+    home_url:
+      type: string
+      title: Destino del logo
+      description: 'Por defecto /.'
+    kicker:
+      type: string
+      title: Rótulo superior
+    name:
+      type: string
+      title: Nombre del sistema
+    skip_target:
+      type: string
+      title: Destino del enlace «Saltar al contenido»
+      description: 'Si se omite no se imprime el enlace.'
+    show_search:
+      type: boolean
+      title: Mostrar buscador
+      description: 'El campo no tiene acción asociada; activarlo solo cuando exista una búsqueda.'
+      default: false
+    login_url:
+      type: string
+      title: Destino de «Ingresar»
+      description: 'Si se omite no se imprime el botón.'
+    login_label:
+      type: string
+      title: Texto de «Ingresar»
+    menu_toggle:
+      type: boolean
+      title: Botón del menú móvil
+      description: 'Actívalo cuando el slot nav lleve el menú.'
+      default: false
+    menu_id:
+      type: string
+      title: Identificador del menú
+      description: 'Debe coincidir con el id del componente nav. Por defecto ua-menu.'
+slots:
+  nav:
+    title: Menú principal
+    description: 'Componente nav.'
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once

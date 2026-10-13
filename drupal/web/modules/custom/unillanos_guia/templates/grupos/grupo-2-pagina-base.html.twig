@@ -1,0 +1,169 @@
+{#
+/**
+ * @file
+ * Grupo 2 de la guía: componentes de la página base.
+ *
+ * Variables:
+ * - datos: datos de ejemplo de la guía.
+ *
+ * Los enlaces apuntan solo a las rutas del menú temporal (/institucional,
+ * /programas, /documentos, /participa), a «/» y a /user/login.
+ */
+#}
+{% set enlaces_menu = [
+  {title: 'Inicio'|t, url: '/'},
+  {title: 'Institucional'|t, url: '/institucional', active: true},
+  {title: 'Programas'|t, url: '/programas'},
+  {title: 'Documentos'|t, url: '/documentos'},
+  {title: 'Participa'|t, url: '/participa'},
+] %}
+{% set programa = datos.programas|first %}
+{% set nombre = programa.nombre|split(' ', 2) %}
+
+<section class="ug-group" id="grupo-2" aria-labelledby="grupo-2-titulo">
+  <h2 class="ug-group__title" id="grupo-2-titulo">{{ 'Grupo 2 · Página base'|t }}</h2>
+
+  {# --------------------------------------------------------------- logos #}
+  <div class="ug-block" id="logos">
+    <h3 class="ug-block__title">logos</h3>
+    <p class="ug-block__text">{{ 'Fila de los tres logos institucionales, tomados de images/ en el tema. La versión grande es la del pie de página.'|t }}</p>
+    <div class="ug-demo">
+      <figure class="ug-sample">
+        {% include 'unillanos:logos' only %}
+        <figcaption>{{ 'normal (64 px)'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:logos' with {large: true} only %}
+        <figcaption>{{ 'grande (72 px)'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# --------------------------------------------------------------- header #}
+  <div class="ug-block" id="header">
+    <h3 class="ug-block__title">header</h3>
+    <p class="ug-block__text">{{ 'Encabezado con los tres logos, el nombre del sistema, herramientas y el menú principal en el slot nav. Pulsa Tab para ver el enlace «Saltar al contenido»; por debajo de 860 px el menú se abre con el botón «Menú» (se cierra con Escape y el foco vuelve al botón) y «Ingresar» pasa a ser su último elemento. El campo de búsqueda no tiene acción: se activa solo cuando exista una búsqueda.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'con buscador, ingreso y menú'|t }}</figcaption>
+      {% embed 'unillanos:header' with {skip_target: '#grupo-2', show_search: true, login_url: '/user/login', menu_toggle: true, menu_id: 'ua-menu-guia', enlaces_menu: enlaces_menu} only %}
+        {% block nav %}
+          {% include 'unillanos:nav' with {items: enlaces_menu, id: 'ua-menu-guia', login: {title: 'Ingresar'|t, url: '/user/login'}} only %}
+        {% endblock %}
+      {% endembed %}
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'mínimo (sin buscador ni ingreso)'|t }}</figcaption>
+      {% embed 'unillanos:header' with {menu_toggle: true, menu_id: 'ua-menu-guia-2', enlaces_menu: enlaces_menu} only %}
+        {% block nav %}
+          {% include 'unillanos:nav' with {items: enlaces_menu, id: 'ua-menu-guia-2', login: {title: 'Ingresar'|t, url: '/user/login'}} only %}
+        {% endblock %}
+      {% endembed %}
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------------ nav #}
+  <div class="ug-block" id="nav">
+    <h3 class="ug-block__title">nav</h3>
+    <p class="ug-block__text">{{ 'Menú principal plano: Inicio, Institucional, Programas, Documentos y Participa. La página actual lleva aria-current="page". Las URL deben venir de Drupal.'|t }}</p>
+    <figure class="ug-frame ug-frame--nav">
+      <figcaption class="ug-frame__cap">{{ 'Institucional es la página actual'|t }}</figcaption>
+      {% include 'unillanos:nav' with {items: enlaces_menu, id: 'ua-menu-solo'} only %}
+    </figure>
+  </div>
+
+  {# ----------------------------------------------------------- breadcrumb #}
+  <div class="ug-block" id="breadcrumb">
+    <h3 class="ug-block__title">breadcrumb</h3>
+    <p class="ug-block__text">{{ 'Ruta de navegación. El último elemento es la página actual y no lleva enlace. Ejemplo con un programa de datos-ejemplo.js.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'tres niveles'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:breadcrumb' with {items: [
+          {title: 'Inicio'|t, url: '/'},
+          {title: 'Programas'|t, url: '/programas'},
+          {title: programa.nombre},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------- pagehead #}
+  <div class="ug-block" id="pagehead">
+    <h3 class="ug-block__title">pagehead</h3>
+    <p class="ug-block__text">{{ 'Franja gris de las páginas interiores: migas, antetítulo, título (con final en acento) y bajada. En la guía el título es un h4 para no repetir el h1 de la página (heading: h4); en una página real es el h1.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'página interior'|t }}</figcaption>
+      {% include 'unillanos:pagehead' with {
+        eyebrow: 'Institucional'|t,
+        title: 'Calidad'|t,
+        title_accent: 'institucional'|t,
+        lead: 'Registro calificado, autoevaluación y plan de mejoramiento de la Universidad, en un solo lugar.'|t,
+        heading: 'h4',
+        breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Institucional'|t}],
+      } only %}
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'con etiqueta en la fila superior'|t }}</figcaption>
+      {% embed 'unillanos:pagehead' with {
+        eyebrow: 'Facultad de ' ~ programa.facultad ~ ' · Sede ' ~ programa.sede,
+        title: nombre|first,
+        title_accent: nombre|last,
+        lead: 'Registro calificado, autoevaluación y plan de mejoramiento del programa, en un solo lugar.'|t,
+        heading: 'h4',
+        breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Programas'|t, url: '/programas'}, {title: programa.nombre}],
+      } only %}
+        {% block meta %}
+          {% include 'unillanos:tag' with {label: 'Programa de ejemplo'|t, variant: 'acento'} only %}
+        {% endblock %}
+      {% endembed %}
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------------- footer #}
+  <div class="ug-block" id="footer">
+    <h3 class="ug-block__title">footer</h3>
+    <p class="ug-block__text">{{ 'Pie de página con logos, descripción, columnas de enlaces, contacto y aviso legal. Los datos de contacto son de ejemplo y los enlaces legales no apuntan a ninguna página todavía, por eso se imprimen como texto.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'completo'|t }}</figcaption>
+      {% include 'unillanos:footer' with {
+        description: 'Un espacio para consultar, participar y hacer seguimiento a la mejora continua de la Universidad.'|t,
+        columns: [
+          {title: 'Institucional'|t, links: [
+            {title: 'Registro calificado'|t, url: '/institucional#registro-calificado'},
+            {title: 'Autoevaluación'|t, url: '/institucional#autoevaluacion'},
+            {title: 'Plan de mejoramiento'|t, url: '/institucional#plan-mejoramiento'},
+          ]},
+          {title: 'Programas y documentos'|t, links: [
+            {title: 'Buscar un programa'|t, url: '/programas'},
+            {title: 'Normatividad'|t, url: '/documentos#normatividad'},
+            {title: 'Documentos base'|t, url: '/documentos#documentos-base'},
+            {title: 'Participa'|t, url: '/participa'},
+          ]},
+        ],
+        contact: [
+          {icon: 'map-pin', lines: ['Dirección de la sede principal'|t, 'Villavicencio, Meta, Colombia'|t]},
+          {icon: 'phone', lines: ['Teléfono de contacto'|t]},
+          {icon: 'mail', lines: ['Correo de la oficina de autoevaluación'|t]},
+        ],
+        legal: 'Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional. © 2026 Universidad de los Llanos.'|t,
+        legal_links: [
+          {title: 'Política de datos personales'|t},
+          {title: 'Mapa del sitio'|t},
+          {title: 'Accesibilidad'|t},
+        ],
+      } only %}
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------------ fab #}
+  <div class="ug-block" id="fab">
+    <h3 class="ug-block__title">fab</h3>
+    <p class="ug-block__text">{{ 'Botón flotante de recomendaciones. En una página real va fijo en la esquina inferior derecha y, por debajo de 860 px, solo muestra el ícono. Aquí se muestra estático (static: true).'|t }}</p>
+    <div class="ug-demo">
+      <figure class="ug-sample">
+        {% include 'unillanos:fab' with {label: '¿Tienes una recomendación?'|t, url: '/participa#recomendacion', static: true} only %}
+        <figcaption>{{ 'estático'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>

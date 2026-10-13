@@ -1,0 +1,7 @@
+unillanos_guia.estilos:
+  path: '/guia-estilos'
+  defaults:
+    _controller: '\Drupal\unillanos_guia\Controller\GuiaEstilosController::build'
+    _title: 'Guía de estilos'
+  requirements:
+    _permission: 'access content'
