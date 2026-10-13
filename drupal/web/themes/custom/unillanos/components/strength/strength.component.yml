@@ -1,0 +1,23 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Fortalezas
+status: stable
+group: Factores y plan
+description: 'Cuadrícula de fortalezas destacadas: fotografía (marcador decorativo), ícono de visto bueno y texto.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    items:
+      type: array
+      title: Fortalezas
+      items:
+        type: object
+        required:
+          - text
+        properties:
+          text:
+            type: string
+          photo_label:
+            type: string
+            description: 'Texto del marcador de la fotografía. Por defecto «Fotografía N».'

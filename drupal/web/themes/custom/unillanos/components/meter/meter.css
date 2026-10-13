@@ -1,0 +1,107 @@
+/**
+ * Componente meter.
+ */
+
+.ua-meter {
+  display: grid;
+  gap: 6px;
+}
+
+.ua-meter__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--tinta-500);
+}
+
+.ua-meter__value {
+  font-family: var(--font-dm-sans);
+  font-weight: 800;
+  color: var(--tinta-900);
+  font-size: 15px;
+}
+
+.ua-meter__track {
+  height: 8px;
+  border-radius: var(--radio-pill);
+  background: var(--superficie-100);
+  overflow: hidden;
+}
+
+.ua-meter__fill {
+  height: 100%;
+  border-radius: var(--radio-pill);
+  background: var(--Unillanos_Red);
+}
+
+.ua-meter__grade {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--tinta-700);
+}
+
+.ua-meter--lg .ua-meter__track {
+  height: 12px;
+}
+
+.ua-meter--lg .ua-meter__value {
+  font-size: 28px;
+  line-height: 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ua-meter__fill {
+    animation: none !important;
+  }
+
+}
+
+/* Colores forzados (alto contraste de Windows): los fondos desaparecen, así que
+   la pista lleva borde y el relleno usa el color de resaltado del sistema. */
+@media (forced-colors: active) {
+
+  .ua-meter__track {
+    border: 1px solid CanvasText;
+  }
+
+  .ua-meter__fill {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+
+}
+
+/* Diferencia intencional con el prototipo: el valor y la escala («4,4 / 5») no
+   se parten en varias líneas en espacios estrechos (tarjetas de factor en
+   móvil). Si no caben junto al rótulo, el valor baja a su propia línea
+   (alineado a la derecha). El medidor nunca es más ancho que su contenedor:
+   en una tarjeta con overflow oculto, lo que se sale se recortaría. */
+.ua-meter {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ua-meter__row {
+  flex-wrap: wrap;
+}
+
+.ua-meter__row > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ua-meter__value {
+  flex: none;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.ua-meter__track {
+  max-width: 100%;
+}

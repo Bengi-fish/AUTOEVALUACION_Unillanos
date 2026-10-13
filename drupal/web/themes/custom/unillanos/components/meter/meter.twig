@@ -1,0 +1,47 @@
+{#
+/**
+ * @file
+ * Medidor de cumplimiento.
+ *
+ * Solo presenta el valor recibido: no calcula el grado. El valor se expone
+ * sin depender del color ni del ancho de la barra: cifra visible («4,4 / 5»),
+ * role="meter" con aria-valuenow y aria-valuetext (valor y etiqueta de grado)
+ * y la etiqueta de grado en texto.
+ *
+ * Entradas defensivas (en producción SDC no valida las props): un valor que
+ * no sea un número decimal («», «abc», una lista, NaN) se trata como «sin
+ * valoración» y no se pinta barra; max no válido o <= 0 usa 5; decimals fuera
+ * de 0–3 usa 1. El ancho de la barra es un número saneado (0–100): es el
+ * único estilo en línea, porque depende del dato. aria-valuenow se limita a
+ * la escala para que el ARIA sea válido; la cifra visible muestra siempre el
+ * valor recibido.
+ *
+ * Dentro de un enlace (in_link) la barra se oculta a las tecnologías de
+ * apoyo: el rótulo, la cifra y la etiqueta, que ya son texto, bastan y el
+ * nombre del enlace no repite el valor.
+ */
+#}
+{% set rotulo = label|default('Grado de cumplimiento'|t) %}
+{% set es_numero = (score is not iterable) and ((score ~ '') matches '/^-?\\d+(\\.\\d+)?$/') %}
+{% if not es_numero %}
+  <div{{ attributes.addClass(large ? ['ua-meter', 'ua-meter--lg'] : ['ua-meter']) }}>
+    <div class="ua-meter__row"><span>{{ rotulo }}</span><span class="ua-meter__value">{{ 'Sin valoración'|t }}</span></div>
+  </div>
+{% else %}
+  {% set maximo = ((max is not iterable) and ((max ~ '') matches '/^\\d+(\\.\\d+)?$/') and (max + 0 > 0)) ? max + 0 : 5 %}
+  {% set decimales = ((decimals is not iterable) and ((decimals ~ '') matches '/^[0-3]$/')) ? decimals + 0 : 1 %}
+  {% set valor = score + 0 %}
+  {% set porcentaje = max(0, min(100, (valor / maximo * 100)|round)) %}
+  {% set cifra = valor|number_format(decimales, ',', '.') %}
+  {% set tope = maximo|number_format(maximo == maximo|round ? 0 : 1, ',', '.') %}
+  {% set texto_valor = ('@valor de @maximo'|t({'@valor': cifra, '@maximo': tope})) ~ (grade ? ', ' ~ grade : '') %}
+  <div{{ attributes.addClass(large ? ['ua-meter', 'ua-meter--lg'] : ['ua-meter']) }}>
+    <div class="ua-meter__row"><span>{{ rotulo }}</span><span class="ua-meter__value">{{ cifra }} <span class="ua-meta">/ {{ tope }}</span></span></div>
+    {% if in_link %}
+      <div class="ua-meter__track" aria-hidden="true"><div class="ua-meter__fill" style="width:{{ porcentaje }}%"></div></div>
+    {% else %}
+      <div class="ua-meter__track" role="meter" aria-valuemin="0" aria-valuemax="{{ maximo }}" aria-valuenow="{{ max(0, min(maximo, valor))|number_format(decimales, '.', '') }}" aria-valuetext="{{ texto_valor }}" aria-label="{{ rotulo }}"><div class="ua-meter__fill" style="width:{{ porcentaje }}%"></div></div>
+    {% endif %}
+    {% if grade %}<span class="ua-meter__grade">{{ grade }}</span>{% endif %}
+  </div>
+{% endif %}

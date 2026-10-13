@@ -1,0 +1,90 @@
+/**
+ * Componente strength.
+ */
+
+.ua-strengths {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espacio-4);
+}
+
+.ua-strength {
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ua-strength .ua-ph {
+  border: 0;
+  border-radius: 0;
+  aspect-ratio: 4 / 3;
+  border-bottom: 1px solid var(--borde);
+}
+
+.ua-strength__body {
+  padding: var(--espacio-3) var(--espacio-4) var(--espacio-4);
+  display: flex;
+  gap: var(--espacio-2);
+  align-items: flex-start;
+}
+
+.ua-strength__icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--Unillanos_Red);
+  color: var(--Surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.ua-strength__text {
+  font-size: 15px;
+  line-height: 21px;
+  font-weight: 600;
+  color: var(--tinta-900);
+  hyphens: auto;
+}
+
+@media (max-width: 1080px) {
+
+  .ua-strengths {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-strengths {
+    grid-template-columns: 1fr;
+  }
+
+  .ua-strength {
+    flex-direction: row;
+  }
+
+  .ua-strength .ua-ph {
+    width: 96px;
+    flex: none;
+    aspect-ratio: 1 / 1;
+    border-bottom: 0;
+    border-right: 1px solid var(--borde);
+  }
+
+  .ua-strength .ua-ph__label, .ua-strength .ua-ph__size {
+    display: none;
+  }
+
+  .ua-strength__body {
+    padding: var(--espacio-3);
+    align-items: center;
+  }
+
+}

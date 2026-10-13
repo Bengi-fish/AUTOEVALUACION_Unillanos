@@ -189,3 +189,13 @@
 .ug-frame__body--estrecho {
   max-width: 460px;
 }
+
+/* En móvil los marcos de la guía no deben estrechar los componentes más de lo
+   que lo hace una página real (contenedor de 16 px). */
+@media (max-width: 560px) {
+
+  .ug-frame__body {
+    padding: var(--espacio-3);
+  }
+
+}

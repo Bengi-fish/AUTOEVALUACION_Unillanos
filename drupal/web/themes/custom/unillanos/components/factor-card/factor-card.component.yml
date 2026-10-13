@@ -1,0 +1,49 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Tarjetas de factor
+status: stable
+group: Factores y plan
+description: 'Cuadrícula de tarjetas de factor (o dimensión): imagen (marcador), número, nombre, medidor y llamada «Ver factor». Cada tarjeta es un enlace; sin url segura y con goto, el destino es #detalle; sin ninguno de los dos no es un enlace (div). goto es la clave de la pestaña a la que debe saltar (data-ua-goto) cuando exista el JS de pestañas. Solo muestra los valores y etiquetas que recibe.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    heading:
+      type: string
+      title: Nivel del título de cada tarjeta
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    items:
+      type: array
+      title: Tarjetas
+      items:
+        type: object
+        required:
+          - name
+        properties:
+          number:
+            type: string
+            description: 'Número que se muestra sobre la imagen, por ejemplo «01» o «D1».'
+          name:
+            type: string
+          score:
+            type: number
+            description: 'Omite la clave si aún no hay valoración (se muestra «Sin valoración»).'
+          grade:
+            type: string
+          decimals:
+            type: integer
+            minimum: 0
+            maximum: 3
+          url:
+            type: string
+          goto:
+            type: string
+            pattern: '^[a-z0-9_-]+$'
+          cta:
+            type: string
+            description: 'Texto de la llamada. Por defecto «Ver factor».'

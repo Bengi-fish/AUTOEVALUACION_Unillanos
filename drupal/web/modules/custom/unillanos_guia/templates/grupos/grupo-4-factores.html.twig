@@ -1,0 +1,123 @@
+{#
+/**
+ * @file
+ * Grupo 4 de la guía: factores y plan de mejoramiento.
+ *
+ * Variables:
+ * - datos: datos de ejemplo de la guía (factores, adendas y fortalezas).
+ *
+ * Los componentes de este grupo solo muestran los valores y las etiquetas que
+ * reciben: ninguno calcula el grado ni el destino de un hallazgo (esas reglas
+ * viven en el módulo unillanos_autoeval). Las etiquetas de grado de la guía
+ * salen de datos-ejemplo.js y no siguen la Tabla 3.1.
+ */
+#}
+{% set factor_1 = datos.institucional.factores|first %}
+{% set tarjetas_demo = [] %}
+{% for factor in datos.institucional.factores|slice(0, 4) %}
+  {% set tarjetas_demo = tarjetas_demo|merge([{number: '%02d'|format(factor.n), name: factor.name, score: factor.score, grade: factor.grado, url: '#grupo-4', goto: factor.key}]) %}
+{% endfor %}
+{% set adendas_demo = [] %}
+{% for adenda in datos.institucional.adendas %}
+  {% set adendas_demo = adendas_demo|merge([{number: adenda.n|slice(1), name: adenda.name, url: '#grupo-4', goto: adenda.key}]) %}
+{% endfor %}
+{% set fortalezas_demo = [] %}
+{% for texto in factor_1.strengths %}
+  {% set fortalezas_demo = fortalezas_demo|merge([{text: texto}]) %}
+{% endfor %}
+
+<section class="ug-group" id="grupo-4" aria-labelledby="grupo-4-titulo">
+  <h2 class="ug-group__title" id="grupo-4-titulo">{{ 'Grupo 4 · Factores y plan'|t }}</h2>
+  <p class="ug-block__text">{{ 'Estos componentes solo muestran los valores y las etiquetas que reciben: ninguno calcula el grado de cumplimiento ni el destino de un hallazgo (esas reglas viven en el módulo unillanos_autoeval y siguen pendientes de Acreditación). Las etiquetas de grado de esta guía vienen de datos-ejemplo.js y NO siguen la escala de la Tabla 3.1.'|t }}</p>
+
+  {# --------------------------------------------------------------- meter #}
+  <div class="ug-block" id="meter">
+    <h3 class="ug-block__title">meter</h3>
+    <p class="ug-block__text">{{ 'Medidor sobre 5. El valor se comunica sin depender del color ni del ancho de la barra: cifra visible («4,4 / 5»), role="meter" con aria-valuenow y aria-valuetext, y la etiqueta de grado en texto.'|t }}</p>
+    <h4 class="ug-block__sub">{{ 'Normal y grande'|t }}</h4>
+    <div class="ug-grid">
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: factor_1.score, grade: factor_1.grado} only %}
+        <figcaption>{{ 'normal'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: factor_1.score, grade: factor_1.grado, large: true} only %}
+        <figcaption>large</figcaption>
+      </figure>
+    </div>
+    <h4 class="ug-block__sub">{{ 'Distintos valores (datos-ejemplo.js)'|t }}</h4>
+    <div class="ug-grid">
+      {% for factor in [datos.institucional.factores[7], datos.institucional.factores[5], datos.institucional.factores[0], datos.institucional.factores[8]] %}
+        <figure class="ug-sample ug-sample--block">
+          {% include 'unillanos:meter' with {score: factor.score, grade: factor.grado} only %}
+          <figcaption>{{ factor.label }}</figcaption>
+        </figure>
+      {% endfor %}
+    </div>
+    <h4 class="ug-block__sub">{{ 'Decimales, otra escala y valores fuera de rango'|t }}</h4>
+    <div class="ug-grid">
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: 4.508, decimals: 3, grade: 'Etiqueta de ejemplo'|t} only %}
+        <figcaption>{{ 'decimals: 3'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: 3, max: 4, grade: 'Etiqueta de ejemplo'|t, label: 'Avance'|t} only %}
+        <figcaption>{{ 'max: 4, rótulo propio'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: 7, grade: 'Etiqueta de ejemplo'|t} only %}
+        <figcaption>{{ 'valor fuera de rango (la barra se limita al 100 %)'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: 4.2} only %}
+        <figcaption>{{ 'sin etiqueta de grado'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {grade: 'Etiqueta de ejemplo'|t} only %}
+        <figcaption>{{ 'sin valor (la clave se omite): «Sin valoración», sin barra'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# --------------------------------------------------------- factor-card #}
+  <div class="ug-block" id="factor-card">
+    <h3 class="ug-block__title">factor-card</h3>
+    <p class="ug-block__text">{{ 'Tarjetas de factor con imagen (marcador), número, nombre, medidor y llamada. Cada una es un enlace; goto lleva la clave de su pestaña (data-ua-goto) para el JS de pestañas de la siguiente tanda. Los cuatro primeros factores de datos-ejemplo.js.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cuatro factores'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-card' with {heading: 'h4', items: tarjetas_demo} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'sin valoración y sin destino (no es un enlace)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-card' with {heading: 'h4', items: [{number: '05', name: 'Estructura y procesos académicos'|t, grade: 'Etiqueta de ejemplo'|t}]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------------- adenda #}
+  <div class="ug-block" id="adenda">
+    <h3 class="ug-block__title">adenda</h3>
+    <p class="ug-block__text">{{ 'Adendas del informe (informes complementarios), de datos-ejemplo.js.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'tres adendas'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:adenda' with {items: adendas_demo} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------- strength #}
+  <div class="ug-block" id="strength">
+    <h3 class="ug-block__title">strength</h3>
+    <p class="ug-block__text">{{ 'Fortalezas destacadas del primer factor de datos-ejemplo.js. Mientras no haya fotografías, el marcador es decorativo (el texto ya describe la fortaleza).'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cuatro fortalezas'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:strength' with {items: fortalezas_demo} only %}
+      </div>
+    </figure>
+  </div>
+</section>

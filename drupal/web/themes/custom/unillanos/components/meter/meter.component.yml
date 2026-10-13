@@ -1,0 +1,41 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Medidor de cumplimiento
+status: stable
+group: Factores y plan
+description: 'Muestra un valor sobre una escala (por defecto sobre 5): cifra visible, barra con role="meter" y la etiqueta de grado. Solo muestra lo que recibe: NO calcula el grado; la etiqueta (grade) la entrega quien lo usa (la regla vive en el módulo unillanos_autoeval).'
+props:
+  type: object
+  properties:
+    score:
+      type: number
+      title: Valor
+      description: 'Valor numérico, por ejemplo 4.4. Si se omite (o no es un número) se muestra «Sin valoración» y no se pinta barra; omite la clave en lugar de pasar null. Si sale de la escala, la barra se limita a 0–100 %.'
+    grade:
+      type: string
+      title: Etiqueta de grado
+      description: 'Texto que se muestra bajo la barra. Se imprime tal cual; no se calcula aquí.'
+    max:
+      type: number
+      title: Máximo de la escala
+      minimum: 1
+      default: 5
+    decimals:
+      type: integer
+      title: Decimales mostrados
+      minimum: 0
+      maximum: 3
+      default: 1
+    label:
+      type: string
+      title: Rótulo
+      description: 'Por defecto «Grado de cumplimiento».'
+    in_link:
+      type: boolean
+      title: Dentro de un enlace
+      description: 'Oculta la barra a las tecnologías de apoyo (el rótulo, la cifra y la etiqueta, que son texto, bastan) para que el nombre del enlace no repita el valor.'
+      default: false
+    large:
+      type: boolean
+      title: Grande
+      description: 'Variante del panel de detalle (cifra de 28 px y barra de 12 px).'
+      default: false
