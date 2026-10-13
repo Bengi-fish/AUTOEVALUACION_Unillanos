@@ -283,7 +283,9 @@
   outline: none;
 }
 
-.ua-main__top {
+/* Solo hay aire si la región trae algo visible (el contenedor de mensajes
+   de Drupal está siempre, pero oculto y vacío). */
+.ua-main__top:has(.page-title, .messages, .tabs, .block-help-block) {
   padding-top: var(--espacio-5);
 }
 

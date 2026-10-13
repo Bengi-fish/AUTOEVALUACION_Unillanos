@@ -13,6 +13,8 @@
  * - page: regiones (primary_menu, breadcrumb, page_title, highlighted,
  *   help, content).
  * - is_front, logged_in.
+ * - pagina_propia: la plantilla del nodo pinta su cabecera, migas y título
+ *   (programa); se omiten el bloque de migas y el del título.
  */
 #}
 {% set cuenta = logged_in
@@ -30,21 +32,21 @@
   {% block nav %}{{ menu }}{% endblock %}
 {% endembed %}
 
-{% if page.breadcrumb %}
+{% if page.breadcrumb and not pagina_propia %}
   <div class="ua-page__migas">
     <div class="ua-container">{{ page.breadcrumb }}</div>
   </div>
 {% endif %}
 
 <main id="main-content" class="ua-main" tabindex="-1">
-  {% if page.page_title or page.highlighted or page.help %}
+  {% if (page.page_title and not pagina_propia) or page.highlighted or page.help %}
     <div class="ua-container ua-main__top">
-      {{ page.page_title }}
+      {% if not pagina_propia %}{{ page.page_title }}{% endif %}
       {{ page.highlighted }}
       {{ page.help }}
     </div>
   {% endif %}
-  {% if is_front %}
+  {% if is_front or pagina_propia %}
     {{ page.content }}
   {% else %}
     <div class="ua-container ua-main__body">

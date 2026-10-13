@@ -7,10 +7,15 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\node\NodeInterface;
+use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -27,6 +32,7 @@ class UnillanosHooks {
     protected RouteMatchInterface $routeMatch,
     protected RequestStack $requestStack,
     protected RendererInterface $renderer,
+    protected PresentadorAutoevaluacion $presentador,
   ) {}
 
   /**
@@ -105,7 +111,9 @@ class UnillanosHooks {
    */
   #[Hook('block_view_system_menu_block_alter')]
   public function menuBlockAlter(array &$build, BlockPluginInterface $block): void {
+    // `url.path`: la página actual también se marca por la URL del enlace.
     $build['#cache']['contexts'][] = 'user.roles:authenticated';
+    $build['#cache']['contexts'][] = 'url.path';
   }
 
   /**
@@ -133,6 +141,61 @@ class UnillanosHooks {
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
     ];
+  }
+
+  /**
+   * Implements hook_preprocess_page().
+   *
+   * Los programas pintan su propia cabecera (con migas y título): en la ruta
+   * canónica la página base no repite el bloque de migas ni el del título, y
+   * deja el contenido sin contenedor. En una previsualización o una revisión
+   * se pinta el nodo normal, con los bloques de la página.
+   */
+  #[Hook('preprocess_page')]
+  public function preprocessPage(array &$variables): void {
+    $nodo = $this->routeMatch->getParameter('node');
+    $variables['pagina_propia'] = $this->routeMatch->getRouteName() === 'entity.node.canonical'
+      && $nodo instanceof NodeInterface
+      && $nodo->bundle() === 'programa';
+  }
+
+  /**
+   * Implements hook_preprocess_node().
+   *
+   * Entrega a la plantilla del programa los datos ya armados por el
+   * presentador.
+   */
+  #[Hook('preprocess_node')]
+  public function preprocessNode(array &$variables): void {
+    $nodo = $variables['node'];
+    // Solo en la ruta canónica: allí la página omite sus propias migas y su
+    // título. En una previsualización o una revisión se pinta el nodo normal.
+    $ruta_nodo = $this->routeMatch->getParameter('node');
+    $canonica = $this->routeMatch->getRouteName() === 'entity.node.canonical'
+      && $ruta_nodo instanceof NodeInterface
+      && $ruta_nodo->id() === $nodo->id();
+    if ($canonica && $nodo->bundle() === 'programa' && $variables['view_mode'] === 'full') {
+      $variables['programa'] = $this->presentador->datosPrograma($nodo);
+    }
+  }
+
+  /**
+   * Implements hook_node_view_alter().
+   *
+   * La cabecera nombra la facultad y la sede: si cambian esos términos, el
+   * programa debe volver a pintarse.
+   */
+  #[Hook('node_view_alter')]
+  public function nodeViewAlter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void {
+    if (!$entity instanceof FieldableEntityInterface || $entity->bundle() !== 'programa') {
+      return;
+    }
+    foreach (['field_facultad', 'field_sede'] as $campo) {
+      $termino = $entity->get($campo)->entity;
+      if ($termino) {
+        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'] ?? [], $termino->getCacheTags());
+      }
+    }
   }
 
   /**

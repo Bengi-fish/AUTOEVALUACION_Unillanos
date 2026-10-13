@@ -1,0 +1,44 @@
+{#
+/**
+ * @file
+ * Programa académico, vista completa.
+ *
+ * Variables:
+ * - programa: (solo en la ruta canónica) datos armados por el presentador (nombre_inicio,
+ *   nombre_acento, eyebrow, etiquetas y ficha). Solo trae valores que
+ *   existen; no se muestran los títulos de otros nodos ni datos calculados.
+ */
+#}
+<article{{ attributes.addClass('ua-programa') }}>
+{% if programa %}
+  {% embed 'unillanos:pagehead' with {
+    eyebrow: programa.eyebrow,
+    title: programa.nombre_inicio,
+    title_accent: programa.nombre_acento,
+    lead: 'Registro calificado, autoevaluación y plan de mejoramiento del programa, en un solo lugar.'|t,
+    breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: programa.nombre}],
+    etiquetas: programa.etiquetas,
+  } only %}
+    {% block meta %}
+      {% for etiqueta in etiquetas %}
+        {% include 'unillanos:tag' with {label: etiqueta, variant: loop.first ? 'acento' : ''} only %}
+      {% endfor %}
+    {% endblock %}
+  {% endembed %}
+
+  {# Con un solo dato la ficha repetiría las etiquetas de la cabecera. #}
+  {% if programa.ficha|length > 1 %}
+    {% embed 'unillanos:section' with {id: 'ficha', ficha: programa.ficha} only %}
+      {% block content %}
+        {% include 'unillanos:section-head' with {
+          eyebrow: 'Programa académico'|t,
+          title: 'Ficha del programa'|t,
+        } only %}
+        {% include 'unillanos:ficha' with {items: ficha} only %}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+{% else %}
+  {{ content }}
+{% endif %}
+</article>

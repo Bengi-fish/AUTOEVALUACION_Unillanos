@@ -6,6 +6,10 @@
  * El menú es plano a propósito (sin submenús): solo se imprimen los
  * elementos del primer nivel. «Ingresar» pasa a ser el último elemento del
  * menú móvil (el botón del encabezado se oculta allí).
+ *
+ * La página actual se marca por la ruta activa o porque el enlace apunta a
+ * la URL actual (los enlaces por alias, como el del programa, no siempre
+ * entran en la ruta activa).
  */
 #}
 {% set enlaces = [] %}
@@ -13,7 +17,7 @@
   {% set enlaces = enlaces|merge([{
     title: item.title,
     url: item.url.toString,
-    active: item.in_active_trail,
+    active: item.in_active_trail or (item.url.toString == path('<current>')),
   }]) %}
 {% endfor %}
 {% set cuenta = logged_in

@@ -76,3 +76,37 @@
     grid-template-columns: 1fr;
   }
 }
+
+/*
+ * El último dato ocupa el resto de su fila: sin celdas grises vacías cuando
+ * la cantidad de datos no llena la rejilla. Con filas completas (4, 8… datos
+ * en cuatro columnas; los pares en dos) no cambia nada.
+ */
+@media (min-width: 1081px) {
+
+  .ua-ficha:not(.ua-ficha--compact) > div:nth-child(4n + 1):last-child {
+    grid-column: span 4;
+  }
+
+  .ua-ficha:not(.ua-ficha--compact) > div:nth-child(4n + 2):last-child {
+    grid-column: span 3;
+  }
+
+  .ua-ficha:not(.ua-ficha--compact) > div:nth-child(4n + 3):last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 360px) and (max-width: 1080px) {
+
+  .ua-ficha > div:nth-child(odd):last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1081px) {
+
+  .ua-ficha--compact > div:nth-child(odd):last-child {
+    grid-column: span 2;
+  }
+}
