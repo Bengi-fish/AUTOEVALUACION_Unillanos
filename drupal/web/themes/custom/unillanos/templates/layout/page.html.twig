@@ -1,8 +1,9 @@
 {#
 /**
  * @file
- * Página base: encabezado con el menú principal, migas, contenido, pie y
- * botón flotante de recomendaciones.
+ * Página base: encabezado con el menú principal, migas, contenido y pie.
+ * El botón flotante de recomendaciones (unillanos:fab) vuelve en la Fase 8,
+ * cuando exista la página «Participa».
  *
  * El título (h1), los mensajes y la ayuda van dentro de un contenedor; el
  * contenido de la portada va a todo el ancho para que sus secciones se
@@ -55,24 +56,10 @@
 {% include 'unillanos:footer' with {
   description: 'Un espacio para consultar, participar y hacer seguimiento a la mejora continua de la Universidad.'|t,
   columns: [
-    {title: 'Institucional'|t, links: [
-      {title: 'Registro calificado'|t, url: '/institucional#registro-calificado'},
-      {title: 'Autoevaluación'|t, url: '/institucional#autoevaluacion'},
-      {title: 'Plan de mejoramiento'|t, url: '/institucional#plan-mejoramiento'},
-    ]},
-    {title: 'Programas y documentos'|t, links: [
-      {title: 'Buscar un programa'|t, url: '/programas'},
-      {title: 'Normatividad'|t, url: '/documentos#normatividad'},
-      {title: 'Documentos base'|t, url: '/documentos#documentos-base'},
-      {title: 'Participa'|t, url: '/participa'},
+    {title: 'Explora'|t, links: [
+      {title: 'Programa de Electrónica'|t, url: '/programas/ingenieria-electronica'},
+      {title: 'Documentos'|t, url: '/documentos'},
     ]},
   ],
   legal: 'Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional. © 2026 Universidad de los Llanos.'|t,
-  legal_links: [
-    {title: 'Política de datos personales'|t},
-    {title: 'Mapa del sitio'|t},
-    {title: 'Accesibilidad'|t},
-  ],
 } only %}
-
-{% include 'unillanos:fab' with {label: '¿Tienes una recomendación?'|t, url: '/participa#recomendacion'} only %}

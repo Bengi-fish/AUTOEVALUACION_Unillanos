@@ -1,0 +1,41 @@
+{#
+/**
+ * @file
+ * Portada (versión provisional del paso 0).
+ *
+ * Muestra solo datos guardados de los procesos publicados (lo que falta se
+ * omite); las secciones editoriales y las cifras de la portada definitiva
+ * llegan en el paso 4.
+ *
+ * Variables:
+ * - procesos: lista con programa, url_programa, proceso, periodo, estado y
+ *   resultado de cada proceso (cadena vacía si falta el dato).
+ */
+#}
+{% embed 'unillanos:section' with {procesos: procesos} only %}
+  {% block content %}
+    {% include 'unillanos:section-head' with {
+      eyebrow: 'Autoevaluación'|t,
+      title: 'Procesos publicados'|t,
+    } only %}
+    {% for p in procesos %}
+      {# Solo se imprimen los datos que existen: lo vacío se omite. #}
+      {% set datos = [] %}
+      {% for par in [
+        {term: 'Programa'|t, value: p.programa},
+        {term: 'Proceso'|t, value: p.proceso},
+        {term: 'Periodo evaluado'|t, value: p.periodo},
+        {term: 'Estado'|t, value: p.estado},
+        {term: 'Resultado'|t, value: p.resultado},
+      ] %}
+        {% if par.value %}{% set datos = datos|merge([par]) %}{% endif %}
+      {% endfor %}
+      {% if datos %}
+        {% include 'unillanos:ficha' with {items: datos} only %}
+      {% endif %}
+      {% if p.url_programa %}
+        <p>{% include 'unillanos:button' with {label: 'Ver el programa'|t, url: p.url_programa} only %}</p>
+      {% endif %}
+    {% endfor %}
+  {% endblock %}
+{% endembed %}

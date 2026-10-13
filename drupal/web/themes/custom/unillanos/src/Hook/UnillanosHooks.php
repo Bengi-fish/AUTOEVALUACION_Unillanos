@@ -119,6 +119,23 @@ class UnillanosHooks {
   }
 
   /**
+   * Implements hook_theme().
+   *
+   * Registra la plantilla de la portada, cuyos datos entrega el controlador
+   * de `unillanos_autoeval`.
+   */
+  #[Hook('theme')]
+  public function theme(): array {
+    return [
+      'unillanos_portada' => [
+        'variables' => ['procesos' => []],
+        'template' => 'unillanos-portada',
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ],
+    ];
+  }
+
+  /**
    * Implements hook_preprocess_image_widget().
    */
   #[Hook('preprocess_image_widget')]

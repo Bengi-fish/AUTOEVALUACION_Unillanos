@@ -1,0 +1,24 @@
+uuid: e79d3388-e216-498c-b6be-b54e6739a3bd
+langcode: es
+status: true
+dependencies:
+  config:
+    - node.type.programa
+  module:
+    - node
+id: programa
+label: Programa
+type: 'canonical_entities:node'
+pattern: '/programas/[node:field_clave]'
+selection_criteria:
+  03c6d29b-35c3-4a43-914d-82a4b1852a22:
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: node
+    bundles:
+      programa: programa
+    uuid: 03c6d29b-35c3-4a43-914d-82a4b1852a22
+selection_logic: and
+weight: 0
+relationships: {  }

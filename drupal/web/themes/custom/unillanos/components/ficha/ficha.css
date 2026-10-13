@@ -69,3 +69,10 @@
 .ua-ficha dd {
   overflow-wrap: anywhere;
 }
+
+@media (max-width: 359px) {
+
+  .ua-ficha {
+    grid-template-columns: 1fr;
+  }
+}

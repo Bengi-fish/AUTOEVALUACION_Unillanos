@@ -2,6 +2,7 @@ _core:
   default_config_hash: 6A_AsNxy1stL6FWrHMo-FQaoy4ZJFYcZYA2hySobR70
 enabled_entity_types:
   - user
+  - node
 punctuation:
   hyphen: 1
 verbose: false

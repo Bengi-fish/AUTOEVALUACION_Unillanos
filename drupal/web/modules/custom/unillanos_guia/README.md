@@ -21,13 +21,10 @@ vivo.
   añade cuando se construye.
 - `css/guia.css`: solo la maquetación de las muestras (prefijo `ug-`).
 - `src/Service/DatosEjemplo.php`: lee el JSON.
-- `unillanos_guia.links.menu.yml`: menú principal **temporal** (ver abajo).
 
-## Menú temporal
+## Menú
 
-Los enlaces Institucional, Programas, Documentos y Participa se declaran en
-`unillanos_guia.links.menu.yml` con las URL definitivas, que dan 404 hasta
-la Fase 7. «Inicio» lo aporta el perfil `standard`.
-
-**Pendiente obligatorio de la Fase 7:** mover el menú fuera de este módulo,
-porque este módulo se desactiva en la Fase 9 y el menú desaparecería con él.
+El menú principal ya no vive en este módulo: pasó a
+`unillanos_autoeval.links.menu.yml` (Programa de Electrónica y Documentos).
+Las muestras de la guía conservan los enlaces de ejemplo a `/institucional`,
+`/programas`, `/documentos` y `/participa`, que pueden dar 404.
