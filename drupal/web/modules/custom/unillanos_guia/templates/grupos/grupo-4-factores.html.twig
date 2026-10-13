@@ -15,16 +15,35 @@
 {% set factor_1 = datos.institucional.factores|first %}
 {% set tarjetas_demo = [] %}
 {% for factor in datos.institucional.factores|slice(0, 4) %}
-  {% set tarjetas_demo = tarjetas_demo|merge([{number: '%02d'|format(factor.n), name: factor.name, score: factor.score, grade: factor.grado, url: '#grupo-4', goto: factor.key}]) %}
+  {% set tarjetas_demo = tarjetas_demo|merge([{number: '%02d'|format(factor.n), name: factor.name, score: factor.score, grade: factor.grado, url: '#factor-tabs', goto: factor.key}]) %}
 {% endfor %}
 {% set adendas_demo = [] %}
 {% for adenda in datos.institucional.adendas %}
-  {% set adendas_demo = adendas_demo|merge([{number: adenda.n|slice(1), name: adenda.name, url: '#grupo-4', goto: adenda.key}]) %}
+  {% set adendas_demo = adendas_demo|merge([{number: adenda.n|slice(1), name: adenda.name, url: '#factor-tabs', goto: adenda.key}]) %}
 {% endfor %}
 {% set fortalezas_demo = [] %}
 {% for texto in factor_1.strengths %}
   {% set fortalezas_demo = fortalezas_demo|merge([{text: texto}]) %}
 {% endfor %}
+
+{% set items_tabs = [] %}
+{% set opciones_plan = [] %}
+{% set filas_plan = [] %}
+{% for factor in datos.institucional.factores %}
+  {% set items_tabs = items_tabs|merge([{key: factor.key, group: 'Factores'|t, number: '%02d'|format(factor.n), name: factor.name, label: factor.label, score: factor.score, grade: factor.grado, desc: factor.desc, strengths: factor.strengths, plan_count: factor.plan|length, plan_note: 'formuladas para este factor'|t, plan_url: '#plan-filter', report_meta: 'PDF · 2,4 MB'}]) %}
+  {% set opciones_plan = opciones_plan|merge([{value: factor.key, label: factor.tag ~ ' · ' ~ factor.name}]) %}
+  {% for accion in factor.plan %}
+    {% set filas_plan = filas_plan|merge([{key: factor.key, plazo: accion[3], tag: factor.tag, cells: [{type: 'text', value: accion[0]}, {type: 'text', value: accion[1]}, {type: 'list', items: accion[2]}, {type: 'plazo', value: accion[3]}]}]) %}
+  {% endfor %}
+{% endfor %}
+{% for adenda in datos.institucional.adendas %}
+  {% set items_tabs = items_tabs|merge([{key: adenda.key, group: 'Adendas'|t, number: adenda.n, name: adenda.name, label: adenda.label, desc: adenda.desc, strengths: adenda.strengths, plan_count: adenda.plan|length, plan_note: 'formuladas para esta adenda'|t, plan_url: '#plan-filter', report_meta: 'PDF · 2,4 MB'}]) %}
+  {% set opciones_plan = opciones_plan|merge([{value: adenda.key, label: adenda.tag ~ ' · ' ~ adenda.name}]) %}
+  {% for accion in adenda.plan %}
+    {% set filas_plan = filas_plan|merge([{key: adenda.key, plazo: accion[3], tag: adenda.tag, cells: [{type: 'text', value: accion[0]}, {type: 'text', value: accion[1]}, {type: 'list', items: accion[2]}, {type: 'plazo', value: accion[3]}]}]) %}
+  {% endfor %}
+{% endfor %}
+{% set columnas_plan = [{label: 'Situación para intervenir'|t}, {label: 'Acción de mejora'|t}, {label: 'Responsables'|t}, {label: 'Plazo'|t}] %}
 
 <section class="ug-group" id="grupo-4" aria-labelledby="grupo-4-titulo">
   <h2 class="ug-group__title" id="grupo-4-titulo">{{ 'Grupo 4 · Factores y plan'|t }}</h2>
@@ -117,6 +136,61 @@
       <figcaption class="ug-frame__cap">{{ 'cuatro fortalezas'|t }}</figcaption>
       <div class="ug-frame__body">
         {% include 'unillanos:strength' with {items: fortalezas_demo} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ======================================================= TANDA 4B ==== #}
+  {# --------------------------------------------------------- factor-tabs #}
+  <div class="ug-block" id="factor-tabs">
+    <h3 class="ug-block__title">factor-tabs</h3>
+    <p class="ug-block__text">{{ 'Pestañas de los doce factores y las tres adendas de datos-ejemplo.js, con un panel por pestaña. Con el foco en una pestaña: flechas (arriba/abajo o izquierda/derecha), Inicio y Fin cambian de pestaña y muevan el foco; solo la pestaña activa entra en el orden de Tab y el panel recibe el foco con Tab. Las tarjetas de factor y las adendas de arriba llevan a su pestaña. El botón del informe está desactivado porque los informes aún no existen.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'doce factores y tres adendas'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-tabs' with {id: 'tabs-guia', label: 'Factores y adendas'|t, initial: 'f1', heading: 'h4', items: items_tabs} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------ planlink #}
+  <div class="ug-block" id="planlink">
+    <h3 class="ug-block__title">planlink</h3>
+    <p class="ug-block__text">{{ 'Enlace destacado al plan de mejoramiento. Con plan_key filtra el plan de abajo por ese factor y lleva allí (con el foco en el filtro). El número de acciones sale de datos-ejemplo.js.'|t }}</p>
+    <div class="ug-stack">
+      {% for factor in [datos.institucional.factores[0], datos.institucional.factores[3]] %}
+        <figure class="ug-sample ug-sample--block">
+          {% include 'unillanos:planlink' with {count: factor.plan|length, description: 'formuladas para este factor'|t, url: '#plan-filter', plan_key: factor.key} only %}
+          <figcaption>{{ factor.label }} · {{ factor.plan|length }}</figcaption>
+        </figure>
+      {% endfor %}
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:planlink' with {count: 1, description: 'formuladas para esta adenda'|t, url: '#plan-filter'} only %}
+        <figcaption>{{ 'una sola acción, sin plan_key'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# ---------------------------------------------------------- plan-table #}
+  <div class="ug-block" id="plan-table">
+    <h3 class="ug-block__title">plan-table</h3>
+    <p class="ug-block__text">{{ 'Tabla real con título accesible, encabezados y paginación (de 3 en 3 en esta muestra). Las columnas y celdas son genéricas. En pantallas estrechas cada fila se apila y cada celda muestra su encabezado.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'las 8 primeras acciones, de 3 en 3'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:plan-table' with {columns: columnas_plan, rows: filas_plan|slice(0, 8), page_size: 3, caption: 'Acciones del plan de mejoramiento (muestra)'|t} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------- plan-filter #}
+  <div class="ug-block" id="plan-filter">
+    <h3 class="ug-block__title">plan-filter</h3>
+    <p class="ug-block__text">{{ 'Filtros por factor y por plazo sobre las 44 acciones de datos-ejemplo.js. Filtra sin recargar, actualiza las cifras y avisa a los lectores de pantalla cuántas acciones quedan. Los enlaces «Ver en el plan de mejoramiento» de las pestañas filtran esta tabla por su factor. Solo cuenta y filtra las filas recibidas.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'plan completo'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:plan-filter' with {heading: 'h4', factor_options: opciones_plan, columns: columnas_plan, rows: filas_plan, page_size: 6} only %}
       </div>
     </figure>
   </div>

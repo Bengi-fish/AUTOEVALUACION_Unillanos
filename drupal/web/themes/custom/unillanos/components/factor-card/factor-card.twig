@@ -18,7 +18,7 @@
     {% if factor.score is not null %}
       {% set props_medidor = props_medidor|merge({score: factor.score}) %}
     {% endif %}
-    <{{ etiqueta }} class="ua-factor-card"{% if destino %} href="{{ destino }}"{% endif %}{% if factor.goto %} data-ua-goto="{{ factor.goto }}"{% endif %}>
+    <{{ etiqueta }} class="ua-factor-card"{% if destino %} href="{{ destino }}"{% endif %}{% if factor.goto %} data-ua-goto="{{ factor.goto }}"{% if factor.goto_tabs %} data-ua-goto-tabs="{{ factor.goto_tabs }}"{% endif %}{% endif %}>
       <div class="ua-factor-card__media">
         {%- include 'unillanos:placeholder' with {label: 'Imagen del factor'|t, size_label: '800 × 400 px', decorative: true} only -%}
         {% if factor.number %}<span class="ua-factor-card__num">{{ factor.number }}</span>{% endif %}

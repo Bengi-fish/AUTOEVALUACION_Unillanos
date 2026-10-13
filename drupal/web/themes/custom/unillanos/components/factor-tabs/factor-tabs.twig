@@ -1,0 +1,93 @@
+{#
+/**
+ * @file
+ * Pestañas de factores con un panel por pestaña.
+ *
+ * Solo imprime los valores recibidos (no calcula grados). Los paneles llegan
+ * ya renderizados y ocultos salvo el activo; factor-tabs.js solo alterna cuál
+ * se ve. Las cabeceras de grupo de la lista llevan role="presentation" porque
+ * una lista de pestañas solo puede contener pestañas.
+ */
+#}
+{% set base = id|default('pestanas') %}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
+{% set sub = {'h2': 'h3', 'h3': 'h4', 'h4': 'h5'}[nivel] %}
+{# Si initial no está entre las pestañas se usa la primera (si no, todos los paneles quedarían ocultos). #}
+{% set inicial = (items|first).key %}
+{% for item in items %}
+  {% if item.key == initial %}{% set inicial = initial %}{% endif %}
+{% endfor %}
+<div{{ attributes.addClass('ua-tabs').setAttribute('id', base).setAttribute('data-ua-tabs', true) }}>
+  <div class="ua-tabs__list" role="tablist" aria-label="{{ label|default('Factores'|t) }}" aria-orientation="vertical">
+    {% set grupo_actual = '' %}
+    {% for item in items %}
+      {% if item.group and item.group != grupo_actual %}
+        {% set grupo_actual = item.group %}
+        <div class="ua-tabs__group" role="presentation">{{ item.group }}</div>
+      {% endif %}
+      {% set activa = item.key == inicial %}
+      <button class="ua-tab" role="tab" type="button" id="{{ base }}-tab-{{ item.key }}" data-key="{{ item.key }}" aria-selected="{{ activa ? 'true' : 'false' }}" aria-controls="{{ base }}-panel-{{ item.key }}"{% if not activa %} tabindex="-1"{% endif %}>
+        <span class="ua-tab__num">{{ item.number }}</span><span class="ua-tab__label">{{ item.name }}</span>
+      </button>
+    {% endfor %}
+  </div>
+  {% for item in items %}
+    {% set props_medidor = {grade: item.grade|default(''), decimals: item.decimals is same as(0) ? 0 : item.decimals|default(1), large: true} %}
+    {% if item.score is not null %}
+      {% set props_medidor = props_medidor|merge({score: item.score}) %}
+    {% endif %}
+    <div class="ua-panel" role="tabpanel" id="{{ base }}-panel-{{ item.key }}" aria-labelledby="{{ base }}-tab-{{ item.key }}" tabindex="0"{% if item.key != inicial %} hidden{% endif %}>
+      <div class="ua-panel__banner">
+        {%- include 'unillanos:placeholder' with {label: ('Banner de'|t) ~ ' ' ~ (item.label|default(item.name))|lower, size_label: '1600 × 530 px', decorative: true} only -%}
+      </div>
+      <div class="ua-panel__body">
+        <div class="ua-panel__head">
+          <div>
+            {% if item.label %}<span class="ua-eyebrow">{{ item.label }}</span>{% endif %}
+            <{{ nivel }} class="ua-h3">{{ item.name }}</{{ nivel }}>
+          </div>
+          {% if item.score is not null %}
+            {% include 'unillanos:meter' with props_medidor only %}
+          {% endif %}
+        </div>
+        {% if item.desc %}
+          <p class="ua-panel__desc">
+            {#- Solo se resaltan los pares completos *así* (como el prototipo); un asterisco suelto o «**» se imprimen tal cual. -#}
+            {%- for parte in item.desc|split('*') -%}
+              {%- if loop.index is even and not loop.last and parte != '' -%}
+                <strong class="ua-kw">{{ parte }}</strong>
+              {%- elseif loop.index is even -%}
+                *{{ parte }}{% if not loop.last %}*{% endif %}
+              {%- else -%}
+                {{ parte }}
+              {%- endif -%}
+            {%- endfor -%}
+          </p>
+        {% endif %}
+        {% if item.strengths %}
+          {% set fortalezas = [] %}
+          {% for texto in item.strengths %}
+            {% set fortalezas = fortalezas|merge([{text: texto}]) %}
+          {% endfor %}
+          <section aria-label="{{ 'Fortalezas destacadas'|t }}">
+            <div class="ua-panel__block-title"><{{ sub }} class="ua-h4">{{ 'Fortalezas destacadas'|t }}</{{ sub }}></div>
+            {% include 'unillanos:strength' with {items: fortalezas} only %}
+          </section>
+        {% endif %}
+        {% if item.plan_count is not null %}
+          <section aria-label="{{ 'Plan de mejoramiento'|t }}">
+            <div class="ua-panel__block-title"><{{ sub }} class="ua-h4">{{ 'Plan de mejoramiento'|t }}</{{ sub }}></div>
+            {% include 'unillanos:planlink' with {count: item.plan_count, description: item.plan_note|default(''), url: item.plan_url|default(''), plan_key: item.key} only %}
+          </section>
+        {% endif %}
+        <div class="ua-panel__foot">
+          <span class="ua-meta">
+            {%- include 'unillanos:icon' with {name: 'file', size: 'sm'} only -%}
+            {{ ('Informe de'|t) ~ ' ' ~ (item.label|default(item.name))|lower ~ (item.report_meta ? ' · ' ~ item.report_meta : '') }}
+          </span>
+          {% include 'unillanos:button' with {label: ('Ver informe completo'|t) ~ (item.label ? ' · ' ~ item.label : ''), variant: 'primario', url: item.report_url|default(''), icon: 'download', disabled: not item.report_url} only %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

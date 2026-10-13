@@ -7,6 +7,12 @@ global:
       css/base.css: {}
     component:
       css/motion.css: {}
+motion:
+  version: 1.0.0
+  js:
+    js/unillanos.motion.js: {}
+  dependencies:
+    - core/drupal
 base:
   version: VERSION
   css:

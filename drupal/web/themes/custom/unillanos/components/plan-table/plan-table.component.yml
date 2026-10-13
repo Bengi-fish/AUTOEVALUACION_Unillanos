@@ -1,0 +1,74 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Tabla del plan de mejoramiento
+status: stable
+group: Factores y plan
+description: 'Tabla real (caption, encabezados th, celdas) con paginación. Las columnas y las celdas son genéricas (texto, lista o plazo) para no atar la vista a las cuatro columnas del prototipo. En pantallas estrechas cada fila se apila y cada celda muestra su encabezado (data-label); los roles ARIA de tabla se declaran para conservar la semántica aunque el CSS cambie el display. Cada fila puede llevar key y plazo para que un filtro la oculte.'
+props:
+  type: object
+  required:
+    - columns
+    - rows
+  properties:
+    caption:
+      type: string
+      title: Título accesible de la tabla
+      description: 'Por defecto «Acciones del plan de mejoramiento».'
+    page_size:
+      type: integer
+      title: Filas por página
+      minimum: 1
+      default: 6
+    columns:
+      type: array
+      title: Columnas
+      items:
+        type: object
+        required:
+          - label
+        properties:
+          label:
+            type: string
+    rows:
+      type: array
+      title: Filas
+      items:
+        type: object
+        required:
+          - cells
+        properties:
+          key:
+            type: string
+            pattern: '^[a-z0-9_-]+$'
+          plazo:
+            type: string
+            enum:
+              - ''
+              - corto
+              - mediano
+              - largo
+          tag:
+            type: string
+            description: 'Etiqueta que se antepone a la primera celda (por ejemplo «F01»).'
+          cells:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - text
+                    - list
+                    - plazo
+                value:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: string
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once

@@ -44,6 +44,10 @@ props:
           goto:
             type: string
             pattern: '^[a-z0-9_-]+$'
+          goto_tabs:
+            type: string
+            pattern: '^[a-z][a-z0-9_-]*$'
+            description: 'Id del conjunto de pestañas de destino; solo hace falta si hay varios en la página.'
           cta:
             type: string
             description: 'Texto de la llamada. Por defecto «Ver factor».'

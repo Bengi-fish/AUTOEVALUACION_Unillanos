@@ -1,0 +1,46 @@
+{#
+/**
+ * @file
+ * Tabla del plan de mejoramiento con paginación.
+ *
+ * La navegación empieza oculta (hidden): sin JS todas las filas se ven y los
+ * botones no se muestran; plan-table.js la revela y pagina.
+ */
+#}
+{% set tamano = page_size is same as(0) ? 6 : page_size|default(6) %}
+<div{{ attributes.addClass('ua-plan').setAttribute('data-ua-plan', true).setAttribute('data-page-size', tamano) }}>
+  <table role="table">
+    <caption class="ua-sr">{{ caption|default('Acciones del plan de mejoramiento'|t) }}</caption>
+    <thead role="rowgroup">
+      <tr role="row">
+        {% for columna in columns %}<th scope="col" role="columnheader">{{ columna.label }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {% for fila in rows %}
+        <tr role="row"{% if fila.key %} data-key="{{ fila.key }}"{% endif %}{% if fila.plazo %} data-plazo="{{ fila.plazo }}"{% endif %}>
+          {% for celda in fila.cells %}
+            <td role="cell" data-label="{{ (columns[loop.index0] ?? {}).label }}">
+              {%- if loop.first and fila.tag %}<span class="ua-plan__tag">{{ fila.tag }}</span>{% endif -%}
+              {%- if celda.type == 'list' -%}
+                <ul role="list">{% for elemento in celda.items %}<li>{{ elemento }}</li>{% endfor %}</ul>
+              {%- elseif celda.type == 'plazo' -%}
+                {% include 'unillanos:plazo' with {variant: celda.value} only %}
+              {%- else -%}
+                {{ celda.value }}
+              {%- endif -%}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="ua-plan__nav" hidden>
+    <span class="ua-plan__count"></span>
+    <span class="ua-sr" role="status" aria-atomic="true" data-ua-plan-page-live></span>
+    <div class="ua-plan__buttons">
+      {% include 'unillanos:button' with {label: 'Anterior'|t, variant: 'secundario', size: 'sm', icon: 'chevron-left', icon_size: 'sm', attributes: create_attribute({'data-dir': '-1'})} only %}
+      {% include 'unillanos:button' with {label: 'Siguiente'|t, variant: 'secundario', size: 'sm', icon: 'chevron-right', icon_size: 'sm', icon_position: 'after', attributes: create_attribute({'data-dir': '1'})} only %}
+    </div>
+  </div>
+</div>

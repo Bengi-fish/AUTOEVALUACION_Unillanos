@@ -11,7 +11,7 @@
   {% for adenda in items %}
     {% set destino = adenda.url and ((adenda.url ~ '') matches seguro) ? adenda.url : (adenda.goto ? '#detalle' : '') %}
     {% set etiqueta = destino ? 'a' : 'div' %}
-    <{{ etiqueta }} class="ua-adenda"{% if destino %} href="{{ destino }}"{% endif %}{% if adenda.goto %} data-ua-goto="{{ adenda.goto }}"{% endif %}>
+    <{{ etiqueta }} class="ua-adenda"{% if destino %} href="{{ destino }}"{% endif %}{% if adenda.goto %} data-ua-goto="{{ adenda.goto }}"{% if adenda.goto_tabs %} data-ua-goto-tabs="{{ adenda.goto_tabs }}"{% endif %}{% endif %}>
       <span class="ua-adenda__tag"><small>{{ 'ADENDA'|t }}</small>{{ adenda.number }}</span>
       <span><span class="ua-adenda__title">{{ adenda.name }}</span><span class="ua-meta">{{ adenda.caption|default('Informe complementario'|t) }}</span></span>
     </{{ etiqueta }}>

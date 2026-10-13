@@ -88,3 +88,35 @@
   }
 
 }
+
+/* Reflujo: en fila (móvil) el cuerpo puede encoger por debajo de su contenido;
+   si no, se sale de la tarjeta (overflow oculto) y el texto largo se recorta. */
+.ua-strength__body {
+  min-width: 0;
+}
+
+.ua-strength__text {
+  overflow-wrap: anywhere;
+}
+
+/* Por debajo de 340 px la fila (foto de 96 px + icono + texto) deja una columna
+   de texto de unos 50 px, ilegible: las tarjetas vuelven a apilarse (foto
+   arriba, texto debajo). Diferencia intencional con el prototipo. */
+@media (max-width: 340px) {
+
+  .ua-strength {
+    flex-direction: column;
+  }
+
+  .ua-strength .ua-ph {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-right: 0;
+    border-bottom: 1px solid var(--borde);
+  }
+
+  .ua-strength__body {
+    align-items: flex-start;
+  }
+
+}

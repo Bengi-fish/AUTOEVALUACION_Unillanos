@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Enlace al plan de mejoramiento.
+ *
+ * Mismo filtro de URL que unillanos:button; sin destino seguro se usa #plan.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set destino = url and ((url ~ '') matches seguro) ? url : '#plan' %}
+<a{{ attributes.addClass('ua-planlink').setAttribute('href', destino) }}{% if plan_key %} data-ua-plan-link="{{ plan_key }}"{% endif %}>
+  {%- include 'unillanos:icon' with {name: 'layers'} only -%}
+  <span class="ua-planlink__text"><strong>{% trans %}{{ count }} acción de mejora{% plural count %}{{ count }} acciones de mejora{% endtrans %}</strong>{% if description %}<span>{{ description }}</span>{% endif %}</span>
+  <span class="ua-planlink__go">{{ go_label|default('Ver en el plan de mejoramiento'|t) }}{% include 'unillanos:icon' with {name: 'arrow-right', size: 'sm'} only %}</span>
+</a>

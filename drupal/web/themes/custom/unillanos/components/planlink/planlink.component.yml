@@ -1,0 +1,35 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Enlace al plan de mejoramiento
+status: stable
+group: Factores y plan
+description: 'Enlace destacado desde un factor al plan de mejoramiento: ícono, número de acciones y llamada. Con plan_key lleva al filtro del plan (data-ua-plan-link) y lo deja filtrado por ese factor. Solo muestra los valores que recibe.'
+props:
+  type: object
+  required:
+    - count
+  properties:
+    count:
+      type: integer
+      title: Número de acciones de mejora
+      minimum: 0
+    description:
+      type: string
+      title: Frase bajo el número
+      description: 'Por ejemplo «formuladas para este factor».'
+    url:
+      type: string
+      title: Destino
+      description: 'Si no es una URL segura (o falta) se usa #plan, como el prototipo.'
+    plan_key:
+      type: string
+      title: Clave del factor en el filtro del plan
+      pattern: '^[a-z0-9_-]+$'
+    go_label:
+      type: string
+      title: Texto de la llamada
+      description: 'Por defecto «Ver en el plan de mejoramiento».'
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once
+    - unillanos/motion

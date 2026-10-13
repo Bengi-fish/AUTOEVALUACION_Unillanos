@@ -1,0 +1,191 @@
+/**
+ * Componente plan-table.
+ */
+
+.ua-plan {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+}
+
+.ua-plan table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 23px;
+}
+
+.ua-plan th {
+  text-align: left;
+  background: var(--tinta-900);
+  color: var(--Surface);
+  font-family: var(--font-dm-sans);
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: var(--espacio-3) var(--espacio-4);
+}
+
+.ua-plan td {
+  padding: var(--espacio-4);
+  vertical-align: top;
+  border-top: 1px solid var(--borde);
+  color: var(--tinta-700);
+}
+
+.ua-plan tbody tr:nth-child(even) td {
+  background: var(--superficie-50);
+}
+
+.ua-plan td:first-child {
+  font-weight: 600;
+  color: var(--tinta-900);
+  width: 27%;
+}
+
+.ua-plan td:nth-child(2) {
+  width: 35%;
+}
+
+.ua-plan td:nth-child(3) {
+  width: 24%;
+}
+
+.ua-plan tr[hidden] {
+  display: none !important;
+}
+
+.ua-plan td ul {
+  display: grid;
+  gap: 4px;
+}
+
+.ua-plan td li {
+  position: relative;
+  padding-left: 14px;
+}
+
+.ua-plan td li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--Unillanos_Red);
+}
+
+.ua-plan__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
+  background: var(--superficie-50);
+  border-top: 1px solid var(--borde);
+  flex-wrap: wrap;
+}
+
+.ua-plan__count {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-700);
+}
+
+.ua-plan__count strong {
+  color: var(--tinta-900);
+}
+
+.ua-plan__buttons {
+  display: flex;
+  gap: var(--espacio-2);
+}
+
+@media (max-width: 860px) {
+
+  /* El encabezado se oculta solo a la vista (no con display: none) para que
+     los lectores de pantalla sigan asociando cada celda con su columna. */
+  .ua-plan thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .ua-plan table, .ua-plan tbody, .ua-plan tr, .ua-plan td {
+    display: block;
+    width: 100% !important;
+  }
+
+  .ua-plan tr {
+    padding: var(--espacio-4);
+    border-top: 1px solid var(--borde);
+  }
+
+  .ua-plan tbody tr:first-child {
+    border-top: 0;
+  }
+
+  .ua-plan tbody tr:nth-child(even) {
+    background: var(--superficie-50);
+  }
+
+  .ua-plan td {
+    border: 0;
+    padding: 0 0 var(--espacio-3);
+    background: transparent !important;
+  }
+
+  .ua-plan td:last-child {
+    padding-bottom: 0;
+  }
+
+  /* La etiqueta visible de cada celda no se lee otra vez: el texto
+     alternativo vacío la oculta a los lectores (el encabezado ya está en el
+     árbol). Navegadores sin texto alternativo en content usan la primera
+     declaración. */
+  .ua-plan td::before {
+    content: attr(data-label);
+    content: attr(data-label) / "";
+    display: block;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--tinta-500);
+    margin-bottom: 4px;
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-plan__nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ua-plan__buttons .ua-btn {
+    flex: 1;
+  }
+
+}
+
+.ua-plan__tag {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 0 8px;
+  border-radius: var(--radio-pill);
+  background: var(--superficie-100);
+  color: var(--tinta-700);
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 700;
+  vertical-align: 1px;
+}

@@ -199,3 +199,8 @@
   }
 
 }
+
+.ug-stack {
+  display: grid;
+  gap: var(--espacio-4);
+}
