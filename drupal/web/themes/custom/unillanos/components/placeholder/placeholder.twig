@@ -10,7 +10,12 @@
 {% endif %}
 {# Se concatena (sin marcador @label) para que el atributo se escape una vez. #}
 {% set aria = ('Espacio para imagen:'|t) ~ ' ' ~ label %}
-<div{{ attributes.addClass(clases).setAttribute('role', 'img').setAttribute('aria-label', aria) }}>
+{% if decorative %}
+  {% set attributes = attributes.setAttribute('aria-hidden', 'true') %}
+{% else %}
+  {% set attributes = attributes.setAttribute('role', 'img').setAttribute('aria-label', aria) %}
+{% endif %}
+<div{{ attributes.addClass(clases) }}>
   {% include 'unillanos:icon' with {name: 'image', size: 'lg'} only %}
   <span class="ua-ph__label">{{ label }}</span>
   {% if size_label %}<span class="ua-ph__size">{{ size_label }}</span>{% endif %}

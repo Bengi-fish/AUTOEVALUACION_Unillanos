@@ -133,4 +133,154 @@
       </div>
     </figure>
   </div>
+
+  {# ======================================================= TANDA 3B ==== #}
+  {# ------------------------------------------------------------ doc-list #}
+  <div class="ug-block" id="doc-list">
+    <h3 class="ug-block__title">doc-list</h3>
+    <p class="ug-block__text">{{ 'Lista de documentos descargables. Los documentos todavía no existen, así que no llevan url: el botón de descarga queda desactivado (sin href), como los enlaces legales del pie. Con una url segura sería un enlace.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'normatividad (con descripción)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:doc-list' with {heading: 'h4', items: [
+          {cat: 'Normatividad'|t, title: 'Acuerdo 01 de 2025 CESU'|t, desc: 'Lineamientos y aspectos por evaluar para la acreditación en alta calidad de programas, unidades académicas e instituciones'|t, meta: 'PDF · 1,0 MB'},
+          {cat: 'Normatividad'|t, title: 'Acuerdo CESU 02 de 2020'|t, desc: 'Modelo de acreditación en alta calidad (referente anterior)'|t, meta: 'PDF · 1,2 MB'},
+          {cat: 'Normatividad'|t, title: 'Decreto 1330 de 2019'|t, desc: 'Registro calificado y condiciones de calidad de programas e instituciones'|t, meta: 'PDF · 860 KB'},
+          {cat: 'Normatividad'|t, title: 'Ley 1581 de 2012'|t, desc: 'Protección de datos personales'|t, meta: 'PDF · 290 KB'},
+        ]} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'documentos del proceso (con otro tipo de archivo)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:doc-list' with {heading: 'h4', items: [
+          {cat: 'Acto administrativo'|t, title: 'Resolución de registro calificado institucional · Villavicencio'|t, meta: 'PDF · 1,4 MB · ejemplo'|t},
+          {cat: 'Informe'|t, title: 'Informe de verificación de condiciones institucionales'|t, meta: 'PDF · 3,2 MB · ejemplo'|t},
+          {cat: 'Matriz'|t, title: 'Matriz de evidencias por condición'|t, meta: 'XLSX · 220 KB · ejemplo'|t, kind: 'XLSX'},
+          {cat: 'Documento base'|t, title: 'Proyecto Educativo Institucional (PEI)'|t, meta: 'PDF · 2,1 MB · 10 feb 2025'|t, url: '/documentos#documentos-base'},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ----------------------------------------------------------- cond-grid #}
+  <div class="ug-block" id="cond-grid">
+    <h3 class="ug-block__title">cond-grid</h3>
+    <p class="ug-block__text">{{ 'Condiciones numeradas con su estado por sede (o un solo estado). Los estados son ilustrativos.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'condiciones institucionales (estado por sede)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:cond-grid' with {heading: 'h4', items: [
+          {title: 'Mecanismos de selección y evaluación de estudiantes y profesores'|t, text: 'Criterios transparentes de ingreso, vinculación, permanencia y evaluación.'|t, states: [{sede: datos.sedes.villavicencio.nombre, label: 'Cumple'|t, variant: 'ok'}, {sede: datos.sedes.granada.nombre, label: 'Cumple'|t, variant: 'ok'}]},
+          {title: 'Cultura de autoevaluación'|t, text: 'Prácticas permanentes de autoevaluación, autorregulación y mejora continua.'|t, states: [{sede: datos.sedes.villavicencio.nombre, label: 'Cumple'|t, variant: 'ok'}, {sede: datos.sedes.granada.nombre, label: 'En revisión'|t, variant: 'proceso'}]},
+          {title: 'Recursos suficientes para las funciones misionales'|t, text: 'Recursos físicos, tecnológicos y financieros disponibles para el cumplimiento de la misión.'|t, states: [{sede: datos.sedes.villavicencio.nombre, label: 'Cumple'|t, variant: 'ok'}, {sede: datos.sedes.granada.nombre, label: 'Pendiente'|t, variant: 'pendiente'}]},
+        ]} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'condiciones del programa (un solo estado)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:cond-grid' with {heading: 'h4', items: [
+          {title: 'Denominación'|t, text: 'El nombre del programa corresponde a su contenido y a su nivel de formación.'|t, states: [{label: 'Cumple'|t, variant: 'ok'}]},
+          {title: 'Investigación, innovación y creación'|t, text: 'Formación para la investigación y aportes al desarrollo tecnológico.'|t, states: [{label: 'En revisión'|t, variant: 'proceso'}]},
+          {title: 'Infraestructura física y tecnológica'|t, text: 'Espacios y equipos adecuados para el desarrollo del programa.'|t, states: [{label: 'Pendiente'|t, variant: 'pendiente'}]},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------------- ficha #}
+  <div class="ug-block" id="ficha">
+    <h3 class="ug-block__title">ficha</h3>
+    <p class="ug-block__text">{{ 'Ficha de datos en rejilla. Los datos de contacto de la segunda muestra son claramente falsos (dominio .invalid y números en cero): nunca deben ser teléfonos ni correos reales.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'ficha de un programa (ejemplo)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:ficha' with {items: [
+          {term: 'Nivel'|t, value: datos.programas|first.nivel ~ ' universitario'},
+          {term: 'Modalidad'|t, value: 'Presencial'|t},
+          {term: 'Duración'|t, value: '10 semestres'|t},
+          {term: 'Créditos académicos'|t, value: '160'},
+          {term: 'Código SNIES'|t, value: '00000 (ejemplo)'|t},
+          {term: 'Sede'|t, value: datos.programas|first.sede},
+          {term: 'Resolución de registro'|t, value: 'N.º 0000 de 2022 (ejemplo)'|t},
+          {term: 'Vigente hasta'|t, value: 'Diciembre de 2029'|t},
+        ]} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'con datos de contacto de ejemplo (falsos)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:ficha' with {items: [
+          {term: 'Oficina'|t, value: 'Oficina de autoevaluación (ejemplo)'|t},
+          {term: 'Correo'|t, value: 'oficina@ejemplo.invalid'},
+          {term: 'Teléfono'|t, value: '000 000 0000 (ejemplo)'|t},
+          {term: 'Horario'|t, value: 'Lunes a viernes (ejemplo)'|t},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ----------------------------------------------------------- sede-card #}
+  <div class="ug-block" id="sede-card">
+    <h3 class="ug-block__title">sede-card</h3>
+    <p class="ug-block__text">{{ 'Sedes con su estado y una ficha compacta. Los nombres salen de datos-ejemplo.js; las resoluciones son de ejemplo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'dos sedes'|t }}</figcaption>
+      <div class="ug-frame__body ug-frame__body--estrecho">
+        {% include 'unillanos:sede-card' with {items: [
+          {name: datos.sedes.villavicencio.nombre, status: {label: 'Vigente'|t, variant: 'ok'}, details: [{term: 'Resolución'|t, value: 'N.º 0000 de 2023 (ejemplo)'|t}, {term: 'Vigente hasta'|t, value: 'Diciembre de 2030'|t}]},
+          {name: datos.sedes.granada.nombre, status: {label: 'Vigente'|t, variant: 'ok'}, details: [{term: 'Resolución'|t, value: 'N.º 0000 de 2023 (ejemplo)'|t}, {term: 'Vigente hasta'|t, value: 'Diciembre de 2030'|t}]},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------- cta-row #}
+  <div class="ug-block" id="cta-row">
+    <h3 class="ug-block__title">cta-row</h3>
+    <p class="ug-block__text">{{ 'Fila con título, frase y un botón primario con flecha. view_go lleva la clave de la pestaña de destino (data-ua-view-go) para el JS de pestañas del grupo 5.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'siguiente paso'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:cta-row' with {
+          title: 'Siguiente paso'|t,
+          text: 'Consulta la autoevaluación institucional por factores, con su valoración y sus fortalezas.'|t,
+          heading: 'h4',
+          button_label: 'Ver autoevaluación'|t,
+          button_url: '/institucional#autoevaluacion',
+          view_go: 'autoevaluacion',
+        } only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------- gallery #}
+  <div class="ug-block" id="gallery">
+    <h3 class="ug-block__title">gallery</h3>
+    <p class="ug-block__text">{{ 'Carrusel horizontal con botones Anterior y Siguiente. Sin fotografías todavía: cada figura usa el componente placeholder. Con el foco en la pista (Tab), las flechas del teclado la recorren.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'ocho figuras'|t }}</figcaption>
+      {% embed 'unillanos:section' with {
+        variant: 'alt',
+        pies: ['Taller de ponderación con estudiantes'|t, 'Mesa de trabajo con profesores'|t, 'Encuentro con egresados'|t, 'Jornada en sede regional'|t, 'Comité de autoevaluación'|t, 'Socialización de resultados'|t, 'Visita a laboratorios'|t, 'Foro con el sector productivo'|t],
+        titulo_galeria: 'La comunidad construye el proceso'|t,
+        antetitulo_galeria: 'Galería'|t,
+        nombre_pista: 'Galería del proceso'|t,
+      } only %}
+        {% block content %}
+          {% embed 'unillanos:gallery' with {eyebrow: antetitulo_galeria, title: titulo_galeria, heading: 'h4', track_label: nombre_pista, pies: pies} only %}
+            {% block items %}
+              {% for pie in pies %}
+                <figure class="ua-gallery__item">
+                  {% include 'unillanos:placeholder' with {label: 'Fotografía'|t, size_label: '800 × 600 px', ratio: '4x3', decorative: true} only %}
+                  <figcaption>{{ pie }}</figcaption>
+                </figure>
+              {% endfor %}
+            {% endblock %}
+          {% endembed %}
+        {% endblock %}
+      {% endembed %}
+    </figure>
+  </div>
 </section>

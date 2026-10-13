@@ -1,0 +1,35 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Galería
+status: stable
+group: Contenido
+description: 'Carrusel horizontal de figuras con botones Anterior y Siguiente. Las figuras (figure.ua-gallery__item con su figcaption) llegan por el slot items; mientras no haya fotografías se usa el componente placeholder. La pista se puede recorrer con el teclado (flechas) porque recibe el foco.'
+props:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: Antetítulo
+    title:
+      type: string
+      title: Título
+    heading:
+      type: string
+      title: Nivel del título
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h2
+    track_label:
+      type: string
+      title: Nombre accesible de la pista
+      description: 'Por defecto «Galería».'
+slots:
+  items:
+    title: Figuras
+    description: 'Una o más figure.ua-gallery__item.'
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once

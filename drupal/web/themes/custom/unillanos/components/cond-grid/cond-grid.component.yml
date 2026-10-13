@@ -1,0 +1,51 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Condiciones de calidad
+status: stable
+group: Contenido
+description: 'Cuadrícula numerada de condiciones, cada una con título, texto y el estado por sede (o un solo estado).'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    heading:
+      type: string
+      title: Nivel del título de cada condición
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    items:
+      type: array
+      title: Condiciones
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          title:
+            type: string
+          text:
+            type: string
+          states:
+            type: array
+            title: Estados
+            description: 'Cada estado puede llevar el nombre de la sede que le corresponde.'
+            items:
+              type: object
+              required:
+                - label
+                - variant
+              properties:
+                sede:
+                  type: string
+                label:
+                  type: string
+                variant:
+                  type: string
+                  enum:
+                    - ok
+                    - proceso
+                    - pendiente

@@ -1,0 +1,56 @@
+/**
+ * Componente gallery.
+ */
+
+.ua-gallery {
+  position: relative;
+}
+
+.ua-gallery__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 3 * var(--espacio-5)) / 4);
+  gap: var(--espacio-5);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.ua-gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.ua-gallery__item {
+  scroll-snap-align: start;
+  margin: 0;
+}
+
+.ua-gallery__item figcaption {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-700);
+  margin-top: var(--espacio-2);
+}
+
+.ua-gallery__controls {
+  display: flex;
+  gap: var(--espacio-2);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-gallery__track {
+    grid-auto-columns: calc((100% - 2 * var(--espacio-5)) / 3);
+  }
+
+}
+
+@media (max-width: 860px) {
+
+  .ua-gallery__track {
+    grid-auto-columns: 72%;
+    gap: var(--espacio-4);
+  }
+
+}

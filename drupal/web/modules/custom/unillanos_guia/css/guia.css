@@ -185,3 +185,7 @@
 .ug-frame--nav .ua-nav {
   display: block;
 }
+
+.ug-frame__body--estrecho {
+  max-width: 460px;
+}

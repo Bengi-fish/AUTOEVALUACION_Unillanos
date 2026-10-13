@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Galería: carrusel horizontal con botones.
+ *
+ * El comportamiento (botones y desplazamiento suave) está en gallery.js.
+ */
+#}
+<div{{ attributes.addClass('ua-gallery').setAttribute('data-ua-gallery', true) }}>
+  {% embed 'unillanos:section-head' with {eyebrow: eyebrow|default(''), title: title|default(''), heading: heading|default('')} only %}
+    {% block right %}
+      <div class="ua-gallery__controls">
+        {% include 'unillanos:button' with {label: 'Anterior'|t, variant: 'icono', icon: 'chevron-left', attributes: create_attribute({'data-dir': '-1'})} only %}
+        {% include 'unillanos:button' with {label: 'Siguiente'|t, variant: 'icono', icon: 'chevron-right', attributes: create_attribute({'data-dir': '1'})} only %}
+      </div>
+    {% endblock %}
+  {% endembed %}
+  <div class="ua-gallery__track" tabindex="0" role="group" aria-label="{{ track_label|default('Galería'|t) }}">
+    {% block items %}{{ items }}{% endblock %}
+  </div>
+</div>

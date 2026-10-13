@@ -1,0 +1,35 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Llamada a la acción
+status: stable
+group: Contenido
+description: 'Fila con un título, una frase y un botón primario con flecha. view_go es la clave de la pestaña a la que debe saltar el botón (data-ua-view-go) cuando exista el JS de pestañas.'
+props:
+  type: object
+  required:
+    - title
+    - button_label
+    - button_url
+  properties:
+    title:
+      type: string
+      title: Título
+    text:
+      type: string
+      title: Texto
+    heading:
+      type: string
+      title: Nivel del título
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h2
+    button_label:
+      type: string
+    button_url:
+      type: string
+    view_go:
+      type: string
+      title: Pestaña de destino
+      pattern: '^[a-z0-9_-]+$'

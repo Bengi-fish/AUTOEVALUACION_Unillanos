@@ -1,0 +1,47 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Lista de documentos
+status: stable
+group: Contenido
+description: 'Lista de documentos descargables (ícono de tipo, categoría, título, descripción opcional y datos del archivo). El botón de descarga solo es un enlace si el documento tiene una url segura; sin url queda desactivado.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    spaced:
+      type: boolean
+      title: Con margen superior
+      description: 'Añade separación sobre la lista (ua-docs--spaced), como en la ficha del programa.'
+      default: false
+    heading:
+      type: string
+      title: Nivel del título de cada documento
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    items:
+      type: array
+      title: Documentos
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          title:
+            type: string
+          cat:
+            type: string
+            description: 'Categoría, por ejemplo «Acto administrativo».'
+          desc:
+            type: string
+          meta:
+            type: string
+            description: 'Tipo, tamaño y fecha, por ejemplo «PDF · 1,4 MB».'
+          kind:
+            type: string
+            description: 'Rótulo del ícono (PDF, XLSX…). Por defecto PDF.'
+          url:
+            type: string

@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Fila de llamada a la acción.
+ */
+#}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h2' %}
+{% set atributos_boton = view_go ? create_attribute({'data-ua-view-go': view_go}) : create_attribute() %}
+<div{{ attributes.addClass('ua-cta-row') }}>
+  <div>
+    <{{ nivel }} class="ua-h3">{{ title }}</{{ nivel }}>
+    {% if text %}<p>{{ text }}</p>{% endif %}
+  </div>
+  {% include 'unillanos:button' with {label: button_label, variant: 'primario', url: button_url, icon: 'arrow-right', icon_position: 'after', attributes: atributos_boton} only %}
+</div>

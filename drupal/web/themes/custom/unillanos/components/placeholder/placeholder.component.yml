@@ -8,6 +8,11 @@ props:
   required:
     - label
   properties:
+    decorative:
+      type: boolean
+      title: Decorativo
+      description: 'Lo oculta a lectores de pantalla (aria-hidden). Úsalo dentro de una figure con figcaption que ya describe la imagen.'
+      default: false
     label:
       type: string
       title: Descripción de la imagen

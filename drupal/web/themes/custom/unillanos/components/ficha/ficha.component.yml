@@ -1,0 +1,28 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Ficha
+status: stable
+group: Contenido
+description: 'Ficha de datos en rejilla de cuatro columnas (dos en la variante compacta): término y valor. Úsala para datos de un programa o de una sede.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    compact:
+      type: boolean
+      title: Compacta
+      description: 'Dos columnas y menos relleno (dentro de la tarjeta de sede).'
+      default: false
+    items:
+      type: array
+      title: Datos
+      items:
+        type: object
+        required:
+          - term
+          - value
+        properties:
+          term:
+            type: string
+          value:
+            type: string
