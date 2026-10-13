@@ -1,0 +1,11 @@
+{#
+/**
+ * @file
+ * Lista numerada compacta de factores.
+ */
+#}
+<ol{{ attributes.addClass('ua-factor-chips').setAttribute('role', 'list') }}>
+  {% for factor in items %}
+    <li class="ua-factor-chip"><span class="ua-factor-chip__n">{{ '%02d'|format(factor.n) }}</span> {{ factor.name }}</li>
+  {% endfor %}
+</ol>

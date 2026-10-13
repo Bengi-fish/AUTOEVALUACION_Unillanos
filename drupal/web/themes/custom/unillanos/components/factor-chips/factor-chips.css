@@ -1,0 +1,27 @@
+/**
+ * Componente factor-chips.
+ */
+
+.ua-factor-chips {
+  list-style: none;
+  margin: var(--espacio-4) 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.ua-factor-chip {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-700);
+}
+
+.ua-factor-chip__n {
+  flex: none;
+  font-weight: 700;
+  color: var(--rojo-700);
+  font-variant-numeric: tabular-nums;
+}

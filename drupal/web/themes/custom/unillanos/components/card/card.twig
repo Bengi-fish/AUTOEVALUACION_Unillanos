@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Cuadrícula de tarjetas de acceso.
+ *
+ * Mismo filtro de URL que unillanos:button.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
+<div{{ attributes.addClass('ua-cards') }}>
+  {% for tarjeta in items %}
+    <a class="ua-card"{% if tarjeta.url and ((tarjeta.url ~ '') matches seguro) %} href="{{ tarjeta.url }}"{% endif %}>
+      {%- if tarjeta.icon -%}
+        <span class="ua-card__icon">{% include 'unillanos:icon' with {name: tarjeta.icon} only %}</span>
+      {%- endif -%}
+      <{{ nivel }} class="ua-card__title">{{ tarjeta.title }}</{{ nivel }}>
+      {% if tarjeta.text %}<p class="ua-card__text">{{ tarjeta.text }}</p>{% endif %}
+      {% if tarjeta.cta %}<span class="ua-card__cta">{{ tarjeta.cta }}{% include 'unillanos:icon' with {name: 'arrow-right', size: 'sm'} only %}</span>{% endif %}
+    </a>
+  {% endfor %}
+</div>

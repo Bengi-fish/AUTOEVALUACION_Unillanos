@@ -1,0 +1,70 @@
+/**
+ * Componente stats.
+ */
+
+.ua-stats {
+  background: var(--Unillanos_Red);
+  color: var(--Surface);
+}
+
+.ua-stats__list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.ua-stat {
+  padding: var(--espacio-6) var(--espacio-5);
+  border-left: 1px solid rgba(255,255,255,.28);
+}
+
+.ua-stat:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.ua-stat__value {
+  display: block;
+  font-family: var(--font-dm-sans);
+  font-size: 40px;
+  line-height: 44px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+.ua-stat__label {
+  display: block;
+  font-size: 15px;
+  line-height: 22px;
+  margin-top: 6px;
+}
+
+@media (max-width: 860px) {
+
+  .ua-stats__list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ua-stat {
+    padding: var(--espacio-5) var(--espacio-4);
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,.28);
+  }
+
+  .ua-stat:nth-child(-n+2) {
+    border-top: 0;
+  }
+
+  .ua-stat:nth-child(odd) {
+    padding-left: 0;
+  }
+
+  .ua-stat:nth-child(even) {
+    border-left: 1px solid rgba(255,255,255,.28);
+  }
+
+  .ua-stat__value {
+    font-size: 32px;
+    line-height: 36px;
+  }
+
+}

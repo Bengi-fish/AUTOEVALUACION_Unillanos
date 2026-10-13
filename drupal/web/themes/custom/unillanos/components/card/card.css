@@ -1,0 +1,83 @@
+/**
+ * Componente card.
+ */
+
+.ua-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espacio-4);
+}
+
+.ua a.ua-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  padding: var(--espacio-5);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.ua a.ua-card[href]:hover {
+  border-color: var(--rojo-100);
+  box-shadow: var(--sombra-2);
+}
+
+.ua-card__icon {
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-md);
+  background: var(--rojo-50);
+  color: var(--rojo-700);
+}
+
+.ua-card__title {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--tinta-900);
+}
+
+.ua-card__text {
+  font-size: 15px;
+  line-height: 23px;
+  color: var(--tinta-700);
+}
+
+.ua-card__cta {
+  margin-top: auto;
+  padding-top: var(--espacio-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rojo-700);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-cards {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* El anillo de foco no debe perderse bajo la sombra del hover. */
+.ua a.ua-card[href]:focus-visible {
+  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+}

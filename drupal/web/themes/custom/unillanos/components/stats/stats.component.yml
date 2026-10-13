@@ -1,0 +1,31 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Cifras
+status: stable
+group: Contenido
+description: 'Banda roja de indicadores (de 2 a 4 cifras). Cada cifra puede llevar una clave para que un selector de sede la actualice (data-ua-stat).'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    label:
+      type: string
+      title: Nombre accesible de la banda
+      description: 'Por defecto «Cifras del proceso».'
+    items:
+      type: array
+      title: Cifras
+      items:
+        type: object
+        required:
+          - value
+          - label
+        properties:
+          value:
+            type: string
+          label:
+            type: string
+          key:
+            type: string
+            pattern: '^[a-z0-9_-]+$'
+            description: 'Clave para que un selector de sede actualice la cifra (data-ua-stat).'
