@@ -18,10 +18,12 @@ se adaptó desde el prototipo `plantilla/` del repositorio.
 
 ## Tipografía
 
-DM Sans servida desde `fonts/` (variable, eje de peso, latin y latin-ext).
-Archivos de `@fontsource-variable/dm-sans` 5.3.0, licencia OFL 1.1
-(`fonts/OFL.txt`). La variante no trae el eje `opsz` que sí pedía el CSS de
-Google Fonts del prototipo, así que el ajuste óptico por tamaño no aplica.
+DM Sans servida desde `fonts/` (variable, ejes de peso y tamaño óptico
+`[opsz,wght]`, latin y latin-ext). Archivos de `@fontsource-variable/dm-sans`
+5.3.0, licencia OFL 1.1 (`fonts/OFL.txt`). Con el eje `opsz` los títulos grandes
+tienen el mismo trazo (y el mismo ancho) que con la hoja de Google Fonts del
+prototipo; ocupa unos 38 KiB más que la variante solo de peso (unos 25 KiB más
+en la práctica, porque el navegador solo descarga latin-ext si hace falta).
 
 ## Estructura
 
