@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * Menú principal plano: lo pinta el componente unillanos:nav.
+ *
+ * El menú es plano a propósito (sin submenús): solo se imprimen los
+ * elementos del primer nivel. «Ingresar» pasa a ser el último elemento del
+ * menú móvil (el botón del encabezado se oculta allí).
+ */
+#}
+{% set enlaces = [] %}
+{% for item in items %}
+  {% set enlaces = enlaces|merge([{
+    title: item.title,
+    url: item.url.toString,
+    active: item.in_active_trail,
+  }]) %}
+{% endfor %}
+{% set cuenta = logged_in
+  ? {url: '/user', title: 'Mi cuenta'|t}
+  : {url: '/user/login', title: 'Ingresar'|t}
+%}
+{% include 'unillanos:nav' with {items: enlaces, id: 'ua-menu', login: cuenta} only %}

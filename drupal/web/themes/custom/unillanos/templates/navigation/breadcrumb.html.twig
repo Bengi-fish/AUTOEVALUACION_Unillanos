@@ -1,25 +1,16 @@
 {#
 /**
  * @file
- * Theme override for a breadcrumb trail.
+ * Migas de pan: las pinta el componente unillanos:breadcrumb.
  *
- * Available variables:
- * - breadcrumb: Breadcrumb trail items.
+ * Variables:
+ * - breadcrumb: lista de elementos con text y url (el último sin url).
  */
 #}
 {% if breadcrumb %}
-  <nav class="breadcrumb" aria-labelledby="system-breadcrumb">
-    <h2 id="system-breadcrumb" class="visually-hidden">{{ 'Breadcrumb'|t }}</h2>
-    <ol>
-    {% for item in breadcrumb %}
-      <li>
-        {% if item.url %}
-          <a href="{{ item.url }}">{{ item.text }}</a>
-        {% else %}
-          {{ item.text }}
-        {% endif %}
-      </li>
-    {% endfor %}
-    </ol>
-  </nav>
+  {% set migas = [] %}
+  {% for item in breadcrumb %}
+    {% set migas = migas|merge([{title: item.text, url: item.url}]) %}
+  {% endfor %}
+  {% include 'unillanos:breadcrumb' with {items: migas} only %}
 {% endif %}

@@ -3,7 +3,15 @@
 namespace Drupal\unillanos\Hook;
 
 use Drupal\Core\Extension\ExtensionPathResolver;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Block\BlockPluginInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Hook implementations for unillanos.
@@ -15,6 +23,10 @@ class UnillanosHooks {
    */
   public function __construct(
     protected ExtensionPathResolver $pathResolver,
+    protected TitleResolverInterface $titleResolver,
+    protected RouteMatchInterface $routeMatch,
+    protected RequestStack $requestStack,
+    protected RendererInterface $renderer,
   ) {}
 
   /**
@@ -41,6 +53,69 @@ class UnillanosHooks {
         'href' => $ruta . '/images/favicon.png',
       ],
     ];
+  }
+
+  /**
+   * Implements hook_preprocess_breadcrumb().
+   *
+   * Drupal no incluye la página actual en las migas y el componente
+   * unillanos:breadcrumb trata el último elemento como la página actual, así
+   * que se añade el título de la ruta como último elemento sin enlace.
+   */
+  #[Hook('preprocess_breadcrumb')]
+  public function preprocessBreadcrumb(array &$variables): void {
+    $request = $this->requestStack->getCurrentRequest();
+    $ruta = $this->routeMatch->getRouteObject();
+    if (empty($variables['breadcrumb']) || !$request || !$ruta) {
+      return;
+    }
+    $titulo = $this->titleResolver->getTitle($request, $ruta);
+    // Un título que es un render array se renderiza sin aislar para que sus
+    // etiquetas de caché suban al bloque; uno de texto se deja tal cual.
+    $texto = is_array($titulo)
+      ? Html::decodeEntities(strip_tags((string) $this->renderer->render($titulo)))
+      : (string) $titulo;
+    if (trim($texto) !== '') {
+      $variables['breadcrumb'][] = ['text' => trim($texto), 'url' => ''];
+    }
+  }
+
+  /**
+   * Implements hook_block_view_BASE_BLOCK_ID_alter() para las migas.
+   *
+   * La última miga es el título de la ruta: el bloque varía por ruta y por
+   * cada entidad de sus parámetros (p. ej. el nodo), para que editar el
+   * título invalide la miga.
+   */
+  #[Hook('block_view_system_breadcrumb_block_alter')]
+  public function breadcrumbBlockAlter(array &$build, BlockPluginInterface $block): void {
+    $build['#cache']['contexts'][] = 'route';
+    foreach ($this->routeMatch->getParameters() as $parametro) {
+      if ($parametro instanceof CacheableDependencyInterface) {
+        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'] ?? [], $parametro->getCacheTags());
+      }
+    }
+  }
+
+  /**
+   * Implements hook_block_view_BASE_BLOCK_ID_alter() para el menú.
+   *
+   * El elemento «Ingresar» / «Mi cuenta» depende de si hay sesión iniciada,
+   * y ese dato no es un contexto de caché por sí mismo.
+   */
+  #[Hook('block_view_system_menu_block_alter')]
+  public function menuBlockAlter(array &$build, BlockPluginInterface $block): void {
+    $build['#cache']['contexts'][] = 'user.roles:authenticated';
+  }
+
+  /**
+   * Implements hook_page_attachments().
+   *
+   * El botón de cuenta del encabezado cambia con la sesión.
+   */
+  #[Hook('page_attachments')]
+  public function pageAttachments(array &$attachments): void {
+    $attachments['#cache']['contexts'][] = 'user.roles:authenticated';
   }
 
   /**

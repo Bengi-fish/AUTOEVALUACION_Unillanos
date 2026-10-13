@@ -273,3 +273,44 @@
 .ua [hidden] {
   display: none !important;
 }
+
+/* Página base de Drupal (page.html.twig): páginas sin sección propia. */
+.ua-page__migas {
+  padding-block: var(--espacio-4) 0;
+}
+
+.ua-main:focus {
+  outline: none;
+}
+
+.ua-main__top {
+  padding-top: var(--espacio-5);
+}
+
+.ua-main__body {
+  padding-block: var(--espacio-5) var(--espacio-8);
+}
+
+.ua .page-title {
+  margin: 0 0 var(--espacio-4);
+}
+
+.ua .form-text,
+.ua .form-email,
+.ua .form-tel,
+.ua .form-url,
+.ua .form-search,
+.ua .form-number,
+.ua .form-textarea,
+.ua .form-select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (forced-colors: active) {
+
+  .ua :focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+}

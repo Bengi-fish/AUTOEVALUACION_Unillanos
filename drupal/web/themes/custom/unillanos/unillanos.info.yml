@@ -28,6 +28,7 @@ regions:
   header: 'Encabezado'
   primary_menu: 'Menú principal'
   breadcrumb: 'Migas de pan'
+  page_title: 'Título de la página'
   highlighted: 'Destacado'
   help: 'Ayuda'
   content: 'Contenido'
