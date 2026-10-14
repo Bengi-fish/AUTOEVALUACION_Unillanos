@@ -4,8 +4,9 @@
  * Marcador de imagen, o fondo propio del tema (variant tema).
  */
 #}
-{% set tema = (variant ~ '') == 'tema' %}
-{% set clases = tema ? ['ua-ph', 'ua-ph--tema'] : ['ua-ph'] %}
+{# Variantes con fondo propio (tema y suave): decorativas, sin icono ni textos. #}
+{% set tema = (variant ~ '') in ['tema', 'suave'] %}
+{% set clases = tema ? ['ua-ph', 'ua-ph--' ~ variant] : ['ua-ph'] %}
 {% if ratio %}
   {% set clases = clases|merge(['ua-ph--' ~ ratio]) %}
 {% endif %}

@@ -73,6 +73,23 @@
     </figure>
   </div>
 
+  <div class="ug-block" id="steps-neutras">
+    <h3 class="ug-block__title">steps · sin estado</h3>
+    <p class="ug-block__text">{{ 'Con status vacío, la fase es neutra: numerada, sin ✓ ni etiqueta de estado. Se usa cuando no se sabe en qué fase está el proceso (no hay dato de fase).'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cinco fases sin estado'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:steps' with {heading: 'h4', items: [
+          {title: 'Planeación y organización'|t, text: 'Comité, cronograma y ponderación de factores.'|t, status: ''},
+          {title: 'Recolección'|t, text: 'Encuestas, grupos focales y evidencias.'|t, status: ''},
+          {title: 'Análisis y juicio'|t, text: 'Valoración y juicio de cada factor.'|t, status: ''},
+          {title: 'Informe de autoevaluación'|t, text: 'Consolidación y aprobación del informe.'|t, status: ''},
+          {title: 'Plan de mejoramiento y radicación'|t, text: 'Acciones, responsables y plazos; radicación del informe y sus anexos.'|t, status: ''},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
   {# ------------------------------------------------- concept, factor-chips #}
   <div class="ug-block" id="concept">
     <h3 class="ug-block__title">concept</h3>
@@ -113,6 +130,36 @@
       <figcaption class="ug-frame__cap">{{ 'doce factores'|t }}</figcaption>
       <div class="ug-frame__body">
         {% include 'unillanos:factor-chips' with {items: factores_demo} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="factor-chips-valor">
+    <h3 class="ug-block__title">factor-chips · score, grade</h3>
+    <p class="ug-block__text">{{ 'Con score (y grade, decimals) cada factor muestra su valoración guardada a la derecha, sin partirse; el nombre sí puede partirse. El componente no calcula nada. Un factor sin valor queda solo con número y nombre. Los valores y etiquetas de la muestra son de datos-ejemplo.js.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'valor en nueve factores'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% set chips_valor = [] %}
+        {% for factor in datos.institucional.factores %}
+          {% set chips_valor = chips_valor|merge([loop.index <= 9 ? {n: factor.n, name: factor.name, score: factor.score, grade: factor.grado, decimals: 2} : {n: factor.n, name: factor.name}]) %}
+        {% endfor %}
+        {% include 'unillanos:factor-chips' with {items: chips_valor} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="concept-sin-aside">
+    <h3 class="ug-block__title">concept · sin tarjeta lateral</h3>
+    <p class="ug-block__text">{{ 'La tarjeta lateral (aside) solo se imprime si trae contenido: sin ella no queda una tarjeta vacía.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'solo texto'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% embed 'unillanos:concept' with {eyebrow: 'La autoevaluación'|t, title: 'Sin tarjeta lateral'|t, heading: 'h4'} only %}
+          {% block main %}
+            <p class="ua-lead">{{ 'Cuando no hay factores que listar, el texto ocupa su columna y la tarjeta no se imprime.'|t }}</p>
+          {% endblock %}
+        {% endembed %}
       </div>
     </figure>
   </div>

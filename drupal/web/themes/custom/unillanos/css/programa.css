@@ -26,3 +26,8 @@
 .ua-programa #ficha .ua-ficha {
   margin-bottom: 0;
 }
+
+/* Portada: enlace «Ver todos los programas» bajo las tarjetas. */
+.ua .ua-portada__mas {
+  margin: var(--espacio-5) 0 0;
+}

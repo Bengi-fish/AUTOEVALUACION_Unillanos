@@ -81,3 +81,9 @@
 .ua a.ua-card[href]:focus-visible {
   box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
 }
+
+/* Los saltos de línea del texto se respetan (p. ej. cada dato de un programa
+   en su línea). */
+.ua-card__text {
+  white-space: pre-line;
+}

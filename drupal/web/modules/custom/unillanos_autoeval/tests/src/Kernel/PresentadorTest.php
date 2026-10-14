@@ -5,6 +5,7 @@ namespace Drupal\Tests\unillanos_autoeval\Kernel;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\ParagraphsType;
+use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\user\Traits\UserCreationTrait;
@@ -107,53 +108,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->assertNull($presentador->programaPorClave('no-existe'));
     $this->assertSame($reciente->id(), $presentador->procesoDelPrograma($programa)->id());
     $this->assertNull($presentador->procesoDelPrograma($otro));
-  }
-
-  /**
-   * El resumen de la portada trae lo guardado y deja vacío lo que falta.
-   */
-  public function testProcesosPublicados(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $programa = $this->crearNodo('programa', [
-      'title' => 'Ingeniería Electrónica',
-      'field_clave' => 'ingenieria-electronica',
-    ]);
-    $this->crearNodo('proceso', [
-      'title' => 'Renovación 2018–2022',
-      'field_programa' => $programa->id(),
-      'field_estado' => 'finalizado',
-      'field_periodo_evaluado' => '2018–2022',
-    ]);
-    $cache = new CacheableMetadata();
-    $resumen = $presentador->procesosPublicados($cache);
-    $this->assertCount(1, $resumen);
-    $this->assertSame('Ingeniería Electrónica', $resumen[0]['programa']);
-    $this->assertSame('Finalizado', $resumen[0]['estado']);
-    $this->assertSame('2018–2022', $resumen[0]['periodo']);
-    $this->assertSame('', $resumen[0]['resultado']);
-    $this->assertContains('node:' . $programa->id(), $cache->getCacheTags());
-  }
-
-  /**
-   * Un programa sin publicar no se nombra ni se enlaza; sin estado, vacío.
-   */
-  public function testProgramaSinPublicarNoSeMuestra(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $oculto = $this->crearNodo('programa', [
-      'title' => 'Oculto',
-      'field_clave' => 'oculto',
-      'status' => 0,
-    ]);
-    $this->crearNodo('proceso', [
-      'title' => 'Proceso sin estado',
-      'field_programa' => $oculto->id(),
-    ]);
-    $resumen = $presentador->procesosPublicados(new CacheableMetadata());
-    $this->assertCount(1, $resumen);
-    $this->assertSame('', $resumen[0]['programa']);
-    $this->assertSame('', $resumen[0]['url_programa']);
-    $this->assertSame('', $resumen[0]['estado']);
-    $this->assertSame('Proceso sin estado', $resumen[0]['proceso']);
   }
 
   /**
@@ -732,6 +686,274 @@ class PresentadorTest extends UnillanosKernelTestBase {
     // Sin porcentaje (2,50 está fuera de 0 a 1), pero con su narrativa.
     $this->assertStringStartsWith('2025-2 · Reportado — ', $periodos[0]);
     $this->assertSame("2025-1 · 40 % · Reportado (Medios de verificación: Acta & 'anexo')", $periodos[1]);
+  }
+
+  /**
+   * Presentador con rutas simuladas.
+   *
+   * En la prueba no existen /programas ni /documentos.
+   *
+   * @param string[] $rutas
+   *   Rutas que se darán por existentes.
+   */
+  protected function presentadorConRutas(array $rutas): PresentadorAutoevaluacion {
+    return new class($this->container->get('entity_type.manager'), $this->container->get('path.validator'), $rutas) extends PresentadorAutoevaluacion {
+
+      /**
+       * Constructor.
+       */
+      public function __construct($gestor, $validador, protected array $rutas) {
+        parent::__construct($gestor, $validador);
+      }
+
+      /**
+       * {@inheritdoc}
+       */
+      protected function rutaExiste(string $ruta): bool {
+        return in_array($ruta, $this->rutas, TRUE);
+      }
+
+    };
+  }
+
+  /**
+   * Crea un programa con un proceso publicado de un modelo.
+   *
+   * @return \Drupal\node\Entity\Node[]
+   *   Con programa y proceso.
+   */
+  protected function programaConProceso(string $nombre, int $modelo, array $extra = []): array {
+    $programa = $this->crearNodo('programa', [
+      'title' => $nombre,
+      'field_clave' => strtolower(str_replace(' ', '-', $nombre)),
+    ]);
+    $proceso = $this->crearNodo('proceso', $extra + [
+      'title' => 'Proceso ' . $nombre,
+      'field_programa' => $programa->id(),
+      'field_lineamiento' => $modelo,
+      'field_periodo_evaluado' => '2018–2022',
+    ]);
+    return ['programa' => $programa, 'proceso' => $proceso];
+  }
+
+  /**
+   * Sin procesos publicados la portada no trae datos.
+   */
+  public function testPortadaSinProcesos(): void {
+    $datos = $this->container->get('unillanos_autoeval.presentador')->datosPortada(new CacheableMetadata());
+    $this->assertSame('', $datos['eyebrow']);
+    $this->assertSame([], $datos['cifras']);
+    $this->assertSame([], $datos['programas']);
+    $this->assertSame([], $datos['factores']);
+    $this->assertFalse($datos['unico']);
+    $this->assertSame(0, $datos['total_programas']);
+    $this->assertSame('', $datos['documentos']);
+  }
+
+  /**
+   * Con un programa: cifras de su proceso, fila destacada y chips con valor.
+   */
+  public function testPortadaConUnPrograma(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $this->cargarGrados();
+    $d = $this->programaConPlan();
+    $sede = Term::create(['vid' => 'sede', 'name' => 'Sede Barcelona']);
+    $sede->save();
+    $facultad = Term::create(['vid' => 'facultad', 'name' => 'Facultad de Ingeniería']);
+    $facultad->save();
+    $d['programa']->set('field_sede', $sede->id())->set('field_facultad', $facultad->id())->save();
+    $d['proceso']->set('field_periodo_evaluado', '2018–2022');
+    $d['proceso']->set('field_resultado', 'Cumplimiento en alto grado (4,508 · 90 %)');
+    $d['proceso']->save();
+    $id = (int) $d['proceso']->id();
+    $alto = array_values($this->container->get('entity_type.manager')->getStorage('taxonomy_term')->loadByProperties(['name' => 'Alto']));
+    $this->crearNodo('valoracion', [
+      'field_proceso' => $id,
+      'field_elemento' => $d['f1']->id(),
+      'field_valoracion' => '4.27',
+      'field_grado' => $alto[0]->id(),
+    ]);
+    $this->hallazgo($id, 'fortaleza', 'Fortaleza', (int) $d['f1']->id());
+    $this->hallazgo($id, 'fortaleza', 'Otra fortaleza', (int) $d['f1']->id());
+    $this->hallazgo($id, 'aspecto_por_mejorar', 'Aspecto', (int) $d['f2']->id());
+    $this->meta($d['plan'], 1, '1');
+
+    $cache = new CacheableMetadata();
+    $datos = $presentador->datosPortada($cache);
+    $this->assertSame('Proceso de autoevaluación 2018–2022', $datos['eyebrow']);
+    $this->assertTrue($datos['unico']);
+    $this->assertSame(1, $datos['total_programas']);
+    $this->assertSame([
+      ['value' => '1', 'label' => 'Factores evaluados'],
+      ['value' => '2', 'label' => 'Fortalezas identificadas'],
+      ['value' => '1', 'label' => 'Aspectos por mejorar'],
+      ['value' => '1', 'label' => 'Acciones de mejora formuladas'],
+    ], $datos['cifras']);
+    $this->assertCount(1, $datos['programas']);
+    $this->assertSame('Programa', $datos['programas'][0]['title']);
+    $this->assertSame(
+      'Facultad de Ingeniería · Sede Barcelona · Periodo evaluado: 2018–2022 · Resultado: Cumplimiento en alto grado (4,508 · 90 %)',
+      $datos['programas'][0]['text'],
+    );
+    $this->assertSame('/node/' . $d['programa']->id(), $datos['programas'][0]['url']);
+    // Chips: los dos factores del modelo; con un solo programa, valor guardado.
+    $this->assertSame([1, 2], array_column($datos['factores'], 'n'));
+    $this->assertSame(4.27, $datos['factores'][0]['score']);
+    $this->assertSame('Alto', $datos['factores'][0]['grade']);
+    $this->assertArrayNotHasKey('score', $datos['factores'][1]);
+    $this->assertTrue($datos['hay_grado']);
+    $this->assertContains('node_list:meta', $cache->getCacheTags());
+    $this->assertContains('routes', $cache->getCacheTags());
+  }
+
+  /**
+   * Una cifra en cero se omite; sin ninguna no hay cifras.
+   */
+  public function testPortadaOmiteCifrasEnCero(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $modelo = $this->crearLineamiento('Modelo');
+    $this->programaConProceso('Uno', (int) $modelo->id());
+    $this->assertSame([], $presentador->datosPortada(new CacheableMetadata())['cifras']);
+    $this->programaConProceso('Dos', (int) $modelo->id());
+    // Con dos programas solo queda la cifra de programas.
+    $this->assertSame(
+      [['value' => '2', 'label' => 'Programas con autoevaluación']],
+      $presentador->datosPortada(new CacheableMetadata())['cifras'],
+    );
+  }
+
+  /**
+   * Con varios programas: totales, orden por reciente, tope y chips sin valor.
+   */
+  public function testPortadaConVariosProgramas(): void {
+    $this->cargarGrados();
+    $modelo = $this->crearLineamiento('Modelo');
+    $factor = $this->elemento('Estudiantes', 1, $modelo->id());
+    $nombres = [];
+    for ($i = 1; $i <= 14; $i++) {
+      $nombres[$i] = 'Programa ' . $i;
+      $d = $this->programaConProceso($nombres[$i], (int) $modelo->id());
+      $this->hallazgo((int) $d['proceso']->id(), 'fortaleza', 'Fortaleza ' . $i, (int) $factor->id());
+    }
+    $sin_rutas = $this->presentadorConRutas([])->datosPortada(new CacheableMetadata());
+    $this->assertSame(14, $sin_rutas['total_programas']);
+    $this->assertFalse($sin_rutas['unico']);
+    $this->assertCount(12, $sin_rutas['programas']);
+    // Los más recientes primero; los dos más antiguos quedan fuera del tope.
+    $this->assertSame('Programa 14', $sin_rutas['programas'][0]['title']);
+    $this->assertSame('Programa 3', $sin_rutas['programas'][11]['title']);
+    $this->assertSame('', $sin_rutas['ver_todos']);
+    $this->assertSame('', $sin_rutas['documentos']);
+    $this->assertSame('Programas con autoevaluación publicada', $sin_rutas['eyebrow']);
+    $this->assertSame([
+      ['value' => '14', 'label' => 'Programas con autoevaluación'],
+      ['value' => '14', 'label' => 'Fortalezas identificadas'],
+    ], $sin_rutas['cifras']);
+    // Con varios programas, los chips son solo número y nombre (sin promedios).
+    $this->assertSame([['n' => 1, 'name' => 'Estudiantes']], $sin_rutas['factores']);
+    $this->assertFalse($sin_rutas['hay_grado']);
+
+    // «Ver todos» y documentos solo si esas rutas existen.
+    $con_rutas = $this->presentadorConRutas(['/programas', '/documentos'])->datosPortada(new CacheableMetadata());
+    $this->assertSame('/programas', $con_rutas['ver_todos']);
+    $this->assertSame('/documentos', $con_rutas['documentos']);
+    // Con 12 o menos no hay «Ver todos» aunque la ruta exista.
+    $pocos = $this->presentadorConRutas(['/programas']);
+    $this->assertSame('/programas', $pocos->datosPortada(new CacheableMetadata())['ver_todos']);
+  }
+
+  /**
+   * Un programa sin publicar y un proceso institucional no salen.
+   */
+  public function testPortadaIgnoraLoQueNoSeMuestra(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $modelo = $this->crearLineamiento('Modelo');
+    $visible = $this->programaConProceso('Visible', (int) $modelo->id());
+    $oculto = $this->crearNodo('programa', ['title' => 'Oculto', 'field_clave' => 'oculto', 'status' => 0]);
+    $this->crearNodo('proceso', ['field_programa' => $oculto->id(), 'field_lineamiento' => $modelo->id()]);
+    // Proceso de una sede (institucional): sin programa.
+    $sede = Term::create(['vid' => 'sede', 'name' => 'Sede']);
+    $sede->save();
+    $this->crearNodo('proceso', ['field_sede' => $sede->id(), 'field_lineamiento' => $modelo->id()]);
+    // Proceso sin publicar de un programa visible.
+    $otro = $this->crearNodo('programa', ['title' => 'Otro', 'field_clave' => 'otro']);
+    $this->crearNodo('proceso', ['field_programa' => $otro->id(), 'field_lineamiento' => $modelo->id(), 'status' => 0]);
+
+    $datos = $presentador->datosPortada(new CacheableMetadata());
+    $this->assertSame(1, $datos['total_programas']);
+    $this->assertSame(['Visible'], array_column($datos['programas'], 'title'));
+    $this->assertTrue($datos['unico']);
+    $this->assertSame('/node/' . $visible['programa']->id(), $datos['programas'][0]['url']);
+  }
+
+  /**
+   * Los chips usan el modelo del proceso más reciente que tenga factores.
+   */
+  public function testPortadaUsaElModeloDelProcesoMasReciente(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $viejo = $this->crearLineamiento('Modelo 2020');
+    $nuevo = $this->crearLineamiento('Modelo 2025');
+    $registro = $this->crearLineamiento('Registro', 'registro_calificado');
+    $this->elemento('Factor del 2020', 1, $viejo->id());
+    $this->elemento('Factor A del 2025', 1, $nuevo->id());
+    $this->elemento('Factor B del 2025', 2, $nuevo->id());
+    $this->programaConProceso('Antiguo', (int) $viejo->id());
+    $this->programaConProceso('Nuevo', (int) $nuevo->id());
+    // El más reciente es de registro calificado (sin factores): se salta.
+    $this->programaConProceso('Registro', (int) $registro->id());
+    $datos = $presentador->datosPortada(new CacheableMetadata());
+    $this->assertSame(['Factor A del 2025', 'Factor B del 2025'], array_column($datos['factores'], 'name'));
+    $this->assertSame(3, $datos['total_programas']);
+  }
+
+  /**
+   * Se usa el proceso más reciente con datos, no uno nuevo todavía vacío.
+   */
+  public function testPortadaUsaElProcesoConDatos(): void {
+    $this->cargarGrados();
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $d = $this->programaConPlan();
+    $d['proceso']->set('field_periodo_evaluado', '2018–2022')->save();
+    $alto = array_values($this->container->get('entity_type.manager')->getStorage('taxonomy_term')->loadByProperties(['name' => 'Alto']));
+    $this->crearNodo('valoracion', [
+      'field_proceso' => $d['proceso']->id(),
+      'field_elemento' => $d['f1']->id(),
+      'field_valoracion' => '4.10',
+      'field_grado' => $alto[0]->id(),
+    ]);
+    $this->hallazgo((int) $d['proceso']->id(), 'fortaleza', 'Fortaleza', (int) $d['f1']->id());
+    // Un proceso más reciente del mismo programa, todavía sin datos.
+    $this->crearNodo('proceso', [
+      'field_programa' => $d['programa']->id(),
+      'field_lineamiento' => $d['proceso']->get('field_lineamiento')->target_id,
+      'field_periodo_evaluado' => '2024–2028',
+    ]);
+    $datos = $presentador->datosPortada(new CacheableMetadata());
+    $this->assertSame(1, $datos['total_programas']);
+    $this->assertSame('Proceso de autoevaluación 2018–2022', $datos['eyebrow']);
+    $this->assertSame([
+      ['value' => '1', 'label' => 'Factores evaluados'],
+      ['value' => '1', 'label' => 'Fortalezas identificadas'],
+    ], $datos['cifras']);
+    // Los chips muestran el mismo proceso que las cifras.
+    $this->assertSame(4.1, $datos['factores'][0]['score']);
+    $this->assertStringContainsString('2018–2022', $datos['programas'][0]['text']);
+  }
+
+  /**
+   * Las acciones de mejora cuentan solo metas de planes publicados.
+   */
+  public function testPortadaCuentaSoloMetasDePlanesPublicados(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $d = $this->programaConPlan();
+    $this->meta($d['plan'], 1, '1');
+    $this->meta($d['plan'], 2, '2');
+    $borrador = $this->crearNodo('plan_mejoramiento', ['field_proceso' => $d['proceso']->id(), 'status' => 0]);
+    $this->meta($borrador, 1, '1');
+    $this->meta($borrador, 2, '2');
+    $this->meta($borrador, 3, '3');
+    $cifras = $presentador->datosPortada(new CacheableMetadata())['cifras'];
+    $this->assertSame([['value' => '2', 'label' => 'Acciones de mejora formuladas']], $cifras);
   }
 
 }

@@ -7,8 +7,9 @@
 {% set nivel_titulo = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
 <ol{{ attributes.addClass('ua-steps').setAttribute('role', 'list') }}>
   {% for fase in items %}
-    {% set estado = (fase.status ~ '') in ['hecho', 'actual', 'pendiente'] ? fase.status : 'pendiente' %}
-    <li class="ua-step ua-step--{{ estado }}"{% if estado == 'actual' %} aria-current="step"{% endif %}>
+    {# Sin estado (vacío o ausente) la fase es neutra: numerada, sin ✓ ni etiqueta. #}
+    {% set estado = (fase.status ~ '') in ['hecho', 'actual', 'pendiente', ''] ? (fase.status ~ '') : 'pendiente' %}
+    <li class="ua-step{% if estado %} ua-step--{{ estado }}{% else %} ua-step--neutra{% endif %}"{% if estado == 'actual' %} aria-current="step"{% endif %}>
       <span class="ua-step__dot">
         {%- if estado == 'hecho' -%}
           {% include 'unillanos:icon' with {name: 'check'} only %}

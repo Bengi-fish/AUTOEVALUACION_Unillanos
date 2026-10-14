@@ -21,3 +21,14 @@ props:
             type: integer
           name:
             type: string
+          score:
+            type: number
+            description: 'Valoración guardada del factor; se muestra a la derecha. Omite la clave si no hay valor (no pases null). El componente no calcula nada.'
+          grade:
+            type: string
+            description: 'Etiqueta de grado guardada, junto al valor.'
+          decimals:
+            type: integer
+            minimum: 0
+            maximum: 3
+            description: 'Decimales del valor (por defecto 2).'

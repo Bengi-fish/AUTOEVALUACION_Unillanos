@@ -31,6 +31,7 @@ props:
             type: string
           text:
             type: string
+            description: 'Los saltos de línea se respetan.'
           url:
             type: string
           cta:

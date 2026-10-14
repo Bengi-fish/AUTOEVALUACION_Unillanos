@@ -1,41 +1,140 @@
 {#
 /**
  * @file
- * Portada (versión provisional del paso 0).
- *
- * Muestra solo datos guardados de los procesos publicados (lo que falta se
- * omite); las secciones editoriales y las cifras de la portada definitiva
- * llegan en el paso 4.
+ * Portada (página de inicio).
  *
  * Variables:
- * - procesos: lista con programa, url_programa, proceso, periodo, estado y
- *   resultado de cada proceso (cadena vacía si falta el dato).
+ * - datos: lo arma PresentadorAutoevaluacion::datosPortada(): eyebrow,
+ *   cifras, unico, programas, ver_todos, factores, hay_grado y documentos.
+ *   Solo trae lo que existe: lo vacío se omite (sin etiquetas de pendiente).
+ *
+ * El h1 es el título del hero (la página omite el bloque de título).
+ *
+ * Los textos editoriales (bajada, «¿Qué es la autoevaluación?», principios,
+ * fases) son los del prototipo y están pendientes de confirmar por
+ * Acreditación (docs/pendientes-acreditacion.md).
  */
 #}
-{% embed 'unillanos:section' with {procesos: procesos} only %}
-  {% block content %}
-    {% include 'unillanos:section-head' with {
-      eyebrow: 'Autoevaluación'|t,
-      title: 'Procesos publicados'|t,
-    } only %}
-    {% for p in procesos %}
-      {# Solo se imprimen los datos que existen: lo vacío se omite. #}
-      {% set datos = [] %}
-      {% for par in [
-        {term: 'Programa'|t, value: p.programa},
-        {term: 'Proceso'|t, value: p.proceso},
-        {term: 'Periodo evaluado'|t, value: p.periodo},
-        {term: 'Estado'|t, value: p.estado},
-        {term: 'Resultado'|t, value: p.resultado},
-      ] %}
-        {% if par.value %}{% set datos = datos|merge([par]) %}{% endif %}
-      {% endfor %}
-      {% if datos %}
-        {% include 'unillanos:ficha' with {items: datos} only %}
-      {% endif %}
-      {% if p.url_programa %}
-        <p>{% include 'unillanos:button' with {label: 'Ver el programa'|t, url: p.url_programa} only %}</p>
-      {% endif %}
-    {% endfor %}
+{{ attach_library('unillanos/programa') }}
+
+{# ---------------------------------------------------------------- hero #}
+{% embed 'unillanos:hero' with {
+  eyebrow: datos.eyebrow,
+  title: 'Autoevaluación'|t,
+  title_accent: 'Institucional'|t,
+  lead: 'Un ejercicio participativo en el que la comunidad universitaria reconoce sus fortalezas, identifica oportunidades de mejora y define el camino hacia la excelencia académica en la Orinoquia.'|t,
+} only %}
+  {% block media %}
+    {# Versión suave del fondo del tema: junto a la banda roja de cifras, el rojo pleno pesaba. #}
+    {% include 'unillanos:placeholder' with {label: 'Fondo del tema'|t, variant: 'suave', ratio: '16x10'} only %}
   {% endblock %}
 {% endembed %}
+
+{# -------------------------------------------------------------- cifras #}
+{% if datos.cifras %}
+  {% include 'unillanos:stats' with {label: 'Cifras de la autoevaluación'|t, items: datos.cifras} only %}
+{% endif %}
+
+{# ------------------------------------------ programas con autoevaluación #}
+{% if datos.programas %}
+  {% embed 'unillanos:section' with {id: 'programas', datos: datos} only %}
+    {% block content %}
+      {% include 'unillanos:section-head' with {
+        eyebrow: 'Programas'|t,
+        title: 'Lo que se ha evaluado, en un solo lugar'|t,
+        lead: datos.unico ? 'Entra al programa para ver su autoevaluación por factores y su plan de mejoramiento.'|t : 'Entra por el programa que te interesa para ver su autoevaluación por factores y su plan de mejoramiento.'|t,
+      } only %}
+      {% if datos.unico %}
+        {% set programa = datos.programas|first %}
+        {% include 'unillanos:cta-row' with {
+          heading: 'h3',
+          title: programa.title,
+          text: programa.text,
+          button_label: programa.cta,
+          button_url: programa.url,
+        } only %}
+      {% else %}
+        {% set tarjetas = [] %}
+        {% for programa in datos.programas %}
+          {# En las tarjetas, cada dato en su línea (white-space: pre-line en el texto). #}
+          {% set tarjetas = tarjetas|merge([{icon: 'cap', title: programa.title, text: programa.lines|join("\n"), url: programa.url, cta: programa.cta}]) %}
+        {% endfor %}
+        {% include 'unillanos:card' with {heading: 'h3', items: tarjetas} only %}
+        {% if datos.ver_todos %}
+          <p class="ua-portada__mas">
+            {% include 'unillanos:button' with {label: 'Ver todos los programas'|t, variant: 'secundario', url: datos.ver_todos, icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
+          </p>
+        {% endif %}
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+{% endif %}
+
+{# ------------------------------------------------------------ concepto #}
+{% embed 'unillanos:section' with {id: 'que-es', variant: 'alt', datos: datos} only %}
+  {% block content %}
+    {% embed 'unillanos:concept' with {
+      eyebrow: 'La autoevaluación'|t,
+      title: '¿Qué es la autoevaluación?'|t,
+      aside_label: 'Qué se evalúa'|t,
+      principles: [
+        {icon: 'users', title: 'Participativa.'|t, text: 'Estudiantes, profesores, egresados, administrativos y sector externo aportan su mirada.'|t},
+        {icon: 'clipboard', title: 'Basada en evidencias.'|t, text: 'Cada juicio se sustenta en datos, documentos e instrumentos aplicados.'|t},
+        {icon: 'target', title: 'Orientada a la mejora.'|t, text: 'Cada hallazgo se traduce en acciones con responsables y plazos.'|t},
+      ],
+      datos: datos,
+    } only %}
+      {% block main %}
+        <p class="ua-lead">{{ 'La autoevaluación es el ejercicio con el que la Universidad y cada uno de sus programas se miran a sí mismos: reúnen evidencias, escuchan a la comunidad y emiten un juicio sobre su calidad frente a los lineamientos del modelo de acreditación en alta calidad.'|t }}</p>
+        <p>{{ 'Su resultado no es un fin en sí mismo. Alimenta el'|t }} <strong>{{ 'plan de mejoramiento'|t }}</strong>{{ ', sustenta los procesos de'|t }} <strong>{{ 'registro calificado'|t }}</strong> {{ 'y de'|t }} <strong>{{ 'acreditación'|t }}</strong> {{ 'y permite rendir cuentas a la comunidad sobre lo que se ha logrado y lo que falta por mejorar.'|t }}</p>
+      {% endblock %}
+      {% block aside %}
+        {% if datos.factores %}
+          <h3 class="ua-h4">{{ '¿Qué se evalúa?'|t }}</h3>
+          <p class="ua-meta">{{ 'Los factores del modelo con el que se evalúa cada programa.'|t }}</p>
+          {% include 'unillanos:factor-chips' with {items: datos.factores} only %}
+          {% if datos.hay_grado %}
+            <p class="ua-nota">
+              {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
+              <span>{{ 'Las etiquetas de grado se muestran como están guardadas; la regla de asignación está por confirmar.'|t }}</span>
+            </p>
+          {% endif %}
+        {% endif %}
+      {% endblock %}
+    {% endembed %}
+  {% endblock %}
+{% endembed %}
+
+{# --------------------------------------------------------------- fases #}
+{% embed 'unillanos:section' with {id: 'proceso'} only %}
+  {% block content %}
+    {% include 'unillanos:section-head' with {
+      eyebrow: 'El proceso'|t,
+      title: 'Así avanza la autoevaluación'|t,
+      lead: 'Cinco fases, desde la planeación hasta la radicación, con participación de estudiantes, profesores, egresados, personal administrativo y sector externo.'|t,
+    } only %}
+    {# Sin estado: no se sabe en qué fase está cada proceso (no hay dato de fase). #}
+    {% include 'unillanos:steps' with {heading: 'h3', items: [
+      {title: 'Planeación y organización'|t, text: 'Comité, cronograma y ponderación de factores.'|t, status: ''},
+      {title: 'Recolección'|t, text: 'Encuestas, grupos focales y evidencias.'|t, status: ''},
+      {title: 'Análisis y juicio'|t, text: 'Valoración y juicio de cada factor.'|t, status: ''},
+      {title: 'Informe de autoevaluación'|t, text: 'Consolidación y aprobación del informe.'|t, status: ''},
+      {title: 'Plan de mejoramiento y radicación'|t, text: 'Acciones, responsables y plazos; radicación del informe y sus anexos.'|t, status: ''},
+    ]} only %}
+  {% endblock %}
+{% endembed %}
+
+{# ----------------------------------------------------------- documentos #}
+{% if datos.documentos %}
+  {% embed 'unillanos:section' with {id: 'documentos', variant: 'alt', datos: datos} only %}
+    {% block content %}
+      {% include 'unillanos:card' with {heading: 'h2', items: [{
+        icon: 'book',
+        title: 'Documentos'|t,
+        text: 'Normatividad y documentos base que sustentan el proceso de autoevaluación.'|t,
+        url: datos.documentos,
+        cta: 'Ver documentos'|t,
+      }]} only %}
+    {% endblock %}
+  {% endembed %}
+{% endif %}

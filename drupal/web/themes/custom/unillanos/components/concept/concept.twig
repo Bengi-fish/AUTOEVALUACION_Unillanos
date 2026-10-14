@@ -21,7 +21,11 @@
       </ul>
     {% endif %}
   </div>
-  <aside class="ua-concept__card"{% if aside_label %} aria-label="{{ aside_label }}"{% endif %}>
-    {% block aside %}{{ aside }}{% endblock %}
-  </aside>
+  {# La tarjeta lateral solo se imprime si trae contenido. #}
+  {% set contenido_aside %}{% block aside %}{{ aside }}{% endblock %}{% endset %}
+  {% if contenido_aside|trim %}
+    <aside class="ua-concept__card"{% if aside_label %} aria-label="{{ aside_label }}"{% endif %}>
+      {{ contenido_aside }}
+    </aside>
+  {% endif %}
 </div>

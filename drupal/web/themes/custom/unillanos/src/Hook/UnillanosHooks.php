@@ -137,7 +137,7 @@ class UnillanosHooks {
   public function theme(): array {
     return [
       'unillanos_portada' => [
-        'variables' => ['procesos' => []],
+        'variables' => ['datos' => []],
         'template' => 'unillanos-portada',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
@@ -147,17 +147,20 @@ class UnillanosHooks {
   /**
    * Implements hook_preprocess_page().
    *
-   * Los programas pintan su propia cabecera (con migas y título): en la ruta
-   * canónica la página base no repite el bloque de migas ni el del título, y
-   * deja el contenido sin contenedor. En una previsualización o una revisión
-   * se pinta el nodo normal, con los bloques de la página.
+   * Los programas y la portada pintan su propia cabecera (con su h1): en la
+   * ruta canónica del programa y en la página de inicio la página base no
+   * repite el bloque de migas ni el del título, y deja el contenido sin
+   * contenedor. En una previsualización o una revisión se pinta el nodo
+   * normal, con los bloques de la página.
    */
   #[Hook('preprocess_page')]
   public function preprocessPage(array &$variables): void {
     $nodo = $this->routeMatch->getParameter('node');
-    $variables['pagina_propia'] = $this->routeMatch->getRouteName() === 'entity.node.canonical'
+    $programa = $this->routeMatch->getRouteName() === 'entity.node.canonical'
       && $nodo instanceof NodeInterface
       && $nodo->bundle() === 'programa';
+    // La portada también trae su propio h1 (el del hero).
+    $variables['pagina_propia'] = $programa || !empty($variables['is_front']);
   }
 
   /**

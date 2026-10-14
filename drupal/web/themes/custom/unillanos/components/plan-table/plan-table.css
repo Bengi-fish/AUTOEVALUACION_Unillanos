@@ -190,14 +190,14 @@
   vertical-align: 1px;
 }
 
-/* Antetítulo de la celda de acción («Meta 3»). */
+/* Antetítulo de la celda de acción («Meta 3»); sin mayúsculas, para no
+   alterar el código de la meta («2a.2b»). */
 .ua-plan__eyebrow {
   display: block;
   margin-bottom: 2px;
   font-size: 12px;
   line-height: 16px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  letter-spacing: .04em;
   font-weight: 700;
   color: var(--rojo-700);
 }

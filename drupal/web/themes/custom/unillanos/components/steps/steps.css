@@ -150,3 +150,10 @@
   }
 
 }
+
+/* Fase sin estado: igual que una pendiente, pero sin atenuarla. */
+.ua-step--neutra .ua-step__dot {
+  background: var(--Surface);
+  border: 2px solid var(--Unillanos_Red);
+  color: var(--rojo-700);
+}

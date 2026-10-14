@@ -24,7 +24,6 @@ props:
         type: object
         required:
           - title
-          - status
         properties:
           title:
             type: string
@@ -32,7 +31,9 @@ props:
             type: string
           status:
             type: string
+            description: 'Vacío («sin estado»): fase numerada y neutra, sin ✓ ni etiqueta de estado (cuando no se sabe en qué fase está el proceso).'
             enum:
+              - ''
               - hecho
               - actual
               - pendiente

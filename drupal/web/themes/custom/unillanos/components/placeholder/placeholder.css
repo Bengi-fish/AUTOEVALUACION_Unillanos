@@ -80,3 +80,40 @@
     color: CanvasText;
   }
 }
+
+/*
+ * Variante «suave»: la versión ligera del fondo del tema (rosa claro con el
+ * mismo patrón), para donde el rojo pleno pesaría. Decorativa.
+ */
+.ua-ph--suave {
+  border: 1px solid var(--rojo-100);
+  color: var(--rojo-700);
+  background-color: var(--rojo-50);
+  background-image:
+    radial-gradient(circle at 12% 120%, rgba(255, 255, 255, .85) 0 18%, transparent 19%),
+    radial-gradient(circle at 92% -20%, rgba(255, 255, 255, .7) 0 26%, transparent 27%),
+    repeating-linear-gradient(135deg, transparent 0 22px, rgba(227, 6, 29, .05) 22px 44px),
+    linear-gradient(135deg, var(--rojo-50) 0%, var(--rojo-100) 135%);
+}
+
+.ua-ph--suave .ua-ph__num {
+  font-size: clamp(56px, 11vw, 120px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(227, 6, 29, .16);
+  user-select: none;
+}
+
+@media (forced-colors: active) {
+
+  .ua-ph--suave {
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  .ua-ph--suave .ua-ph__num {
+    color: CanvasText;
+  }
+}

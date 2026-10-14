@@ -21,5 +21,5 @@ services:
 
   unillanos_autoeval.presentador:
     class: Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion
-    arguments: ['@entity_type.manager']
+    arguments: ['@entity_type.manager', '@path.validator']
   Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion: '@unillanos_autoeval.presentador'

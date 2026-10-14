@@ -37,10 +37,9 @@ final class PortadaController extends ControllerBase {
    */
   public function portada(): array {
     $cache = new CacheableMetadata();
-    $cache->addCacheTags(['node_list:proceso', 'node_list:programa']);
     $construccion = [
       '#theme' => 'unillanos_portada',
-      '#procesos' => $this->presentador->procesosPublicados($cache),
+      '#datos' => $this->presentador->datosPortada($cache),
     ];
     $cache->applyTo($construccion);
     return $construccion;
