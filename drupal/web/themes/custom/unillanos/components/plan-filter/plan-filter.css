@@ -104,3 +104,36 @@
   }
 
 }
+
+/* Cifra única y compacta, junto a los filtros (cuando no hay plazos). */
+.ua-planall-count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 0 auto;
+  padding: 6px var(--espacio-4);
+  background: var(--superficie-50);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-pill);
+}
+
+.ua-planall-count__value {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 800;
+  color: var(--tinta-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.ua-planall-count__label {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-700);
+}
+
+@media (max-width: 560px) {
+
+  .ua-planall-count {
+    margin-left: 0;
+  }
+}

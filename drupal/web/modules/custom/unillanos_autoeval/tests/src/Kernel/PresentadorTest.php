@@ -3,6 +3,8 @@
 namespace Drupal\Tests\unillanos_autoeval\Kernel;
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\ParagraphsType;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\user\Traits\UserCreationTrait;
@@ -21,6 +23,24 @@ class PresentadorTest extends UnillanosKernelTestBase {
   /**
    * {@inheritdoc}
    */
+  protected static $modules = [
+    'system',
+    'user',
+    'field',
+    'text',
+    'filter',
+    'options',
+    'node',
+    'taxonomy',
+    'file',
+    'entity_reference_revisions',
+    'paragraphs',
+    'unillanos_autoeval',
+  ];
+
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->crearCampo('node', 'proceso', 'field_periodo_evaluado', 'string');
@@ -30,6 +50,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->crearCampo('taxonomy_term', 'elemento_modelo', 'field_numero', 'integer');
     $this->crearCampo('node', 'hallazgo', 'field_tipo_hallazgo', 'string');
     $this->crearCampo('node', 'hallazgo', 'body', 'text_long');
+    $this->prepararPlan();
     Vocabulary::create(['vid' => 'facultad', 'name' => 'facultad'])->save();
     $this->crearCampo('node', 'programa', 'field_facultad', 'entity_reference', ['target_type' => 'taxonomy_term']);
     $this->crearCampo('node', 'programa', 'field_sede', 'entity_reference', ['target_type' => 'taxonomy_term']);
@@ -402,6 +423,315 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->assertSame('f01', $claves[0]);
     $this->assertSame('', $datos['pestanas'][2]['number']);
     $this->assertSame('', $datos['pestanas'][2]['label']);
+  }
+
+  /**
+   * Crea los campos y paragraphs del plan de mejoramiento.
+   */
+  protected function prepararPlan(): void {
+    $this->installEntitySchema('paragraph');
+    foreach (['proyecto_institucional', 'responsable'] as $vid) {
+      Vocabulary::create(['vid' => $vid, 'name' => $vid])->save();
+    }
+    foreach (['indicador', 'programacion_anual'] as $tipo) {
+      ParagraphsType::create(['id' => $tipo, 'label' => $tipo])->save();
+    }
+    $paragraph = ['target_type' => 'paragraph'];
+    foreach (['nombre', 'unidad', 'linea_base'] as $campo) {
+      $this->crearCampo('paragraph', 'indicador', 'field_' . $campo, 'string');
+    }
+    $this->crearCampo('paragraph', 'indicador', 'field_programacion', 'entity_reference_revisions', $paragraph, -1);
+    $this->crearCampo('paragraph', 'programacion_anual', 'field_anio', 'integer');
+    $decimal = ['precision' => 12, 'scale' => 4];
+    $this->crearCampo('paragraph', 'programacion_anual', 'field_programado', 'decimal', $decimal);
+    $this->crearCampo('paragraph', 'programacion_anual', 'field_logrado', 'decimal', $decimal);
+
+    $this->crearCampo('node', 'meta', 'body', 'text_long');
+    $this->crearCampo('node', 'meta', 'field_codigo', 'string');
+    $this->crearCampo('node', 'meta', 'field_numero', 'integer');
+    $this->crearCampo('node', 'meta', 'field_actividades', 'text_long');
+    $this->crearCampo('node', 'meta', 'field_recursos', 'string');
+    $this->crearCampo('node', 'meta', 'field_tipo_meta', 'string');
+    $this->crearCampo('node', 'meta', 'field_proyecto', 'entity_reference', ['target_type' => 'taxonomy_term']);
+    $this->crearCampo('node', 'meta', 'field_responsables', 'entity_reference', ['target_type' => 'taxonomy_term'], -1);
+    $this->crearCampo('node', 'meta', 'field_indicadores', 'entity_reference_revisions', $paragraph, -1);
+    foreach (['codigo_formato', 'version_formato', 'periodo', 'fecha_suscripcion'] as $campo) {
+      $this->crearCampo('node', 'plan_mejoramiento', 'field_' . $campo, 'string');
+    }
+    $this->crearCampo('node', 'seguimiento', 'field_actividades', 'text_long');
+    $this->crearCampo('node', 'seguimiento', 'field_medios_verificacion', 'string');
+  }
+
+  /**
+   * Crea un programa con modelo, dos factores, un proceso y su plan.
+   *
+   * @return array<string, mixed>
+   *   Con programa, proceso, plan, f1 y f2.
+   */
+  protected function programaConPlan(): array {
+    $modelo = $this->crearLineamiento('Modelo');
+    $f1 = $this->elemento('Estudiantes', 1, $modelo->id());
+    $f2 = $this->elemento('Profesores', 2, $modelo->id());
+    $programa = $this->crearNodo('programa', ['title' => 'Programa', 'field_clave' => 'p']);
+    $proceso = $this->crearNodo('proceso', [
+      'field_programa' => $programa->id(),
+      'field_lineamiento' => $modelo->id(),
+    ]);
+    $plan = $this->crearNodo('plan_mejoramiento', [
+      'field_proceso' => $proceso->id(),
+      'field_codigo_formato' => 'FO-GCL-20',
+      'field_version_formato' => '03',
+      'field_periodo' => '2024-2 – 2030',
+      'field_fecha_suscripcion' => '2024-06-19',
+    ]);
+    return ['programa' => $programa, 'proceso' => $proceso, 'plan' => $plan, 'f1' => $f1, 'f2' => $f2];
+  }
+
+  /**
+   * Crea una meta de un plan con los hallazgos indicados.
+   */
+  protected function meta(Node $plan, int $numero, string $codigo, array $hallazgos = [], array $extra = []): Node {
+    return $this->crearNodo('meta', $extra + [
+      'title' => 'Meta',
+      'field_plan' => $plan->id(),
+      'field_numero' => $numero,
+      'field_codigo' => $codigo,
+      'body' => ['value' => 'Acción ' . $codigo, 'format' => 'plain_text'],
+      'field_hallazgos' => $hallazgos,
+    ]);
+  }
+
+  /**
+   * Crea un seguimiento de una meta.
+   */
+  protected function seguimiento(Node $meta, string $periodo, ?string $avance, string $estado = 'reportado'): void {
+    $this->crearNodo('seguimiento', [
+      'field_meta' => $meta->id(),
+      'field_periodo' => $periodo,
+      'field_avance' => $avance,
+      'field_estado' => $estado,
+      'field_actividades' => ['value' => 'Hecho en ' . $periodo, 'format' => 'plain_text'],
+      'field_medios_verificacion' => 'Evidencia ' . $periodo,
+    ]);
+  }
+
+  /**
+   * Arma el plan: filas por meta, factores de cada una y enlace desde ellos.
+   */
+  public function testPlanArmaFilasConEnlace(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $d = $this->programaConPlan();
+    $id = (int) $d['proceso']->id();
+    $this->hallazgo($id, 'aspecto_por_mejorar', 'Situación uno', (int) $d['f1']->id());
+    $this->hallazgo($id, 'aspecto_por_mejorar', 'Situación dos', (int) $d['f2']->id());
+    $this->hallazgo($id, 'fortaleza', 'Fortaleza', (int) $d['f1']->id());
+    $h = $this->container->get('entity_type.manager')->getStorage('node')
+      ->loadByProperties(['type' => 'hallazgo']);
+    $h = array_values($h);
+    usort($h, fn($a, $b) => (int) $a->id() <=> (int) $b->id());
+
+    // Una meta con hallazgos de dos factores, otra de uno y otra sin hallazgos.
+    $paragraphs = $this->container->get('entity_type.manager')->getStorage('paragraph');
+    $tipo = ['type' => 'programacion_anual'];
+    $anio_a = $paragraphs->create($tipo + ['field_anio' => 2024, 'field_programado' => '165.0000']);
+    $anio_b = $paragraphs->create($tipo + [
+      'field_anio' => 2025,
+      'field_programado' => '0.6000',
+      'field_logrado' => '0.5000',
+    ]);
+    $anio_c = $paragraphs->create($tipo + ['field_anio' => 2026]);
+    foreach ([$anio_a, $anio_b, $anio_c] as $anio) {
+      $anio->save();
+    }
+    $indicador = $paragraphs->create([
+      'type' => 'indicador',
+      'field_nombre' => 'Indicador uno',
+      'field_linea_base' => '153 grupo',
+      'field_programacion' => [$anio_a, $anio_b, $anio_c],
+    ]);
+    $indicador->save();
+    $m1 = $this->meta($d['plan'], 1, '1', [$h[0]->id(), $h[1]->id()], [
+      'field_indicadores' => [$indicador],
+      'field_actividades' => ['value' => "1. Uno\n2. Dos", 'format' => 'plain_text'],
+      'field_recursos' => 'Funcionamiento',
+    ]);
+    $m2 = $this->meta($d['plan'], 2, '2a.2b', [$h[2]->id()]);
+    $this->meta($d['plan'], 3, '3');
+    // Seguimientos: el último periodo de la meta 1 no trae porcentaje.
+    $this->seguimiento($m1, '2024-2', '0.80');
+    $this->seguimiento($m1, '2025-2', NULL);
+    $this->seguimiento($m2, '2025-1', '0.50');
+
+    $datos = $presentador->factoresDelPrograma($d['programa'], new CacheableMetadata());
+    $cache = new CacheableMetadata();
+    $resultado = $presentador->planDelPrograma($d['programa'], $datos, $cache);
+    $plan = $resultado['plan'];
+    $this->assertCount(3, $plan['filas']);
+    $this->assertSame('Formato FO-GCL-20 · versión 03 · periodo 2024-2 – 2030 · suscrito en junio de 2024', $plan['lead']);
+
+    // Meta con varios factores: aparece en ambos; sin hallazgos, sin factor.
+    $this->assertSame(['f01', 'f02'], $plan['filas'][0]['keys']);
+    $this->assertSame('F01, F02', $plan['filas'][0]['tag']);
+    $this->assertSame(['f01'], $plan['filas'][1]['keys']);
+    $this->assertSame(['sin-factor'], $plan['filas'][2]['keys']);
+    $this->assertSame('', $plan['filas'][2]['tag']);
+    $this->assertSame(['f01', 'f02', 'sin-factor'], array_column($plan['opciones'], 'value'));
+    $this->assertSame('F01 · Estudiantes', $plan['opciones'][0]['label']);
+
+    // Celdas: situación (lista si son varias), acción con su meta, avance.
+    $this->assertSame(['type' => 'list', 'items' => ['Situación uno', 'Situación dos']], $plan['filas'][0]['cells'][0]);
+    $this->assertSame(['type' => 'text', 'value' => 'Fortaleza'], $plan['filas'][1]['cells'][0]);
+    $this->assertSame('Acción 1', $plan['filas'][0]['cells'][1]['value']);
+    $this->assertSame('Meta 1', $plan['filas'][0]['cells'][1]['eyebrow']);
+    $this->assertSame('Meta 2a.2b', $plan['filas'][1]['cells'][1]['eyebrow']);
+
+    // Avance: siempre el periodo más reciente, sin tomar el % de uno anterior.
+    $this->assertSame("2025-2\nReportado", $plan['filas'][0]['cells'][3]['value']);
+    $this->assertSame("2025-1 · 50 %\nReportado", $plan['filas'][1]['cells'][3]['value']);
+    $this->assertSame('', $plan['filas'][2]['cells'][3]['value']);
+
+    // Detalle: actividades numeradas, indicadores y periodos (con su %).
+    $grupos = array_column($plan['filas'][0]['cells'][1]['details']['groups'], NULL, 'label');
+    $this->assertSame("1. Uno\n2. Dos", $grupos['Actividades']['text']);
+    $this->assertSame('Funcionamiento', $grupos['Recursos']['text']);
+    $this->assertSame(
+      ['Indicador uno · Línea base: 153 grupo · Programación anual · 2024: 165 · 2025: 0,6 (logrado 0,5)'],
+      $grupos['Indicadores']['items'],
+    );
+    $this->assertSame(
+      [
+        '2025-2 · Reportado — Hecho en 2025-2 (Medios de verificación: Evidencia 2025-2)',
+        '2024-2 · 80 % · Reportado — Hecho en 2024-2 (Medios de verificación: Evidencia 2024-2)',
+      ],
+      $grupos['Avance reportado por periodo']['items'],
+    );
+    $this->assertTrue($plan['aviso']);
+
+    // Enlace desde los factores: número de metas por factor.
+    $cuentas = array_column($resultado['factores']['pestanas'], 'plan_count', 'key');
+    $this->assertSame(['f01' => 2, 'f02' => 1], $cuentas);
+    $this->assertSame('#plan', $resultado['factores']['pestanas'][0]['plan_url']);
+    $this->assertContains('node_list:meta', $cache->getCacheTags());
+  }
+
+  /**
+   * Sin plan, sin metas o sin factores el plan se comporta bien.
+   */
+  public function testPlanVacioSinMetasNiFactores(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $d = $this->programaConPlan();
+    $this->hallazgo((int) $d['proceso']->id(), 'fortaleza', 'Fortaleza', (int) $d['f1']->id());
+    $factores = $presentador->factoresDelPrograma($d['programa'], new CacheableMetadata());
+
+    // Plan sin metas: no hay sección y los factores no traen enlace.
+    $resultado = $presentador->planDelPrograma($d['programa'], $factores, new CacheableMetadata());
+    $this->assertSame([], $resultado['plan']);
+    $this->assertArrayNotHasKey('plan_count', $resultado['factores']['pestanas'][0]);
+
+    // Programa sin ningún proceso.
+    $otro = $this->crearNodo('programa', ['title' => 'Otro', 'field_clave' => 'o']);
+    $resultado = $presentador->planDelPrograma($otro, [], new CacheableMetadata());
+    $this->assertSame(['factores' => [], 'plan' => []], $resultado);
+
+    // Sin factores (modelo sin ellos): el plan sale sin filtro por factor.
+    $registro = $this->crearLineamiento('Registro', 'registro_calificado');
+    $sin_modelo = $this->crearNodo('programa', ['title' => 'Sin factores', 'field_clave' => 's']);
+    $proceso = $this->crearNodo('proceso', [
+      'field_programa' => $sin_modelo->id(),
+      'field_lineamiento' => $registro->id(),
+    ]);
+    $plan = $this->crearNodo('plan_mejoramiento', ['field_proceso' => $proceso->id()]);
+    $this->meta($plan, 1, '1');
+    $resultado = $presentador->planDelPrograma($sin_modelo, [], new CacheableMetadata());
+    $this->assertCount(1, $resultado['plan']['filas']);
+    $this->assertSame([], $resultado['plan']['filas'][0]['keys']);
+    $this->assertSame([], $resultado['plan']['opciones']);
+    $this->assertSame('', $resultado['plan']['lead']);
+    $this->assertFalse($resultado['plan']['aviso']);
+  }
+
+  /**
+   * El aviso de «no verificado» solo sale si hay seguimientos sin verificar.
+   */
+  public function testAvisoSoloConSeguimientosSinVerificar(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $d = $this->programaConPlan();
+    $meta = $this->meta($d['plan'], 1, '1');
+    $this->seguimiento($meta, '2025-1', '1.00', 'verificado');
+    $plan = $presentador->planDelPrograma($d['programa'], [], new CacheableMetadata())['plan'];
+    $this->assertFalse($plan['aviso']);
+    $this->assertSame("2025-1 · 100 %\nVerificado", $plan['filas'][0]['cells'][3]['value']);
+    $this->seguimiento($meta, '2025-2', '0.00');
+    $plan = $presentador->planDelPrograma($d['programa'], [], new CacheableMetadata())['plan'];
+    $this->assertTrue($plan['aviso']);
+    // Un avance de 0 es un valor, no un hueco.
+    $this->assertSame("2025-2 · 0 %\nReportado", $plan['filas'][0]['cells'][3]['value']);
+  }
+
+  /**
+   * Los textos salen sin doble escape y los datos raros no rompen el plan.
+   */
+  public function testPlanSinDobleEscapeNiErrores(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $d = $this->programaConPlan();
+    $id = (int) $d['proceso']->id();
+    $this->hallazgo($id, 'aspecto_por_mejorar', "Aspecto de A & B y 'C'", (int) $d['f1']->id());
+    $almacen = $this->container->get('entity_type.manager')->getStorage('node');
+    $propio = array_values($almacen->loadByProperties(['type' => 'hallazgo']))[0];
+    // Un hallazgo de otro proceso enlazado a la meta no se muestra.
+    $otro_proceso = $this->crearNodo('proceso', ['field_programa' => $d['programa']->id()]);
+    $this->hallazgo((int) $otro_proceso->id(), 'aspecto_por_mejorar', 'De otro proceso', (int) $d['f1']->id());
+    $ajeno = array_values($almacen->loadByProperties(['type' => 'hallazgo']));
+    $ajeno = array_filter($ajeno, fn($h) => (int) $h->id() !== (int) $propio->id());
+
+    $paragraphs = $this->container->get('entity_type.manager')->getStorage('paragraph');
+    $tipo = ['type' => 'programacion_anual'];
+    $anios = [
+      $paragraphs->create($tipo + ['field_anio' => 2026, 'field_logrado' => '3.0000']),
+      $paragraphs->create($tipo + ['field_anio' => 2024, 'field_programado' => '1.0000']),
+      $paragraphs->create($tipo + ['field_anio' => 2025]),
+    ];
+    foreach ($anios as $anio) {
+      $anio->save();
+    }
+    $indicador = $paragraphs->create([
+      'type' => 'indicador',
+      'field_nombre' => "Indicador & 'uno'",
+      'field_unidad' => '%',
+      'field_programacion' => $anios,
+    ]);
+    $indicador->save();
+    $meta = $this->meta($d['plan'], 1, "2a&b'", array_merge([$propio->id()], array_map(fn($h) => $h->id(), $ajeno)), [
+      'field_indicadores' => [$indicador],
+    ]);
+    // Avance fuera de 0 a 1: no se muestra como porcentaje.
+    $this->seguimiento($meta, '2025-2', '2.50');
+    $this->crearNodo('seguimiento', [
+      'field_meta' => $meta->id(),
+      'field_periodo' => '2025-1',
+      'field_avance' => '0.40',
+      'field_estado' => 'reportado',
+      'field_medios_verificacion' => "Acta & 'anexo'",
+    ]);
+
+    $factores = $presentador->factoresDelPrograma($d['programa'], new CacheableMetadata());
+    $plan = $presentador->planDelPrograma($d['programa'], $factores, new CacheableMetadata())['plan'];
+    $celdas = $plan['filas'][0]['cells'];
+    // Una sola situación (la del mismo proceso).
+    $this->assertSame(['type' => 'text', 'value' => "Aspecto de A & B y 'C'"], $celdas[0]);
+    // Sin doble escape: el texto va tal cual y la plantilla lo escapa una vez.
+    $this->assertSame("Meta 2a&b'", $celdas[1]['eyebrow']);
+    $this->assertSame("Meta 2a&b'", $celdas[1]['details']['context']);
+    $this->assertSame("2025-2\nReportado", $celdas[3]['value']);
+    $grupos = array_column($celdas[1]['details']['groups'], NULL, 'label');
+    $this->assertSame(
+      ["Indicador & 'uno' · Unidad: % · Programación anual · 2024: 1 · 2026: logrado 3"],
+      $grupos['Indicadores']['items'],
+    );
+    $periodos = $grupos['Avance reportado por periodo']['items'];
+    // Sin porcentaje (2,50 está fuera de 0 a 1), pero con su narrativa.
+    $this->assertStringStartsWith('2025-2 · Reportado — ', $periodos[0]);
+    $this->assertSame("2025-1 · 40 % · Reportado (Medios de verificación: Acta & 'anexo')", $periodos[1]);
   }
 
 }

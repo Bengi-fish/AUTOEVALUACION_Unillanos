@@ -18,7 +18,9 @@
     </thead>
     <tbody role="rowgroup">
       {% for fila in rows %}
-        <tr role="row"{% if fila.key %} data-key="{{ fila.key }}"{% endif %}{% if fila.plazo %} data-plazo="{{ fila.plazo }}"{% endif %}>
+        {# Una o varias claves de factor (separadas por espacio) para el filtro. #}
+        {% set claves = fila.keys ?: (fila.key ? [fila.key] : []) %}
+        <tr role="row"{% if claves %} data-key="{{ claves|join(' ') }}"{% endif %}{% if fila.plazo %} data-plazo="{{ fila.plazo }}"{% endif %}>
           {% for celda in fila.cells %}
             <td role="cell" data-label="{{ (columns[loop.index0] ?? {}).label }}">
               {%- if loop.first and fila.tag %}<span class="ua-plan__tag">{{ fila.tag }}</span>{% endif -%}
@@ -27,7 +29,38 @@
               {%- elseif celda.type == 'plazo' -%}
                 {% include 'unillanos:plazo' with {variant: celda.value} only %}
               {%- else -%}
-                {{ celda.value }}
+                {%- if celda.eyebrow %}<span class="ua-plan__eyebrow">{{ celda.eyebrow }}</span>{% endif -%}
+                {# Un texto con saltos de línea se imprime con ellos (white-space: pre-line). #}
+                {%- if celda.value and "\n" in celda.value -%}
+                  <span class="ua-plan__text">{{ celda.value }}</span>
+                {%- else -%}
+                  {{ celda.value }}
+                {%- endif -%}
+                {%- if celda.details and celda.details.groups %}
+                  {% set grupos = [] %}
+                  {% for grupo in celda.details.groups %}
+                    {% if grupo.text or grupo.items %}{% set grupos = grupos|merge([grupo]) %}{% endif %}
+                  {% endfor %}
+                  {% if grupos %}
+                    <details class="ua-plan__detail">
+                      <summary>{{ celda.details.summary|default('Ver detalle'|t) }}{% if celda.details.context %}<span class="ua-sr"> ({{ celda.details.context }})</span>{% endif %}</summary>
+                      <dl class="ua-plan__dl">
+                        {% for grupo in grupos %}
+                          <div>
+                            <dt>{{ grupo.label }}</dt>
+                            <dd>
+                              {%- if grupo.items -%}
+                                <ul role="list">{% for elemento in grupo.items %}<li>{{ elemento }}</li>{% endfor %}</ul>
+                              {%- else -%}
+                                <span class="ua-plan__text">{{ grupo.text }}</span>
+                              {%- endif -%}
+                            </dd>
+                          </div>
+                        {% endfor %}
+                      </dl>
+                    </details>
+                  {% endif %}
+                {% endif %}
               {%- endif -%}
             </td>
           {% endfor %}

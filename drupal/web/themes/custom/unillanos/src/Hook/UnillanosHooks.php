@@ -179,7 +179,11 @@ class UnillanosHooks {
       $variables['programa'] = $this->presentador->datosPrograma($nodo);
       // Los metadatos de caché de lo que lee el presentador (nodos, términos y
       // permisos) los cubre node_view_alter() para toda la página del nodo.
-      $variables['factores'] = $this->presentador->factoresDelPrograma($nodo, new CacheableMetadata());
+      $cache = new CacheableMetadata();
+      $factores = $this->presentador->factoresDelPrograma($nodo, $cache);
+      $resultado = $this->presentador->planDelPrograma($nodo, $factores, $cache);
+      $variables['factores'] = $resultado['factores'];
+      $variables['plan'] = $resultado['plan'];
     }
   }
 

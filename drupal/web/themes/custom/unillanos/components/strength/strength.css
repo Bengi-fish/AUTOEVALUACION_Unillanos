@@ -132,6 +132,11 @@
   align-items: flex-start;
 }
 
+/* Textos largos: peso medio (el 600 de las tarjetas con foto cansa en párrafos). */
+.ua-strengths--plain .ua-strength__text {
+  font-weight: 500;
+}
+
 @media (max-width: 560px) {
 
   .ua-strengths--plain {

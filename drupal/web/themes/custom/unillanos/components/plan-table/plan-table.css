@@ -189,3 +189,98 @@
   font-weight: 700;
   vertical-align: 1px;
 }
+
+/* Antetítulo de la celda de acción («Meta 3»). */
+.ua-plan__eyebrow {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--rojo-700);
+}
+
+/* Detalle desplegable de una fila (details nativo: teclado y lectores sin JS). */
+.ua-plan .ua-plan__detail {
+  margin: var(--espacio-3) 0 0;
+  border: 0;
+  padding: 0;
+}
+
+.ua-plan .ua-plan__detail > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  margin-left: -4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  color: var(--rojo-700);
+  border-radius: var(--radio-sm, 6px);
+}
+
+.ua-plan .ua-plan__detail > summary:hover {
+  color: var(--Unillanos_Red);
+  text-decoration: underline;
+}
+
+.ua-plan .ua-plan__detail > summary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--tinta-900);
+}
+
+.ua-plan .ua-plan__detail[open] > summary {
+  margin-bottom: var(--espacio-3);
+}
+
+.ua-plan__dl {
+  display: grid;
+  gap: var(--espacio-3);
+  margin: 0;
+  padding: var(--espacio-3) var(--espacio-4);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  font-weight: 400;
+}
+
+.ua-plan__dl dt {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--tinta-500);
+}
+
+.ua-plan__dl dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--tinta-700);
+  overflow-wrap: anywhere;
+}
+
+/* Los saltos de línea de un texto (actividades numeradas a mano, o el
+   estado del avance bajo el periodo) se respetan. */
+.ua-plan__text {
+  white-space: pre-line;
+}
+
+/* Textos largos en la primera columna: peso medio (el 600 del prototipo está
+   pensado para frases cortas). */
+.ua-plan td:first-child {
+  font-weight: 500;
+}
+
+@media (forced-colors: active) {
+
+  .ua-plan .ua-plan__detail > summary:focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+}

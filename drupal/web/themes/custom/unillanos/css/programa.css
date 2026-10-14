@@ -17,3 +17,12 @@
   flex: none;
   margin-top: 2px;
 }
+
+/* Menos aire bajo la ficha antes de la banda de autoevaluación. */
+.ua-programa #ficha {
+  padding-bottom: var(--espacio-6);
+}
+
+.ua-programa #ficha .ua-ficha {
+  margin-bottom: 0;
+}

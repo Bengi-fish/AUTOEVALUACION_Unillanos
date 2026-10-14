@@ -3,7 +3,7 @@
  * Filtro del plan de mejoramiento (portado de plantilla/app.js).
  *
  * Filtra las filas de la tabla por factor y por plazo sin recargar la página,
- * actualiza las cuatro cifras, muestra el aviso de «sin resultados» y anuncia
+ * actualiza las cifras (la del total y, si hay plazo, las de cada plazo), muestra el aviso de «sin resultados» y anuncia
  * a los lectores de pantalla cuántas acciones quedan (región role="status").
  * No usa innerHTML: solo cambia atributos y textContent.
  *
@@ -30,18 +30,22 @@
     raiz.querySelectorAll('[data-kpi]').forEach((cifra) => {
       cifras[cifra.getAttribute('data-kpi')] = cifra;
     });
-    if (!selFactor || !selPlazo || !tabla || !limpiar || !aviso || !vacio || !salida
-      || !cifras.total || !cifras.corto || !cifras.mediano || !cifras.largo) {
+    // El filtro de plazo y sus cifras son opcionales (hay datos sin plazo).
+    if (!selFactor || !tabla || !limpiar || !aviso || !vacio || !salida || !cifras.total) {
       return;
     }
+    const filtros = [selFactor, selPlazo].filter(Boolean);
+    const hayFiltro = () => filtros.some((seleccion) => seleccion.value);
 
     // Aplica los filtros. Con anunciar, avisa del resultado a los lectores.
     const filtrar = (anunciar, animar) => {
       const conteo = { corto: 0, mediano: 0, largo: 0 };
       let visibles = 0;
       filas.forEach((fila) => {
-        const pasaFactor = !selFactor.value || fila.getAttribute('data-key') === selFactor.value;
-        const pasaPlazo = !selPlazo.value || fila.getAttribute('data-plazo') === selPlazo.value;
+        // data-key puede traer varias claves de factor separadas por espacio.
+        const claves = (fila.getAttribute('data-key') || '').split(' ');
+        const pasaFactor = !selFactor.value || claves.includes(selFactor.value);
+        const pasaPlazo = !selPlazo || !selPlazo.value || fila.getAttribute('data-plazo') === selPlazo.value;
         if (pasaFactor && pasaPlazo) {
           fila.removeAttribute('data-ua-out');
           visibles += 1;
@@ -54,13 +58,15 @@
           fila.setAttribute('data-ua-out', '');
         }
       });
-      limpiar.hidden = !(selFactor.value || selPlazo.value);
+      limpiar.hidden = !hayFiltro();
       vacio.hidden = visibles > 0;
       tabla.hidden = visibles === 0;
       cifras.total.textContent = String(visibles);
-      cifras.corto.textContent = String(conteo.corto);
-      cifras.mediano.textContent = String(conteo.mediano);
-      cifras.largo.textContent = String(conteo.largo);
+      ['corto', 'mediano', 'largo'].forEach((plazo) => {
+        if (cifras[plazo]) {
+          cifras[plazo].textContent = String(conteo[plazo]);
+        }
+      });
       tabla.dispatchEvent(new window.CustomEvent('unillanos:plan-refresh'));
       if (animar) {
         Drupal.unillanos.motion.flourish(salida, '.ua-kpi, .ua-plan, .ua-panel__block-title');
@@ -72,12 +78,13 @@
       }
     };
 
-    [selFactor, selPlazo].forEach((seleccion) => {
+    filtros.forEach((seleccion) => {
       seleccion.addEventListener('change', () => filtrar(true, true));
     });
     limpiar.addEventListener('click', () => {
-      selFactor.value = '';
-      selPlazo.value = '';
+      filtros.forEach((seleccion) => {
+        seleccion.value = '';
+      });
       filtrar(true, true);
       selFactor.focus();
     });
@@ -87,7 +94,9 @@
         return;
       }
       selFactor.value = clave;
-      selPlazo.value = '';
+      if (selPlazo) {
+        selPlazo.value = '';
+      }
       filtrar(true, true);
       selFactor.focus({ preventScroll: true });
     });

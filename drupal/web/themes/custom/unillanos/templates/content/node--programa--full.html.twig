@@ -6,6 +6,8 @@
  * Variables:
  * - factores: tarjetas y pestañas de factores del proceso del programa (pueden
  *   faltar o estar vacías).
+ * - plan: lead, opciones del filtro, filas y aviso del plan de mejoramiento
+ *   (vacío si el programa no tiene un plan con metas).
  * - programa: (solo en la ruta canónica) datos armados por el presentador (nombre_inicio,
  *   nombre_acento, eyebrow, etiquetas y ficha). Solo trae valores que
  *   existen; no se muestran los títulos de otros nodos ni datos calculados.
@@ -43,19 +45,27 @@
   {% endif %}
 
   {# Factores del proceso (modelo y cantidad según cada programa). #}
+  {% set hay_plan = plan.filas|default([]) is not empty %}
   {% if factores.pestanas %}
     {# Banda alterna salvo que la cabecera gris quede pegada a ella (sin ficha). #}
     {% set variante = programa.ficha|length > 1 ? 'alt' : '' %}
-    {% embed 'unillanos:section' with {id: 'autoevaluacion', variant: variante, factores: factores} only %}
+    {% embed 'unillanos:section' with {id: 'autoevaluacion', variant: variante, factores: factores, hay_plan: hay_plan} only %}
       {% block content %}
         {% set partes = [] %}
         {% if factores.proceso %}{% set partes = partes|merge([factores.proceso]) %}{% endif %}
         {% if factores.resultado %}{% set partes = partes|merge([('Resultado'|t) ~ ': ' ~ factores.resultado]) %}{% endif %}
-        {% include 'unillanos:section-head' with {
+        {% embed 'unillanos:section-head' with {
           eyebrow: 'Autoevaluación del programa'|t,
-          title: 'Factores, valoración y fortalezas'|t,
+          title: 'Factores y valoración'|t,
           lead: partes|join('. '),
+          hay_plan: hay_plan,
         } only %}
+          {% block right %}
+            {% if hay_plan %}
+              {% include 'unillanos:button' with {label: 'Ir al plan de mejoramiento'|t, variant: 'secundario', url: '#plan', icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
+            {% endif %}
+          {% endblock %}
+        {% endembed %}
         {% set hay_grado = false %}
         {% for tarjeta in factores.tarjetas %}
           {% if tarjeta.grade %}{% set hay_grado = true %}{% endif %}
@@ -79,6 +89,46 @@
             items: factores.pestanas,
           } only %}
         </div>
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+
+  {# Plan de mejoramiento del proceso (una fila por meta). #}
+  {% if hay_plan %}
+    {% embed 'unillanos:section' with {id: 'plan', plan: plan, hay_factores: factores.pestanas is not empty} only %}
+      {% block content %}
+        {% embed 'unillanos:section-head' with {
+          eyebrow: 'Plan de mejoramiento'|t,
+          title: 'Acciones del programa'|t,
+          lead: plan.lead,
+          hay_factores: hay_factores,
+        } only %}
+          {% block right %}
+            {% if hay_factores %}
+              {% include 'unillanos:button' with {label: 'Volver a los factores'|t, variant: 'secundario', url: '#autoevaluacion', icon: 'chevron-left', icon_size: 'sm'} only %}
+            {% endif %}
+          {% endblock %}
+        {% endembed %}
+        {% include 'unillanos:plan-filter' with {
+          heading: 'h3',
+          title: 'Acciones de mejora'|t,
+          show_plazo: false,
+          factor_options: plan.opciones,
+          page_size: 6,
+          columns: [
+            {label: 'Situación para intervenir'|t},
+            {label: 'Acción de mejora'|t},
+            {label: 'Responsables'|t},
+            {label: 'Avance reportado'|t},
+          ],
+          rows: plan.filas,
+        } only %}
+        {% if plan.aviso %}
+          <p class="ua-nota">
+            {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
+            <span>{{ 'El avance es el reportado por el programa en cada periodo; no está verificado.'|t }}</span>
+          </p>
+        {% endif %}
       {% endblock %}
     {% endembed %}
   {% endif %}

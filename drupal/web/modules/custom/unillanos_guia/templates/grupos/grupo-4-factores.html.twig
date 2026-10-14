@@ -26,6 +26,33 @@
   {% set fortalezas_demo = fortalezas_demo|merge([{text: texto}]) %}
 {% endfor %}
 
+{# Filas de ejemplo sin plazo, para las opciones nuevas de plan-table y plan-filter. #}
+{% set filas_sin_plazo = [] %}
+{% set opciones_sin_plazo = [] %}
+{% for factor in datos.institucional.factores|slice(0, 3) %}
+  {% set opciones_sin_plazo = opciones_sin_plazo|merge([{value: factor.key, label: factor.tag ~ ' · ' ~ factor.name}]) %}
+  {% for accion in factor.plan %}
+    {% set claves_demo = loop.last and factor.key == 'f2' ? [factor.key, 'f3'] : [factor.key] %}
+    {% set filas_sin_plazo = filas_sin_plazo|merge([{
+      keys: claves_demo,
+      tag: claves_demo|length > 1 ? factor.tag ~ ', F3' : factor.tag,
+      cells: [
+        {type: 'text', value: accion[0]},
+        {type: 'text', value: accion[1], eyebrow: 'Meta %d'|format(filas_sin_plazo|length + 1), details: {summary: 'Ver actividades, indicadores y avance'|t, context: 'Meta %d'|format(filas_sin_plazo|length + 1), groups: [
+          {label: 'Actividades'|t, text: "1. Primera actividad de ejemplo.\n2. Segunda actividad de ejemplo."},
+          {label: 'Recursos'|t, text: 'Recursos de funcionamiento (ejemplo)'|t},
+          {label: 'Indicadores'|t, items: ['Indicador de ejemplo · Línea base: 10 · Programación anual · 2025: 12 · 2026: 14'|t]},
+          {label: 'Avance reportado por periodo'|t, items: ['2025-2 · 80 % · Reportado'|t, '2025-1 · Reportado'|t]},
+          {label: 'Grupo vacío (no se imprime)'|t, text: ''},
+        ]}},
+        {type: 'list', items: accion[2]},
+        {type: 'text', value: "2025-2 · 80 %\nReportado"},
+      ],
+    }]) %}
+  {% endfor %}
+{% endfor %}
+{% set columnas_sin_plazo = [{label: 'Situación para intervenir'|t}, {label: 'Acción de mejora'|t}, {label: 'Responsables'|t}, {label: 'Avance reportado'|t}] %}
+
 {% set items_tabs = [] %}
 {% set opciones_plan = [] %}
 {% set filas_plan = [] %}
@@ -211,6 +238,17 @@
     </figure>
   </div>
 
+  <div class="ug-block" id="plan-table-detalle">
+    <h3 class="ug-block__title">plan-table · eyebrow, details, keys</h3>
+    <p class="ug-block__text">{{ 'Opciones nuevas: eyebrow (antetítulo en mayúsculas sobre el valor, por ejemplo «Meta 3»), details (bloque desplegable nativo con grupos de etiqueta y texto o lista; los grupos vacíos no se imprimen y los saltos de línea del texto se respetan; context añade un texto solo para lectores de pantalla al resumen, p. ej. «(Meta 3)», porque hay un resumen por fila) y keys (varias claves de factor por fila; la etiqueta de la fila las junta). Los textos de las acciones salen de datos-ejemplo.js; el detalle es de ejemplo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cuatro columnas, sin plazo, con detalle'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:plan-table' with {columns: columnas_sin_plazo, rows: filas_sin_plazo|slice(0, 4), page_size: 3, caption: 'Acciones del plan de mejoramiento (muestra con detalle)'|t} only %}
+      </div>
+    </figure>
+  </div>
+
   {# --------------------------------------------------------- plan-filter #}
   <div class="ug-block" id="plan-filter">
     <h3 class="ug-block__title">plan-filter</h3>
@@ -219,6 +257,17 @@
       <figcaption class="ug-frame__cap">{{ 'plan completo'|t }}</figcaption>
       <div class="ug-frame__body">
         {% include 'unillanos:plan-filter' with {heading: 'h4', factor_options: opciones_plan, columns: columnas_plan, rows: filas_plan, page_size: 6} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="plan-filter-sin-plazo">
+    <h3 class="ug-block__title">plan-filter · show_plazo</h3>
+    <p class="ug-block__text">{{ 'Con show_plazo: false (datos sin plazo) se ocultan el filtro de plazo, las cifras por plazo y la leyenda; queda el filtro de factor y una sola cifra compacta con el total, que el JS actualiza al filtrar. Filtrar por F3 muestra también la acción que atiende a F2 y F3 (varias claves por fila).'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'tres factores, sin plazo'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:plan-filter' with {heading: 'h4', title: 'Acciones de mejora'|t, show_plazo: false, factor_options: opciones_sin_plazo, columns: columnas_sin_plazo, rows: filas_sin_plazo, page_size: 4} only %}
       </div>
     </figure>
   </div>
