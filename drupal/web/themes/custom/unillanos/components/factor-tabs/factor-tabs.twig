@@ -12,6 +12,9 @@
 {% set base = id|default('pestanas') %}
 {% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
 {% set sub = {'h2': 'h3', 'h3': 'h4', 'h4': 'h5'}[nivel] %}
+{% set tema = (image ~ '') == 'tema' %}
+{# El pie del informe se imprime salvo que report sea false. #}
+{% set con_informe = report is not same as(false) %}
 {# Si initial no está entre las pestañas se usa la primera (si no, todos los paneles quedarían ocultos). #}
 {% set inicial = (items|first).key %}
 {% for item in items %}
@@ -38,7 +41,11 @@
     {% endif %}
     <div class="ua-panel" role="tabpanel" id="{{ base }}-panel-{{ item.key }}" aria-labelledby="{{ base }}-tab-{{ item.key }}" tabindex="0"{% if item.key != inicial %} hidden{% endif %}>
       <div class="ua-panel__banner">
-        {%- include 'unillanos:placeholder' with {label: ('Banner de'|t) ~ ' ' ~ (item.label|default(item.name))|lower, size_label: '1600 × 530 px', decorative: true} only -%}
+        {%- if tema -%}
+          {%- include 'unillanos:placeholder' with {label: item.name, variant: 'tema', number: item.number} only -%}
+        {%- else -%}
+          {%- include 'unillanos:placeholder' with {label: ('Banner de'|t) ~ ' ' ~ (item.label|default(item.name))|lower, size_label: '1600 × 530 px', decorative: true} only -%}
+        {%- endif -%}
       </div>
       <div class="ua-panel__body">
         <div class="ua-panel__head">
@@ -71,7 +78,20 @@
           {% endfor %}
           <section aria-label="{{ 'Fortalezas destacadas'|t }}">
             <div class="ua-panel__block-title"><{{ sub }} class="ua-h4">{{ 'Fortalezas destacadas'|t }}</{{ sub }}></div>
-            {% include 'unillanos:strength' with {items: fortalezas} only %}
+            {% include 'unillanos:strength' with {items: fortalezas, plain: tema} only %}
+          </section>
+        {% endif %}
+        {% if item.improvements %}
+          <section aria-label="{{ 'Aspectos por mejorar'|t }}">
+            <div class="ua-panel__block-title"><{{ sub }} class="ua-h4">{{ 'Aspectos por mejorar'|t }}</{{ sub }}></div>
+            <ul class="ua-improve" role="list">
+              {% for texto in item.improvements %}
+                <li class="ua-improve__item">
+                  <span class="ua-improve__icon">{% include 'unillanos:icon' with {name: 'target', size: 'sm'} only %}</span>
+                  <p class="ua-improve__text">{{ texto }}</p>
+                </li>
+              {% endfor %}
+            </ul>
           </section>
         {% endif %}
         {% if item.plan_count is not null %}
@@ -80,6 +100,7 @@
             {% include 'unillanos:planlink' with {count: item.plan_count, description: item.plan_note|default(''), url: item.plan_url|default(''), plan_key: item.key} only %}
           </section>
         {% endif %}
+        {% if con_informe %}
         <div class="ua-panel__foot">
           <span class="ua-meta">
             {%- include 'unillanos:icon' with {name: 'file', size: 'sm'} only -%}
@@ -87,6 +108,7 @@
           </span>
           {% include 'unillanos:button' with {label: ('Ver informe completo'|t) ~ (item.label ? ' · ' ~ item.label : ''), variant: 'primario', url: item.report_url|default(''), icon: 'download', disabled: not item.report_url} only %}
         </div>
+        {% endif %}
       </div>
     </div>
   {% endfor %}

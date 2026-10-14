@@ -166,3 +166,13 @@
   overflow-wrap: anywhere;
   hyphens: auto;
 }
+
+/* Con fondo del tema, cada tarjeta gira un poco el degradado para que la cuadrícula no sea uniforme. */
+.ua-factor-card:nth-child(3n + 2) .ua-ph--tema {
+  filter: hue-rotate(-8deg) saturate(1.05);
+}
+
+.ua-factor-card:nth-child(3n + 3) .ua-ph--tema {
+  background-position: 30% 0;
+  filter: brightness(.94);
+}

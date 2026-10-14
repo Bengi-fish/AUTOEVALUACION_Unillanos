@@ -43,3 +43,40 @@
 .ua-ph--3x1 {
   aspect-ratio: 3 / 1;
 }
+
+/*
+ * Variante «tema»: fondo propio en los colores institucionales (sin recuadro
+ * gris ni texto de imagen pendiente). Decorativo: ningún texto lo describe.
+ */
+.ua-ph--tema {
+  border: 0;
+  color: var(--Surface);
+  background-color: var(--rojo-700);
+  background-image:
+    radial-gradient(circle at 12% 120%, rgba(255, 255, 255, .22) 0 18%, transparent 19%),
+    radial-gradient(circle at 92% -20%, rgba(255, 255, 255, .16) 0 26%, transparent 27%),
+    repeating-linear-gradient(135deg, transparent 0 22px, rgba(255, 255, 255, .05) 22px 44px),
+    linear-gradient(135deg, var(--Unillanos_Red) 0%, var(--rojo-700) 58%, var(--tinta-900) 135%);
+}
+
+.ua-ph--tema .ua-ph__num {
+  font-size: clamp(56px, 11vw, 120px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, .26);
+  user-select: none;
+}
+
+@media (forced-colors: active) {
+
+  .ua-ph--tema {
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  .ua-ph--tema .ua-ph__num {
+    color: CanvasText;
+  }
+}

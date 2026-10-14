@@ -29,3 +29,15 @@ props:
         - 16x10
         - 3x1
       default: ''
+    variant:
+      type: string
+      title: Variante
+      description: 'tema: fondo propio con los colores del tema (degradado institucional y patrón sutil), sin recuadro gris ni textos de «imagen pendiente»; siempre decorativo. Úsalo donde aún no hay fotografía real.'
+      enum:
+        - ''
+        - tema
+      default: ''
+    number:
+      type: string
+      title: Número grande y tenue
+      description: 'Solo con variant tema: número o sigla (por ejemplo «03») que se pinta grande y casi transparente sobre el fondo.'

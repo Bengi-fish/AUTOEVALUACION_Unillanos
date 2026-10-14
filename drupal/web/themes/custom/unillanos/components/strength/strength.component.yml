@@ -8,6 +8,11 @@ props:
   required:
     - items
   properties:
+    plain:
+      type: boolean
+      title: Sin fotografía
+      description: 'Tarjetas de solo texto (ícono de visto bueno y texto), de dos columnas y alineadas arriba: caben textos largos sin recuadros grises de «fotografía».'
+      default: false
     items:
       type: array
       title: Fortalezas

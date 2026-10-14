@@ -109,6 +109,12 @@
       </div>
     </figure>
     <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'image: tema (fondo propio en lugar del recuadro gris)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-card' with {heading: 'h4', image: 'tema', items: tarjetas_demo} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
       <figcaption class="ug-frame__cap">{{ 'sin valoración y sin destino (no es un enlace)'|t }}</figcaption>
       <div class="ug-frame__body">
         {% include 'unillanos:factor-card' with {heading: 'h4', items: [{number: '05', name: 'Estructura y procesos académicos'|t, grade: 'Etiqueta de ejemplo'|t}]} only %}
@@ -138,6 +144,12 @@
         {% include 'unillanos:strength' with {items: fortalezas_demo} only %}
       </div>
     </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'plain: sin fotografía, dos columnas, alineadas arriba (aguantan textos largos)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:strength' with {plain: true, items: fortalezas_demo|merge([{text: 'Fortaleza de ejemplo con un texto largo para ver cómo se alinean las tarjetas cuando una es más alta que la otra: el equipo docente participa de forma permanente en la autoevaluación, en la revisión del plan de estudios y en el seguimiento de las acciones de mejoramiento del programa durante todo el periodo evaluado.'|t}])} only %}
+      </div>
+    </figure>
   </div>
 
   {# ======================================================= TANDA 4B ==== #}
@@ -149,6 +161,22 @@
       <figcaption class="ug-frame__cap">{{ 'doce factores y tres adendas'|t }}</figcaption>
       <div class="ug-frame__body">
         {% include 'unillanos:factor-tabs' with {id: 'tabs-guia', label: 'Factores y adendas'|t, initial: 'f1', heading: 'h4', items: items_tabs} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="factor-tabs-tema">
+    <h3 class="ug-block__title">factor-tabs · image, improvements, report</h3>
+    <p class="ug-block__text">{{ 'Tres opciones de factor-tabs: image: tema (banner con el fondo del tema y el número grande, fortalezas sin fotografía), improvements (bloque «Aspectos por mejorar» tras las fortalezas) y report: false (no se imprime el pie del informe mientras no haya URL). Una pestaña sin número no deja un cuadro vacío. Los textos de aspectos son de ejemplo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'dos factores y una pestaña sin número'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% set aspectos_demo = ['Aspecto por mejorar de ejemplo: fortalecer el seguimiento de la medición de impacto de las funciones misionales.'|t, 'Otro aspecto de ejemplo, más corto.'|t] %}
+        {% include 'unillanos:factor-tabs' with {id: 'tabs-guia-tema', label: 'Factores (con fondo del tema)'|t, heading: 'h4', image: 'tema', report: false, items: [
+          {key: 'f01', number: '01', name: factor_1.name, label: 'Factor 01', score: factor_1.score, grade: factor_1.grado, decimals: 2, strengths: factor_1.strengths|slice(0, 2), improvements: aspectos_demo},
+          {key: 'f02', number: '02', name: 'Factor solo con aspectos por mejorar'|t, label: 'Factor 02', improvements: aspectos_demo|slice(0, 1)},
+          {key: 'sin-factor', number: '', name: 'Sin factor asignado'|t, improvements: aspectos_demo|slice(1, 1)},
+        ]} only %}
       </div>
     </figure>
   </div>

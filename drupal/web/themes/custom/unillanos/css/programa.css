@@ -1,0 +1,19 @@
+/**
+ * Página del programa (node--programa--full.html.twig).
+ */
+
+/* Nota discreta bajo la cuadrícula de factores. */
+.ua .ua-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+  margin: var(--espacio-4) 0 var(--espacio-6);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--tinta-500);
+}
+
+.ua .ua-nota .ua-icon {
+  flex: none;
+  margin-top: 2px;
+}

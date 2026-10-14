@@ -21,6 +21,19 @@ props:
       type: string
       title: Clave de la pestaña inicial
       pattern: '^[a-z0-9_-]*$'
+    image:
+      type: string
+      title: Imágenes del panel
+      description: 'tema: el banner usa el fondo propio del tema (con el número de la pestaña grande y tenue) y las fortalezas van sin fotografía; sin recuadros grises de «imagen pendiente».'
+      enum:
+        - ''
+        - tema
+      default: ''
+    report:
+      type: boolean
+      title: Mostrar el pie del informe
+      description: 'Con false no se imprime el pie «Ver informe completo» (úsalo mientras no haya URL del informe).'
+      default: true
     heading:
       type: string
       title: Nivel del título del panel
@@ -67,6 +80,12 @@ props:
             description: 'Las palabras entre asteriscos (*así*) se resaltan.'
           strengths:
             type: array
+            items:
+              type: string
+          improvements:
+            type: array
+            title: Aspectos por mejorar
+            description: 'Textos de los aspectos por mejorar del factor; se muestran después de las fortalezas.'
             items:
               type: string
           plan_count:

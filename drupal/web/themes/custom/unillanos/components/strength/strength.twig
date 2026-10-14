@@ -4,10 +4,12 @@
  * Fortalezas destacadas.
  */
 #}
-<div{{ attributes.addClass('ua-strengths') }}>
+<div{{ attributes.addClass(plain ? ['ua-strengths', 'ua-strengths--plain'] : ['ua-strengths']) }}>
   {% for fortaleza in items %}
     <article class="ua-strength">
-      {%- include 'unillanos:placeholder' with {label: fortaleza.photo_label|default(('Fotografía'|t) ~ ' ' ~ loop.index), size_label: '800 × 600', decorative: true} only -%}
+      {%- if not plain -%}
+        {%- include 'unillanos:placeholder' with {label: fortaleza.photo_label|default(('Fotografía'|t) ~ ' ' ~ loop.index), size_label: '800 × 600', decorative: true} only -%}
+      {%- endif -%}
       <div class="ua-strength__body">
         <span class="ua-strength__icon">{% include 'unillanos:icon' with {name: 'check', size: 'sm'} only %}</span>
         <p class="ua-strength__text">{{ fortaleza.text }}</p>

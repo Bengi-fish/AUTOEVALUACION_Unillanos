@@ -235,5 +235,16 @@
         <figcaption>16x10</figcaption>
       </figure>
     </div>
+    <p class="ug-block__text">{{ 'Variante tema (variant: tema): fondo propio con los colores del tema, sin recuadro gris ni textos de «imagen pendiente»; siempre decorativo. Con number, un número grande y tenue. La usan las tarjetas y los banners de factor de las páginas de programa.'|t }}</p>
+    <div class="ug-grid">
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Fondo del tema'|t, variant: 'tema', ratio: '16x10'} only %}
+        <figcaption>{{ 'tema, 16x10'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Banner del factor'|t, variant: 'tema', ratio: '3x1', number: '03'} only %}
+        <figcaption>{{ 'tema, 3x1, number'|t }}</figcaption>
+      </figure>
+    </div>
   </div>
 </section>

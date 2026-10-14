@@ -7,6 +7,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
@@ -176,20 +177,30 @@ class UnillanosHooks {
       && $ruta_nodo->id() === $nodo->id();
     if ($canonica && $nodo->bundle() === 'programa' && $variables['view_mode'] === 'full') {
       $variables['programa'] = $this->presentador->datosPrograma($nodo);
+      // Los metadatos de caché de lo que lee el presentador (nodos, términos y
+      // permisos) los cubre node_view_alter() para toda la página del nodo.
+      $variables['factores'] = $this->presentador->factoresDelPrograma($nodo, new CacheableMetadata());
     }
   }
 
   /**
    * Implements hook_node_view_alter().
    *
-   * La cabecera nombra la facultad y la sede: si cambian esos términos, el
-   * programa debe volver a pintarse.
+   * La cabecera nombra la facultad y la sede, y la sección de autoevaluación
+   * lee procesos, valoraciones, hallazgos y términos del modelo: si cambian,
+   * el programa debe volver a pintarse.
    */
   #[Hook('node_view_alter')]
   public function nodeViewAlter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void {
     if (!$entity instanceof FieldableEntityInterface || $entity->bundle() !== 'programa') {
       return;
     }
+    $build['#cache']['tags'] = Cache::mergeTags(
+      $build['#cache']['tags'] ?? [],
+      PresentadorAutoevaluacion::ETIQUETAS_AUTOEVALUACION,
+    );
+    // Las consultas del presentador respetan el acceso del visitante.
+    $build['#cache']['contexts'][] = 'user.permissions';
     foreach (['field_facultad', 'field_sede'] as $campo) {
       $termino = $entity->get($campo)->entity;
       if ($termino) {

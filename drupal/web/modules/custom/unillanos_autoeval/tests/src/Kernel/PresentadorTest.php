@@ -26,6 +26,10 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->crearCampo('node', 'proceso', 'field_periodo_evaluado', 'string');
     $this->crearCampo('node', 'proceso', 'field_resultado', 'string');
     $this->setUpCurrentUser([], ['access content']);
+    $this->crearCampo('taxonomy_term', 'elemento_modelo', 'field_tipo_elemento', 'string');
+    $this->crearCampo('taxonomy_term', 'elemento_modelo', 'field_numero', 'integer');
+    $this->crearCampo('node', 'hallazgo', 'field_tipo_hallazgo', 'string');
+    $this->crearCampo('node', 'hallazgo', 'body', 'text_long');
     Vocabulary::create(['vid' => 'facultad', 'name' => 'facultad'])->save();
     $this->crearCampo('node', 'programa', 'field_facultad', 'entity_reference', ['target_type' => 'taxonomy_term']);
     $this->crearCampo('node', 'programa', 'field_sede', 'entity_reference', ['target_type' => 'taxonomy_term']);
@@ -197,6 +201,207 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->assertSame('', $presentador->fechaMesAnio(''));
     $this->assertSame('', $presentador->fechaMesAnio('2029-13-01'));
     $this->assertSame('', $presentador->fechaMesAnio('texto'));
+  }
+
+  /**
+   * Crea un elemento del modelo con su tipo y número.
+   */
+  protected function elemento(string $nombre, int $numero, int $lineamiento, string $tipo = 'factor', array $padres = []): Term {
+    $termino = Term::create([
+      'vid' => 'elemento_modelo',
+      'name' => $nombre,
+      'field_clave' => $nombre,
+      'field_tipo_elemento' => $tipo,
+      'field_numero' => $numero,
+      'field_lineamiento' => $lineamiento,
+      'parent' => $padres,
+    ]);
+    $termino->save();
+    return $termino;
+  }
+
+  /**
+   * Crea un hallazgo de un proceso.
+   */
+  protected function hallazgo(int $proceso, string $tipo, string $texto, ?int $elemento = NULL, int $publicado = 1, string $formato = 'plain_text'): void {
+    $this->crearNodo('hallazgo', [
+      'field_proceso' => $proceso,
+      'field_tipo_hallazgo' => $tipo,
+      'field_elemento' => $elemento,
+      'body' => ['value' => $texto, 'format' => $formato],
+      'status' => $publicado,
+    ]);
+  }
+
+  /**
+   * Los factores salen del modelo del proceso, con sus datos guardados.
+   */
+  public function testFactoresDelPrograma(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $this->cargarGrados();
+    $modelo = $this->crearLineamiento('Modelo A');
+    $otro_modelo = $this->crearLineamiento('Modelo B');
+    $f2 = $this->elemento('Estudiantes', 2, $modelo->id());
+    $f1 = $this->elemento('Proyecto educativo', 1, $modelo->id());
+    $f3 = $this->elemento('Profesores', 3, $modelo->id());
+    $this->elemento('Factor de otro modelo', 1, $otro_modelo->id());
+    $programa = $this->crearNodo('programa', ['title' => 'Programa', 'field_clave' => 'p']);
+    $proceso = $this->crearNodo('proceso', [
+      'title' => 'Proceso 2018–2022',
+      'field_programa' => $programa->id(),
+      'field_lineamiento' => $modelo->id(),
+      'field_resultado' => 'Cumplimiento en alto grado (4,508 · 90 %)',
+    ]);
+    $pleno = $this->container->get('entity_type.manager')->getStorage('taxonomy_term')->loadByProperties(['name' => 'Pleno']);
+    $alto = $this->container->get('entity_type.manager')->getStorage('taxonomy_term')->loadByProperties(['name' => 'Alto']);
+    $this->crearNodo('valoracion', [
+      'field_proceso' => $proceso->id(),
+      'field_elemento' => $f1->id(),
+      'field_valoracion' => '4.90',
+      'field_grado' => reset($pleno)->id(),
+    ]);
+    $this->crearNodo('valoracion', [
+      'field_proceso' => $proceso->id(),
+      'field_elemento' => $f2->id(),
+      'field_valoracion' => '4.27',
+      'field_grado' => reset($alto)->id(),
+    ]);
+    $this->hallazgo((int) $proceso->id(), 'fortaleza', 'Fortaleza uno', (int) $f1->id());
+    $this->hallazgo((int) $proceso->id(), 'aspecto_por_mejorar', '<p>Mejorar &amp; sostener</p>', (int) $f1->id(), 1, 'basic_html');
+    $this->hallazgo((int) $proceso->id(), 'aspecto_por_mejorar', 'Puntaje < 4 y > 3', (int) $f1->id());
+    $this->hallazgo((int) $proceso->id(), 'aspecto_por_mejorar', 'Aspecto del factor dos', (int) $f2->id());
+    $this->hallazgo((int) $proceso->id(), 'aspecto_por_mejorar', 'Aspecto sin factor');
+    $this->hallazgo((int) $proceso->id(), 'fortaleza', 'Sin publicar', (int) $f1->id(), 0);
+    $this->hallazgo((int) $proceso->id(), 'fortaleza', '   ', (int) $f1->id());
+
+    $cache = new CacheableMetadata();
+    $datos = $presentador->factoresDelPrograma($programa, $cache);
+    $this->assertSame('Proceso 2018–2022', $datos['proceso']);
+    $this->assertSame('Cumplimiento en alto grado (4,508 · 90 %)', $datos['resultado']);
+    // El factor 3 no tiene valoración ni hallazgos: no aparece.
+    $this->assertSame(['f01', 'f02', 'sin-factor'], array_column($datos['pestanas'], 'key'));
+    $this->assertSame(['f01', 'f02'], array_column($datos['tarjetas'], 'goto'));
+    $this->assertSame(4.9, $datos['tarjetas'][0]['score']);
+    $this->assertSame('Pleno', $datos['tarjetas'][0]['grade']);
+    $this->assertSame('01', $datos['tarjetas'][0]['number']);
+    $this->assertSame('Alto', $datos['tarjetas'][1]['grade']);
+    $this->assertSame(['Fortaleza uno'], $datos['pestanas'][0]['strengths']);
+    // HTML de otro formato: sin etiquetas; texto plano: tal cual.
+    $this->assertSame(['Mejorar & sostener', 'Puntaje < 4 y > 3'], $datos['pestanas'][0]['improvements']);
+    $this->assertSame('Factor 01', $datos['pestanas'][0]['label']);
+    $this->assertSame(['Aspecto del factor dos'], $datos['pestanas'][1]['improvements']);
+    $this->assertSame([], $datos['pestanas'][1]['strengths']);
+    $this->assertSame('Sin factor asignado', $datos['pestanas'][2]['name']);
+    $this->assertSame(['Aspecto sin factor'], $datos['pestanas'][2]['improvements']);
+    $this->assertContains('node_list:hallazgo', $cache->getCacheTags());
+    $this->assertNotContains('node:' . $f3->id(), $cache->getCacheTags());
+  }
+
+  /**
+   * Un hallazgo sobre una característica o un aspecto va a su factor.
+   */
+  public function testHallazgoDeCaracteristicaVaAlFactor(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $modelo = $this->crearLineamiento('Modelo 2025');
+    $factor = $this->elemento('Factor', 4, $modelo->id());
+    $caracteristica = $this->elemento('Característica', 10, $modelo->id(), 'caracteristica', [$factor->id()]);
+    $aspecto = $this->elemento('Aspecto', 11, $modelo->id(), 'aspecto', [$caracteristica->id()]);
+    $suelto = $this->elemento('Característica suelta', 12, $modelo->id(), 'caracteristica');
+    $programa = $this->crearNodo('programa', ['title' => 'Programa', 'field_clave' => 'p']);
+    $proceso = $this->crearNodo('proceso', [
+      'field_programa' => $programa->id(),
+      'field_lineamiento' => $modelo->id(),
+    ]);
+    $this->hallazgo((int) $proceso->id(), 'fortaleza', 'Por aspecto', (int) $aspecto->id());
+    $this->hallazgo((int) $proceso->id(), 'fortaleza', 'Por característica', (int) $caracteristica->id());
+    $this->hallazgo((int) $proceso->id(), 'aspecto_por_mejorar', 'Sin padre', (int) $suelto->id());
+    $datos = $presentador->factoresDelPrograma($programa, new CacheableMetadata());
+    $this->assertSame(['f04', 'sin-factor'], array_column($datos['pestanas'], 'key'));
+    $this->assertSame(['Por aspecto', 'Por característica'], $datos['pestanas'][0]['strengths']);
+    $this->assertSame(['Sin padre'], $datos['pestanas'][1]['improvements']);
+    // Sin valoración no hay tarjeta ni medidor.
+    $this->assertSame([], $datos['tarjetas']);
+    $this->assertArrayNotHasKey('score', $datos['pestanas'][0]);
+  }
+
+  /**
+   * Sin proceso, sin modelo o sin factores no se devuelve nada.
+   */
+  public function testFactoresVaciosSinProcesoNiModelo(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $programa = $this->crearNodo('programa', ['title' => 'Programa', 'field_clave' => 'p']);
+    $this->assertSame([], $presentador->factoresDelPrograma($programa, new CacheableMetadata()));
+    $this->crearNodo('proceso', ['field_programa' => $programa->id()]);
+    $this->assertSame([], $presentador->factoresDelPrograma($programa, new CacheableMetadata()));
+    $modelo = $this->crearLineamiento('Modelo sin factores');
+    $otro = $this->crearNodo('programa', ['title' => 'Otro', 'field_clave' => 'o']);
+    $this->crearNodo('proceso', ['field_programa' => $otro->id(), 'field_lineamiento' => $modelo->id()]);
+    $this->assertSame([], $presentador->factoresDelPrograma($otro, new CacheableMetadata()));
+  }
+
+  /**
+   * Se usa el proceso más reciente que tenga factores y datos.
+   */
+  public function testUsaElProcesoMasRecienteConFactores(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $acreditacion = $this->crearLineamiento('Acreditación');
+    $registro = $this->crearLineamiento('Registro calificado', 'registro_calificado');
+    $factor = $this->elemento('Estudiantes', 2, $acreditacion->id());
+    $this->elemento('Condición', 1, $registro->id(), 'condicion');
+    $programa = $this->crearNodo('programa', ['title' => 'Programa', 'field_clave' => 'p']);
+    $antiguo = $this->crearNodo('proceso', [
+      'title' => 'Acreditación 2018',
+      'field_programa' => $programa->id(),
+      'field_lineamiento' => $acreditacion->id(),
+    ]);
+    $this->hallazgo((int) $antiguo->id(), 'fortaleza', 'Fortaleza antigua', (int) $factor->id());
+    // Un proceso más reciente sin datos todavía y otro de registro calificado.
+    $this->crearNodo('proceso', [
+      'title' => 'Acreditación 2024 sin datos',
+      'field_programa' => $programa->id(),
+      'field_lineamiento' => $acreditacion->id(),
+    ]);
+    $this->crearNodo('proceso', [
+      'title' => 'Registro 2025',
+      'field_programa' => $programa->id(),
+      'field_lineamiento' => $registro->id(),
+    ]);
+    $datos = $presentador->factoresDelPrograma($programa, new CacheableMetadata());
+    $this->assertSame('Acreditación 2018', $datos['proceso']);
+    $this->assertSame(['Fortaleza antigua'], $datos['pestanas'][0]['strengths']);
+  }
+
+  /**
+   * Las claves de pestaña son únicas aunque falten o se repitan los números.
+   */
+  public function testClavesDePestanaUnicas(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $modelo = $this->crearLineamiento('Modelo');
+    $a = $this->elemento('Factor A', 1, $modelo->id());
+    $b = $this->elemento('Factor B repetido', 1, $modelo->id());
+    $c = Term::create([
+      'vid' => 'elemento_modelo',
+      'name' => 'Factor sin número',
+      'field_clave' => 'sin-numero',
+      'field_tipo_elemento' => 'factor',
+      'field_lineamiento' => $modelo->id(),
+    ]);
+    $c->save();
+    $programa = $this->crearNodo('programa', ['title' => 'Programa', 'field_clave' => 'p']);
+    $proceso = $this->crearNodo('proceso', [
+      'field_programa' => $programa->id(),
+      'field_lineamiento' => $modelo->id(),
+    ]);
+    foreach ([$a, $b, $c] as $factor) {
+      $this->hallazgo((int) $proceso->id(), 'fortaleza', 'Fortaleza ' . $factor->label(), (int) $factor->id());
+    }
+    $datos = $presentador->factoresDelPrograma($programa, new CacheableMetadata());
+    $claves = array_column($datos['pestanas'], 'key');
+    $this->assertCount(3, $claves);
+    $this->assertSame($claves, array_values(array_unique($claves)));
+    $this->assertSame('f01', $claves[0]);
+    $this->assertSame('', $datos['pestanas'][2]['number']);
+    $this->assertSame('', $datos['pestanas'][2]['label']);
   }
 
 }

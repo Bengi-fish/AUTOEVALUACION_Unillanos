@@ -228,3 +228,68 @@
 .ua-panel__desc {
   overflow-wrap: anywhere;
 }
+
+/*
+ * Aspectos por mejorar: lista de tarjetas de texto. Mismo borde, radio y
+ * relleno que las fortalezas sin fotografía; el ícono es un círculo con
+ * contorno (no relleno) para distinguirlas de las fortalezas.
+ */
+.ua-improve {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-4);
+  align-items: start;
+}
+
+.ua-improve__item {
+  display: flex;
+  gap: var(--espacio-2);
+  align-items: flex-start;
+  padding: var(--espacio-4);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua-improve__icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 2px solid var(--Unillanos_Red);
+  color: var(--rojo-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ua-improve__icon .ua-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.ua-improve__text {
+  min-width: 0;
+  font-size: 15px;
+  line-height: 21px;
+  font-weight: 600;
+  color: var(--tinta-900);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+@media (max-width: 560px) {
+
+  .ua-improve {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Una pestaña sin número (p. ej. «Sin factor asignado») no deja un cuadro vacío. */
+.ua-tab__num:empty {
+  display: none;
+}

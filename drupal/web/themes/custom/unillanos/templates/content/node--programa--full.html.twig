@@ -4,6 +4,8 @@
  * Programa académico, vista completa.
  *
  * Variables:
+ * - factores: tarjetas y pestañas de factores del proceso del programa (pueden
+ *   faltar o estar vacías).
  * - programa: (solo en la ruta canónica) datos armados por el presentador (nombre_inicio,
  *   nombre_acento, eyebrow, etiquetas y ficha). Solo trae valores que
  *   existen; no se muestran los títulos de otros nodos ni datos calculados.
@@ -11,6 +13,7 @@
 #}
 <article{{ attributes.addClass('ua-programa') }}>
 {% if programa %}
+{{ attach_library('unillanos/programa') }}
   {% embed 'unillanos:pagehead' with {
     eyebrow: programa.eyebrow,
     title: programa.nombre_inicio,
@@ -35,6 +38,47 @@
           title: 'Ficha del programa'|t,
         } only %}
         {% include 'unillanos:ficha' with {items: ficha} only %}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+
+  {# Factores del proceso (modelo y cantidad según cada programa). #}
+  {% if factores.pestanas %}
+    {# Banda alterna salvo que la cabecera gris quede pegada a ella (sin ficha). #}
+    {% set variante = programa.ficha|length > 1 ? 'alt' : '' %}
+    {% embed 'unillanos:section' with {id: 'autoevaluacion', variant: variante, factores: factores} only %}
+      {% block content %}
+        {% set partes = [] %}
+        {% if factores.proceso %}{% set partes = partes|merge([factores.proceso]) %}{% endif %}
+        {% if factores.resultado %}{% set partes = partes|merge([('Resultado'|t) ~ ': ' ~ factores.resultado]) %}{% endif %}
+        {% include 'unillanos:section-head' with {
+          eyebrow: 'Autoevaluación del programa'|t,
+          title: 'Factores, valoración y fortalezas'|t,
+          lead: partes|join('. '),
+        } only %}
+        {% set hay_grado = false %}
+        {% for tarjeta in factores.tarjetas %}
+          {% if tarjeta.grade %}{% set hay_grado = true %}{% endif %}
+        {% endfor %}
+        {% if factores.tarjetas %}
+          {% include 'unillanos:factor-card' with {heading: 'h3', image: 'tema', items: factores.tarjetas} only %}
+        {% endif %}
+        {% if hay_grado %}
+          <p class="ua-nota">
+            {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
+            <span>{{ 'Las etiquetas de grado se muestran como están guardadas; la regla de asignación está por confirmar.'|t }}</span>
+          </p>
+        {% endif %}
+        <div class="ua-subsection">
+          {% include 'unillanos:factor-tabs' with {
+            id: 'factores',
+            label: 'Factores del programa'|t,
+            heading: 'h3',
+            image: 'tema',
+            report: false,
+            items: factores.pestanas,
+          } only %}
+        </div>
       {% endblock %}
     {% endembed %}
   {% endif %}

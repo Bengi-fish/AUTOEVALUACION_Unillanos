@@ -17,6 +17,14 @@ props:
         - h3
         - h4
       default: h3
+    image:
+      type: string
+      title: Imagen de la tarjeta
+      description: 'tema: fondo propio con los colores del tema (placeholder variant tema) en lugar del recuadro gris de «Imagen del factor».'
+      enum:
+        - ''
+        - tema
+      default: ''
     items:
       type: array
       title: Tarjetas
