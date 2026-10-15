@@ -46,8 +46,7 @@ Antes de tocar código lee `docs/drupal/modelo-de-contenido.md` (nombres de máq
 Reglas del dominio no obvias: el modelo se declara por proceso (`field_lineamiento`; CESU 2020 o CESU 2025) y no hay equivalencias entre ellos; el grado se calcula, no se digita; valoraciones solo para factor y característica.
 
 ## 4. Estado actual
-- **Fase 6 (tema) casi cerrada**, rama `fase-6-tema`; último commit `280a1cf` (demo con datos reales de Ingeniería Electrónica, paso 5b).
-- Antes del merge a `main`: este `CLAUDE.md` y el commit de documentación (`docs/IMPLEMENTACION_DRUPAL.md`, `docs/pendientes-acreditacion.md`, README del tema). El merge lo hace el usuario.
+- **Fase 6 (tema) cerrada a falta del merge**, rama `fase-6-tema`; último commit de contenido `280a1cf` (demo con datos reales, paso 5b) y de documentación `513e7ea`. El merge a `main` lo hace el usuario.
 - **Fase 7** (`fase-7-vistas`): vistas y páginas (`/programas`, `/institucional`, etc.).
 - **Fase 8** (`fase-8-webform-roles`): formulario Participa, roles y permisos (respaldo previo `antes-fase-8`).
 - **Fase 9** (`fase-9-revision`): revisión antes de mostrar (accesibilidad, cifras contra el informe, desactivar `unillanos_guia`, control de acceso de `public://`).

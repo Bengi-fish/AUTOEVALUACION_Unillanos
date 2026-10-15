@@ -592,7 +592,7 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 - **Textos editoriales de la portada** («¿Qué es la autoevaluación?», fases del proceso) y de `/documentos`: se conservan los del prototipo y están **pendientes de confirmar con Acreditación**.
 - **«Última actualización» en la portada:** se omite a propósito. Sería la fecha de carga de los datos, no la del informe; se añadirá cuando haya fechas de publicación propias.
 - **Componentes sin usar y sin commitear:** los de los grupos 5 y 6 (`pane`, `program-card`, `program-search`, `progsearch`, `reco-form`, `scope`, `tool`, `view-tabs`) siguen sin usarse; su destino se decide en la Fase 7.
-- Estado y pendientes de cada paso: `docs/pendientes-acreditacion.md`, secciones 16 a 21.
+- Estado y pendientes de cada paso: `docs/pendientes-acreditacion.md`, secciones 16, 17 y 19 a 21.
 
 **Push y merge:** sección 2.6 con `fase-6-tema`.
 
@@ -673,7 +673,7 @@ Marca cada fase cuando ya esté fusionada en `main`:
 
 - [x] Fase 1 · [x] Fase 2 · [x] Fase 3 · [x] Fase 4 · [x] Fase 5 · [ ] Fase 6 · [ ] Fase 7 · [ ] Fase 8 · [ ] Fase 9
 
-**Siguiente:** Fase 6 (tema visual), rama `fase-6-tema` (sección 10).
+**Fase 6 cerrada a falta del merge** (rama `fase-6-tema`, sección 10); **siguiente: Fase 7** (rama `fase-7-vistas`, sección 11).
 
 **Pendientes abiertos** (detalle en 9.5; ninguno bloquea la Fase 6):
 

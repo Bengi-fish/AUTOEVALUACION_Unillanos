@@ -318,6 +318,8 @@ Pendiente o decidido no aplicar:
 - [ ] **Carga de entidades:** ~36 cargas por render para indicadores y programación (paragraphs); tolerable con caché.
 - [ ] **Peso 500 de la primera columna** no depende de `show_plazo`: afecta también a la tabla de la guía con plazo (el prototipo usa 600).
 
+> **Nota de numeración:** las secciones de la demostración local saltan de la 17 a la 19 (no existe la 18). Los pasos 1 a 3 de la demo están dentro de la sección 17; los pasos 4, 5a y 5b son las secciones 19, 20 y 21.
+
 ## 19. Demostración local: paso 4 (portada definitiva)
 
 `PresentadorAutoevaluacion::datosPortada()` arma la portada (reemplaza la provisional del paso 0). Escala de 0 a 40 programas: cada programa aparece una vez, con su proceso más reciente **con datos** (el mismo que usan las cifras, los chips y la página del programa). Orden: hero → cifras → programas → concepto → fases → documentos.
