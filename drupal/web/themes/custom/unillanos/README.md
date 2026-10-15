@@ -36,6 +36,8 @@ en la práctica, porque el navegador solo descarga latin-ext si hace falta).
 
 ## Alcance
 
-El tema no trae plantillas de nodos ni vistas reales: esas llegan con los
-datos en la Fase 7. Los datos de ejemplo viven solo en el módulo
-`unillanos_guia` (`/guia-estilos`).
+Las páginas públicas del demo (portada, programa, plan y `/documentos`) usan
+plantillas de nodo o de página propia (`templates/content/`) más el servicio
+`unillanos_autoeval.presentador`; no usan Views. Las vistas llegan en la
+Fase 7 (listado y buscador de programas). Los datos de ejemplo viven solo en el
+módulo `unillanos_guia` (`/guia-estilos`).
