@@ -1,0 +1,41 @@
+id: documentos_generales
+label: 'Documentos generales (normatividad)'
+migration_group: unillanos
+# Medios «documento» no ligados a un programa: se ligan a un lineamiento.
+source:
+  plugin: csv
+  path: '%datos%/semillas/documentos.csv'
+  ids: [id]
+process:
+  name: nombre
+  field_media_file/target_id:
+    plugin: migration_lookup
+    migration: archivos_generales
+    source: id
+    no_stub: true
+  field_categoria: categoria
+  field_version:
+    plugin: skip_on_empty
+    method: process
+    source: version
+  field_fecha_publicacion:
+    plugin: skip_on_empty
+    method: process
+    source: fecha_publicacion
+  field_lineamiento:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: lineamiento_id
+    -
+      plugin: migration_lookup
+      migration: lineamientos
+      no_stub: true
+  status: publicado
+destination:
+  plugin: 'entity:media'
+  default_bundle: documento
+migration_dependencies:
+  required:
+    - archivos_generales
+    - lineamientos

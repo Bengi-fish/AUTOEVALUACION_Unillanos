@@ -1,0 +1,11 @@
+{#
+/**
+ * @file
+ * Etiqueta redondeada.
+ */
+#}
+{% set clases = ['ua-tag'] %}
+{% if variant %}
+  {% set clases = clases|merge(['ua-tag--' ~ variant]) %}
+{% endif %}
+<span{{ attributes.addClass(clases) }}>{{ label }}</span>

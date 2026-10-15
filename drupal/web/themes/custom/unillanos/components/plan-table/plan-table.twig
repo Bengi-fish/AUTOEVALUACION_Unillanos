@@ -1,0 +1,79 @@
+{#
+/**
+ * @file
+ * Tabla del plan de mejoramiento con paginación.
+ *
+ * La navegación empieza oculta (hidden): sin JS todas las filas se ven y los
+ * botones no se muestran; plan-table.js la revela y pagina.
+ */
+#}
+{% set tamano = page_size is same as(0) ? 6 : page_size|default(6) %}
+<div{{ attributes.addClass('ua-plan').setAttribute('data-ua-plan', true).setAttribute('data-page-size', tamano) }}>
+  <table role="table">
+    <caption class="ua-sr">{{ caption|default('Acciones del plan de mejoramiento'|t) }}</caption>
+    <thead role="rowgroup">
+      <tr role="row">
+        {% for columna in columns %}<th scope="col" role="columnheader">{{ columna.label }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {% for fila in rows %}
+        {# Una o varias claves de factor (separadas por espacio) para el filtro. #}
+        {% set claves = fila.keys ?: (fila.key ? [fila.key] : []) %}
+        <tr role="row"{% if claves %} data-key="{{ claves|join(' ') }}"{% endif %}{% if fila.plazo %} data-plazo="{{ fila.plazo }}"{% endif %}>
+          {% for celda in fila.cells %}
+            <td role="cell" data-label="{{ (columns[loop.index0] ?? {}).label }}">
+              {%- if loop.first and fila.tag %}<span class="ua-plan__tag">{{ fila.tag }}</span>{% endif -%}
+              {%- if celda.type == 'list' -%}
+                <ul role="list">{% for elemento in celda.items %}<li>{{ elemento }}</li>{% endfor %}</ul>
+              {%- elseif celda.type == 'plazo' -%}
+                {% include 'unillanos:plazo' with {variant: celda.value} only %}
+              {%- else -%}
+                {%- if celda.eyebrow %}<span class="ua-plan__eyebrow">{{ celda.eyebrow }}</span>{% endif -%}
+                {# Un texto con saltos de línea se imprime con ellos (white-space: pre-line). #}
+                {%- if celda.value and "\n" in celda.value -%}
+                  <span class="ua-plan__text">{{ celda.value }}</span>
+                {%- else -%}
+                  {{ celda.value }}
+                {%- endif -%}
+                {%- if celda.details and celda.details.groups %}
+                  {% set grupos = [] %}
+                  {% for grupo in celda.details.groups %}
+                    {% if grupo.text or grupo.items %}{% set grupos = grupos|merge([grupo]) %}{% endif %}
+                  {% endfor %}
+                  {% if grupos %}
+                    <details class="ua-plan__detail">
+                      <summary>{{ celda.details.summary|default('Ver detalle'|t) }}{% if celda.details.context %}<span class="ua-sr"> ({{ celda.details.context }})</span>{% endif %}</summary>
+                      <dl class="ua-plan__dl">
+                        {% for grupo in grupos %}
+                          <div>
+                            <dt>{{ grupo.label }}</dt>
+                            <dd>
+                              {%- if grupo.items -%}
+                                <ul role="list">{% for elemento in grupo.items %}<li>{{ elemento }}</li>{% endfor %}</ul>
+                              {%- else -%}
+                                <span class="ua-plan__text">{{ grupo.text }}</span>
+                              {%- endif -%}
+                            </dd>
+                          </div>
+                        {% endfor %}
+                      </dl>
+                    </details>
+                  {% endif %}
+                {% endif %}
+              {%- endif -%}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="ua-plan__nav" hidden>
+    <span class="ua-plan__count"></span>
+    <span class="ua-sr" role="status" aria-atomic="true" data-ua-plan-page-live></span>
+    <div class="ua-plan__buttons">
+      {% include 'unillanos:button' with {label: 'Anterior'|t, variant: 'secundario', size: 'sm', icon: 'chevron-left', icon_size: 'sm', attributes: create_attribute({'data-dir': '-1'})} only %}
+      {% include 'unillanos:button' with {label: 'Siguiente'|t, variant: 'secundario', size: 'sm', icon: 'chevron-right', icon_size: 'sm', icon_position: 'after', attributes: create_attribute({'data-dir': '1'})} only %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+id: archivos
+label: 'Archivos de los documentos del programa'
+migration_group: unillanos
+unillanos_por_programa: true
+# Un programa sin documentos.csv no tiene esta migración.
+unillanos_csv_opcional: true
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/documentos.csv'
+  ids: [id]
+  constants:
+    destino: 'public://documentos/%programa%'
+process:
+  ruta:
+    plugin: unillanos_ruta_archivo
+    source: archivo
+    raiz: '%raiz%'
+    bases: [docs, datos]
+  filename:
+    plugin: callback
+    callable: basename
+    source: archivo
+  destino:
+    plugin: concat
+    source:
+      - constants/destino
+      - '@filename'
+    delimiter: /
+  uri:
+    plugin: file_copy
+    source:
+      - '@ruta'
+      - '@destino'
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:file'

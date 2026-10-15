@@ -1,0 +1,12 @@
+{#
+/**
+ * @file
+ * Etiqueta de plazo del plan de mejoramiento.
+ */
+#}
+{% set textos = {
+  'corto': 'Corto plazo'|t,
+  'mediano': 'Mediano plazo'|t,
+  'largo': 'Largo plazo'|t,
+} %}
+<span{{ attributes.addClass(['ua-plazo', 'ua-plazo--' ~ variant]) }}>{{ label|default(textos[variant]) }}</span>

@@ -1,0 +1,40 @@
+{#
+/**
+ * @file
+ * Encabezado del sitio.
+ */
+#}
+{% set id_menu = menu_id|default('ua-menu') %}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set inicio = ((home_url|default('/')) ~ '') matches seguro ? home_url|default('/') : '/' %}
+{% if skip_target %}
+  {% include 'unillanos:button' with {label: 'Saltar al contenido'|t, url: skip_target, attributes: create_attribute({class: ['ua-skip']})} only %}
+{% endif %}
+<header{{ attributes.addClass('ua-header') }}>
+  <div class="ua-container ua-header__bar">
+    <a class="ua-brand" href="{{ inicio }}">
+      {% include 'unillanos:logos' only %}
+      <span class="ua-brand__system"><span class="ua-brand__kicker">{{ kicker|default('Sistema de Información de'|t) }}</span><span class="ua-brand__name">{{ name|default('Autoevaluación Institucional'|t) }}</span></span>
+    </a>
+    <div class="ua-header__tools">
+      {% if show_search %}
+        <label class="ua-search">
+          {%- include 'unillanos:icon' with {name: 'search'} only -%}
+          <span class="ua-sr">{{ 'Buscar en el sitio'|t }}</span>
+          <input type="search" placeholder="{{ 'Buscar factores, documentos…'|t }}">
+        </label>
+      {% endif %}
+      {% if login_url %}
+        {% include 'unillanos:button' with {label: login_label|default('Ingresar'|t), variant: 'secundario', url: login_url, icon: 'user'} only %}
+      {% endif %}
+      {% if menu_toggle %}
+        <button class="ua-menu-toggle" type="button" data-ua-menu-toggle aria-controls="{{ id_menu }}" aria-expanded="false">
+          {%- include 'unillanos:icon' with {name: 'menu', attributes: create_attribute({'data-ua-menu-open': true})} only -%}
+          {%- include 'unillanos:icon' with {name: 'close', attributes: create_attribute({'data-ua-menu-close': true, hidden: true})} only -%}
+          <span class="ua-sr">{{ 'Menú'|t }}</span>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+  {% block nav %}{{ nav }}{% endblock %}
+</header>

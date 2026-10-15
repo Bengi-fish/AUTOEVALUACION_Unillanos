@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Fila de los tres logos institucionales.
+ *
+ * Las imágenes viven en images/ del tema; la ruta se deduce de la del
+ * componente (…/unillanos/components/logos → …/unillanos/images).
+ */
+#}
+{% set tema = componentMetadata.path|split('/components/')|first %}
+<span{{ attributes.addClass(large ? ['ua-logos', 'ua-logos--lg'] : ['ua-logos']) }}>
+  <img class="ua-logos__img ua-logos__img--unillanos" src="{{ file_url(tema ~ '/images/logo-unillanos.png') }}" alt="{{ 'Universidad de los Llanos'|t }}">
+  <img class="ua-logos__img ua-logos__img--acreditacion" src="{{ file_url(tema ~ '/images/logo-acreditacion.png') }}" alt="{{ 'Acreditación institucional en alta calidad'|t }}">
+  <img class="ua-logos__img ua-logos__img--volamos" src="{{ file_url(tema ~ '/images/logo-volamos.png') }}" alt="{{ 'Volamos más alto por la calidad'|t }}">
+</span>

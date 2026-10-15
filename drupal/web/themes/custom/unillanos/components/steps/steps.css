@@ -1,0 +1,159 @@
+/**
+ * Componente steps.
+ */
+
+.ua-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  counter-reset: paso;
+}
+
+.ua-step {
+  position: relative;
+  padding-right: var(--espacio-4);
+}
+
+.ua-step::before {
+  content: "";
+  position: absolute;
+  top: 19px;
+  left: 40px;
+  right: 0;
+  height: 2px;
+  background: var(--tinta-400);
+}
+
+.ua-step:last-child::before {
+  display: none;
+}
+
+.ua-step--hecho::before {
+  background: var(--Unillanos_Red);
+}
+
+.ua-step__dot {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-dm-sans);
+  font-weight: 700;
+  font-size: 15px;
+  background: var(--Surface);
+  border: 2px solid var(--tinta-400);
+  color: var(--tinta-500);
+  margin-bottom: var(--espacio-4);
+}
+
+.ua-step--hecho .ua-step__dot {
+  background: var(--Unillanos_Red);
+  border-color: var(--Unillanos_Red);
+  color: var(--Surface);
+}
+
+.ua-step--actual .ua-step__dot {
+  border: 3px solid var(--Unillanos_Red);
+  color: var(--rojo-700);
+  box-shadow: 0 0 0 6px var(--rojo-50);
+}
+
+.ua-step__title {
+  font-family: var(--font-dm-sans);
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+  color: var(--tinta-900);
+}
+
+.ua-step__text {
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--tinta-500);
+  margin-top: 4px !important;
+}
+
+.ua-step__state {
+  display: inline-block;
+  margin-top: var(--espacio-2);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 700;
+  border-radius: var(--radio-pill);
+  padding: 1px 10px;
+  background: var(--superficie-100);
+  color: var(--tinta-700);
+}
+
+.ua-step--hecho .ua-step__state {
+  background: var(--Surface);
+  color: var(--tinta-700);
+  border: 1px solid var(--borde);
+}
+
+.ua-step--actual .ua-step__state {
+  background: var(--Unillanos_Red);
+  color: var(--Surface);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-steps {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: var(--espacio-6);
+  }
+
+  .ua-step:nth-child(3)::before {
+    display: none;
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-steps {
+    grid-template-columns: 1fr;
+    row-gap: 0;
+  }
+
+  .ua-step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    column-gap: var(--espacio-4);
+    padding: 0 0 var(--espacio-5);
+  }
+
+  .ua-step__dot {
+    margin: 0;
+    grid-row: span 3;
+  }
+
+  .ua-step__state {
+    justify-self: start;
+  }
+
+  .ua-step::before, .ua-step:nth-child(3)::before {
+    display: block;
+    top: 40px;
+    bottom: 0;
+    left: 19px;
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+
+  .ua-step:last-child::before {
+    display: none;
+  }
+
+}
+
+/* Fase sin estado: igual que una pendiente, pero sin atenuarla. */
+.ua-step--neutra .ua-step__dot {
+  background: var(--Surface);
+  border: 2px solid var(--Unillanos_Red);
+  color: var(--rojo-700);
+}

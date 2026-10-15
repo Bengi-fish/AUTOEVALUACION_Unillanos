@@ -1,0 +1,67 @@
+{#
+/**
+ * @file
+ * Página base: encabezado con el menú principal, migas, contenido y pie.
+ * El botón flotante de recomendaciones (unillanos:fab) vuelve en la Fase 8,
+ * cuando exista la página «Participa».
+ *
+ * El título (h1), los mensajes y la ayuda van dentro de un contenedor; el
+ * contenido de la portada va a todo el ancho para que sus secciones se
+ * pinten de borde a borde.
+ *
+ * Variables:
+ * - page: regiones (primary_menu, breadcrumb, page_title, highlighted,
+ *   help, content).
+ * - is_front, logged_in.
+ * - pagina_propia: la plantilla del nodo pinta su cabecera, migas y título
+ *   (programa); se omiten el bloque de migas y el del título.
+ */
+#}
+{% set cuenta = logged_in
+  ? {url: '/user', label: 'Mi cuenta'|t}
+  : {url: '/user/login', label: 'Ingresar'|t}
+%}
+{% embed 'unillanos:header' with {
+  skip_target: '#main-content',
+  login_url: cuenta.url,
+  login_label: cuenta.label,
+  menu_toggle: true,
+  menu_id: 'ua-menu',
+  menu: page.primary_menu,
+} only %}
+  {% block nav %}{{ menu }}{% endblock %}
+{% endembed %}
+
+{% if page.breadcrumb and not pagina_propia %}
+  <div class="ua-page__migas">
+    <div class="ua-container">{{ page.breadcrumb }}</div>
+  </div>
+{% endif %}
+
+<main id="main-content" class="ua-main" tabindex="-1">
+  {% if (page.page_title and not pagina_propia) or page.highlighted or page.help %}
+    <div class="ua-container ua-main__top">
+      {% if not pagina_propia %}{{ page.page_title }}{% endif %}
+      {{ page.highlighted }}
+      {{ page.help }}
+    </div>
+  {% endif %}
+  {% if is_front or pagina_propia %}
+    {{ page.content }}
+  {% else %}
+    <div class="ua-container ua-main__body">
+      {{ page.content }}
+    </div>
+  {% endif %}
+</main>
+
+{% include 'unillanos:footer' with {
+  description: 'Un espacio para consultar, participar y hacer seguimiento a la mejora continua de la Universidad.'|t,
+  columns: [
+    {title: 'Explora'|t, links: [
+      {title: 'Programa de Electrónica'|t, url: '/programas/ingenieria-electronica'},
+      {title: 'Documentos'|t, url: '/documentos'},
+    ]},
+  ],
+  legal: 'Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional. © 2026 Universidad de los Llanos.'|t,
+} only %}

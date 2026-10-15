@@ -1,0 +1,22 @@
+uuid: 45cbc321-ea86-4221-834b-29188797c28f
+langcode: es
+status: true
+dependencies:
+  module:
+    - help
+  theme:
+    - unillanos
+_core:
+  default_config_hash: VfPFqqxfkomud5CO8DUijw85QIl9GIxh_nIxLOYESxg
+id: unillanos_help
+theme: unillanos
+region: help
+weight: 0
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: Ayuda
+  label_display: '0'
+  provider: help
+visibility: {  }

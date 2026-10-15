@@ -1,0 +1,54 @@
+/**
+ * Componente concept.
+ */
+
+.ua-concept {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: var(--espacio-7);
+  align-items: start;
+}
+
+.ua-concept .ua-lead {
+  margin: var(--espacio-4) 0;
+}
+
+.ua-concept p + p {
+  margin-top: var(--espacio-3);
+}
+
+.ua-principles {
+  display: grid;
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-5);
+  list-style: none;
+  padding: 0;
+}
+
+.ua-principles li {
+  display: flex;
+  gap: var(--espacio-3);
+  align-items: flex-start;
+}
+
+.ua-principles .ua-icon {
+  flex: none;
+  color: var(--rojo-700);
+  margin-top: 3px;
+}
+
+.ua-concept__card {
+  background: var(--superficie-50);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-5);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-concept {
+    grid-template-columns: 1fr;
+    gap: var(--espacio-6);
+  }
+
+}

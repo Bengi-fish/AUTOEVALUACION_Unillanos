@@ -1,0 +1,11 @@
+{#
+/**
+ * @file
+ * Ficha de datos (dl).
+ */
+#}
+<dl{{ attributes.addClass(compact ? ['ua-ficha', 'ua-ficha--compact'] : ['ua-ficha']) }}>
+  {% for dato in items %}
+    <div><dt>{{ dato.term }}</dt><dd>{{ dato.value }}</dd></div>
+  {% endfor %}
+</dl>

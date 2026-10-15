@@ -1,0 +1,35 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Adendas
+status: stable
+group: Factores y plan
+description: 'Lista de adendas (informes complementarios): etiqueta oscura con «ADENDA» y el número, nombre y una frase. Cada una es un enlace; sin url segura y con goto, el destino es #detalle; sin ninguno de los dos no es un enlace (div). goto es la clave de la pestaña de destino (data-ua-goto).'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    items:
+      type: array
+      title: Adendas
+      items:
+        type: object
+        required:
+          - name
+        properties:
+          number:
+            type: string
+            description: 'Número de la adenda, por ejemplo «1».'
+          name:
+            type: string
+          caption:
+            type: string
+            description: 'Por defecto «Informe complementario».'
+          url:
+            type: string
+          goto:
+            type: string
+            pattern: '^[a-z0-9_-]+$'
+          goto_tabs:
+            type: string
+            pattern: '^[a-z][a-z0-9_-]*$'
+            description: 'Id del conjunto de pestañas de destino; solo hace falta si hay varios en la página.'

@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * Condiciones de calidad numeradas.
+ */
+#}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
+<ol{{ attributes.addClass('ua-cond-grid').setAttribute('role', 'list') }}>
+  {% for condicion in items %}
+    <li class="ua-cond">
+      <span class="ua-cond__n">{{ '%02d'|format(loop.index) }}</span>
+      <{{ nivel }} class="ua-cond__title">{{ condicion.title }}</{{ nivel }}>
+      {% if condicion.text %}<p class="ua-cond__text">{{ condicion.text }}</p>{% endif %}
+      {% if condicion.states %}
+        <div class="ua-cond__estados">
+          {%- for estado in condicion.states -%}
+            {%- if estado.sede -%}<span class="ua-cond__sede">{{ estado.sede }}</span>{%- endif -%}
+            {% include 'unillanos:estado' with {label: estado.label, variant: estado.variant} only %}
+          {%- endfor -%}
+        </div>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ol>

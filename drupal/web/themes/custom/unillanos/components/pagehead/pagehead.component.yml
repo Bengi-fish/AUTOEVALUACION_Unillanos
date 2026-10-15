@@ -1,0 +1,53 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Cabecera de página
+status: stable
+group: Página base
+description: 'Franja gris con migas, antetítulo, título y bajada de una página interior. El título puede llevar una parte final de acento (en rojo).'
+props:
+  type: object
+  required:
+    - title
+  properties:
+    eyebrow:
+      type: string
+      title: Antetítulo
+    title:
+      type: string
+      title: Título
+    title_accent:
+      type: string
+      title: Final del título en acento
+      description: 'Se imprime a continuación del título, en rojo.'
+    lead:
+      type: string
+      title: Bajada
+    heading:
+      type: string
+      title: Nivel del título
+      description: 'h1 por defecto; solo una página debe tener un h1.'
+      enum:
+        - ''
+        - h1
+        - h2
+        - h3
+        - h4
+      default: h1
+    breadcrumb:
+      type: array
+      title: Migas de pan
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          title:
+            type: string
+          url:
+            type: string
+slots:
+  meta:
+    title: Fila superior
+    description: 'Etiquetas o estados bajo las migas (por ejemplo «Programa de ejemplo»).'
+  extra:
+    title: Extra
+    description: 'Contenido bajo la bajada (por ejemplo el buscador de otro programa).'

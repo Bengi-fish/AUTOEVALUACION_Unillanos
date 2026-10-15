@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * Cuadrícula de tarjetas de factor.
+ *
+ * Mismo filtro de URL que unillanos:button. La imagen es un marcador
+ * decorativo: el enlace ya se nombra con el título.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
+{# Sin url segura pero con goto, el destino por defecto es #detalle (como el prototipo); sin ninguno de los dos no es un enlace. #}
+<div{{ attributes.addClass('ua-factor-grid') }}>
+  {% for factor in items %}
+    {% set destino = factor.url and ((factor.url ~ '') matches seguro) ? factor.url : (factor.goto ? '#detalle' : '') %}
+    {% set etiqueta = destino ? 'a' : 'div' %}
+    {% set props_medidor = {grade: factor.grade|default(''), decimals: factor.decimals is same as(0) ? 0 : factor.decimals|default(1), in_link: destino ? true : false} %}
+    {% if factor.score is not null %}
+      {% set props_medidor = props_medidor|merge({score: factor.score}) %}
+    {% endif %}
+    <{{ etiqueta }} class="ua-factor-card"{% if destino %} href="{{ destino }}"{% endif %}{% if factor.goto %} data-ua-goto="{{ factor.goto }}"{% if factor.goto_tabs %} data-ua-goto-tabs="{{ factor.goto_tabs }}"{% endif %}{% endif %}>
+      <div class="ua-factor-card__media">
+        {%- if (image ~ '') == 'tema' -%}
+          {%- include 'unillanos:placeholder' with {label: 'Imagen del factor'|t, variant: 'tema'} only -%}
+        {%- else -%}
+          {%- include 'unillanos:placeholder' with {label: 'Imagen del factor'|t, size_label: '800 × 400 px', decorative: true} only -%}
+        {%- endif -%}
+        {% if factor.number %}<span class="ua-factor-card__num">{{ factor.number }}</span>{% endif %}
+      </div>
+      <div class="ua-factor-card__body">
+        <{{ nivel }} class="ua-factor-card__title">{{ factor.name }}</{{ nivel }}>
+        {% include 'unillanos:meter' with props_medidor only %}
+        <span class="ua-factor-card__foot">{{ factor.cta|default('Ver factor'|t) }}{% include 'unillanos:icon' with {name: 'arrow-right', size: 'sm'} only %}</span>
+      </div>
+    </{{ etiqueta }}>
+  {% endfor %}
+</div>

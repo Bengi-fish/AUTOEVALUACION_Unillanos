@@ -199,7 +199,7 @@ ddev export-db --file=$HOME/respaldos/antes-fase-N.sql.gz
 | 4 | `fase-4-reglas` | Módulo `unillanos_autoeval` | Grado se calcula; pruebas pasan | No |
 | 5 | `fase-5-importacion` | Migraciones y datos de Ingeniería Electrónica | `migrate:status` sin errores; 17 metas | Sí |
 | 6 | `fase-6-tema` | Tema `unillanos` desde la plantilla | Se ve igual que el prototipo | No |
-| 7 | `fase-7-vistas` | Vistas y páginas | 6 páginas con datos reales | No |
+| 7 | `fase-7-vistas` | Listado de programas con Views y páginas restantes | 6 páginas con datos reales | No |
 | 8 | `fase-8-webform-roles` | Formulario Participa, roles y permisos | Cada rol ve solo lo suyo | Sí |
 | 9 | `fase-9-revision` | Revisión final | Lista de la sección 12 completa | No |
 
@@ -564,16 +564,17 @@ Datos y decisiones que quedan abiertos. Ninguno bloquea el avance a la Fase 6.
 
 ```
 Ejecuta la Fase 6 en la rama fase-6-tema. Genera el tema con
-`ddev exec -d /var/www/html/drupal/web php core/scripts/drupal generate-theme unillanos --path themes/custom`,
+`ddev exec -d /var/www/html/drupal php vendor/bin/dr generate-theme unillanos --path themes/custom`,
 habilítalo y ponlo por defecto (`ddev drush theme:enable unillanos` y
 `ddev drush config:set system.theme default unillanos -y`).
 Convierte plantilla/ en el tema drupal/web/themes/custom/unillanos. 1) Copia `style.css` en `css/` y
 `app.js` en `js/`, y declara una librería global. 2) Adapta `app.js` a `Drupal.behaviors.unillanos`
 usando `once()`, sin cambiar la lógica de las pestañas animadas, el medidor ni el filtro del plan.
 3) Crea `page.html.twig` con el encabezado, el menú plano y el pie del prototipo, más las regiones
-necesarias. 4) Crea plantillas para `node--programa--full`, `node--proceso--full` y
-`views-view--plan` que reproduzcan el HTML del prototipo con los atributos `data-ua-views`,
-`data-routes` y `data-view`. 5) Copia los logos de plantilla/assets. No uses datos de
+necesarias. 4) Crea plantillas de nodo (`node--programa--full`) y de página propia (portada y
+`/documentos`) que reproduzcan el HTML del prototipo con los atributos `data-ua-views`,
+`data-routes` y `data-view`; los datos los prepara el servicio `unillanos_autoeval.presentador`
+(sin Views). 5) Copia los logos de plantilla/assets. No uses datos de
 `datos-ejemplo.js`: todo debe salir de los campos de Drupal. Respeta `prefers-reduced-motion`.
 Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
@@ -581,6 +582,17 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 **[TÚ] verificas:** abres `plantilla/programa-ejemplo.html` y el nodo del programa en Drupal, lado a lado, en escritorio (1440 px) y en móvil (390 px). Pruebas las pestañas animadas con el teclado.
 
 **Hecho cuando:** el sitio se ve y se comporta como el prototipo, con datos reales, y `config:status` queda sin diferencias.
+
+**Cómo se resolvió (demo con datos reales de Ingeniería Electrónica, solo local):**
+
+- **Sin Views.** Las páginas públicas (portada `/inicio`, programa, plan de mejoramiento, `/documentos`) son plantillas de nodo o de página propia más el servicio `PresentadorAutoevaluacion` (`unillanos_autoeval.presentador`). Los componentes SDC solo muestran valores ya preparados; no calculan nada. Views queda para la Fase 7 (listado y buscador de programas).
+- **El tema se genera con** `ddev exec -d /var/www/html/drupal php vendor/bin/dr generate-theme unillanos --path themes/custom` (el comando `core/scripts/drupal generate-theme` está obsoleto y falla con la estructura de este repositorio).
+- **Alias de URL:** los alias viven en la base de datos, no en la configuración. En una base nueva, o tras importar un respaldo o migrar antes de importar la configuración, ejecuta `ddev drush pathauto:aliases-generate create canonical_entities:node` (solo crea los que faltan). Sin él, el enlace «Programa de Electrónica» del menú no encuentra su alias.
+- **Documentos:** las migraciones de documentos (marcas `%raiz%` y `unillanos_csv_opcional`) copian los archivos a `public://documentos/`; `/documentos` y la sección «Documentos del programa» salen del presentador.
+- **Textos editoriales de la portada** («¿Qué es la autoevaluación?», fases del proceso) y de `/documentos`: se conservan los del prototipo y están **pendientes de confirmar con Acreditación**.
+- **«Última actualización» en la portada:** se omite a propósito. Sería la fecha de carga de los datos, no la del informe; se añadirá cuando haya fechas de publicación propias.
+- **Componentes sin usar y sin commitear:** los de los grupos 5 y 6 (`pane`, `program-card`, `program-search`, `progsearch`, `reco-form`, `scope`, `tool`, `view-tabs`) siguen sin usarse; su destino se decide en la Fase 7.
+- Estado y pendientes de cada paso: `docs/pendientes-acreditacion.md`, secciones 16, 17 y 19 a 21.
 
 **Push y merge:** sección 2.6 con `fase-6-tema`.
 
@@ -595,18 +607,21 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 **Claude ejecuta.** Prompt:
 
 ```
-Ejecuta la Fase 7 en la rama fase-7-vistas. Con la tabla "Páginas del prototipo → Drupal" de
-docs/drupal/modelo-de-contenido.md, crea las vistas `programas` (página con filtros expuestos),
-`valoraciones_proceso` (bloque por factor y característica, con argumento proceso),
-`hallazgos_proceso`, `plan_mejoramiento` (bloque filtrable por factor a través de los hallazgos),
-`documentos` (página con pestañas por categoría) y los bloques de la portada. Configura Pathauto:
-`/programas/[node:field_clave]`, `/procesos/[node:nid]`. Exporta la configuración.
+Ejecuta la Fase 7 en la rama fase-7-vistas. Parte de lo que ya existe tras la Fase 6: el programa,
+el plan, la portada y `/documentos` son plantillas más el servicio `unillanos_autoeval.presentador`
+(sin Views) y no se rehacen. Con la tabla "Páginas del prototipo → Drupal" de
+docs/drupal/modelo-de-contenido.md, crea con Views lo que falta: el listado y buscador de programas
+`/programas` (página con filtros expuestos) y las páginas que aún no existen (`/institucional`).
+Decide el destino de los componentes de los grupos 5 y 6 (pane, program-card, program-search,
+progsearch, reco-form, scope, tool, view-tabs): usarlos o descartarlos. Completa Pathauto
+(`/procesos/[node:nid]`; el patrón `/programas/[node:field_clave]` ya existe) y `auto_entitylabel`.
+Exporta la configuración.
 Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
 
-**[TÚ] verificas:** recorres las 6 páginas del prototipo en Drupal y pruebas el enlace "ver acciones de este factor".
+**[TÚ] verificas:** recorres las 6 páginas del prototipo en Drupal y pruebas el enlace "ver acciones de este factor". Vigila el tamaño de `PresentadorAutoevaluacion` (más de 1500 líneas): se divide si crece (regla de `CLAUDE.md`).
 
-**Hecho cuando:** las 6 páginas existen con datos reales y ese enlace abre el plan ya filtrado.
+**Hecho cuando:** las 6 páginas existen con datos reales (las de la demo siguen funcionando) y ese enlace abre el plan ya filtrado.
 
 **Pendiente heredado de la Fase 5:** configurar `auto_entitylabel` (títulos de `valoracion` y `seguimiento`, hoy con ids) junto con Pathauto.
 
@@ -648,6 +663,8 @@ Marca cada punto. Los comandos los puede correr Claude; la revisión visual es t
 - [ ] Accesibilidad: contraste, navegación con teclado por las pestañas, textos alternativos en imágenes.
 - [ ] Móvil (390 px) y escritorio (1440 px) comparados con `plantilla/`.
 - [ ] Copia de seguridad: `ddev export-db --file=$HOME/respaldos/final.sql.gz` guardada **fuera** del repositorio.
+- [ ] Desactivar el módulo `unillanos_guia` (`/guia-estilos` es público y muestra datos inventados).
+- [ ] Control de acceso a `public://`: hoy un documento no publicado sigue accesible por su URL directa; decidir y aplicar la protección.
 - [ ] Documentación al día: `README.md`, `CLAUDE.md` y los tres documentos del MER reflejan lo implementado.
 
 ### Registro de avance
@@ -656,7 +673,7 @@ Marca cada fase cuando ya esté fusionada en `main`:
 
 - [x] Fase 1 · [x] Fase 2 · [x] Fase 3 · [x] Fase 4 · [x] Fase 5 · [ ] Fase 6 · [ ] Fase 7 · [ ] Fase 8 · [ ] Fase 9
 
-**Siguiente:** Fase 6 (tema visual), rama `fase-6-tema` (sección 10).
+**Fase 6 cerrada a falta del merge** (rama `fase-6-tema`, sección 10); **siguiente: Fase 7** (rama `fase-7-vistas`, sección 11).
 
 **Pendientes abiertos** (detalle en 9.5; ninguno bloquea la Fase 6):
 

@@ -1,0 +1,89 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Filtro del plan de mejoramiento
+status: stable
+group: Factores y plan
+description: 'Filtros por factor y por plazo, cuatro cifras (total y por plazo), leyenda de plazos y la tabla del plan. Filtra las filas sin recargar la página, actualiza las cifras y avisa a los lectores de pantalla cuántas acciones quedan (región role=status). Los controles son selects nativos (teclado y flechas del navegador). Solo cuenta y filtra las filas que recibe: no calcula el destino de ningún hallazgo.'
+props:
+  type: object
+  required:
+    - columns
+    - rows
+  properties:
+    title:
+      type: string
+      title: Título del bloque de la tabla
+      description: 'Por defecto «Acciones del plan».'
+    heading:
+      type: string
+      title: Nivel del título
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    show_plazo:
+      type: boolean
+      title: Mostrar el plazo
+      description: 'Con false se ocultan el filtro de plazo, las cifras por plazo y la leyenda (cuando los datos no traen plazo); queda una sola cifra compacta con el total junto a los filtros.'
+      default: true
+    factor_label:
+      type: string
+      title: Rótulo del filtro de factor
+    factor_all_label:
+      type: string
+      title: Texto de «todos» del filtro de factor
+    factor_options:
+      type: array
+      title: Opciones del filtro de factor
+      items:
+        type: object
+        required:
+          - value
+          - label
+        properties:
+          value:
+            type: string
+            pattern: '^[a-z0-9_-]+$'
+          label:
+            type: string
+    page_size:
+      type: integer
+      minimum: 1
+      default: 6
+    columns:
+      type: array
+      items:
+        type: object
+        required:
+          - label
+        properties:
+          label:
+            type: string
+    rows:
+      type: array
+      description: 'Mismas filas que plan-table (key, plazo, tag y cells).'
+      items:
+        type: object
+        required:
+          - cells
+        properties:
+          key:
+            type: string
+          keys:
+            type: array
+            items:
+              type: string
+          plazo:
+            type: string
+          tag:
+            type: string
+          cells:
+            type: array
+            items:
+              type: object
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once
+    - unillanos/motion

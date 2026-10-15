@@ -49,6 +49,7 @@ module:
   text: 0
   token: 0
   unillanos_autoeval: 0
+  unillanos_guia: 0
   unillanos_migrate: 0
   update: 0
   user: 0
@@ -62,4 +63,5 @@ module:
 theme:
   olivero: 0
   claro: 0
+  unillanos: 0
 profile: standard

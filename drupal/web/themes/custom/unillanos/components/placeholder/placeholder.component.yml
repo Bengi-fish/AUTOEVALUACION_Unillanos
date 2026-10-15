@@ -1,0 +1,44 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Marcador de imagen
+status: stable
+group: Base
+description: 'Recuadro que reserva el espacio de una imagen con su proporción y tamaño sugerido. Se usa donde aún no hay fotografía.'
+props:
+  type: object
+  required:
+    - label
+  properties:
+    decorative:
+      type: boolean
+      title: Decorativo
+      description: 'Lo oculta a lectores de pantalla (aria-hidden). Úsalo dentro de una figure con figcaption que ya describe la imagen.'
+      default: false
+    label:
+      type: string
+      title: Descripción de la imagen
+    size_label:
+      type: string
+      title: Tamaño sugerido
+      description: 'Por ejemplo «1200 × 750 px».'
+    ratio:
+      type: string
+      title: Proporción
+      enum:
+        - ''
+        - 4x3
+        - 16x10
+        - 3x1
+      default: ''
+    variant:
+      type: string
+      title: Variante
+      description: 'tema: fondo propio con los colores del tema (degradado institucional y patrón sutil), sin recuadro gris ni textos de «imagen pendiente»; siempre decorativo. suave: la versión ligera (rosa claro con el mismo patrón), para donde el rojo pleno pesaría (p. ej. el hero, junto a una banda roja). Úsalo donde aún no hay fotografía real.'
+      enum:
+        - ''
+        - tema
+        - suave
+      default: ''
+    number:
+      type: string
+      title: Número grande y tenue
+      description: 'Solo con variant tema o suave: número o sigla (por ejemplo «03») que se pinta grande y casi transparente sobre el fondo.'

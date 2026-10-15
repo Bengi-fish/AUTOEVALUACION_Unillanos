@@ -1,0 +1,26 @@
+{#
+/**
+ * @file
+ * Menú principal plano (barra roja).
+ *
+ * Un destino que no sea relativo a la raíz (una sola barra, sin «\» ni
+ * espacios detrás), ancla, consulta, http(s), mailto o tel se imprime sin
+ * href (mismo filtro que unillanos:button).
+ *
+ * `login` añade un último elemento («Ingresar») que solo se ve en pantallas
+ * pequeñas con el menú abierto: allí el botón del encabezado está oculto.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+<nav{{ attributes.addClass('ua-nav').setAttribute('id', id|default('ua-menu')).setAttribute('aria-label', label|default('Menú principal'|t)) }}>
+  <div class="ua-container">
+    <ul class="ua-nav__list">
+      {% for item in items %}
+        <li class="ua-nav__item"><a class="ua-nav__link"{% if item.url and ((item.url ~ '') matches seguro) %} href="{{ item.url }}"{% endif %}{% if item.active %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+      {% endfor %}
+      {% if login and login.url and ((login.url ~ '') matches seguro) %}
+        <li class="ua-nav__item ua-nav__item--movil"><a class="ua-nav__link" href="{{ login.url }}">{{ login.title }}</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>

@@ -41,7 +41,7 @@ class CalculadorGrado {
    *
    * @return \Drupal\taxonomy\TermInterface|null
    *   El término de grado, o NULL si no hay valoración o queda fuera de
-   *   @todo s los rangos.
+   *   cualquiera de los rangos.
    */
   public function calcular(float|int|string|NULL $valoracion): ?TermInterface {
     if ($valoracion === NULL || $valoracion === '') {

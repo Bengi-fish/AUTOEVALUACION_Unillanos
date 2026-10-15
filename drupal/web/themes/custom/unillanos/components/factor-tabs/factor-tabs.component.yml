@@ -1,0 +1,109 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Pestañas de factores
+status: stable
+group: Factores y plan
+description: 'Lista de pestañas (factores, adendas o dimensiones) y un panel por cada una con banner, medidor, descripción, fortalezas, enlace al plan y enlace al informe. Los paneles llegan ya renderizados; el JS solo muestra el de la pestaña activa (patrón de pestañas: flechas, Inicio y Fin, aria-selected, tabindex itinerante). Solo muestra los valores que recibe: no calcula grados.'
+props:
+  type: object
+  required:
+    - id
+    - items
+  properties:
+    id:
+      type: string
+      title: Identificador
+      pattern: '^[a-z][a-z0-9_-]*$'
+      description: 'Único en la página; prefija los ids de pestañas y paneles.'
+    label:
+      type: string
+      title: Nombre accesible de la lista de pestañas
+    initial:
+      type: string
+      title: Clave de la pestaña inicial
+      pattern: '^[a-z0-9_-]*$'
+    image:
+      type: string
+      title: Imágenes del panel
+      description: 'tema: el banner usa el fondo propio del tema (con el número de la pestaña grande y tenue) y las fortalezas van sin fotografía; sin recuadros grises de «imagen pendiente».'
+      enum:
+        - ''
+        - tema
+      default: ''
+    report:
+      type: boolean
+      title: Mostrar el pie del informe
+      description: 'Con false no se imprime el pie «Ver informe completo» (úsalo mientras no haya URL del informe).'
+      default: true
+    heading:
+      type: string
+      title: Nivel del título del panel
+      description: 'Los subtítulos del panel usan el nivel siguiente.'
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    items:
+      type: array
+      title: Pestañas
+      items:
+        type: object
+        required:
+          - key
+          - name
+        properties:
+          key:
+            type: string
+            pattern: '^[a-z0-9_-]+$'
+          group:
+            type: string
+            description: 'Rótulo del grupo (por ejemplo «Factores» o «Adendas»); se imprime al cambiar de grupo.'
+          number:
+            type: string
+          name:
+            type: string
+          label:
+            type: string
+            description: 'Antetítulo del panel, por ejemplo «Factor 01».'
+          score:
+            type: number
+            description: 'Omite la clave si no hay valoración (por ejemplo en una adenda).'
+          grade:
+            type: string
+          decimals:
+            type: integer
+            minimum: 0
+            maximum: 3
+          desc:
+            type: string
+            description: 'Las palabras entre asteriscos (*así*) se resaltan.'
+          strengths:
+            type: array
+            items:
+              type: string
+          improvements:
+            type: array
+            title: Aspectos por mejorar
+            description: 'Textos de los aspectos por mejorar del factor; se muestran después de las fortalezas.'
+            items:
+              type: string
+          plan_count:
+            type: integer
+            minimum: 0
+          plan_note:
+            type: string
+            description: 'Por ejemplo «formuladas para este factor».'
+          plan_url:
+            type: string
+          report_meta:
+            type: string
+            description: 'Por ejemplo «PDF · 2,4 MB».'
+          report_url:
+            type: string
+            description: 'Si falta, el botón del informe queda desactivado.'
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once
+    - unillanos/motion

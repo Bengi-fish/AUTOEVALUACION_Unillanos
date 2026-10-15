@@ -1,0 +1,35 @@
+name: Unillanos
+type: theme
+'base theme': false
+description: 'Tema del Sistema de Información de Autoevaluación de la Universidad de los Llanos, derivado de plantilla/.'
+core_version_requirement: ^11
+generator: 'starterkit_theme:11.4.8'
+libraries:
+  - unillanos/global
+  - unillanos/base
+  - unillanos/messages
+  - core/normalize
+libraries-extend:
+  user/drupal.user:
+    - unillanos/user
+  core/drupal.dropbutton:
+    - unillanos/dropbutton
+  core/drupal.dialog:
+    - unillanos/dialog
+  file/drupal.file:
+    - unillanos/file
+  core/drupal.item-list:
+    - unillanos/item-list
+  core/drupal.progress:
+    - unillanos/progress
+  core/drupal.tablesort:
+    - unillanos/drupal.tablesort
+regions:
+  header: 'Encabezado'
+  primary_menu: 'Menú principal'
+  breadcrumb: 'Migas de pan'
+  page_title: 'Título de la página'
+  highlighted: 'Destacado'
+  help: 'Ayuda'
+  content: 'Contenido'
+  footer: 'Pie de página'

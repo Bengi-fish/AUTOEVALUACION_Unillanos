@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * Fases del proceso.
+ */
+#}
+{% set nivel_titulo = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
+<ol{{ attributes.addClass('ua-steps').setAttribute('role', 'list') }}>
+  {% for fase in items %}
+    {# Sin estado (vacío o ausente) la fase es neutra: numerada, sin ✓ ni etiqueta. #}
+    {% set estado = (fase.status ~ '') in ['hecho', 'actual', 'pendiente', ''] ? (fase.status ~ '') : 'pendiente' %}
+    <li class="ua-step{% if estado %} ua-step--{{ estado }}{% else %} ua-step--neutra{% endif %}"{% if estado == 'actual' %} aria-current="step"{% endif %}>
+      <span class="ua-step__dot">
+        {%- if estado == 'hecho' -%}
+          {% include 'unillanos:icon' with {name: 'check'} only %}
+        {%- else -%}
+          {{ loop.index }}
+        {%- endif -%}
+      </span>
+      <{{ nivel_titulo }} class="ua-step__title">{{ fase.title }}</{{ nivel_titulo }}>
+      {% if fase.text %}<p class="ua-step__text">{{ fase.text }}</p>{% endif %}
+      {% if fase.state_label %}
+        <span class="ua-step__state">{{ fase.state_label }}</span>
+      {% elseif estado == 'hecho' %}
+        <span class="ua-sr">{{ 'Completada'|t }}</span>
+      {% elseif estado == 'actual' %}
+        <span class="ua-sr">{{ 'En curso'|t }}</span>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ol>

@@ -1,0 +1,33 @@
+/**
+ * Componente logos.
+ */
+
+.ua-logos {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  flex: none;
+}
+
+.ua-logos__img {
+  display: block;
+  height: 64px;
+  width: auto;
+}
+
+.ua-logos__img + .ua-logos__img {
+  padding-left: var(--espacio-4);
+  border-left: 1px solid var(--borde);
+}
+
+.ua-logos--lg .ua-logos__img {
+  height: 72px;
+}
+
+@media (max-width: 560px) {
+
+  .ua-logos--lg .ua-logos__img {
+    height: 56px;
+  }
+
+}

@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Lista numerada compacta de factores, con su valoración guardada si existe.
+ */
+#}
+<ol{{ attributes.addClass('ua-factor-chips').setAttribute('role', 'list') }}>
+  {% for factor in items %}
+    <li class="ua-factor-chip">
+      <span class="ua-factor-chip__n">{{ '%02d'|format(factor.n) }}</span>
+      <span class="ua-factor-chip__name">{{ factor.name }}</span>
+      {# Solo se imprime lo guardado: sin valor, el factor queda con número y nombre. #}
+      {% if factor.score is not null %}
+        <span class="ua-factor-chip__value">
+          <span class="ua-sr">{{ 'Valoración'|t }}: </span><strong>{{ factor.score|number_format(factor.decimals is same as(0) ? 0 : factor.decimals|default(2), ',', '') }}</strong>
+          {%- if factor.grade %} <span class="ua-factor-chip__grade">{{ factor.grade }}</span>{% endif -%}
+        </span>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ol>

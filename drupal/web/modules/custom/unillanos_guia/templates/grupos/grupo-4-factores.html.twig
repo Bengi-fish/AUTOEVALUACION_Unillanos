@@ -1,0 +1,274 @@
+{#
+/**
+ * @file
+ * Grupo 4 de la guía: factores y plan de mejoramiento.
+ *
+ * Variables:
+ * - datos: datos de ejemplo de la guía (factores, adendas y fortalezas).
+ *
+ * Los componentes de este grupo solo muestran los valores y las etiquetas que
+ * reciben: ninguno calcula el grado ni el destino de un hallazgo (esas reglas
+ * viven en el módulo unillanos_autoeval). Las etiquetas de grado de la guía
+ * salen de datos-ejemplo.js y no siguen la Tabla 3.1.
+ */
+#}
+{% set factor_1 = datos.institucional.factores|first %}
+{% set tarjetas_demo = [] %}
+{% for factor in datos.institucional.factores|slice(0, 4) %}
+  {% set tarjetas_demo = tarjetas_demo|merge([{number: '%02d'|format(factor.n), name: factor.name, score: factor.score, grade: factor.grado, url: '#factor-tabs', goto: factor.key}]) %}
+{% endfor %}
+{% set adendas_demo = [] %}
+{% for adenda in datos.institucional.adendas %}
+  {% set adendas_demo = adendas_demo|merge([{number: adenda.n|slice(1), name: adenda.name, url: '#factor-tabs', goto: adenda.key}]) %}
+{% endfor %}
+{% set fortalezas_demo = [] %}
+{% for texto in factor_1.strengths %}
+  {% set fortalezas_demo = fortalezas_demo|merge([{text: texto}]) %}
+{% endfor %}
+
+{# Filas de ejemplo sin plazo, para las opciones nuevas de plan-table y plan-filter. #}
+{% set filas_sin_plazo = [] %}
+{% set opciones_sin_plazo = [] %}
+{% for factor in datos.institucional.factores|slice(0, 3) %}
+  {% set opciones_sin_plazo = opciones_sin_plazo|merge([{value: factor.key, label: factor.tag ~ ' · ' ~ factor.name}]) %}
+  {% for accion in factor.plan %}
+    {% set claves_demo = loop.last and factor.key == 'f2' ? [factor.key, 'f3'] : [factor.key] %}
+    {% set filas_sin_plazo = filas_sin_plazo|merge([{
+      keys: claves_demo,
+      tag: claves_demo|length > 1 ? factor.tag ~ ', F3' : factor.tag,
+      cells: [
+        {type: 'text', value: accion[0]},
+        {type: 'text', value: accion[1], eyebrow: 'Meta %d'|format(filas_sin_plazo|length + 1), details: {summary: 'Ver actividades, indicadores y avance'|t, context: 'Meta %d'|format(filas_sin_plazo|length + 1), groups: [
+          {label: 'Actividades'|t, text: "1. Primera actividad de ejemplo.\n2. Segunda actividad de ejemplo."},
+          {label: 'Recursos'|t, text: 'Recursos de funcionamiento (ejemplo)'|t},
+          {label: 'Indicadores'|t, items: ['Indicador de ejemplo · Línea base: 10 · Programación anual · 2025: 12 · 2026: 14'|t]},
+          {label: 'Avance reportado por periodo'|t, items: ['2025-2 · 80 % · Reportado'|t, '2025-1 · Reportado'|t]},
+          {label: 'Grupo vacío (no se imprime)'|t, text: ''},
+        ]}},
+        {type: 'list', items: accion[2]},
+        {type: 'text', value: "2025-2 · 80 %\nReportado"},
+      ],
+    }]) %}
+  {% endfor %}
+{% endfor %}
+{% set columnas_sin_plazo = [{label: 'Situación para intervenir'|t}, {label: 'Acción de mejora'|t}, {label: 'Responsables'|t}, {label: 'Avance reportado'|t}] %}
+
+{% set items_tabs = [] %}
+{% set opciones_plan = [] %}
+{% set filas_plan = [] %}
+{% for factor in datos.institucional.factores %}
+  {% set items_tabs = items_tabs|merge([{key: factor.key, group: 'Factores'|t, number: '%02d'|format(factor.n), name: factor.name, label: factor.label, score: factor.score, grade: factor.grado, desc: factor.desc, strengths: factor.strengths, plan_count: factor.plan|length, plan_note: 'formuladas para este factor'|t, plan_url: '#plan-filter', report_meta: 'PDF · 2,4 MB'}]) %}
+  {% set opciones_plan = opciones_plan|merge([{value: factor.key, label: factor.tag ~ ' · ' ~ factor.name}]) %}
+  {% for accion in factor.plan %}
+    {% set filas_plan = filas_plan|merge([{key: factor.key, plazo: accion[3], tag: factor.tag, cells: [{type: 'text', value: accion[0]}, {type: 'text', value: accion[1]}, {type: 'list', items: accion[2]}, {type: 'plazo', value: accion[3]}]}]) %}
+  {% endfor %}
+{% endfor %}
+{% for adenda in datos.institucional.adendas %}
+  {% set items_tabs = items_tabs|merge([{key: adenda.key, group: 'Adendas'|t, number: adenda.n, name: adenda.name, label: adenda.label, desc: adenda.desc, strengths: adenda.strengths, plan_count: adenda.plan|length, plan_note: 'formuladas para esta adenda'|t, plan_url: '#plan-filter', report_meta: 'PDF · 2,4 MB'}]) %}
+  {% set opciones_plan = opciones_plan|merge([{value: adenda.key, label: adenda.tag ~ ' · ' ~ adenda.name}]) %}
+  {% for accion in adenda.plan %}
+    {% set filas_plan = filas_plan|merge([{key: adenda.key, plazo: accion[3], tag: adenda.tag, cells: [{type: 'text', value: accion[0]}, {type: 'text', value: accion[1]}, {type: 'list', items: accion[2]}, {type: 'plazo', value: accion[3]}]}]) %}
+  {% endfor %}
+{% endfor %}
+{% set columnas_plan = [{label: 'Situación para intervenir'|t}, {label: 'Acción de mejora'|t}, {label: 'Responsables'|t}, {label: 'Plazo'|t}] %}
+
+<section class="ug-group" id="grupo-4" aria-labelledby="grupo-4-titulo">
+  <h2 class="ug-group__title" id="grupo-4-titulo">{{ 'Grupo 4 · Factores y plan'|t }}</h2>
+  <p class="ug-block__text">{{ 'Estos componentes solo muestran los valores y las etiquetas que reciben: ninguno calcula el grado de cumplimiento ni el destino de un hallazgo (esas reglas viven en el módulo unillanos_autoeval y siguen pendientes de Acreditación). Las etiquetas de grado de esta guía vienen de datos-ejemplo.js y NO siguen la escala de la Tabla 3.1.'|t }}</p>
+
+  {# --------------------------------------------------------------- meter #}
+  <div class="ug-block" id="meter">
+    <h3 class="ug-block__title">meter</h3>
+    <p class="ug-block__text">{{ 'Medidor sobre 5. El valor se comunica sin depender del color ni del ancho de la barra: cifra visible («4,4 / 5»), role="meter" con aria-valuenow y aria-valuetext, y la etiqueta de grado en texto.'|t }}</p>
+    <h4 class="ug-block__sub">{{ 'Normal y grande'|t }}</h4>
+    <div class="ug-grid">
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: factor_1.score, grade: factor_1.grado} only %}
+        <figcaption>{{ 'normal'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: factor_1.score, grade: factor_1.grado, large: true} only %}
+        <figcaption>large</figcaption>
+      </figure>
+    </div>
+    <h4 class="ug-block__sub">{{ 'Distintos valores (datos-ejemplo.js)'|t }}</h4>
+    <div class="ug-grid">
+      {% for factor in [datos.institucional.factores[7], datos.institucional.factores[5], datos.institucional.factores[0], datos.institucional.factores[8]] %}
+        <figure class="ug-sample ug-sample--block">
+          {% include 'unillanos:meter' with {score: factor.score, grade: factor.grado} only %}
+          <figcaption>{{ factor.label }}</figcaption>
+        </figure>
+      {% endfor %}
+    </div>
+    <h4 class="ug-block__sub">{{ 'Decimales, otra escala y valores fuera de rango'|t }}</h4>
+    <div class="ug-grid">
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: 4.508, decimals: 3, grade: 'Etiqueta de ejemplo'|t} only %}
+        <figcaption>{{ 'decimals: 3'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: 3, max: 4, grade: 'Etiqueta de ejemplo'|t, label: 'Avance'|t} only %}
+        <figcaption>{{ 'max: 4, rótulo propio'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: 7, grade: 'Etiqueta de ejemplo'|t} only %}
+        <figcaption>{{ 'valor fuera de rango (la barra se limita al 100 %)'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {score: 4.2} only %}
+        <figcaption>{{ 'sin etiqueta de grado'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:meter' with {grade: 'Etiqueta de ejemplo'|t} only %}
+        <figcaption>{{ 'sin valor (la clave se omite): «Sin valoración», sin barra'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# --------------------------------------------------------- factor-card #}
+  <div class="ug-block" id="factor-card">
+    <h3 class="ug-block__title">factor-card</h3>
+    <p class="ug-block__text">{{ 'Tarjetas de factor con imagen (marcador), número, nombre, medidor y llamada. Cada una es un enlace; goto lleva la clave de su pestaña (data-ua-goto) para el JS de pestañas de la siguiente tanda. Los cuatro primeros factores de datos-ejemplo.js.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cuatro factores'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-card' with {heading: 'h4', items: tarjetas_demo} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'image: tema (fondo propio en lugar del recuadro gris)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-card' with {heading: 'h4', image: 'tema', items: tarjetas_demo} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'sin valoración y sin destino (no es un enlace)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-card' with {heading: 'h4', items: [{number: '05', name: 'Estructura y procesos académicos'|t, grade: 'Etiqueta de ejemplo'|t}]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------------- adenda #}
+  <div class="ug-block" id="adenda">
+    <h3 class="ug-block__title">adenda</h3>
+    <p class="ug-block__text">{{ 'Adendas del informe (informes complementarios), de datos-ejemplo.js.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'tres adendas'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:adenda' with {items: adendas_demo} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------- strength #}
+  <div class="ug-block" id="strength">
+    <h3 class="ug-block__title">strength</h3>
+    <p class="ug-block__text">{{ 'Fortalezas destacadas del primer factor de datos-ejemplo.js. Mientras no haya fotografías, el marcador es decorativo (el texto ya describe la fortaleza).'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cuatro fortalezas'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:strength' with {items: fortalezas_demo} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'plain: sin fotografía, dos columnas, alineadas arriba (aguantan textos largos)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:strength' with {plain: true, items: fortalezas_demo|merge([{text: 'Fortaleza de ejemplo con un texto largo para ver cómo se alinean las tarjetas cuando una es más alta que la otra: el equipo docente participa de forma permanente en la autoevaluación, en la revisión del plan de estudios y en el seguimiento de las acciones de mejoramiento del programa durante todo el periodo evaluado.'|t}])} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ======================================================= TANDA 4B ==== #}
+  {# --------------------------------------------------------- factor-tabs #}
+  <div class="ug-block" id="factor-tabs">
+    <h3 class="ug-block__title">factor-tabs</h3>
+    <p class="ug-block__text">{{ 'Pestañas de los doce factores y las tres adendas de datos-ejemplo.js, con un panel por pestaña. Con el foco en una pestaña: flechas (arriba/abajo o izquierda/derecha), Inicio y Fin cambian de pestaña y muevan el foco; solo la pestaña activa entra en el orden de Tab y el panel recibe el foco con Tab. Las tarjetas de factor y las adendas de arriba llevan a su pestaña. El botón del informe está desactivado porque los informes aún no existen.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'doce factores y tres adendas'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-tabs' with {id: 'tabs-guia', label: 'Factores y adendas'|t, initial: 'f1', heading: 'h4', items: items_tabs} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="factor-tabs-tema">
+    <h3 class="ug-block__title">factor-tabs · image, improvements, report</h3>
+    <p class="ug-block__text">{{ 'Tres opciones de factor-tabs: image: tema (banner con el fondo del tema y el número grande, fortalezas sin fotografía), improvements (bloque «Aspectos por mejorar» tras las fortalezas) y report: false (no se imprime el pie del informe mientras no haya URL). Una pestaña sin número no deja un cuadro vacío. Los textos de aspectos son de ejemplo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'dos factores y una pestaña sin número'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% set aspectos_demo = ['Aspecto por mejorar de ejemplo: fortalecer el seguimiento de la medición de impacto de las funciones misionales.'|t, 'Otro aspecto de ejemplo, más corto.'|t] %}
+        {% include 'unillanos:factor-tabs' with {id: 'tabs-guia-tema', label: 'Factores (con fondo del tema)'|t, heading: 'h4', image: 'tema', report: false, items: [
+          {key: 'f01', number: '01', name: factor_1.name, label: 'Factor 01', score: factor_1.score, grade: factor_1.grado, decimals: 2, strengths: factor_1.strengths|slice(0, 2), improvements: aspectos_demo},
+          {key: 'f02', number: '02', name: 'Factor solo con aspectos por mejorar'|t, label: 'Factor 02', improvements: aspectos_demo|slice(0, 1)},
+          {key: 'sin-factor', number: '', name: 'Sin factor asignado'|t, improvements: aspectos_demo|slice(1, 1)},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------ planlink #}
+  <div class="ug-block" id="planlink">
+    <h3 class="ug-block__title">planlink</h3>
+    <p class="ug-block__text">{{ 'Enlace destacado al plan de mejoramiento. Con plan_key filtra el plan de abajo por ese factor y lleva allí (con el foco en el filtro). El número de acciones sale de datos-ejemplo.js.'|t }}</p>
+    <div class="ug-stack">
+      {% for factor in [datos.institucional.factores[0], datos.institucional.factores[3]] %}
+        <figure class="ug-sample ug-sample--block">
+          {% include 'unillanos:planlink' with {count: factor.plan|length, description: 'formuladas para este factor'|t, url: '#plan-filter', plan_key: factor.key} only %}
+          <figcaption>{{ factor.label }} · {{ factor.plan|length }}</figcaption>
+        </figure>
+      {% endfor %}
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:planlink' with {count: 1, description: 'formuladas para esta adenda'|t, url: '#plan-filter'} only %}
+        <figcaption>{{ 'una sola acción, sin plan_key'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# ---------------------------------------------------------- plan-table #}
+  <div class="ug-block" id="plan-table">
+    <h3 class="ug-block__title">plan-table</h3>
+    <p class="ug-block__text">{{ 'Tabla real con título accesible, encabezados y paginación (de 3 en 3 en esta muestra). Las columnas y celdas son genéricas. En pantallas estrechas cada fila se apila y cada celda muestra su encabezado.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'las 8 primeras acciones, de 3 en 3'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:plan-table' with {columns: columnas_plan, rows: filas_plan|slice(0, 8), page_size: 3, caption: 'Acciones del plan de mejoramiento (muestra)'|t} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="plan-table-detalle">
+    <h3 class="ug-block__title">plan-table · eyebrow, details, keys</h3>
+    <p class="ug-block__text">{{ 'Opciones nuevas: eyebrow (antetítulo en mayúsculas sobre el valor, por ejemplo «Meta 3»), details (bloque desplegable nativo con grupos de etiqueta y texto o lista; los grupos vacíos no se imprimen y los saltos de línea del texto se respetan; context añade un texto solo para lectores de pantalla al resumen, p. ej. «(Meta 3)», porque hay un resumen por fila) y keys (varias claves de factor por fila; la etiqueta de la fila las junta). Los textos de las acciones salen de datos-ejemplo.js; el detalle es de ejemplo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cuatro columnas, sin plazo, con detalle'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:plan-table' with {columns: columnas_sin_plazo, rows: filas_sin_plazo|slice(0, 4), page_size: 3, caption: 'Acciones del plan de mejoramiento (muestra con detalle)'|t} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------- plan-filter #}
+  <div class="ug-block" id="plan-filter">
+    <h3 class="ug-block__title">plan-filter</h3>
+    <p class="ug-block__text">{{ 'Filtros por factor y por plazo sobre las 44 acciones de datos-ejemplo.js. Filtra sin recargar, actualiza las cifras y avisa a los lectores de pantalla cuántas acciones quedan. Los enlaces «Ver en el plan de mejoramiento» de las pestañas filtran esta tabla por su factor. Solo cuenta y filtra las filas recibidas.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'plan completo'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:plan-filter' with {heading: 'h4', factor_options: opciones_plan, columns: columnas_plan, rows: filas_plan, page_size: 6} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="plan-filter-sin-plazo">
+    <h3 class="ug-block__title">plan-filter · show_plazo</h3>
+    <p class="ug-block__text">{{ 'Con show_plazo: false (datos sin plazo) se ocultan el filtro de plazo, las cifras por plazo y la leyenda; queda el filtro de factor y una sola cifra compacta con el total, que el JS actualiza al filtrar. Filtrar por F3 muestra también la acción que atiende a F2 y F3 (varias claves por fila).'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'tres factores, sin plazo'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:plan-filter' with {heading: 'h4', title: 'Acciones de mejora'|t, show_plazo: false, factor_options: opciones_sin_plazo, columns: columnas_sin_plazo, rows: filas_sin_plazo, page_size: 4} only %}
+      </div>
+    </figure>
+  </div>
+</section>

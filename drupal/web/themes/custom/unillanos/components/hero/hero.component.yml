@@ -1,0 +1,48 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Portada
+status: stable
+group: Contenido
+description: 'Portada de la página de inicio: antetítulo, título con final en acento, bajada, nota con fecha y, a la derecha, una imagen (slot media).'
+props:
+  type: object
+  required:
+    - title
+  properties:
+    eyebrow:
+      type: string
+      title: Antetítulo
+    title:
+      type: string
+      title: Título
+    title_accent:
+      type: string
+      title: Final del título en acento
+    lead:
+      type: string
+      title: Bajada
+    note:
+      type: string
+      title: Nota
+      description: 'Por ejemplo la fecha de la última actualización.'
+    note_icon:
+      type: string
+      title: Ícono de la nota
+      description: 'Por defecto «calendar».'
+    heading:
+      type: string
+      title: Nivel del título
+      description: 'h1 por defecto; solo una página debe tener un h1.'
+      enum:
+        - ''
+        - h1
+        - h2
+        - h3
+        - h4
+      default: h1
+slots:
+  meta:
+    title: Fila superior
+    description: 'Etiquetas sobre el antetítulo (vacía por defecto).'
+  media:
+    title: Imagen
+    description: 'Imagen o marcador de la columna derecha.'

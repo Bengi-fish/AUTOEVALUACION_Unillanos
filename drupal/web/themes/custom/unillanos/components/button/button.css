@@ -1,0 +1,115 @@
+/**
+ * Componente button.
+ */
+
+.ua-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  min-height: 48px;
+  padding: var(--espacio-3) 22px;
+  border-radius: var(--radio-md);
+  font-family: var(--font-dm-sans);
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.ua a.ua-btn {
+  text-decoration: none;
+}
+
+.ua-btn--primario {
+  background: var(--Unillanos_Red);
+  color: var(--Surface);
+}
+
+.ua a.ua-btn--primario {
+  color: var(--Surface);
+}
+
+.ua-btn--primario:hover {
+  background: var(--rojo-700);
+}
+
+.ua-btn--primario:active {
+  background: var(--rojo-800);
+}
+
+.ua-btn--secundario {
+  background: var(--Surface);
+  color: var(--rojo-700);
+  border-color: var(--Unillanos_Red);
+}
+
+.ua-btn--secundario:hover {
+  background: var(--rojo-50);
+}
+
+.ua-btn--texto {
+  background: transparent;
+  color: var(--rojo-700);
+  padding-left: 0;
+  padding-right: 0;
+  min-height: 40px;
+}
+
+.ua-btn--texto:hover {
+  text-decoration: underline;
+}
+
+.ua-btn--sm {
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.ua-btn[disabled], .ua-btn[aria-disabled="true"], .ua a.ua-btn[aria-disabled="true"] {
+  background: var(--superficie-100);
+  color: var(--tinta-500);
+  border-color: transparent;
+  cursor: not-allowed;
+}
+
+.ua-btn[aria-disabled="true"], .ua-icon-btn[aria-disabled="true"] {
+  pointer-events: none;
+}
+
+.ua .ua-icon-btn[disabled], .ua .ua-icon-btn[aria-disabled="true"] {
+  border-color: var(--superficie-100);
+  background: var(--superficie-100);
+  color: var(--tinta-500);
+  cursor: not-allowed;
+}
+
+.ua-btn--primario:focus-visible {
+  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+  border-radius: var(--radio-md);
+}
+
+.ua-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--tinta-400);
+  background: var(--Surface);
+  color: var(--tinta-900);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ua-icon-btn:hover {
+  border-color: var(--Unillanos_Red);
+  color: var(--rojo-700);
+}
+
+.ua-icon-btn:focus-visible {
+  border-radius: 50%;
+}

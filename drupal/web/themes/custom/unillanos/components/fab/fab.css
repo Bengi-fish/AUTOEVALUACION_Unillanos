@@ -1,0 +1,56 @@
+/**
+ * Componente fab.
+ */
+
+.ua-fab {
+  position: fixed;
+  right: var(--espacio-5);
+  bottom: var(--espacio-5);
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: 52px;
+  padding: 0 22px 0 18px;
+  border-radius: var(--radio-pill);
+  border: 0;
+  background: var(--Unillanos_Red);
+  color: var(--Surface);
+  box-shadow: var(--sombra-2);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ua a.ua-fab {
+  color: var(--Surface);
+  text-decoration: none;
+}
+
+.ua-fab:hover {
+  background: var(--rojo-700);
+}
+
+@media (max-width: 860px) {
+
+  .ua-fab__text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .ua-fab {
+    padding: 0;
+    width: 56px;
+    justify-content: center;
+  }
+
+}
+
+.ua-fab--estatico {
+  position: static;
+}

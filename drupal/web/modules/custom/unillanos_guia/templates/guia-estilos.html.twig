@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * Guía de estilos: todos los componentes del tema unillanos.
+ *
+ * Variables:
+ * - datos: datos de ejemplo (copia de plantilla/datos-ejemplo.js). Solo se
+ *   usan aquí, nunca en páginas reales.
+ *
+ * Cada grupo de componentes es una plantilla en templates/grupos/.
+ */
+#}
+<div class="ug">
+  <div class="ua-container ug-wrap">
+    <header class="ug-intro">
+      <span class="ua-eyebrow">{{ 'Sistema de diseño'|t }}</span>
+      <p class="ua-lead">{{ 'Componentes del tema unillanos derivados del prototipo plantilla/, con el mismo marcado y las mismas clases ua-*.'|t }}</p>
+      <p class="ua-meta">
+        {% include 'unillanos:icon' with {name: 'info', size: 'sm'} only %}
+        {{ 'Los datos de esta página son de ejemplo (plantilla/datos-ejemplo.js). Esta guía es pública mientras dura el desarrollo y se desactiva antes de mostrar el sitio.'|t }}
+      </p>
+      <nav class="ug-index" aria-label="{{ 'Grupos de componentes'|t }}">
+        <ul role="list">
+          <li><a href="#grupo-1">{{ 'Grupo 1 · Base'|t }}</a></li>
+          <li><a href="#grupo-2">{{ 'Grupo 2 · Página base'|t }}</a></li>
+          <li><a href="#grupo-3">{{ 'Grupo 3 · Contenido'|t }}</a></li>
+          <li><a href="#grupo-4">{{ 'Grupo 4 · Factores y plan'|t }}</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    {% include '@unillanos_guia/templates/grupos/grupo-1-base.html.twig' %}
+    {% include '@unillanos_guia/templates/grupos/grupo-2-pagina-base.html.twig' %}
+    {% include '@unillanos_guia/templates/grupos/grupo-3-contenido.html.twig' %}
+    {% include '@unillanos_guia/templates/grupos/grupo-4-factores.html.twig' %}
+  </div>
+</div>

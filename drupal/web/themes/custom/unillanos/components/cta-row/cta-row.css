@@ -1,0 +1,15 @@
+/**
+ * Componente cta-row.
+ */
+
+.ua-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-5);
+  flex-wrap: wrap;
+}
+
+.ua-cta-row p {
+  margin-top: var(--espacio-1);
+}

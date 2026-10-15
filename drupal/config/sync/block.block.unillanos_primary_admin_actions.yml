@@ -1,0 +1,20 @@
+uuid: 3f4c905b-ae3c-4165-b403-5f1d11613f77
+langcode: es
+status: true
+dependencies:
+  theme:
+    - unillanos
+_core:
+  default_config_hash: Q9_2whdOj1YIomfvsIfopROW4FT_X5pY0DjdOiOaQ5U
+id: unillanos_primary_admin_actions
+theme: unillanos
+region: highlighted
+weight: -5
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Acciones principales de administración'
+  label_display: '0'
+  provider: core
+visibility: {  }

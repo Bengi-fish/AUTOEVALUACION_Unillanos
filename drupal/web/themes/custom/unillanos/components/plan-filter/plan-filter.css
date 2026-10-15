@@ -1,0 +1,139 @@
+/**
+ * Componente plan-filter.
+ */
+
+.ua-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espacio-4);
+  margin: 0 0 var(--espacio-6);
+  padding: 0;
+  list-style: none;
+}
+
+.ua-kpi {
+  background: var(--superficie-50);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: var(--espacio-4) var(--espacio-5);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ua-kpi__value {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 800;
+  color: var(--tinta-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.ua-kpi__label {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-700);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+.ua-planall-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-5);
+}
+
+.ua-planall-filter .ua-selectbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 260px;
+  max-width: 420px;
+}
+
+.ua-planall-filter__lab {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--tinta-500);
+}
+
+.ua-planall-filter .ua-select {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Título del bloque de la tabla (con la leyenda de plazos). Se repite aquí
+   porque el filtro puede usarse sin las pestañas de factores. */
+.ua-panel__block-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-4);
+  flex-wrap: wrap;
+}
+
+/* Reflujo: las cifras pueden encoger y, hasta 360 px, llevan menos relleno
+   lateral para que su etiqueta quepa en la caja a 320 px. */
+.ua-kpi {
+  min-width: 0;
+}
+
+@media (max-width: 360px) {
+
+  .ua-kpi {
+    padding-inline: var(--espacio-4);
+  }
+
+}
+
+/* Cifra única y compacta, junto a los filtros (cuando no hay plazos). */
+.ua-planall-count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 0 auto;
+  padding: 6px var(--espacio-4);
+  background: var(--superficie-50);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-pill);
+}
+
+.ua-planall-count__value {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 800;
+  color: var(--tinta-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.ua-planall-count__label {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-700);
+}
+
+@media (max-width: 560px) {
+
+  .ua-planall-count {
+    margin-left: 0;
+  }
+}

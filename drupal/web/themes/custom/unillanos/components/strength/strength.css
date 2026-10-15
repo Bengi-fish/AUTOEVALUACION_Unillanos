@@ -1,0 +1,149 @@
+/**
+ * Componente strength.
+ */
+
+.ua-strengths {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espacio-4);
+}
+
+.ua-strength {
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ua-strength .ua-ph {
+  border: 0;
+  border-radius: 0;
+  aspect-ratio: 4 / 3;
+  border-bottom: 1px solid var(--borde);
+}
+
+.ua-strength__body {
+  padding: var(--espacio-3) var(--espacio-4) var(--espacio-4);
+  display: flex;
+  gap: var(--espacio-2);
+  align-items: flex-start;
+}
+
+.ua-strength__icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--Unillanos_Red);
+  color: var(--Surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.ua-strength__text {
+  font-size: 15px;
+  line-height: 21px;
+  font-weight: 600;
+  color: var(--tinta-900);
+  hyphens: auto;
+}
+
+@media (max-width: 1080px) {
+
+  .ua-strengths {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-strengths {
+    grid-template-columns: 1fr;
+  }
+
+  .ua-strength {
+    flex-direction: row;
+  }
+
+  .ua-strength .ua-ph {
+    width: 96px;
+    flex: none;
+    aspect-ratio: 1 / 1;
+    border-bottom: 0;
+    border-right: 1px solid var(--borde);
+  }
+
+  .ua-strength .ua-ph__label, .ua-strength .ua-ph__size {
+    display: none;
+  }
+
+  .ua-strength__body {
+    padding: var(--espacio-3);
+    align-items: center;
+  }
+
+}
+
+/* Reflujo: en fila (móvil) el cuerpo puede encoger por debajo de su contenido;
+   si no, se sale de la tarjeta (overflow oculto) y el texto largo se recorta. */
+.ua-strength__body {
+  min-width: 0;
+}
+
+.ua-strength__text {
+  overflow-wrap: anywhere;
+}
+
+/* Por debajo de 340 px la fila (foto de 96 px + icono + texto) deja una columna
+   de texto de unos 50 px, ilegible: las tarjetas vuelven a apilarse (foto
+   arriba, texto debajo). Diferencia intencional con el prototipo. */
+@media (max-width: 340px) {
+
+  .ua-strength {
+    flex-direction: column;
+  }
+
+  .ua-strength .ua-ph {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-right: 0;
+    border-bottom: 1px solid var(--borde);
+  }
+
+  .ua-strength__body {
+    align-items: flex-start;
+  }
+
+}
+
+/* Sin fotografía: dos columnas, texto completo y tarjetas alineadas arriba. */
+.ua-strengths--plain {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.ua-strengths--plain .ua-strength__body {
+  padding: var(--espacio-4);
+  align-items: flex-start;
+}
+
+/* Textos largos: peso medio (el 600 de las tarjetas con foto cansa en párrafos). */
+.ua-strengths--plain .ua-strength__text {
+  font-weight: 500;
+}
+
+@media (max-width: 560px) {
+
+  .ua-strengths--plain {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ua-strengths--plain .ua-strength {
+    flex-direction: column;
+  }
+}

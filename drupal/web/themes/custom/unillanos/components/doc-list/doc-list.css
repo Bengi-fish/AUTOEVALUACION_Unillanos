@@ -1,0 +1,96 @@
+/**
+ * Componente doc-list.
+ */
+
+.ua-docs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-4);
+}
+
+.ua-doc {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4) var(--espacio-5);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua-doc__icon {
+  flex: none;
+  width: 48px;
+  height: 56px;
+  border-radius: var(--radio-sm);
+  background: var(--rojo-50);
+  color: var(--rojo-700);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-dm-sans);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  gap: 2px;
+}
+
+.ua-doc__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ua-doc__title {
+  font-family: var(--font-dm-sans);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--tinta-900);
+}
+
+.ua-doc__cat {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--rojo-700);
+  margin-bottom: 2px;
+}
+
+.ua-doc[hidden] {
+  display: none;
+}
+
+@media (max-width: 860px) {
+
+  .ua-docs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--espacio-4);
+  }
+
+  .ua-docs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+}
+
+.ua-docs--spaced {
+  margin-top: var(--espacio-6);
+}
+
+.ua-doc__desc {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-700);
+  margin: 2px 0 4px;
+}
+
+/* Reflujo: nombres de archivo largos no deben desbordar la tarjeta. */
+.ua-doc__title,
+.ua-doc__desc,
+.ua-doc .ua-meta {
+  overflow-wrap: anywhere;
+}

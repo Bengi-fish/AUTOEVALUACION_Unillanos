@@ -1,0 +1,38 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Tarjetas de acceso
+status: stable
+group: Contenido
+description: 'Cuadrícula de tarjetas de acceso (ícono, título, texto y llamada a la acción). Cada tarjeta es un enlace; sin url segura se imprime sin href.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    heading:
+      type: string
+      title: Nivel del título de cada tarjeta
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    items:
+      type: array
+      title: Tarjetas
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          icon:
+            type: string
+          title:
+            type: string
+          text:
+            type: string
+            description: 'Los saltos de línea se respetan.'
+          url:
+            type: string
+          cta:
+            type: string

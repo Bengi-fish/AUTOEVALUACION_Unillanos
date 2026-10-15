@@ -1,0 +1,48 @@
+/**
+ * Página del programa (node--programa--full.html.twig).
+ */
+
+/* Nota discreta bajo la cuadrícula de factores. */
+.ua .ua-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+  margin: var(--espacio-4) 0 var(--espacio-6);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--tinta-500);
+}
+
+.ua .ua-nota .ua-icon {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* Menos aire bajo la ficha antes de la banda de autoevaluación. */
+.ua-programa #ficha {
+  padding-bottom: var(--espacio-6);
+}
+
+.ua-programa #ficha .ua-ficha {
+  margin-bottom: 0;
+}
+
+/* Portada: enlace «Ver todos los programas» bajo las tarjetas. */
+.ua .ua-portada__mas {
+  margin: var(--espacio-5) 0 0;
+}
+
+/* Varios botones en la cabecera de una sección (derecha del título). */
+.ua .ua-section__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+  justify-content: flex-end;
+}
+
+@media (max-width: 560px) {
+
+  .ua .ua-section__acciones {
+    justify-content: flex-start;
+  }
+}

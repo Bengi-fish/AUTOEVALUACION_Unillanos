@@ -1,0 +1,295 @@
+/**
+ * Componente factor-tabs.
+ */
+
+.ua-tabs {
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  gap: var(--espacio-6);
+  align-items: start;
+}
+
+.ua-tabs__list {
+  position: sticky;
+  top: var(--espacio-5);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ua-tabs__group {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--tinta-500);
+  padding: var(--espacio-3) var(--espacio-3) 6px;
+}
+
+.ua-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 10px var(--espacio-3);
+  border-radius: var(--radio-md);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--tinta-700);
+}
+
+.ua-tab:hover {
+  background: var(--superficie-50);
+  color: var(--tinta-900);
+}
+
+.ua-tab__num {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radio-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-dm-sans);
+  font-weight: 700;
+  font-size: 13px;
+  background: var(--superficie-100);
+  color: var(--tinta-700);
+}
+
+.ua-tab[aria-selected="true"] {
+  background: var(--rojo-50);
+  color: var(--tinta-900);
+  font-weight: 600;
+}
+
+.ua-tab[aria-selected="true"] .ua-tab__num {
+  background: var(--Unillanos_Red);
+  color: var(--Surface);
+}
+
+.ua-panel {
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+}
+
+.ua-panel__banner {
+  position: relative;
+}
+
+.ua-panel__banner .ua-ph {
+  border-radius: 0;
+  border: 0;
+  aspect-ratio: 21 / 7;
+}
+
+.ua-panel__body {
+  padding: var(--espacio-6);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-6);
+}
+
+.ua-panel__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: var(--espacio-6);
+  align-items: end;
+}
+
+.ua-panel__desc {
+  font-size: 18px;
+  line-height: 30px;
+  color: var(--tinta-700);
+}
+
+.ua-panel__block-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-4);
+  flex-wrap: wrap;
+}
+
+.ua-panel__foot .ua-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ua-panel__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+  flex-wrap: wrap;
+  padding-top: var(--espacio-5);
+  border-top: 1px solid var(--borde);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-tabs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ua-tabs__list {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    flex-direction: row;
+    overflow-x: auto;
+    border-radius: var(--radio-md);
+    scrollbar-width: none;
+  }
+
+  .ua-tabs__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ua-tabs__group {
+    display: none;
+  }
+
+  .ua-tab {
+    width: auto;
+    flex: none;
+    white-space: nowrap;
+    border-radius: var(--radio-pill);
+    padding: 6px 14px 6px 6px;
+  }
+
+  .ua-tab__label {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+}
+
+@media (max-width: 860px) {
+
+  .ua-panel__head {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espacio-4);
+  }
+
+  .ua-panel__body {
+    padding: var(--espacio-5);
+  }
+
+  .ua-panel__banner .ua-ph {
+    aspect-ratio: 16 / 7;
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-panel__foot .ua-btn {
+    width: 100%;
+  }
+
+}
+
+.ua-tabs {
+  scroll-margin-top: 84px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ua-panel {
+    animation: none !important;
+  }
+
+}
+
+/* El anillo de foco del panel no debe cambiarle las esquinas. */
+.ua-panel:focus-visible {
+  border-radius: var(--radio-lg);
+}
+
+/* Reflujo: el título del panel y el texto largo no deben ensanchar el panel
+   (tiene overflow oculto y recortaría lo que se salga). */
+.ua-panel__head .ua-h3,
+.ua-panel__desc {
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Aspectos por mejorar: lista de tarjetas de texto. Mismo borde, radio y
+ * relleno que las fortalezas sin fotografía; el ícono es un círculo con
+ * contorno (no relleno) para distinguirlas de las fortalezas.
+ */
+.ua-improve {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-4);
+  align-items: start;
+}
+
+.ua-improve__item {
+  display: flex;
+  gap: var(--espacio-2);
+  align-items: flex-start;
+  padding: var(--espacio-4);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua-improve__icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 2px solid var(--Unillanos_Red);
+  color: var(--rojo-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ua-improve__icon .ua-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.ua-improve__text {
+  min-width: 0;
+  font-size: 15px;
+  line-height: 21px;
+  font-weight: 500;
+  color: var(--tinta-900);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+@media (max-width: 560px) {
+
+  .ua-improve {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Una pestaña sin número (p. ej. «Sin factor asignado») no deja un cuadro vacío. */
+.ua-tab__num:empty {
+  display: none;
+}

@@ -1,0 +1,85 @@
+/**
+ * Componente planlink.
+ */
+
+.ua-planlink {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4) var(--espacio-5);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  background: var(--superficie-50);
+  text-decoration: none;
+  color: var(--tinta-900);
+  transition: border-color .2s, background-color .2s, transform .2s, box-shadow .2s;
+}
+
+.ua-planlink > .ua-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  border-radius: 12px;
+  background: #fde7ea;
+  color: var(--rojo-700);
+}
+
+.ua-planlink__text {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ua-planlink__text strong {
+  font-size: 17px;
+}
+
+.ua-planlink__text span {
+  color: var(--tinta-500);
+  font-size: 14px;
+}
+
+.ua-planlink__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--rojo-700);
+  white-space: nowrap;
+}
+
+.ua-planlink__go .ua-icon {
+  transition: transform .25s ease;
+}
+
+.ua-planlink:hover {
+  border-color: var(--Unillanos_Red);
+  background: var(--Surface);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(227,6,29,.10);
+}
+
+.ua-planlink:hover .ua-planlink__go .ua-icon {
+  transform: translateX(5px);
+}
+
+@media (max-width: 560px) {
+
+  .ua-planlink {
+    flex-wrap: wrap;
+  }
+
+  /* El texto largo de la llamada puede partirse (con nowrap medía más que el
+     panel en 320 px). */
+  .ua-planlink__go {
+    white-space: normal;
+  }
+
+  .ua-planlink__go {
+    width: 100%;
+  }
+
+}

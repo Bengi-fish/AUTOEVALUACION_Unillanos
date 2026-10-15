@@ -1,0 +1,318 @@
+/**
+ * Base global: reinicio, tipografía, controles y utilidades.
+ */
+
+.ua, .ua *, .ua *::before, .ua *::after {
+  box-sizing: border-box;
+}
+
+.ua {
+  margin: 0;
+  font-family: var(--font-dm-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--tinta-700);
+  background: var(--Surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+.ua :where(h1, h2, h3, h4) {
+  font-family: var(--font-dm-sans);
+  color: var(--tinta-900);
+  margin: 0;
+}
+
+.ua :where(p) {
+  margin: 0;
+}
+
+.ua :where(a) {
+  color: var(--rojo-700);
+  text-underline-offset: 3px;
+}
+
+.ua :where(img) {
+  max-width: 100%;
+  display: block;
+}
+
+.ua :where(ul, ol) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ua :where(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+.ua :focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+  border-radius: var(--radio-sm);
+}
+
+.ua .ua-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.ua-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ua-icon--sm {
+  width: 16px;
+  height: 16px;
+}
+
+.ua-icon--lg {
+  width: 28px;
+  height: 28px;
+}
+
+.ua-container {
+  width: 100%;
+  max-width: var(--contenedor-max);
+  margin: 0 auto;
+  padding: 0 var(--espacio-5);
+}
+
+.ua-eyebrow {
+  display: inline-block;
+  font-family: var(--font-dm-sans);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--rojo-700);
+  margin-bottom: var(--espacio-2);
+}
+
+.ua-h2 {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+.ua-h3 {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+}
+
+.ua-h4 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 700;
+}
+
+.ua-lead {
+  font-size: 20px;
+  line-height: 32px;
+}
+
+.ua-meta {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--tinta-500);
+}
+
+.ua-search {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  height: 44px;
+  /* 280 px (el prototipo tiene 260): con 260 el marcador se recortaba. */
+  width: 280px;
+  padding: 0 var(--espacio-3);
+  border: 1px solid var(--tinta-400);
+  border-radius: var(--radio-md);
+  color: var(--tinta-500);
+  background: var(--Surface);
+}
+
+.ua-search input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  width: 100%;
+  font-size: 15px;
+  color: var(--tinta-900);
+}
+
+.ua-search:focus-within {
+  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+}
+
+.ua-search.ua-search--full {
+  width: 100%;
+}
+
+.ua .ua-kw {
+  background: none;
+  color: var(--rojo-700);
+  font-weight: 700;
+}
+
+.ua-input, .ua-select, .ua-textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 14px;
+  border: 1px solid var(--tinta-400);
+  border-radius: var(--radio-sm);
+  background: var(--Surface);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--tinta-900);
+}
+
+.ua-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%233d424a' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.ua-textarea {
+  min-height: 132px;
+  resize: vertical;
+}
+
+.ua-input::placeholder, .ua-textarea::placeholder {
+  color: var(--tinta-500);
+}
+
+.ua-input:hover, .ua-select:hover, .ua-textarea:hover {
+  border-color: var(--tinta-700);
+}
+
+.ua-input:focus, .ua-select:focus, .ua-textarea:focus {
+  outline: none;
+  border-color: var(--tinta-900);
+  box-shadow: 0 0 0 1px var(--tinta-900);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-search {
+    width: 200px;
+  }
+
+}
+
+@media (max-width: 860px) {
+
+  .ua-h2 {
+    font-size: 26px;
+    line-height: 32px;
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-container {
+    padding: 0 var(--espacio-4);
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ua *, .ua *::before {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+}
+
+.ua-skip {
+  position: absolute;
+  left: var(--espacio-4);
+  top: -80px;
+  z-index: 100;
+}
+
+.ua-skip:focus {
+  top: var(--espacio-4);
+}
+
+[data-view-panel][hidden], [data-sub-panel][hidden] {
+  display: none;
+}
+
+.ua-selectbar {
+  display: block;
+}
+
+.ua-prog-empty {
+  grid-column: 1 / -1;
+  padding: var(--espacio-6);
+  text-align: center;
+  color: var(--tinta-500);
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua [hidden] {
+  display: none !important;
+}
+
+/* Página base de Drupal (page.html.twig): páginas sin sección propia. */
+.ua-page__migas {
+  padding-block: var(--espacio-4) 0;
+}
+
+.ua-main:focus {
+  outline: none;
+}
+
+/* Solo hay aire si la región trae algo visible (el contenedor de mensajes
+   de Drupal está siempre, pero oculto y vacío). */
+.ua-main__top:has(.page-title, .messages, .tabs, .block-help-block) {
+  padding-top: var(--espacio-5);
+}
+
+.ua-main__body {
+  padding-block: var(--espacio-5) var(--espacio-8);
+}
+
+.ua .page-title {
+  margin: 0 0 var(--espacio-4);
+}
+
+.ua .form-text,
+.ua .form-email,
+.ua .form-tel,
+.ua .form-url,
+.ua .form-search,
+.ua .form-number,
+.ua .form-textarea,
+.ua .form-select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (forced-colors: active) {
+
+  .ua :focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+}

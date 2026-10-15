@@ -1,0 +1,44 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Menú principal
+status: stable
+group: Página base
+description: 'Barra roja del menú principal, plana. Las URL deben venir de Drupal (menú o rutas), no de texto libre: solo se imprimen destinos relativos a la raíz, anclas, consultas, http(s), mailto y tel.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    items:
+      type: array
+      title: Enlaces
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          title:
+            type: string
+          url:
+            type: string
+          active:
+            type: boolean
+    login:
+      type: object
+      title: Enlace «Ingresar» del menú móvil
+      description: 'Último elemento del menú; solo se ve por debajo de 860 px con el menú abierto.'
+      required:
+        - title
+        - url
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+    id:
+      type: string
+      title: Identificador
+      description: 'Lo usa el botón del encabezado en aria-controls. Por defecto ua-menu.'
+    label:
+      type: string
+      title: Nombre accesible
+      description: 'Por defecto «Menú principal».'

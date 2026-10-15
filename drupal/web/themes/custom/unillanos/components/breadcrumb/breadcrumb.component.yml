@@ -1,0 +1,22 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Migas de pan
+status: stable
+group: Página base
+description: 'Ruta de navegación. El último elemento es la página actual y no lleva enlace.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    items:
+      type: array
+      title: Elementos
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          title:
+            type: string
+          url:
+            type: string

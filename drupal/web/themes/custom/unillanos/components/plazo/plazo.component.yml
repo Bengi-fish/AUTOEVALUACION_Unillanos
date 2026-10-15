@@ -1,0 +1,21 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Plazo
+status: stable
+group: Base
+description: 'Etiqueta de plazo del plan de mejoramiento: corto, mediano o largo.'
+props:
+  type: object
+  required:
+    - variant
+  properties:
+    variant:
+      type: string
+      title: Plazo
+      enum:
+        - corto
+        - mediano
+        - largo
+    label:
+      type: string
+      title: Texto
+      description: 'Si se omite se usa «Corto plazo», «Mediano plazo» o «Largo plazo».'

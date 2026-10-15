@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Portada de la página de inicio.
+ */
+#}
+{% set nivel = (heading ~ '') in ['h1', 'h2', 'h3', 'h4'] ? heading : 'h1' %}
+<section{{ attributes.addClass('ua-hero') }}>
+  <div class="ua-container">
+    <div class="ua-hero__grid">
+      <div>
+        {# Sin espacios dentro: .ua-hero__meta:empty oculta la fila vacía. #}
+        <div class="ua-hero__meta">{% block meta %}{{ meta }}{% endblock %}</div>
+        {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
+        <{{ nivel }} class="ua-hero__title">{{ title }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
+        {% if lead %}<p class="ua-hero__lead">{{ lead }}</p>{% endif %}
+        {% if note %}
+          <p class="ua-hero__note ua-meta">
+            {%- include 'unillanos:icon' with {name: note_icon|default('calendar'), size: 'sm'} only -%}
+            {{ note }}
+          </p>
+        {% endif %}
+      </div>
+      <div class="ua-hero__media">{% block media %}{{ media }}{% endblock %}</div>
+    </div>
+  </div>
+</section>

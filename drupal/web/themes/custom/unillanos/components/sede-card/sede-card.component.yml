@@ -1,0 +1,46 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Tarjetas de sede
+status: stable
+group: Contenido
+description: 'Lista de sedes con su estado (por ejemplo «Vigente») y una ficha compacta de datos.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    items:
+      type: array
+      title: Sedes
+      items:
+        type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+          status:
+            type: object
+            required:
+              - label
+              - variant
+            properties:
+              label:
+                type: string
+              variant:
+                type: string
+                enum:
+                  - ok
+                  - proceso
+                  - pendiente
+          details:
+            type: array
+            items:
+              type: object
+              required:
+                - term
+                - value
+              properties:
+                term:
+                  type: string
+                value:
+                  type: string

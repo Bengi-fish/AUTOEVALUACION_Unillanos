@@ -18,3 +18,8 @@ services:
     class: Drupal\unillanos_autoeval\Service\ModeloProceso
     arguments: ['@entity_type.manager']
   Drupal\unillanos_autoeval\Service\ModeloProceso: '@unillanos_autoeval.modelo_proceso'
+
+  unillanos_autoeval.presentador:
+    class: Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion
+    arguments: ['@entity_type.manager', '@path.validator']
+  Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion: '@unillanos_autoeval.presentador'

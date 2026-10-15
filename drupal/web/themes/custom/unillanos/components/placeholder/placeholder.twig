@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * Marcador de imagen, o fondo propio del tema (variant tema).
+ */
+#}
+{# Variantes con fondo propio (tema y suave): decorativas, sin icono ni textos. #}
+{% set tema = (variant ~ '') in ['tema', 'suave'] %}
+{% set clases = tema ? ['ua-ph', 'ua-ph--' ~ variant] : ['ua-ph'] %}
+{% if ratio %}
+  {% set clases = clases|merge(['ua-ph--' ~ ratio]) %}
+{% endif %}
+{# Se concatena (sin marcador @label) para que el atributo se escape una vez. #}
+{% set aria = ('Espacio para imagen:'|t) ~ ' ' ~ label %}
+{% if tema or decorative %}
+  {% set attributes = attributes.setAttribute('aria-hidden', 'true') %}
+{% else %}
+  {% set attributes = attributes.setAttribute('role', 'img').setAttribute('aria-label', aria) %}
+{% endif %}
+<div{{ attributes.addClass(clases) }}>
+  {% if tema %}
+    {% if number %}<span class="ua-ph__num">{{ number }}</span>{% endif %}
+  {% else %}
+    {% include 'unillanos:icon' with {name: 'image', size: 'lg'} only %}
+    <span class="ua-ph__label">{{ label }}</span>
+    {% if size_label %}<span class="ua-ph__size">{{ size_label }}</span>{% endif %}
+  {% endif %}
+</div>

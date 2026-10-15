@@ -1,0 +1,73 @@
+{#
+/**
+ * @file
+ * Filtros, cifras y tabla del plan de mejoramiento.
+ *
+ * Con show_plazo false (datos sin plazo) no hay filtro, cifras ni leyenda de
+ * plazo: queda el filtro de factor y una sola cifra con el total.
+ *
+ * Las cifras iniciales se cuentan aquí con las filas recibidas; plan-filter.js
+ * las actualiza al filtrar. La región role="status" está vacía al cargar (no
+ * se anuncia nada hasta que la persona cambia un filtro).
+ */
+#}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
+{% set total = rows|length %}
+{# show_plazo false: sin filtro, cifras ni leyenda de plazo. #}
+{% set con_plazo = show_plazo is not same as(false) %}
+{% set cuenta = {'corto': 0, 'mediano': 0, 'largo': 0} %}
+{% for fila in rows %}
+  {% if fila.plazo in ['corto', 'mediano', 'largo'] %}
+    {% set cuenta = cuenta|merge({(fila.plazo): cuenta[fila.plazo] + 1}) %}
+  {% endif %}
+{% endfor %}
+<div{{ attributes.addClass('ua-planall').setAttribute('data-ua-plan-all', true) }}>
+  <div class="ua-planall-filter">
+    <label class="ua-selectbar">
+      <span class="ua-planall-filter__lab">{{ factor_label|default('Factor'|t) }}</span>
+      <select class="ua-select" data-f="key">
+        <option value="">{{ factor_all_label|default('Todos los factores'|t) }}</option>
+        {% for opcion in factor_options %}<option value="{{ opcion.value }}">{{ opcion.label }}</option>{% endfor %}
+      </select>
+    </label>
+    {% if con_plazo %}
+      <label class="ua-selectbar">
+        <span class="ua-planall-filter__lab">{{ 'Plazo'|t }}</span>
+        <select class="ua-select" data-f="plazo">
+          <option value="">{{ 'Todos los plazos'|t }}</option>
+          <option value="corto">{{ 'Corto plazo'|t }}</option>
+          <option value="mediano">{{ 'Mediano plazo'|t }}</option>
+          <option value="largo">{{ 'Largo plazo'|t }}</option>
+        </select>
+      </label>
+    {% endif %}
+    <button type="button" class="ua-btn ua-btn--texto" data-f-clear hidden>{{ 'Quitar filtros'|t }}</button>
+    {% if not con_plazo %}
+      {# Una sola cifra compacta, junto a los filtros (la actualiza el JS). #}
+      <p class="ua-planall-count"><span class="ua-planall-count__value" data-kpi="total">{{ total }}</span><span class="ua-planall-count__label">{{ 'Acciones de mejora'|t }}</span></p>
+    {% endif %}
+  </div>
+  <p class="ua-sr" role="status" aria-live="polite" aria-atomic="true" data-ua-plan-live></p>
+  <div data-out>
+    {% if con_plazo %}
+    <ul class="ua-kpis" role="list">
+      <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="total">{{ total }}</span><span class="ua-kpi__label">{{ 'Acciones de mejora'|t }}</span></li>
+      <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="corto">{{ cuenta.corto }}</span><span class="ua-kpi__label">{% include 'unillanos:plazo' with {variant: 'corto', label: 'Corto'|t} only %} {{ 'plazo'|t }}</span></li>
+      <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="mediano">{{ cuenta.mediano }}</span><span class="ua-kpi__label">{% include 'unillanos:plazo' with {variant: 'mediano', label: 'Mediano'|t} only %} {{ 'plazo'|t }}</span></li>
+      <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="largo">{{ cuenta.largo }}</span><span class="ua-kpi__label">{% include 'unillanos:plazo' with {variant: 'largo', label: 'Largo'|t} only %} {{ 'plazo'|t }}</span></li>
+    </ul>
+    {% endif %}
+    <div class="ua-panel__block-title">
+      <{{ nivel }} class="ua-h4">{{ title|default('Acciones del plan'|t) }}</{{ nivel }}>
+      {% if con_plazo %}
+      <div class="ua-legend">
+        <span>{% include 'unillanos:plazo' with {variant: 'corto', label: 'Corto'|t} only %} {{ '1 a 6 meses'|t }}</span>
+        <span>{% include 'unillanos:plazo' with {variant: 'mediano', label: 'Mediano'|t} only %} {{ '7 a 12 meses'|t }}</span>
+        <span>{% include 'unillanos:plazo' with {variant: 'largo', label: 'Largo'|t} only %} {{ '13 a 18 meses'|t }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% include 'unillanos:plan-table' with {columns: columns, rows: rows, page_size: page_size|default(6)} only %}
+    <p class="ua-prog-empty" data-ua-plan-empty hidden>{{ 'No hay acciones con esos filtros.'|t }}</p>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * Concepto: texto explicativo y tarjeta lateral.
+ */
+#}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h2' %}
+<div{{ attributes.addClass('ua-concept') }}>
+  <div>
+    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
+    {% if title %}<{{ nivel }} class="ua-h2">{{ title }}</{{ nivel }}>{% endif %}
+    {% block main %}{{ main }}{% endblock %}
+    {% if principles %}
+      <ul class="ua-principles" role="list">
+        {% for principio in principles %}
+          <li>
+            {%- include 'unillanos:icon' with {name: principio.icon, size: 'sm'} only -%}
+            <span><strong>{{ principio.title }}</strong>{% if principio.text %} {{ principio.text }}{% endif %}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+  {# La tarjeta lateral solo se imprime si trae contenido. #}
+  {% set contenido_aside %}{% block aside %}{{ aside }}{% endblock %}{% endset %}
+  {% if contenido_aside|trim %}
+    <aside class="ua-concept__card"{% if aside_label %} aria-label="{{ aside_label }}"{% endif %}>
+      {{ contenido_aside }}
+    </aside>
+  {% endif %}
+</div>

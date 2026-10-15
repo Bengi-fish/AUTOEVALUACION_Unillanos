@@ -1,0 +1,20 @@
+/**
+ * Componente tag.
+ */
+
+.ua-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 600;
+  padding: 1px 10px;
+  border-radius: var(--radio-pill);
+  background: var(--superficie-100);
+  color: var(--tinta-700);
+}
+
+.ua-tag--acento {
+  background: var(--rojo-50);
+  color: var(--rojo-700);
+}

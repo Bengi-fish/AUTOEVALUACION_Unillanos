@@ -1,0 +1,90 @@
+/**
+ * Componente adenda.
+ */
+
+.ua-adendas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--espacio-5);
+  margin-top: var(--espacio-5);
+}
+
+.ua-adenda {
+  display: flex;
+  gap: var(--espacio-4);
+  align-items: center;
+  padding: var(--espacio-4);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+}
+
+.ua a.ua-adenda {
+  text-decoration: none;
+  color: inherit;
+}
+
+.ua a.ua-adenda[href]:hover {
+  border-color: var(--rojo-100);
+  box-shadow: var(--sombra-2);
+}
+
+.ua-adenda__tag {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radio-md);
+  background: var(--tinta-900);
+  color: var(--Surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-dm-sans);
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+.ua-adenda__tag small {
+  font-size: 10px;
+  letter-spacing: .06em;
+  font-weight: 700;
+  line-height: 14px;
+}
+
+.ua-adenda__title {
+  font-family: var(--font-dm-sans);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--tinta-900);
+}
+
+@media (max-width: 860px) {
+
+  .ua-adendas {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacio-4);
+  }
+
+  .ua-adendas {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* Sustituye el estilo en línea display:block del prototipo. */
+.ua-adenda .ua-meta {
+  display: block;
+}
+
+/* El anillo de foco no debe perderse bajo la sombra del hover, ni cambiar las
+   esquinas de la tarjeta. */
+.ua a.ua-adenda[href]:focus-visible {
+  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+  border-radius: var(--radio-md);
+}

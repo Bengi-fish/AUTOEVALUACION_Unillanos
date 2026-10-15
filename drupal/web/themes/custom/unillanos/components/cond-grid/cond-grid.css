@@ -1,0 +1,79 @@
+/**
+ * Componente cond-grid.
+ */
+
+.ua-cond-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--espacio-4);
+  list-style: none;
+  margin: 0 0 var(--espacio-6);
+  padding: 0;
+}
+
+.ua-cond {
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: var(--espacio-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.ua-cond__n {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rojo-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.ua-cond__title {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+  color: var(--tinta-900);
+}
+
+.ua-cond__text {
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--tinta-500);
+}
+
+.ua-cond__estados {
+  margin-top: auto;
+  padding-top: var(--espacio-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.ua-cond__sede {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tinta-500);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-cond-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-cond-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+}
+
+/* Reflujo: palabras largas no deben desbordar la tarjeta. */
+.ua-cond__title,
+.ua-cond__text {
+  overflow-wrap: anywhere;
+}

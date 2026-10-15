@@ -1,0 +1,45 @@
+/**
+ * Tokens del sistema de diseño (derivados de plantilla/style.css).
+ */
+
+:root {
+  --Unillanos_Red: #e3061d;
+  --rojo-700: #b80417;
+  --rojo-800: #8c0312;
+  --rojo-100: #f9d3d7;
+  --rojo-50: #fdedee;
+  --tinta-900: #1a1c20;
+  --tinta-700: #3d424a;
+  --tinta-500: #5f6670;
+  --tinta-400: #8a9099;
+  --tinta-200: #b7bcc4;
+  --borde: #dfe2e6;
+  --Surface: #ffffff;
+  --superficie-50: #f4f5f7;
+  --superficie-100: #ebedf0;
+  --plazo-corto-fondo: #e8f1fb;
+  --plazo-corto-texto: #1f5aa6;
+  --plazo-mediano-fondo: #fff1cc;
+  --plazo-mediano-texto: #8a5a00;
+  --plazo-largo-fondo: #ebedf0;
+  --plazo-largo-texto: #3d424a;
+  --exito-fondo: #e6f4ec;
+  --exito-texto: #17693b;
+  --espacio-1: 4px;
+  --espacio-2: 8px;
+  --espacio-3: 12px;
+  --espacio-4: 16px;
+  --espacio-5: 24px;
+  --espacio-6: 32px;
+  --espacio-7: 48px;
+  --espacio-8: 80px;
+  --radio-sm: 4px;
+  --radio-md: 8px;
+  --radio-lg: 16px;
+  --radio-pill: 999px;
+  --sombra-1: 0 1px 2px rgba(26,28,32,0.08);
+  --sombra-2: 0 8px 24px rgba(26,28,32,0.12);
+  --contenedor-max: 1200px;
+  --alto-encabezado: 88px;
+  --font-dm-sans: "DM Sans", "Segoe UI", Arial, sans-serif;
+}

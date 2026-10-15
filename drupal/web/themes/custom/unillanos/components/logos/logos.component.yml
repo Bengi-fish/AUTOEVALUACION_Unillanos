@@ -1,0 +1,13 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Logos
+status: stable
+group: Página base
+description: 'Fila de los tres logos institucionales (Universidad de los Llanos, acreditación y «Volamos más alto»). Las imágenes salen de images/ en el tema.'
+props:
+  type: object
+  properties:
+    large:
+      type: boolean
+      title: Grande
+      description: 'Versión del pie de página (72 px de alto en lugar de 64 px).'
+      default: false

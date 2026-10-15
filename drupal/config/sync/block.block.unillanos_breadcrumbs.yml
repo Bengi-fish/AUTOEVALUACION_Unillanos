@@ -1,0 +1,22 @@
+uuid: 148ccf51-aeef-40a7-b4c1-7118e5f20db5
+langcode: es
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - unillanos
+_core:
+  default_config_hash: VhBzWb7lMRtIOg9G7VSw_0uopi-7zXeHq4vXqqV1HFE
+id: unillanos_breadcrumbs
+theme: unillanos
+region: breadcrumb
+weight: 0
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: 'Enlaces de ayuda a la navegación'
+  label_display: '0'
+  provider: system
+visibility: {  }

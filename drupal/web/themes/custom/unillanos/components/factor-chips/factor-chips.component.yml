@@ -1,0 +1,34 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Lista de factores
+status: stable
+group: Contenido
+description: 'Lista numerada compacta de factores (número de dos cifras y nombre).'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    items:
+      type: array
+      title: Factores
+      items:
+        type: object
+        required:
+          - n
+          - name
+        properties:
+          n:
+            type: integer
+          name:
+            type: string
+          score:
+            type: number
+            description: 'Valoración guardada del factor; se muestra a la derecha. Omite la clave si no hay valor (no pases null). El componente no calcula nada.'
+          grade:
+            type: string
+            description: 'Etiqueta de grado guardada, junto al valor.'
+          decimals:
+            type: integer
+            minimum: 0
+            maximum: 3
+            description: 'Decimales del valor (por defecto 2).'

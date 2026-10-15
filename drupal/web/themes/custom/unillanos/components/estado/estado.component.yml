@@ -1,0 +1,21 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Estado
+status: stable
+group: Base
+description: 'Estado de una condición o de un registro: cumple, en revisión o pendiente.'
+props:
+  type: object
+  required:
+    - label
+    - variant
+  properties:
+    label:
+      type: string
+      title: Texto
+    variant:
+      type: string
+      title: Variante
+      enum:
+        - ok
+        - proceso
+        - pendiente

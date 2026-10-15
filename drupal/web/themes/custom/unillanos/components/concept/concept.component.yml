@@ -1,0 +1,49 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Concepto
+status: stable
+group: Contenido
+description: 'Dos columnas: texto explicativo (antetítulo, título, párrafos y principios) y una tarjeta lateral (aside).'
+props:
+  type: object
+  properties:
+    eyebrow:
+      type: string
+      title: Antetítulo
+    title:
+      type: string
+      title: Título
+    heading:
+      type: string
+      title: Nivel del título
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h2
+    principles:
+      type: array
+      title: Principios
+      description: 'Lista con ícono, frase en negrita y texto, bajo el texto principal.'
+      items:
+        type: object
+        required:
+          - icon
+          - title
+        properties:
+          icon:
+            type: string
+          title:
+            type: string
+          text:
+            type: string
+    aside_label:
+      type: string
+      title: Nombre accesible de la tarjeta lateral
+slots:
+  main:
+    title: Texto principal
+    description: 'Párrafos de la columna izquierda (el primero suele ser class="ua-lead").'
+  aside:
+    title: Tarjeta lateral
+    description: 'Contenido de la tarjeta de la derecha.'

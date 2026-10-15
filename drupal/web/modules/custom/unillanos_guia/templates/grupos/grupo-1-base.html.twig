@@ -1,0 +1,254 @@
+{#
+/**
+ * @file
+ * Grupo 1 de la guía: componentes base.
+ *
+ * Variables:
+ * - datos: datos de ejemplo de la guía.
+ */
+#}
+{% set iconos = ['arrow-right', 'award', 'book', 'building', 'calendar', 'cap', 'check', 'chevron-down', 'chevron-left', 'chevron-right', 'clipboard', 'clock', 'close', 'download', 'external', 'file', 'image', 'info', 'layers', 'mail', 'map-pin', 'menu', 'message', 'mic', 'phone', 'scale', 'search', 'shield', 'target', 'user', 'users'] %}
+{% set factor = datos.institucional.factores|first %}
+
+<section class="ug-group" id="grupo-1" aria-labelledby="grupo-1-titulo">
+  <h2 class="ug-group__title" id="grupo-1-titulo">{{ 'Grupo 1 · Base'|t }}</h2>
+
+  {# ---------------------------------------------------------------- icon #}
+  <div class="ug-block" id="icon">
+    <h3 class="ug-block__title">icon</h3>
+    <p class="ug-block__text">{{ 'Ícono SVG en línea del prototipo. Tres tamaños: 16, 20 y 28 px.'|t }}</p>
+    <div class="ug-demo">
+      <figure class="ug-sample">
+        {% include 'unillanos:icon' with {name: 'search', size: 'sm'} only %}
+        <figcaption>sm</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:icon' with {name: 'search'} only %}
+        <figcaption>{{ 'normal'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:icon' with {name: 'search', size: 'lg'} only %}
+        <figcaption>lg</figcaption>
+      </figure>
+    </div>
+    <ul class="ug-icons" role="list">
+      {% for nombre in iconos %}
+        <li class="ug-sample">
+          {% include 'unillanos:icon' with {name: nombre, size: 'lg'} only %}
+          <span class="ug-sample__name">{{ nombre }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {# ------------------------------------------------------------- button #}
+  <div class="ug-block" id="button">
+    <h3 class="ug-block__title">button</h3>
+    <p class="ug-block__text">{{ 'Botón o enlace con aspecto de botón. Con url se pinta un enlace; sin url, un botón.'|t }}</p>
+    <h4 class="ug-block__sub">{{ 'Variantes'|t }}</h4>
+    <div class="ug-demo">
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Descargar informe consolidado'|t, variant: 'primario', url: '#', icon: 'download'} only %}
+        <figcaption>primario</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Ver autoevaluación'|t, variant: 'secundario', url: '#', icon: 'arrow-right', icon_position: 'after'} only %}
+        <figcaption>secundario</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Quitar filtros'|t, variant: 'texto'} only %}
+        <figcaption>texto</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Ingresar'|t, variant: 'secundario', url: '#', icon: 'user'} only %}
+        <figcaption>{{ 'enlace con ícono'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Enviar recomendación'|t, type: 'submit', icon: 'arrow-right', icon_position: 'after'} only %}
+        <figcaption>submit</figcaption>
+      </figure>
+    </div>
+    <h4 class="ug-block__sub">{{ 'Tamaño pequeño y botones de ícono'|t }}</h4>
+    <div class="ug-demo">
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Anterior'|t, variant: 'secundario', size: 'sm', icon: 'chevron-left', icon_size: 'sm'} only %}
+        <figcaption>sm</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Siguiente'|t, variant: 'secundario', size: 'sm', icon: 'chevron-right', icon_size: 'sm', icon_position: 'after'} only %}
+        <figcaption>sm</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Anterior'|t, variant: 'icono', icon: 'chevron-left'} only %}
+        <figcaption>icono</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Siguiente'|t, variant: 'icono', icon: 'chevron-right'} only %}
+        <figcaption>icono</figcaption>
+      </figure>
+    </div>
+    <h4 class="ug-block__sub">{{ 'Desactivados'|t }}</h4>
+    <div class="ug-demo">
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Ver informe completo'|t, variant: 'primario', disabled: true} only %}
+        <figcaption>{{ 'botón'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Ver informe completo'|t, variant: 'primario', url: '#', disabled: true} only %}
+        <figcaption>{{ 'enlace'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Anterior'|t, variant: 'secundario', size: 'sm', disabled: true} only %}
+        <figcaption>{{ 'botón sm'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:button' with {label: 'Anterior'|t, variant: 'secundario', size: 'sm', url: '#', disabled: true} only %}
+        <figcaption>{{ 'enlace sm'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  {# ------------------------------------------------- tag, estado, plazo #}
+  <div class="ug-block" id="tag">
+    <h3 class="ug-block__title">tag</h3>
+    <p class="ug-block__text">{{ 'Etiqueta redondeada para sede, nivel u otra categoría corta. Ejemplos con los programas de datos-ejemplo.js.'|t }}</p>
+    <ul class="ug-list" role="list">
+      {% for programa in datos.programas|slice(0, 3) %}
+        <li class="ug-list__item">
+          <span class="ug-list__name">{{ programa.nombre }}</span>
+          {% include 'unillanos:tag' with {label: programa.sede} only %}
+          {% include 'unillanos:tag' with {label: programa.nivel} only %}
+          {% if programa.ejemplo %}
+            {% include 'unillanos:tag' with {label: 'Ejemplo completo'|t, variant: 'acento'} only %}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="ug-block" id="estado">
+    <h3 class="ug-block__title">estado</h3>
+    <p class="ug-block__text">{{ 'Estado de una condición o de un registro.'|t }}</p>
+    <div class="ug-demo">
+      <figure class="ug-sample">
+        {% include 'unillanos:estado' with {label: 'Cumple'|t, variant: 'ok'} only %}
+        <figcaption>ok</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:estado' with {label: 'En revisión'|t, variant: 'proceso'} only %}
+        <figcaption>proceso</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:estado' with {label: 'Pendiente'|t, variant: 'pendiente'} only %}
+        <figcaption>pendiente</figcaption>
+      </figure>
+      <figure class="ug-sample">
+        {% include 'unillanos:estado' with {label: 'Registro vigente'|t, variant: 'ok'} only %}
+        <figcaption>{{ 'texto largo'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="ug-block" id="plazo">
+    <h3 class="ug-block__title">plazo</h3>
+    <p class="ug-block__text">{{ 'Plazo de una acción de mejora. Sin texto usa «Corto plazo», «Mediano plazo» o «Largo plazo». Ejemplos con las acciones del primer factor de datos-ejemplo.js.'|t }}</p>
+    <div class="ug-demo">
+      {% for plazo in ['corto', 'mediano', 'largo'] %}
+        <figure class="ug-sample">
+          {% include 'unillanos:plazo' with {variant: plazo} only %}
+          <figcaption>{{ plazo }}</figcaption>
+        </figure>
+      {% endfor %}
+      {% for plazo in ['corto', 'mediano', 'largo'] %}
+        <figure class="ug-sample">
+          {% include 'unillanos:plazo' with {variant: plazo, label: plazo|capitalize} only %}
+          <figcaption>{{ 'texto corto'|t }}</figcaption>
+        </figure>
+      {% endfor %}
+    </div>
+    <ul class="ug-list" role="list">
+      {% for accion in factor.plan|slice(0, 3) %}
+        <li class="ug-list__item">
+          <span class="ug-list__name">{{ accion[0] }}</span>
+          {% include 'unillanos:plazo' with {variant: accion[3]} only %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {# ----------------------------------------------- section, section-head #}
+  <div class="ug-block" id="section">
+    <h3 class="ug-block__title">section</h3>
+    <p class="ug-block__text">{{ 'Banda de página con el contenedor centrado: normal, «alt» (fondo gris) y «tight» (menos relleno vertical).'|t }}</p>
+    {% for variante in ['', 'alt', 'tight'] %}
+      <figure class="ug-frame">
+        <figcaption class="ug-frame__cap">{{ variante ?: 'normal'|t }}</figcaption>
+        {% embed 'unillanos:section' with {variant: variante} only %}
+          {% block content %}
+            <p>{{ 'Contenido de la sección dentro del contenedor.'|t }}</p>
+          {% endblock %}
+        {% endembed %}
+      </figure>
+    {% endfor %}
+  </div>
+
+  <div class="ug-block" id="section-head">
+    <h3 class="ug-block__title">section-head</h3>
+    <p class="ug-block__text">{{ 'Antetítulo, título y bajada, con un espacio a la derecha para acciones. La variante «panel» es la introducción de un panel de pestañas.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">section</figcaption>
+      <div class="ug-frame__body">
+      {% embed 'unillanos:section-head' with {eyebrow: 'Resultados'|t, title: 'Factores evaluados'|t, lead: 'Consulta la valoración y las fortalezas de cada uno de los doce factores y las adendas del informe.'|t, heading: 'h4'} only %}
+        {% block right %}
+          {% include 'unillanos:button' with {label: 'Descargar informe consolidado'|t, variant: 'secundario', url: '#', icon: 'download'} only %}
+        {% endblock %}
+      {% endembed %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">panel</figcaption>
+      <div class="ug-frame__body">
+      {% include 'unillanos:section-head' with {eyebrow: 'Plan de mejoramiento'|t, title: 'Acciones del programa'|t, lead: 'Filtra por factor o por plazo.'|t, variant: 'panel', heading: 'h4'} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# -------------------------------------------------------- placeholder #}
+  <div class="ug-block" id="placeholder">
+    <h3 class="ug-block__title">placeholder</h3>
+    <p class="ug-block__text">{{ 'Recuadro que reserva el espacio de una imagen con su proporción y tamaño sugerido. Se usa donde aún no hay fotografía.'|t }}</p>
+    <div class="ug-grid">
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Imagen horizontal'|t, size_label: '1280 × 720 px'} only %}
+        <figcaption>{{ '16:9 (por defecto)'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Banner del factor'|t, size_label: '1600 × 530 px', ratio: '3x1'} only %}
+        <figcaption>3x1</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Fotografía'|t, size_label: '800 × 600 px', ratio: '4x3'} only %}
+        <figcaption>4x3</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Fotografía institucional de la comunidad universitaria'|t, size_label: '1200 × 750 px', ratio: '16x10'} only %}
+        <figcaption>16x10</figcaption>
+      </figure>
+    </div>
+    <p class="ug-block__text">{{ 'Variante tema (variant: tema): fondo propio con los colores del tema, sin recuadro gris ni textos de «imagen pendiente»; siempre decorativo. Con number, un número grande y tenue. La usan las tarjetas y los banners de factor de las páginas de programa. Variante suave (variant: suave): la versión ligera, rosa claro con el mismo patrón, para donde el rojo pleno pesaría (el hero de la portada).'|t }}</p>
+    <div class="ug-grid">
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Fondo del tema'|t, variant: 'tema', ratio: '16x10'} only %}
+        <figcaption>{{ 'tema, 16x10'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Banner del factor'|t, variant: 'tema', ratio: '3x1', number: '03'} only %}
+        <figcaption>{{ 'tema, 3x1, number'|t }}</figcaption>
+      </figure>
+      <figure class="ug-sample ug-sample--block">
+        {% include 'unillanos:placeholder' with {label: 'Fondo suave'|t, variant: 'suave', ratio: '16x10'} only %}
+        <figcaption>{{ 'suave, 16x10 (versión ligera)'|t }}</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>

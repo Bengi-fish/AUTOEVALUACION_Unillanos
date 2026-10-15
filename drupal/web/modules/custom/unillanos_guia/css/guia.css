@@ -1,0 +1,206 @@
+/**
+ * Maquetación propia de /guia-estilos (prefijo ug-). Los componentes se
+ * estilan con el CSS del tema; aquí solo van las muestras y sus rótulos.
+ */
+
+.ug-wrap {
+  padding-block: var(--espacio-7) var(--espacio-8);
+}
+
+.ug-intro {
+  margin-bottom: var(--espacio-7);
+}
+
+.ug-intro .ua-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: var(--espacio-3);
+}
+
+.ug-index ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-5);
+}
+
+.ug-index a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--espacio-4);
+  border: 1px solid var(--tinta-400);
+  border-radius: var(--radio-pill);
+  color: var(--tinta-700);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ug-index a:hover {
+  border-color: var(--Unillanos_Red);
+  color: var(--rojo-700);
+}
+
+.ug-group {
+  margin-top: var(--espacio-7);
+  padding-top: var(--espacio-6);
+  border-top: 6px solid var(--Unillanos_Red);
+}
+
+.ug-group__title {
+  margin-bottom: var(--espacio-5);
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 800;
+}
+
+.ug-block {
+  margin-bottom: var(--espacio-7);
+  padding-bottom: var(--espacio-6);
+  border-bottom: 1px solid var(--borde);
+}
+
+.ug-block__title {
+  margin-bottom: var(--espacio-2);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 700;
+  color: var(--rojo-700);
+}
+
+.ug-block__sub {
+  margin: var(--espacio-6) 0 var(--espacio-3);
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--tinta-500);
+}
+
+.ug-block__text {
+  max-width: 720px;
+  margin-bottom: var(--espacio-4);
+}
+
+.ug-demo {
+  margin-bottom: var(--espacio-5);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-5);
+}
+
+.ug-sample {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+  margin: 0;
+}
+
+.ug-sample figcaption,
+.ug-sample__name,
+.ug-frame__cap {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--tinta-500);
+}
+
+.ug-sample--block {
+  align-items: stretch;
+}
+
+.ug-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-5);
+}
+
+.ug-icons .ug-sample {
+  align-items: center;
+  padding: var(--espacio-4) var(--espacio-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  text-align: center;
+}
+
+.ug-list {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.ug-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ug-list__name {
+  flex: 1 1 260px;
+  font-weight: 600;
+  color: var(--tinta-900);
+}
+
+.ug-frame {
+  position: relative;
+  margin: 0 0 var(--espacio-4);
+  border: 1px dashed var(--tinta-400);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+}
+
+.ug-frame__cap {
+  padding: var(--espacio-2) var(--espacio-3);
+  background: var(--superficie-100);
+}
+
+.ug-frame__body {
+  padding: var(--espacio-5);
+}
+
+.ug-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--espacio-5);
+}
+
+@media (max-width: 860px) {
+
+  .ug-wrap {
+    padding-block: var(--espacio-6) var(--espacio-7);
+  }
+
+}
+
+/* El menú suelto de la guía no tiene botón: se muestra siempre. */
+.ug-frame--nav .ua-nav {
+  display: block;
+}
+
+.ug-frame__body--estrecho {
+  max-width: 460px;
+}
+
+/* En móvil los marcos de la guía no deben estrechar los componentes más de lo
+   que lo hace una página real (contenedor de 16 px). */
+@media (max-width: 560px) {
+
+  .ug-frame__body {
+    padding: var(--espacio-3);
+  }
+
+}
+
+.ug-stack {
+  display: grid;
+  gap: var(--espacio-4);
+}

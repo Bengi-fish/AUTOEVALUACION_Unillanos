@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ * Migas de pan: las pinta el componente unillanos:breadcrumb.
+ *
+ * Variables:
+ * - breadcrumb: lista de elementos con text y url (el último sin url).
+ */
+#}
+{% if breadcrumb %}
+  {% set migas = [] %}
+  {% for item in breadcrumb %}
+    {% set migas = migas|merge([{title: item.text, url: item.url}]) %}
+  {% endfor %}
+  {% include 'unillanos:breadcrumb' with {items: migas} only %}
+{% endif %}

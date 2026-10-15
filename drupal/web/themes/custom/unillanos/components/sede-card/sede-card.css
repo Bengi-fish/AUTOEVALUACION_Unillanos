@@ -1,0 +1,45 @@
+/**
+ * Componente sede-card.
+ */
+
+.ua-sedes {
+  display: grid;
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-4);
+  list-style: none;
+  padding: 0;
+}
+
+.ua-sede {
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: var(--espacio-4);
+}
+
+.ua-sede__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--espacio-3);
+}
+
+.ua-sede__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.ua-sede__name .ua-icon {
+  color: var(--rojo-700);
+}
+
+@media (max-width: 560px) {
+
+  .ua-sede__head {
+    flex-wrap: wrap;
+  }
+
+}

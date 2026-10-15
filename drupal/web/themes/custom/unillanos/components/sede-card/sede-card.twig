@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * Tarjetas de sede.
+ */
+#}
+<ul{{ attributes.addClass('ua-sedes').setAttribute('role', 'list') }}>
+  {% for sede in items %}
+    <li class="ua-sede">
+      <div class="ua-sede__head">
+        <span class="ua-sede__name">
+          {%- include 'unillanos:icon' with {name: 'map-pin', size: 'sm'} only -%}
+          {{ sede.name }}
+        </span>
+        {% if sede.status %}
+          {% include 'unillanos:estado' with {label: sede.status.label, variant: sede.status.variant} only %}
+        {% endif %}
+      </div>
+      {% if sede.details %}
+        {% include 'unillanos:ficha' with {compact: true, items: sede.details} only %}
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

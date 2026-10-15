@@ -1,0 +1,349 @@
+{#
+/**
+ * @file
+ * Grupo 3 de la guía: componentes de contenido.
+ *
+ * Variables:
+ * - datos: datos de ejemplo de la guía (cifras de sede y factores).
+ *
+ * Los enlaces apuntan solo a las rutas del menú temporal. Donde falta una
+ * fotografía se usa el componente placeholder.
+ */
+#}
+{% set cifras = datos.sedes.villavicencio.stats %}
+{% set factores_demo = [] %}
+{% for factor in datos.institucional.factores %}
+  {% set factores_demo = factores_demo|merge([{n: factor.n, name: factor.name}]) %}
+{% endfor %}
+
+<section class="ug-group" id="grupo-3" aria-labelledby="grupo-3-titulo">
+  <h2 class="ug-group__title" id="grupo-3-titulo">{{ 'Grupo 3 · Contenido'|t }}</h2>
+
+  {# ---------------------------------------------------------------- hero #}
+  <div class="ug-block" id="hero">
+    <h3 class="ug-block__title">hero</h3>
+    <p class="ug-block__text">{{ 'Portada de la página de inicio: antetítulo, título con final en acento, bajada, nota con fecha y una imagen a la derecha (slot media; aquí un marcador). En una página real el título es el h1; en la guía es un h4.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'inicio'|t }}</figcaption>
+      {% embed 'unillanos:hero' with {
+        eyebrow: 'Proceso de autoevaluación 2024 – 2026'|t,
+        title: 'Autoevaluación'|t,
+        title_accent: 'Institucional'|t,
+        lead: 'Un ejercicio participativo en el que la comunidad universitaria reconoce sus fortalezas, identifica oportunidades de mejora y define el camino hacia la excelencia académica en la Orinoquia.'|t,
+        note: 'Última actualización: 15 de septiembre de 2026'|t,
+        heading: 'h4',
+      } only %}
+        {% block media %}
+          {% include 'unillanos:placeholder' with {label: 'Fotografía institucional de la comunidad universitaria'|t, size_label: '1200 × 750 px', ratio: '16x10'} only %}
+        {% endblock %}
+      {% endembed %}
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------------- stats #}
+  <div class="ug-block" id="stats">
+    <h3 class="ug-block__title">stats</h3>
+    <p class="ug-block__text">{{ 'Banda roja de cuatro cifras. Los valores salen de datos-ejemplo.js (sede Villavicencio). Cada cifra puede llevar una clave (key) para que un selector de sede la actualice.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cuatro cifras'|t }}</figcaption>
+      {% include 'unillanos:stats' with {items: [
+        {value: cifras.factores, label: 'Factores evaluados'|t, key: 'factores'},
+        {value: cifras.participantes, label: 'Personas participaron en encuestas'|t, key: 'participantes'},
+        {value: cifras.acciones, label: 'Acciones de mejora formuladas'|t, key: 'acciones'},
+        {value: cifras.global, label: 'Valoración global sobre 5'|t, key: 'global'},
+      ]} only %}
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------------- steps #}
+  <div class="ug-block" id="steps">
+    <h3 class="ug-block__title">steps</h3>
+    <p class="ug-block__text">{{ 'Fases del proceso. Estados: hecho (con ✓), actual (resaltado, aria-current="step") y pendiente. La muestra enseña los tres.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cinco fases'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:steps' with {heading: 'h4', items: [
+          {title: 'Planeación y organización'|t, text: 'Comité, cronograma y ponderación de factores.'|t, status: 'hecho', state_label: 'Completada'|t},
+          {title: 'Recolección'|t, text: 'Encuestas, grupos focales y evidencias.'|t, status: 'hecho', state_label: 'Completada'|t},
+          {title: 'Análisis y juicio'|t, text: 'Valoración y juicio de cada factor.'|t, status: 'actual', state_label: 'En curso'|t},
+          {title: 'Informe de autoevaluación'|t, text: 'Consolidación y aprobación del informe.'|t, status: 'pendiente', state_label: 'Pendiente'|t},
+          {title: 'Plan de mejoramiento y radicación'|t, text: 'Acciones, responsables y plazos; radicación del informe y sus anexos.'|t, status: 'pendiente', state_label: 'Pendiente'|t},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="steps-neutras">
+    <h3 class="ug-block__title">steps · sin estado</h3>
+    <p class="ug-block__text">{{ 'Con status vacío, la fase es neutra: numerada, sin ✓ ni etiqueta de estado. Se usa cuando no se sabe en qué fase está el proceso (no hay dato de fase).'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cinco fases sin estado'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:steps' with {heading: 'h4', items: [
+          {title: 'Planeación y organización'|t, text: 'Comité, cronograma y ponderación de factores.'|t, status: ''},
+          {title: 'Recolección'|t, text: 'Encuestas, grupos focales y evidencias.'|t, status: ''},
+          {title: 'Análisis y juicio'|t, text: 'Valoración y juicio de cada factor.'|t, status: ''},
+          {title: 'Informe de autoevaluación'|t, text: 'Consolidación y aprobación del informe.'|t, status: ''},
+          {title: 'Plan de mejoramiento y radicación'|t, text: 'Acciones, responsables y plazos; radicación del informe y sus anexos.'|t, status: ''},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------- concept, factor-chips #}
+  <div class="ug-block" id="concept">
+    <h3 class="ug-block__title">concept</h3>
+    <p class="ug-block__text">{{ 'Dos columnas: texto explicativo con principios y una tarjeta lateral. Dentro de la tarjeta va, por ejemplo, la lista de factores (factor-chips) con los doce factores de datos-ejemplo.js.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'texto, principios y tarjeta lateral'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% embed 'unillanos:concept' with {
+          eyebrow: 'La autoevaluación'|t,
+          title: '¿Qué es la autoevaluación?'|t,
+          heading: 'h4',
+          aside_label: 'Qué se evalúa'|t,
+          factores_demo: factores_demo,
+          principles: [
+            {icon: 'users', title: 'Participativa.'|t, text: 'Estudiantes, profesores, egresados, administrativos y sector externo aportan su mirada.'|t},
+            {icon: 'clipboard', title: 'Basada en evidencias.'|t, text: 'Cada juicio se sustenta en datos, documentos e instrumentos aplicados.'|t},
+            {icon: 'target', title: 'Orientada a la mejora.'|t, text: 'Cada hallazgo se traduce en acciones con responsables y plazos.'|t},
+          ],
+        } only %}
+          {% block main %}
+            <p class="ua-lead">{{ 'La autoevaluación es el ejercicio con el que la Universidad y cada uno de sus programas se miran a sí mismos: reúnen evidencias, escuchan a la comunidad y emiten un juicio sobre su calidad frente a los lineamientos del modelo de acreditación en alta calidad.'|t }}</p>
+            <p>{{ 'Su resultado no es un fin en sí mismo. Alimenta el'|t }} <strong>{{ 'plan de mejoramiento'|t }}</strong>{{ ', sustenta los procesos de'|t }} <strong>{{ 'registro calificado'|t }}</strong> {{ 'y de'|t }} <strong>{{ 'acreditación'|t }}</strong> {{ 'y permite rendir cuentas a la comunidad sobre lo que se ha logrado y lo que falta por mejorar.'|t }}</p>
+          {% endblock %}
+          {% block aside %}
+            <h5 class="ua-h4">{{ '¿Qué se evalúa?'|t }}</h5>
+            <p class="ua-meta">{{ 'Los doce factores del modelo institucional, para las dos sedes, y los factores de cada programa académico.'|t }}</p>
+            {% include 'unillanos:factor-chips' with {items: factores_demo} only %}
+          {% endblock %}
+        {% endembed %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="factor-chips">
+    <h3 class="ug-block__title">factor-chips</h3>
+    <p class="ug-block__text">{{ 'Lista numerada compacta de factores (número de dos cifras y nombre).'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'doce factores'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:factor-chips' with {items: factores_demo} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="factor-chips-valor">
+    <h3 class="ug-block__title">factor-chips · score, grade</h3>
+    <p class="ug-block__text">{{ 'Con score (y grade, decimals) cada factor muestra su valoración guardada a la derecha, sin partirse; el nombre sí puede partirse. El componente no calcula nada. Un factor sin valor queda solo con número y nombre. Los valores y etiquetas de la muestra son de datos-ejemplo.js.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'valor en nueve factores'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% set chips_valor = [] %}
+        {% for factor in datos.institucional.factores %}
+          {% set chips_valor = chips_valor|merge([loop.index <= 9 ? {n: factor.n, name: factor.name, score: factor.score, grade: factor.grado, decimals: 2} : {n: factor.n, name: factor.name}]) %}
+        {% endfor %}
+        {% include 'unillanos:factor-chips' with {items: chips_valor} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="concept-sin-aside">
+    <h3 class="ug-block__title">concept · sin tarjeta lateral</h3>
+    <p class="ug-block__text">{{ 'La tarjeta lateral (aside) solo se imprime si trae contenido: sin ella no queda una tarjeta vacía.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'solo texto'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% embed 'unillanos:concept' with {eyebrow: 'La autoevaluación'|t, title: 'Sin tarjeta lateral'|t, heading: 'h4'} only %}
+          {% block main %}
+            <p class="ua-lead">{{ 'Cuando no hay factores que listar, el texto ocupa su columna y la tarjeta no se imprime.'|t }}</p>
+          {% endblock %}
+        {% endembed %}
+      </div>
+    </figure>
+  </div>
+
+  {# ---------------------------------------------------------------- card #}
+  <div class="ug-block" id="card">
+    <h3 class="ug-block__title">card</h3>
+    <p class="ug-block__text">{{ 'Tarjetas de acceso a las secciones del sitio. Cada una es un enlace a una ruta del menú; un destino no válido se imprime sin href.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cuatro tarjetas'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:card' with {heading: 'h4', items: [
+          {icon: 'building', title: 'Institucional'|t, text: 'Registro calificado, autoevaluación por factores y plan de mejoramiento de la Universidad, en las sedes Villavicencio y Granada.'|t, url: '/institucional', cta: 'Ver autoevaluación institucional'|t},
+          {icon: 'cap', title: 'Programas'|t, text: 'Busca un programa y consulta su registro calificado, su autoevaluación nacional o internacional y su plan de mejoramiento.'|t, url: '/programas', cta: 'Buscar un programa'|t},
+          {icon: 'book', title: 'Documentos'|t, text: 'Normatividad y documentos base que sustentan el proceso de autoevaluación.'|t, url: '/documentos', cta: 'Ver documentos'|t},
+          {icon: 'message', title: 'Participa'|t, text: 'Conoce las encuestas, grupos focales y entrevistas del proceso y envía tus recomendaciones.'|t, url: '/participa', cta: 'Participar'|t},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ======================================================= TANDA 3B ==== #}
+  {# ------------------------------------------------------------ doc-list #}
+  <div class="ug-block" id="doc-list">
+    <h3 class="ug-block__title">doc-list</h3>
+    <p class="ug-block__text">{{ 'Lista de documentos descargables. Los documentos todavía no existen, así que no llevan url: el botón de descarga queda desactivado (sin href), como los enlaces legales del pie. Con una url segura sería un enlace.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'normatividad (con descripción)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:doc-list' with {heading: 'h4', items: [
+          {cat: 'Normatividad'|t, title: 'Acuerdo 01 de 2025 CESU'|t, desc: 'Lineamientos y aspectos por evaluar para la acreditación en alta calidad de programas, unidades académicas e instituciones'|t, meta: 'PDF · 1,0 MB'},
+          {cat: 'Normatividad'|t, title: 'Acuerdo CESU 02 de 2020'|t, desc: 'Modelo de acreditación en alta calidad (referente anterior)'|t, meta: 'PDF · 1,2 MB'},
+          {cat: 'Normatividad'|t, title: 'Decreto 1330 de 2019'|t, desc: 'Registro calificado y condiciones de calidad de programas e instituciones'|t, meta: 'PDF · 860 KB'},
+          {cat: 'Normatividad'|t, title: 'Ley 1581 de 2012'|t, desc: 'Protección de datos personales'|t, meta: 'PDF · 290 KB'},
+        ]} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'documentos del proceso (con otro tipo de archivo)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:doc-list' with {heading: 'h4', items: [
+          {cat: 'Acto administrativo'|t, title: 'Resolución de registro calificado institucional · Villavicencio'|t, meta: 'PDF · 1,4 MB · ejemplo'|t},
+          {cat: 'Informe'|t, title: 'Informe de verificación de condiciones institucionales'|t, meta: 'PDF · 3,2 MB · ejemplo'|t},
+          {cat: 'Matriz'|t, title: 'Matriz de evidencias por condición'|t, meta: 'XLSX · 220 KB · ejemplo'|t, kind: 'XLSX'},
+          {cat: 'Documento base'|t, title: 'Proyecto Educativo Institucional (PEI)'|t, meta: 'PDF · 2,1 MB · 10 feb 2025'|t, url: '/documentos#documentos-base'},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  <div class="ug-block" id="doc-list-tipos">
+    <h3 class="ug-block__title">doc-list · tipos de archivo y descarga</h3>
+    <p class="ug-block__text">{{ 'El rótulo del ícono (kind) admite hasta cuatro letras (PDF, DOCX, XLSX…) dentro del recuadro de 48 px. El nombre accesible del botón de descarga incluye el tipo y el tamaño de meta: «Descargar {título} (PDF · 5,2 MB)». Con url, el botón es un enlace; el navegador abre el PDF en su visor y descarga los documentos de Word y de Excel. Las muestras apuntan a un ancla de esta página; los tamaños son de ejemplo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'PDF, DOCX y XLSX con url, tamaño y fecha'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:doc-list' with {heading: 'h4', items: [
+          {cat: 'Informe'|t, title: 'Informe de autoevaluación (muestra)'|t, desc: 'Un título largo con descripción para ver cómo se parten el texto y el nombre del archivo sin desbordar la tarjeta ni el botón de descarga'|t, meta: 'PDF · 5,2 MB', kind: 'PDF', url: '#doc-list-tipos'},
+          {cat: 'Documento base'|t, title: 'Plan de mejoramiento (muestra)'|t, meta: 'XLSX · 197 KB · junio de 2024', kind: 'XLSX', url: '#doc-list-tipos'},
+          {cat: 'Normatividad'|t, title: 'Acuerdo de ejemplo (muestra)'|t, meta: 'DOCX · 992 KB', kind: 'DOCX', url: '#doc-list-tipos'},
+          {cat: 'Soporte'|t, title: 'Documento sin archivo todavía (muestra)'|t, meta: 'PDF'},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ----------------------------------------------------------- cond-grid #}
+  <div class="ug-block" id="cond-grid">
+    <h3 class="ug-block__title">cond-grid</h3>
+    <p class="ug-block__text">{{ 'Condiciones numeradas con su estado por sede (o un solo estado). Los estados son ilustrativos.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'condiciones institucionales (estado por sede)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:cond-grid' with {heading: 'h4', items: [
+          {title: 'Mecanismos de selección y evaluación de estudiantes y profesores'|t, text: 'Criterios transparentes de ingreso, vinculación, permanencia y evaluación.'|t, states: [{sede: datos.sedes.villavicencio.nombre, label: 'Cumple'|t, variant: 'ok'}, {sede: datos.sedes.granada.nombre, label: 'Cumple'|t, variant: 'ok'}]},
+          {title: 'Cultura de autoevaluación'|t, text: 'Prácticas permanentes de autoevaluación, autorregulación y mejora continua.'|t, states: [{sede: datos.sedes.villavicencio.nombre, label: 'Cumple'|t, variant: 'ok'}, {sede: datos.sedes.granada.nombre, label: 'En revisión'|t, variant: 'proceso'}]},
+          {title: 'Recursos suficientes para las funciones misionales'|t, text: 'Recursos físicos, tecnológicos y financieros disponibles para el cumplimiento de la misión.'|t, states: [{sede: datos.sedes.villavicencio.nombre, label: 'Cumple'|t, variant: 'ok'}, {sede: datos.sedes.granada.nombre, label: 'Pendiente'|t, variant: 'pendiente'}]},
+        ]} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'condiciones del programa (un solo estado)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:cond-grid' with {heading: 'h4', items: [
+          {title: 'Denominación'|t, text: 'El nombre del programa corresponde a su contenido y a su nivel de formación.'|t, states: [{label: 'Cumple'|t, variant: 'ok'}]},
+          {title: 'Investigación, innovación y creación'|t, text: 'Formación para la investigación y aportes al desarrollo tecnológico.'|t, states: [{label: 'En revisión'|t, variant: 'proceso'}]},
+          {title: 'Infraestructura física y tecnológica'|t, text: 'Espacios y equipos adecuados para el desarrollo del programa.'|t, states: [{label: 'Pendiente'|t, variant: 'pendiente'}]},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# --------------------------------------------------------------- ficha #}
+  <div class="ug-block" id="ficha">
+    <h3 class="ug-block__title">ficha</h3>
+    <p class="ug-block__text">{{ 'Ficha de datos en rejilla. Los datos de contacto de la segunda muestra son claramente falsos (dominio .invalid y números en cero): nunca deben ser teléfonos ni correos reales.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'ficha de un programa (ejemplo)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:ficha' with {items: [
+          {term: 'Nivel'|t, value: datos.programas|first.nivel ~ ' universitario'},
+          {term: 'Modalidad'|t, value: 'Presencial'|t},
+          {term: 'Duración'|t, value: '10 semestres'|t},
+          {term: 'Créditos académicos'|t, value: '160'},
+          {term: 'Código SNIES'|t, value: '00000 (ejemplo)'|t},
+          {term: 'Sede'|t, value: datos.programas|first.sede},
+          {term: 'Resolución de registro'|t, value: 'N.º 0000 de 2022 (ejemplo)'|t},
+          {term: 'Vigente hasta'|t, value: 'Diciembre de 2029'|t},
+        ]} only %}
+      </div>
+    </figure>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'con datos de contacto de ejemplo (falsos)'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:ficha' with {items: [
+          {term: 'Oficina'|t, value: 'Oficina de autoevaluación (ejemplo)'|t},
+          {term: 'Correo'|t, value: 'oficina@ejemplo.invalid'},
+          {term: 'Teléfono'|t, value: '000 000 0000 (ejemplo)'|t},
+          {term: 'Horario'|t, value: 'Lunes a viernes (ejemplo)'|t},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ----------------------------------------------------------- sede-card #}
+  <div class="ug-block" id="sede-card">
+    <h3 class="ug-block__title">sede-card</h3>
+    <p class="ug-block__text">{{ 'Sedes con su estado y una ficha compacta. Los nombres salen de datos-ejemplo.js; las resoluciones son de ejemplo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'dos sedes'|t }}</figcaption>
+      <div class="ug-frame__body ug-frame__body--estrecho">
+        {% include 'unillanos:sede-card' with {items: [
+          {name: datos.sedes.villavicencio.nombre, status: {label: 'Vigente'|t, variant: 'ok'}, details: [{term: 'Resolución'|t, value: 'N.º 0000 de 2023 (ejemplo)'|t}, {term: 'Vigente hasta'|t, value: 'Diciembre de 2030'|t}]},
+          {name: datos.sedes.granada.nombre, status: {label: 'Vigente'|t, variant: 'ok'}, details: [{term: 'Resolución'|t, value: 'N.º 0000 de 2023 (ejemplo)'|t}, {term: 'Vigente hasta'|t, value: 'Diciembre de 2030'|t}]},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------- cta-row #}
+  <div class="ug-block" id="cta-row">
+    <h3 class="ug-block__title">cta-row</h3>
+    <p class="ug-block__text">{{ 'Fila con título, frase y un botón primario con flecha. view_go lleva la clave de la pestaña de destino (data-ua-view-go) para el JS de pestañas del grupo 5.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'siguiente paso'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:cta-row' with {
+          title: 'Siguiente paso'|t,
+          text: 'Consulta la autoevaluación institucional por factores, con su valoración y sus fortalezas.'|t,
+          heading: 'h4',
+          button_label: 'Ver autoevaluación'|t,
+          button_url: '/institucional#autoevaluacion',
+          view_go: 'autoevaluacion',
+        } only %}
+      </div>
+    </figure>
+  </div>
+
+  {# ------------------------------------------------------------- gallery #}
+  <div class="ug-block" id="gallery">
+    <h3 class="ug-block__title">gallery</h3>
+    <p class="ug-block__text">{{ 'Carrusel horizontal con botones Anterior y Siguiente. Sin fotografías todavía: cada figura usa el componente placeholder. Con el foco en la pista (Tab), las flechas del teclado la recorren.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'ocho figuras'|t }}</figcaption>
+      {% embed 'unillanos:section' with {
+        variant: 'alt',
+        pies: ['Taller de ponderación con estudiantes'|t, 'Mesa de trabajo con profesores'|t, 'Encuentro con egresados'|t, 'Jornada en sede regional'|t, 'Comité de autoevaluación'|t, 'Socialización de resultados'|t, 'Visita a laboratorios'|t, 'Foro con el sector productivo'|t],
+        titulo_galeria: 'La comunidad construye el proceso'|t,
+        antetitulo_galeria: 'Galería'|t,
+        nombre_pista: 'Galería del proceso'|t,
+      } only %}
+        {% block content %}
+          {% embed 'unillanos:gallery' with {eyebrow: antetitulo_galeria, title: titulo_galeria, heading: 'h4', track_label: nombre_pista, pies: pies} only %}
+            {% block items %}
+              {% for pie in pies %}
+                <figure class="ua-gallery__item">
+                  {% include 'unillanos:placeholder' with {label: 'Fotografía'|t, size_label: '800 × 600 px', ratio: '4x3', decorative: true} only %}
+                  <figcaption>{{ pie }}</figcaption>
+                </figure>
+              {% endfor %}
+            {% endblock %}
+          {% endembed %}
+        {% endblock %}
+      {% endembed %}
+    </figure>
+  </div>
+</section>

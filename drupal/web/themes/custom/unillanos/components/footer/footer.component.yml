@@ -1,0 +1,78 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Pie de página
+status: stable
+group: Página base
+description: 'Pie de página: banda con los tres logos, franja roja, descripción del sistema, columnas de enlaces, contacto y aviso legal. Los textos de contacto y los enlaces legales los define quien lo usa.'
+props:
+  type: object
+  properties:
+    institution:
+      type: string
+      title: Institución
+      description: 'Por defecto «Universidad de los Llanos».'
+    institution_note:
+      type: string
+      title: Nota de la institución
+      description: 'Por ejemplo las sedes. Por defecto «Sedes Villavicencio y Granada · Meta, Colombia».'
+    title:
+      type: string
+      title: Nombre del sistema
+    description:
+      type: string
+      title: Descripción
+    columns:
+      type: array
+      title: Columnas de enlaces
+      items:
+        type: object
+        required:
+          - title
+          - links
+        properties:
+          title:
+            type: string
+          links:
+            type: array
+            items:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                url:
+                  type: string
+    contact_title:
+      type: string
+      title: Título de la columna de contacto
+    contact:
+      type: array
+      title: Contacto
+      items:
+        type: object
+        required:
+          - icon
+          - lines
+        properties:
+          icon:
+            type: string
+          lines:
+            type: array
+            items:
+              type: string
+    legal:
+      type: string
+      title: Aviso legal
+    legal_links:
+      type: array
+      title: Enlaces legales
+      description: 'Sin url se imprimen como texto.'
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          title:
+            type: string
+          url:
+            type: string

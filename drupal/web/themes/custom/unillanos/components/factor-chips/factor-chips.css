@@ -1,0 +1,62 @@
+/**
+ * Componente factor-chips.
+ */
+
+.ua-factor-chips {
+  list-style: none;
+  margin: var(--espacio-4) 0 0;
+  padding: 0;
+  display: grid;
+  /* La columna no crece por encima de su contenedor (con valor, el mínimo de
+     la fila incluye el valor que no se parte). */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.ua-factor-chip {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-700);
+}
+
+.ua-factor-chip__n {
+  flex: none;
+  /* DM Sans no trae cifras tabulares: el ancho mínimo (2ch, mayor que el par
+     más ancho) hace que todos los nombres arranquen en la misma columna. */
+  min-width: 2ch;
+  font-weight: 700;
+  color: var(--rojo-700);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Con valoración: el nombre se parte si hace falta y el valor no. */
+.ua-factor-chip {
+  min-width: 0;
+}
+
+.ua-factor-chip__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ua-factor-chip__value {
+  flex: none;
+  margin-left: auto;
+  padding-left: var(--espacio-2);
+  text-align: right;
+  white-space: nowrap;
+  color: var(--tinta-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.ua-factor-chip__grade {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--tinta-500);
+}

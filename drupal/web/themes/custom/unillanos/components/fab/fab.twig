@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Botón flotante de recomendaciones.
+ *
+ * Mismo filtro de URL que unillanos:button; sin destino seguro no se
+ * imprime href.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set clases = static ? ['ua-fab', 'ua-fab--estatico'] : ['ua-fab'] %}
+<a{{ attributes.addClass(clases) }}{% if url and ((url ~ '') matches seguro) %} href="{{ url }}"{% endif %}>
+  {%- include 'unillanos:icon' with {name: icon|default('message')} only -%}
+  <span class="ua-fab__text">{{ label }}</span>
+</a>

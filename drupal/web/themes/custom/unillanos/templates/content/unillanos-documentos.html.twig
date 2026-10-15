@@ -1,0 +1,81 @@
+{#
+/**
+ * @file
+ * Página de documentos.
+ *
+ * Variables:
+ * - datos: lo arma PresentadorAutoevaluacion::documentosPublicados():
+ *   generales (por categoría), programas (con sus documentos), total y salto.
+ *   Solo trae lo que existe: lo vacío se omite.
+ *
+ * El h1 es el título de la cabecera (la página omite el bloque de título).
+ * Los textos editoriales (bajada, títulos y bajadas de sección) son los del
+ * prototipo y están pendientes de confirmar por Acreditación.
+ */
+#}
+{{ attach_library('unillanos/documentos') }}
+
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Documentos'|t,
+  title: 'Normatividad y'|t,
+  title_accent: 'documentos'|t,
+  lead: 'Las normas que orientan la autoevaluación y los documentos que sustentan el proceso.'|t,
+  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Documentos'|t}],
+} only %}
+
+{% set textos = {
+  normatividad: {eyebrow: 'Normatividad'|t, title: 'Normas que orientan el proceso'|t, lead: 'Leyes, decretos y acuerdos del sector.'|t},
+  documento_base: {eyebrow: 'Documentos base'|t, title: 'Documentos que sustentan el proceso'|t, lead: ''},
+  informe: {eyebrow: 'Informes'|t, title: 'Informes de autoevaluación'|t, lead: ''},
+  acto_administrativo: {eyebrow: 'Actos administrativos'|t, title: 'Actos administrativos'|t, lead: ''},
+  soporte: {eyebrow: 'Soportes'|t, title: 'Documentos de soporte'|t, lead: ''},
+} %}
+{% set bandas = 0 %}
+
+{% if datos.total == 0 %}
+  {% embed 'unillanos:section' with {id: 'documentos'} only %}
+    {% block content %}
+      <p class="ua-lead ua-docs-vacio">{{ 'Todavía no hay documentos publicados.'|t }}</p>
+    {% endblock %}
+  {% endembed %}
+{% endif %}
+
+{# --------------------------------------------- generales, por categoría #}
+{% for grupo in datos.generales %}
+  {% set texto = textos[grupo.categoria] ?? {eyebrow: 'Documentos'|t, title: 'Otros documentos'|t, lead: ''} %}
+  {% embed 'unillanos:section' with {id: 'doc-' ~ grupo.categoria, variant: bandas is even ? '' : 'alt', grupo: grupo, texto: texto} only %}
+    {% block content %}
+      {% include 'unillanos:section-head' with {eyebrow: texto.eyebrow, title: texto.title, lead: texto.lead} only %}
+      {% include 'unillanos:doc-list' with {heading: 'h3', items: grupo.items} only %}
+    {% endblock %}
+  {% endembed %}
+  {% set bandas = bandas + 1 %}
+{% endfor %}
+
+{# ---------------------------------------------- documentos por programa #}
+{% if datos.programas %}
+  {% embed 'unillanos:section' with {id: 'doc-programas', variant: bandas is even ? '' : 'alt', datos: datos} only %}
+    {% block content %}
+      {% include 'unillanos:section-head' with {
+        eyebrow: 'Programas'|t,
+        title: 'Documentos de los programas'|t,
+        lead: 'Informes, planes y otros documentos de cada programa.'|t,
+      } only %}
+      {% if datos.salto %}
+        <nav aria-label="{{ 'Programas con documentos'|t }}">
+          <ul class="ua-docs-salto" role="list">
+            {% for programa in datos.programas %}
+              <li><a href="#programa-{{ programa.id }}">{{ programa.nombre }}</a></li>
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
+      {% for programa in datos.programas %}
+        <div class="ua-docs-programa" id="programa-{{ programa.id }}">
+          <h3 class="ua-docs-programa__titulo"><a href="{{ programa.url }}">{{ programa.nombre }}</a></h3>
+          {% include 'unillanos:doc-list' with {heading: 'h4', items: programa.items} only %}
+        </div>
+      {% endfor %}
+    {% endblock %}
+  {% endembed %}
+{% endif %}

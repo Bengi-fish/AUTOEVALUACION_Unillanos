@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Banda de cifras.
+ */
+#}
+<section{{ attributes.addClass('ua-stats').setAttribute('aria-label', label|default('Cifras del proceso'|t)) }}>
+  <div class="ua-container">
+    <ul class="ua-stats__list" role="list">
+      {% for cifra in items %}
+        <li class="ua-stat"><span class="ua-stat__value"{% if cifra.key %} data-ua-stat="{{ cifra.key }}"{% endif %}>{{ cifra.value }}</span> <span class="ua-stat__label">{{ cifra.label }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
