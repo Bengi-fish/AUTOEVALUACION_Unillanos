@@ -39,9 +39,9 @@ props:
             type: string
           meta:
             type: string
-            description: 'Tipo, tamaño y fecha, por ejemplo «PDF · 1,4 MB».'
+            description: 'Tipo, tamaño y fecha, por ejemplo «PDF · 1,4 MB». También se añade al nombre accesible del botón de descarga.'
           kind:
             type: string
-            description: 'Rótulo del ícono (PDF, XLSX…). Por defecto PDF.'
+            description: 'Rótulo del ícono (PDF, XLSX, DOCX…). Por defecto PDF; caben hasta cuatro letras.'
           url:
             type: string

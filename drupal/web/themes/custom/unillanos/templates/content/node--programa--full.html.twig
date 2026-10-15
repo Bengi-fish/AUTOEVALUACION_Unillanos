@@ -8,6 +8,8 @@
  *   faltar o estar vacías).
  * - plan: lead, opciones del filtro, filas y aviso del plan de mejoramiento
  *   (vacío si el programa no tiene un plan con metas).
+ * - documentos: items, informe y plan del programa (vacío si no tiene
+ *   documentos).
  * - programa: (solo en la ruta canónica) datos armados por el presentador (nombre_inicio,
  *   nombre_acento, eyebrow, etiquetas y ficha). Solo trae valores que
  *   existen; no se muestran los títulos de otros nodos ni datos calculados.
@@ -49,7 +51,7 @@
   {% if factores.pestanas %}
     {# Banda alterna salvo que la cabecera gris quede pegada a ella (sin ficha). #}
     {% set variante = programa.ficha|length > 1 ? 'alt' : '' %}
-    {% embed 'unillanos:section' with {id: 'autoevaluacion', variant: variante, factores: factores, hay_plan: hay_plan} only %}
+    {% embed 'unillanos:section' with {id: 'autoevaluacion', variant: variante, factores: factores, hay_plan: hay_plan, informe: documentos.informe|default(null)} only %}
       {% block content %}
         {% set partes = [] %}
         {% if factores.proceso %}{% set partes = partes|merge([factores.proceso]) %}{% endif %}
@@ -59,10 +61,18 @@
           title: 'Factores y valoración'|t,
           lead: partes|join('. '),
           hay_plan: hay_plan,
+          informe: informe,
         } only %}
           {% block right %}
-            {% if hay_plan %}
-              {% include 'unillanos:button' with {label: 'Ir al plan de mejoramiento'|t, variant: 'secundario', url: '#plan', icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
+            {% if hay_plan or informe %}
+              <div class="ua-section__acciones">
+                {% if informe %}
+                  {% include 'unillanos:button' with {label: ('Ver'|t) ~ ' ' ~ informe.title ~ ' (' ~ informe.kind ~ ')', variant: 'secundario', url: informe.url, icon: 'download', icon_size: 'sm'} only %}
+                {% endif %}
+                {% if hay_plan %}
+                  {% include 'unillanos:button' with {label: 'Ir al plan de mejoramiento'|t, variant: 'secundario', url: '#plan', icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
+                {% endif %}
+              </div>
             {% endif %}
           {% endblock %}
         {% endembed %}
@@ -95,17 +105,25 @@
 
   {# Plan de mejoramiento del proceso (una fila por meta). #}
   {% if hay_plan %}
-    {% embed 'unillanos:section' with {id: 'plan', plan: plan, hay_factores: factores.pestanas is not empty} only %}
+    {% embed 'unillanos:section' with {id: 'plan', plan: plan, hay_factores: factores.pestanas is not empty, plan_documento: documentos.plan|default(null)} only %}
       {% block content %}
         {% embed 'unillanos:section-head' with {
           eyebrow: 'Plan de mejoramiento'|t,
           title: 'Acciones del programa'|t,
           lead: plan.lead,
           hay_factores: hay_factores,
+          plan_documento: plan_documento,
         } only %}
           {% block right %}
-            {% if hay_factores %}
-              {% include 'unillanos:button' with {label: 'Volver a los factores'|t, variant: 'secundario', url: '#autoevaluacion', icon: 'chevron-left', icon_size: 'sm'} only %}
+            {% if hay_factores or plan_documento %}
+              <div class="ua-section__acciones">
+                {% if plan_documento %}
+                  {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ plan_documento.title ~ ' (' ~ plan_documento.kind ~ ')', variant: 'secundario', url: plan_documento.url, icon: 'download', icon_size: 'sm'} only %}
+                {% endif %}
+                {% if hay_factores %}
+                  {% include 'unillanos:button' with {label: 'Volver a los factores'|t, variant: 'secundario', url: '#autoevaluacion', icon: 'chevron-left', icon_size: 'sm'} only %}
+                {% endif %}
+              </div>
             {% endif %}
           {% endblock %}
         {% endembed %}
@@ -129,6 +147,20 @@
             <span>{{ 'El avance es el reportado por el programa en cada periodo; no está verificado.'|t }}</span>
           </p>
         {% endif %}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+
+  {# Documentos del programa (informe, plan y los demás). #}
+  {% if documentos.items %}
+    {% embed 'unillanos:section' with {id: 'documentos', variant: 'alt', documentos: documentos} only %}
+      {% block content %}
+        {% include 'unillanos:section-head' with {
+          eyebrow: 'Documentos'|t,
+          title: 'Documentos del programa'|t,
+          lead: 'Informes, planes y otros documentos descargables de este programa.'|t,
+        } only %}
+        {% include 'unillanos:doc-list' with {heading: 'h3', items: documentos.items} only %}
       {% endblock %}
     {% endembed %}
   {% endif %}

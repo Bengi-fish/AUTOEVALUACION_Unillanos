@@ -7,6 +7,11 @@ global:
       css/base.css: {}
     component:
       css/motion.css: {}
+documentos:
+  version: 1.0.0
+  css:
+    component:
+      css/documentos.css: {}
 programa:
   version: 1.0.0
   css:

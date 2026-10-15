@@ -5,3 +5,11 @@ unillanos_autoeval.portada:
     _title: 'Sistema de Información de Autoevaluación Institucional'
   requirements:
     _permission: 'access content'
+
+unillanos_autoeval.documentos:
+  path: '/documentos'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\DocumentosController::documentos'
+    _title: 'Documentos'
+  requirements:
+    _permission: 'access content'

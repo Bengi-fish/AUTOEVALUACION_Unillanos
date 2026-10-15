@@ -4,7 +4,9 @@
  * Lista de documentos descargables.
  *
  * El botón de descarga es el componente button: con una url segura es un
- * enlace; sin url (el documento aún no existe) queda desactivado, sin href.
+ * enlace; sin url (el documento aún no existe) queda desactivado, sin href. Su
+ * nombre accesible incluye el tipo y el tamaño (meta): «Descargar {título}
+ * (PDF · 5,2 MB)».
  */
 #}
 {% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
@@ -21,7 +23,7 @@
         {% if doc.desc %}<p class="ua-doc__desc">{{ doc.desc }}</p>{% endif %}
         {% if doc.meta %}<p class="ua-meta">{{ doc.meta }}</p>{% endif %}
       </div>
-      {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ doc.title ~ (doc.url ? '' : ' (' ~ ('aún no disponible'|t) ~ ')'), variant: 'icono', icon: 'download', url: doc.url|default(''), disabled: not doc.url} only %}
+      {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ doc.title ~ (doc.meta ? ' (' ~ doc.meta ~ ')' : '') ~ (doc.url ? '' : ' (' ~ ('aún no disponible'|t) ~ ')'), variant: 'icono', icon: 'download', url: doc.url|default(''), disabled: not doc.url} only %}
     </li>
   {% endfor %}
 </ul>

@@ -210,6 +210,22 @@
     </figure>
   </div>
 
+  <div class="ug-block" id="doc-list-tipos">
+    <h3 class="ug-block__title">doc-list · tipos de archivo y descarga</h3>
+    <p class="ug-block__text">{{ 'El rótulo del ícono (kind) admite hasta cuatro letras (PDF, DOCX, XLSX…) dentro del recuadro de 48 px. El nombre accesible del botón de descarga incluye el tipo y el tamaño de meta: «Descargar {título} (PDF · 5,2 MB)». Con url, el botón es un enlace; el navegador abre el PDF en su visor y descarga los documentos de Word y de Excel. Las muestras apuntan a un ancla de esta página; los tamaños son de ejemplo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'PDF, DOCX y XLSX con url, tamaño y fecha'|t }}</figcaption>
+      <div class="ug-frame__body">
+        {% include 'unillanos:doc-list' with {heading: 'h4', items: [
+          {cat: 'Informe'|t, title: 'Informe de autoevaluación (muestra)'|t, desc: 'Un título largo con descripción para ver cómo se parten el texto y el nombre del archivo sin desbordar la tarjeta ni el botón de descarga'|t, meta: 'PDF · 5,2 MB', kind: 'PDF', url: '#doc-list-tipos'},
+          {cat: 'Documento base'|t, title: 'Plan de mejoramiento (muestra)'|t, meta: 'XLSX · 197 KB · junio de 2024', kind: 'XLSX', url: '#doc-list-tipos'},
+          {cat: 'Normatividad'|t, title: 'Acuerdo de ejemplo (muestra)'|t, meta: 'DOCX · 992 KB', kind: 'DOCX', url: '#doc-list-tipos'},
+          {cat: 'Soporte'|t, title: 'Documento sin archivo todavía (muestra)'|t, meta: 'PDF'},
+        ]} only %}
+      </div>
+    </figure>
+  </div>
+
   {# ----------------------------------------------------------- cond-grid #}
   <div class="ug-block" id="cond-grid">
     <h3 class="ug-block__title">cond-grid</h3>

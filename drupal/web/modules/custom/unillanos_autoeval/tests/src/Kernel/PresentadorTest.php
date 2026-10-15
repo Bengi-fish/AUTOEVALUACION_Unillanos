@@ -747,7 +747,9 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->assertSame([], $datos['factores']);
     $this->assertFalse($datos['unico']);
     $this->assertSame(0, $datos['total_programas']);
-    $this->assertSame('', $datos['documentos']);
+    // La ruta /documentos existe (la define este módulo): la tarjeta de
+    // documentos aparece sola.
+    $this->assertSame('/documentos', $datos['documentos']);
   }
 
   /**
