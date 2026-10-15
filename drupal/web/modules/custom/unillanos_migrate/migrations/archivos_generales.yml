@@ -1,0 +1,37 @@
+id: archivos_generales
+label: 'Archivos de los documentos generales'
+migration_group: unillanos
+# Copia (no mueve) cada archivo de docs/ o datos/ a public://documentos/<carpeta>/.
+# La columna `archivo` es la ruta relativa a la raíz; RutaDeArchivo la valida.
+source:
+  plugin: csv
+  path: '%datos%/semillas/documentos.csv'
+  ids: [id]
+  constants:
+    destino: 'public://documentos/general'
+process:
+  ruta:
+    plugin: unillanos_ruta_archivo
+    source: archivo
+    raiz: '%raiz%'
+    bases: [docs, datos]
+  filename:
+    plugin: callback
+    callable: basename
+    source: archivo
+  destino:
+    plugin: concat
+    source:
+      - constants/destino
+      - '@filename'
+    delimiter: /
+  uri:
+    plugin: file_copy
+    source:
+      - '@ruta'
+      - '@destino'
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:file'

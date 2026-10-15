@@ -4,6 +4,8 @@ description: 'Migraciones CSV → Drupal del Sistema de Información de Autoeval
 package: Unillanos
 core_version_requirement: ^11
 dependencies:
+  - drupal:file
+  - drupal:media
   - drupal:migrate
   - drupal:node
   - drupal:taxonomy

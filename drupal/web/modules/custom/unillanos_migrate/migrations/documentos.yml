@@ -1,0 +1,55 @@
+id: documentos
+label: 'Documentos del programa'
+migration_group: unillanos
+unillanos_por_programa: true
+# Un programa sin documentos.csv no tiene esta migración.
+unillanos_csv_opcional: true
+# Medios «documento» ligados a un proceso (el programa se deduce del proceso)
+# y, si el CSV lo indica, a un lineamiento.
+source:
+  plugin: csv
+  path: '%datos%/importacion/%carpeta%/documentos.csv'
+  ids: [id]
+process:
+  name: nombre
+  field_media_file/target_id:
+    plugin: migration_lookup
+    migration: 'archivos:%programa%'
+    source: id
+    no_stub: true
+  field_categoria: categoria
+  field_version:
+    plugin: skip_on_empty
+    method: process
+    source: version
+  field_fecha_publicacion:
+    plugin: skip_on_empty
+    method: process
+    source: fecha_publicacion
+  field_proceso:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: proceso_id
+    -
+      plugin: migration_lookup
+      migration: 'procesos:%programa%'
+      no_stub: true
+  field_lineamiento:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: lineamiento_id
+    -
+      plugin: migration_lookup
+      migration: lineamientos
+      no_stub: true
+  status: publicado
+destination:
+  plugin: 'entity:media'
+  default_bundle: documento
+migration_dependencies:
+  required:
+    - 'archivos:%programa%'
+    - 'procesos:%programa%'
+    - lineamientos
