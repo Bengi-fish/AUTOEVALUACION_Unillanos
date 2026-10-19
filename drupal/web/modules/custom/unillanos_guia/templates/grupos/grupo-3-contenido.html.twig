@@ -356,4 +356,105 @@
       {% endembed %}
     </figure>
   </div>
+
+  {# ======================================================= TANDA 3C ==== #}
+  {# ------------------------------------------------------------ program-card #}
+  <div class="ug-block" id="program-card">
+    <h3 class="ug-block__title">program-card</h3>
+    <p class="ug-block__text">{{ 'Tarjeta de un programa: facultad, nombre, etiquetas y llamada a la acción. Es un solo enlace; su nombre accesible es el del programa y la facultad y las etiquetas se leen como descripción. Lo vacío se omite: sin sede no hay etiqueta de sede, sin facultad no hay línea de facultad y solo los programas con autoevaluación llevan la marca. La facultad se imprime como llega («Facultad de …»), sin prefijo.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'con autoevaluación · sin sede ni marca · nombre largo · solo el nombre'|t }}</figcaption>
+      <div class="ug-frame__body">
+        <ul class="ua-prog-list" role="list">
+          <li>{% include 'unillanos:program-card' with {id: 'g-uno', name: 'Ingeniería Electrónica'|t, url: '#program-card', faculty: 'Facultad de Ciencias Básicas e Ingeniería'|t, level: 'Pregrado'|t, campus: 'Sede Barcelona'|t, evaluated: true, heading: 'h4'} only %}</li>
+          <li>{% include 'unillanos:program-card' with {id: 'g-dos', name: 'Enfermería'|t, url: '#program-card', faculty: 'Facultad de Ciencias de la Salud'|t, level: 'Pregrado'|t, heading: 'h4'} only %}</li>
+          <li>{% include 'unillanos:program-card' with {id: 'g-tres', name: 'Especialización en Seguridad y Salud en el Trabajo'|t, url: '#program-card', faculty: 'Facultad de Ciencias Agropecuarias y Recursos Naturales'|t, level: 'Especialización'|t, heading: 'h4'} only %}</li>
+          <li>{% include 'unillanos:program-card' with {id: 'g-cuatro', name: 'Programa de ejemplo'|t, url: '#program-card', heading: 'h4'} only %}</li>
+        </ul>
+      </div>
+    </figure>
+  </div>
+
+  {# ---------------------------------------------------------- program-search #}
+  {% set muestra = [] %}
+  {% for programa in datos.programas %}
+    {% set muestra = muestra|merge([{
+      id: loop.index,
+      name: programa.nombre,
+      url: '#program-search',
+      faculty: ('Facultad de'|t) ~ ' ' ~ programa.facultad,
+      level: programa.nivel,
+      campus: ('Sede'|t) ~ ' ' ~ programa.sede,
+      evaluated: programa.ejemplo|default(false),
+      search: (programa.nombre ~ ' ' ~ programa.facultad ~ ' ' ~ programa.nivel ~ ' ' ~ programa.sede)|lower|replace({'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ü': 'u', 'ñ': 'n'}),
+      faculty_id: programa.facultad|lower|replace({' ': '-'}),
+      level_key: programa.nivel|lower,
+      campus_id: programa.sede|lower,
+    }]) %}
+  {% endfor %}
+  {% set cuarenta = [] %}
+  {% set facultades_demo = ['Facultad de Ciencias de la Salud'|t, 'Facultad de Ciencias Económicas'|t, 'Facultad de Ciencias Humanas y de la Educación'|t, 'Facultad de Ciencias Básicas e Ingeniería'|t, 'Facultad de Ciencias Agropecuarias y Recursos Naturales'|t] %}
+  {% for i in 1..40 %}
+    {% set facultad_demo = facultades_demo[(i - 1) % 5] %}
+    {% set nivel_demo = i % 3 == 0 ? 'Maestría'|t : 'Pregrado'|t %}
+    {% set nombre_demo = ('Programa de ejemplo'|t) ~ ' ' ~ '%02d'|format(i) %}
+    {% set cuarenta = cuarenta|merge([{
+      id: i,
+      name: nombre_demo,
+      url: '#program-search',
+      faculty: facultad_demo,
+      level: nivel_demo,
+      evaluated: i == 1,
+      search: (nombre_demo ~ ' ' ~ facultad_demo ~ ' ' ~ nivel_demo)|lower|replace({'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ü': 'u', 'ñ': 'n'}),
+      faculty_id: (i - 1) % 5,
+      level_key: i % 3 == 0 ? 'maestria' : 'pregrado',
+    }]) %}
+  {% endfor %}
+  {# Como lo entrega el servidor con ?q=ingenieria: lo que no coincide va oculto. #}
+  {% set del_servidor = [] %}
+  {% for programa in muestra %}
+    {% set del_servidor = del_servidor|merge([programa|merge({hidden: 'ingenieria' not in programa.search})]) %}
+  {% endfor %}
+  {% set casos = [
+    {id: 'ps-cero', titulo: 'cero programas'|t, programas: [], valores: {}},
+    {id: 'ps-uno', titulo: 'un programa (un solo valor en cada filtro: sin filtro de sede)'|t, programas: [muestra|first], valores: {}},
+    {id: 'ps-diez', titulo: 'diez programas de ejemplo (filtros de facultad, nivel y sede)'|t, programas: muestra, valores: {}},
+    {id: 'ps-servidor', titulo: 'como llega del servidor con la búsqueda «ingenieria» (sin JavaScript se ve así)'|t, programas: del_servidor, valores: {q: 'ingenieria'}, total: muestra|length},
+    {id: 'ps-cuarenta', titulo: 'cuarenta programas (sin sedes: el filtro de sede no se imprime)'|t, programas: cuarenta, valores: {}},
+  ] %}
+  <div class="ug-block" id="program-search">
+    <h3 class="ug-block__title">program-search</h3>
+    <p class="ug-block__text">{{ 'Buscador y listado de programas. Es un formulario GET real: con JavaScript filtra al instante (sin tildes ni mayúsculas, sobre el campo search de cada programa, y por facultad, nivel y sede) y sin recargar; sin JavaScript se envía y el servidor marca como ocultos los programas que no coinciden. El contador concuerda con la cantidad («Se muestra 1 programa», «Se muestran 12 programas de 40») y se anuncia a los lectores de pantalla solo cuando la persona usa un control. Filtrar no mueve el foco. Cada filtro solo se imprime si recibe opciones. Con cero programas no hay controles.'|t }}</p>
+    {% for caso in casos %}
+      {% set facultades = {} %}
+      {% set niveles = {} %}
+      {% set sedes = {} %}
+      {% for programa in caso.programas %}
+        {% if programa.faculty %}{% set facultades = facultades|merge({(programa.faculty_id): programa.faculty}) %}{% endif %}
+        {% if programa.level %}{% set niveles = niveles|merge({(programa.level_key): programa.level}) %}{% endif %}
+        {% if programa.campus %}{% set sedes = sedes|merge({(programa.campus_id): programa.campus}) %}{% endif %}
+      {% endfor %}
+      {% set filtros = {faculty: [], level: [], campus: []} %}
+      {% for valor, etiqueta in facultades|sort %}{% set filtros = filtros|merge({faculty: filtros.faculty|merge([{value: valor, label: etiqueta}])}) %}{% endfor %}
+      {% for valor, etiqueta in niveles %}{% set filtros = filtros|merge({level: filtros.level|merge([{value: valor, label: etiqueta}])}) %}{% endfor %}
+      {# La sede solo es filtro con dos o más valores distintos. #}
+      {% if sedes|length >= 2 %}
+        {% for valor, etiqueta in sedes|sort %}{% set filtros = filtros|merge({campus: filtros.campus|merge([{value: valor, label: etiqueta}])}) %}{% endfor %}
+      {% endif %}
+      <figure class="ug-frame">
+        <figcaption class="ug-frame__cap">{{ caso.titulo }}</figcaption>
+        <div class="ug-frame__body">
+          {% include 'unillanos:program-search' with {
+            id: caso.id,
+            heading: 'h4',
+            programs: caso.programas|map(programa => programa|merge({id: caso.id ~ '-' ~ programa.id})),
+            total: caso.total|default(caso.programas|length),
+            filters: filtros,
+            values: caso.valores,
+            action: '#program-search',
+          } only %}
+        </div>
+      </figure>
+    {% endfor %}
+  </div>
 </section>

@@ -1,0 +1,83 @@
+/**
+ * Componente program-search.
+ */
+
+.ua-searchbar {
+  display: grid;
+  /* La búsqueda ocupa una fila; los filtros (dos o tres) se reparten debajo. */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--espacio-3);
+  align-items: end;
+}
+
+.ua-searchbar__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ua-searchbar__field:first-child {
+  grid-column: 1 / -1;
+}
+
+.ua-searchbar__lab {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--tinta-500);
+}
+
+.ua-searchbar .ua-search {
+  width: 100%;
+}
+
+/* Con poco ancho el texto de ayuda termina en puntos suspensivos. */
+.ua-searchbar .ua-search input {
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+
+/* El foco lo muestra el contenedor (.ua-search:focus-within); sin esto el
+   estilo global de foco dibuja un segundo anillo (sombra) dentro del campo.
+   En modo de alto contraste sigue valiendo el contorno global. */
+.ua .ua-searchbar .ua-search input:focus-visible {
+  box-shadow: none;
+}
+
+.ua-searchbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.ua .ua-searchbar__count {
+  margin: var(--espacio-4) 0;
+}
+
+.ua-prog-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--espacio-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ua-prog-list > li {
+  display: flex;
+}
+
+@media (max-width: 860px) {
+
+  .ua-searchbar {
+    grid-template-columns: 1fr;
+  }
+
+  .ua-prog-list {
+    grid-template-columns: 1fr;
+  }
+
+}

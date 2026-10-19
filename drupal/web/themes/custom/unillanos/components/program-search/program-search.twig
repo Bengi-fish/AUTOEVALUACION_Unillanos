@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * Buscador y listado de programas.
+ *
+ * Formulario GET real: con JavaScript, program-search.js filtra al instante;
+ * sin él, el formulario se envía y el servidor marca como hidden lo que no
+ * coincide. Cada control tiene su etiqueta visible. El contador es una región
+ * role="status" que solo cambia de texto cuando la persona usa un control.
+ * Lo vacío se omite: un filtro sin opciones no se imprime y sin programas no
+ * hay controles.
+ */
+#}
+{% set uid = ((id ~ '') matches '~^[A-Za-z0-9_-]+$~') ? id : 'prog' %}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
+{% set todos = total is not null ? total : programs|length %}
+{% set filtros = filters|default({}) %}
+{% set valores = values|default({}) %}
+{% if programs is empty %}
+  <p{{ attributes.addClass('ua-lead', 'ua-prog-vacio') }}>{{ 'Todavía no hay programas publicados.'|t }}</p>
+{% else %}
+  {% set visibles = 0 %}
+  {% for programa in programs %}
+    {% if not programa.hidden %}{% set visibles = visibles + 1 %}{% endif %}
+  {% endfor %}
+  {% set hay_filtro = valores.q or valores.faculty or valores.level or valores.campus %}
+  {% set count = visibles %}
+  <div{{ attributes.setAttribute('data-ua-programas', true) }}>
+    <form class="ua-searchbar" method="get" action="{{ action }}" role="search" aria-label="{{ 'Buscar programas'|t }}">
+      <div class="ua-searchbar__field">
+        <label class="ua-searchbar__lab" for="{{ uid }}-q">{{ 'Buscar un programa'|t }}</label>
+        <div class="ua-search ua-search--full">
+          {%- include 'unillanos:icon' with {name: 'search'} only -%}
+          <input type="search" id="{{ uid }}-q" name="q" value="{{ valores.q }}" maxlength="100" autocomplete="off" placeholder="{{ 'Nombre o facultad'|t }}" data-ua-prog-q>
+        </div>
+      </div>
+      {% set controles = [
+        {clave: 'faculty', nombre: 'facultad', rotulo: 'Facultad'|t, todas: 'Todas las facultades'|t},
+        {clave: 'level', nombre: 'nivel', rotulo: 'Nivel'|t, todas: 'Todos los niveles'|t},
+        {clave: 'campus', nombre: 'sede', rotulo: 'Sede'|t, todas: 'Todas las sedes'|t},
+      ] %}
+      {% for control in controles %}
+        {% set opciones = filtros[control.clave]|default([]) %}
+        {% if opciones %}
+          <div class="ua-searchbar__field">
+            <label class="ua-searchbar__lab" for="{{ uid }}-{{ control.nombre }}">{{ control.rotulo }}</label>
+            <select class="ua-select" id="{{ uid }}-{{ control.nombre }}" name="{{ control.nombre }}" data-ua-prog-filter="{{ control.clave }}">
+              <option value="">{{ control.todas }}</option>
+              {% for opcion in opciones %}
+                <option value="{{ opcion.value }}"{% if (opcion.value ~ '') == (valores[control.clave] ~ '') %} selected{% endif %}>{{ opcion.label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+      {% endfor %}
+      <div class="ua-searchbar__actions">
+        {% include 'unillanos:button' with {label: 'Buscar'|t, variant: 'secundario', type: 'submit', attributes: create_attribute({'data-ua-prog-submit': true})} only %}
+        {# Sin JavaScript es un enlace que deja la página sin filtros; con JavaScript limpia en el sitio. #}
+        {% include 'unillanos:button' with {label: 'Quitar filtros'|t, variant: 'texto', url: action|default('?'), attributes: create_attribute({'data-ua-prog-clear': true, 'hidden': hay_filtro ? false : true})} only %}
+      </div>
+    </form>
+    <p class="ua-searchbar__count ua-meta" role="status" aria-live="polite" aria-atomic="true" data-ua-prog-count data-total="{{ todos }}">
+      {%- if hay_filtro -%}
+        {% trans %}Se muestra {{ count }} programa de {{ todos }}.{% plural count %}Se muestran {{ count }} programas de {{ todos }}.{% endtrans %}
+      {%- else -%}
+        {% trans %}Se muestra {{ count }} programa.{% plural count %}Se muestran {{ count }} programas.{% endtrans %}
+      {%- endif -%}
+    </p>
+    <ul class="ua-prog-list" data-ua-prog-list>
+      {% for programa in programs %}
+        <li{% if programa.hidden %} hidden{% endif %} data-ua-prog-item data-search="{{ programa.search }}" data-faculty="{{ programa.faculty_id }}" data-level="{{ programa.level_key }}" data-campus="{{ programa.campus_id }}">
+          {# Un dato ausente se pasa vacío: el esquema del componente no admite NULL. #}
+          {% include 'unillanos:program-card' with {
+            name: programa.name,
+            id: programa.id|default(''),
+            url: programa.url|default(''),
+            faculty: programa.faculty|default(''),
+            level: programa.level|default(''),
+            campus: programa.campus|default(''),
+            evaluated: programa.evaluated|default(false),
+            heading: nivel,
+          } only %}
+        </li>
+      {% endfor %}
+      <li class="ua-prog-empty" data-ua-prog-empty{% if visibles > 0 %} hidden{% endif %}>{{ 'No encontramos programas con esos criterios. Prueba con otro nombre o quita los filtros.'|t }}</li>
+    </ul>
+  </div>
+{% endif %}

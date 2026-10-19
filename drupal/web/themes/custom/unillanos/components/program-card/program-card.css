@@ -1,0 +1,98 @@
+/**
+ * Componente program-card.
+ */
+
+.ua a.ua-prog {
+  flex: 1;
+  display: flex;
+  gap: var(--espacio-4);
+  align-items: flex-start;
+  padding: var(--espacio-5);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.ua a.ua-prog:hover {
+  border-color: var(--rojo-100);
+  background: var(--rojo-50);
+}
+
+.ua-prog__icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-md);
+  background: var(--rojo-50);
+  color: var(--rojo-700);
+}
+
+.ua-prog__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ua-prog__faculty {
+  overflow-wrap: break-word;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--tinta-500);
+}
+
+.ua-prog__name {
+  margin: 0;
+  overflow-wrap: break-word;
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 700;
+  color: var(--tinta-900);
+}
+
+.ua-prog__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.ua-prog__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--espacio-2);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rojo-700);
+}
+
+/* La etiqueta no se parte en dos líneas: si no cabe, pasa a la siguiente. */
+.ua-prog__meta .ua-tag {
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+/* En pantallas estrechas el ícono (decorativo) y el relleno le quitan ancho
+   al nombre: sin ellos «Especialización» cabe entera a 320 px. */
+@media (max-width: 480px) {
+
+  .ua a.ua-prog {
+    padding: var(--espacio-4);
+  }
+
+  .ua-prog__icon {
+    display: none;
+  }
+
+}
