@@ -7,10 +7,10 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\file\FileInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
+use Drupal\unillanos_autoeval\Traits\EtiquetasYOrdenTrait;
 
 /**
  * Arma, desde las entidades, los datos que muestran las páginas públicas.
@@ -25,6 +25,7 @@ use Drupal\node\NodeInterface;
 class PresentadorAutoevaluacion {
 
   use StringTranslationTrait;
+  use EtiquetasYOrdenTrait;
 
   /**
    * Programas que muestra la portada como máximo.
@@ -80,6 +81,7 @@ class PresentadorAutoevaluacion {
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected PathValidatorInterface $pathValidator,
+    protected ListadoProgramas $listado,
   ) {}
 
   /**
@@ -98,24 +100,6 @@ class PresentadorAutoevaluacion {
       return '';
     }
     return number_format((float) $valor, $decimales, ',', '');
-  }
-
-  /**
-   * Devuelve la etiqueta de un campo de lista (texto) con su valor guardado.
-   *
-   * @param \Drupal\Core\Field\FieldItemListInterface $campo
-   *   Campo de tipo lista de texto.
-   *
-   * @return string
-   *   La etiqueta, o una cadena vacía si el campo está vacío.
-   */
-  public function etiquetaLista(FieldItemListInterface $campo): string {
-    $valor = $campo->value;
-    if ($valor === NULL || $valor === '') {
-      return '';
-    }
-    $permitidos = $campo->getFieldDefinition()->getFieldStorageDefinition()->getSetting('allowed_values') ?? [];
-    return (string) ($permitidos[$valor] ?? $valor);
   }
 
   /**
@@ -1001,49 +985,30 @@ class PresentadorAutoevaluacion {
   public function datosPortada(CacheableMetadata $cache): array {
     $cache->addCacheTags(array_merge(self::ETIQUETAS_AUTOEVALUACION, ['node_list:programa', 'routes']));
     $cache->addCacheContexts(['user.permissions']);
-    $almacen = $this->entityTypeManager->getStorage('node');
-    $ids = $almacen->getQuery()
-      ->accessCheck(TRUE)
-      ->condition('type', 'proceso')
-      ->condition('status', 1)
-      ->exists('field_programa')
-      ->sort('nid', 'DESC')
-      ->execute();
-    $procesos = $almacen->loadMultiple($ids);
-    $programas = $almacen->loadMultiple(array_filter(array_map(
-      fn($proceso) => $proceso->get('field_programa')->target_id,
-      $procesos
-    )));
-
+    // Qué programas aparecen lo decide ListadoProgramas (la misma regla que el
+    // listado de /programas): programa publicado y visible con al menos un
+    // proceso publicado y visible. Los datos solo eligen cuál proceso se usa.
+    $agrupados = $this->listado->procesosPorPrograma($cache);
+    $ids_proceso_visibles = [];
+    foreach ($agrupados as $grupo) {
+      foreach ($grupo['procesos'] as $proceso) {
+        $ids_proceso_visibles[] = (int) $proceso->id();
+      }
+    }
     // Un proceso por programa visible: el más reciente que tenga datos (si
     // ninguno los tiene, el más reciente). Así cifras, chips y tarjeta hablan
     // del mismo proceso que la página del programa.
-    $con_datos = $this->procesosConDatos(array_keys($procesos));
-    $por_programa = [];
-    foreach ($procesos as $proceso) {
-      $id_programa = (int) $proceso->get('field_programa')->target_id;
-      $programa = $programas[$id_programa] ?? NULL;
-      if (!$programa instanceof NodeInterface || !$programa->isPublished()) {
-        continue;
-      }
-      $por_programa[$id_programa][] = $proceso;
-    }
+    $con_datos = $this->procesosConDatos($ids_proceso_visibles);
     $elegidos = [];
-    foreach ($por_programa as $id_programa => $lista) {
-      $programa = $programas[$id_programa];
-      $acceso = $programa->access('view', NULL, TRUE);
-      $cache->addCacheableDependency($acceso);
-      if (!$acceso->isAllowed()) {
-        continue;
-      }
-      $elegido = reset($lista);
-      foreach ($lista as $proceso) {
+    foreach ($agrupados as $id_programa => $grupo) {
+      $elegido = reset($grupo['procesos']);
+      foreach ($grupo['procesos'] as $proceso) {
         if (isset($con_datos[(int) $proceso->id()])) {
           $elegido = $proceso;
           break;
         }
       }
-      $elegidos[$id_programa] = ['proceso' => $elegido, 'programa' => $programa];
+      $elegidos[$id_programa] = ['proceso' => $elegido, 'programa' => $grupo['programa']];
     }
 
     $total = count($elegidos);
@@ -1538,30 +1503,6 @@ class PresentadorAutoevaluacion {
       ),
       $titulo,
     ) ?? $titulo;
-  }
-
-  /**
-   * Compara dos textos en español (con acentos) para ordenarlos.
-   *
-   * Usa el ordenamiento de `intl` cuando está disponible: con el idioma «C» de
-   * PHP, `strcoll` deja «Álgebra» o «Économía» después de «Zoología».
-   *
-   * @param string $a
-   *   Primer texto.
-   * @param string $b
-   *   Segundo texto.
-   *
-   * @return int
-   *   Negativo, cero o positivo, como `strcmp`.
-   */
-  protected function compararTextos(string $a, string $b): int {
-    if (class_exists('\Collator')) {
-      $comparacion = (new \Collator('es'))->compare($a, $b);
-      if ($comparacion !== FALSE) {
-        return (int) $comparacion;
-      }
-    }
-    return strcmp(mb_strtolower($a), mb_strtolower($b));
   }
 
 }

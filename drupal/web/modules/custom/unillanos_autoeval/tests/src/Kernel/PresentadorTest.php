@@ -700,13 +700,14 @@ class PresentadorTest extends UnillanosKernelTestBase {
    *   Rutas que se darán por existentes.
    */
   protected function presentadorConRutas(array $rutas): PresentadorAutoevaluacion {
-    return new class($this->container->get('entity_type.manager'), $this->container->get('path.validator'), $rutas) extends PresentadorAutoevaluacion {
+    $contenedor = $this->container;
+    return new class($contenedor->get('entity_type.manager'), $contenedor->get('path.validator'), $contenedor->get('unillanos_autoeval.listado_programas'), $rutas) extends PresentadorAutoevaluacion {
 
       /**
        * Constructor.
        */
-      public function __construct($gestor, $validador, protected array $rutas) {
-        parent::__construct($gestor, $validador);
+      public function __construct($gestor, $validador, $listado, protected array $rutas) {
+        parent::__construct($gestor, $validador, $listado);
       }
 
       /**
