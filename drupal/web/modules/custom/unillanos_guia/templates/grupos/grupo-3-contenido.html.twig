@@ -53,6 +53,16 @@
         {value: cifras.global, label: 'Valoración global sobre 5'|t, key: 'global'},
       ]} only %}
     </figure>
+    <p class="ug-block__text">{{ 'El rótulo concuerda con la cifra: con 1 va en singular y con 0 o más de 1, en plural. El presentador lo decide con formatPlural(); el componente solo imprime el rótulo que recibe.'|t }}</p>
+    <figure class="ug-frame">
+      <figcaption class="ug-frame__cap">{{ 'cifras en singular (valor 1)'|t }}</figcaption>
+      {% include 'unillanos:stats' with {items: [
+        {value: '1', label: 'Factor evaluado'|t},
+        {value: '1', label: 'Fortaleza identificada'|t},
+        {value: '1', label: 'Aspecto por mejorar'|t},
+        {value: '1', label: 'Acción de mejora formulada'|t},
+      ]} only %}
+    </figure>
   </div>
 
   {# --------------------------------------------------------------- steps #}

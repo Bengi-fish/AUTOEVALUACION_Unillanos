@@ -565,6 +565,9 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $cuentas = array_column($resultado['factores']['pestanas'], 'plan_count', 'key');
     $this->assertSame(['f01' => 2, 'f02' => 1], $cuentas);
     $this->assertSame('#plan', $resultado['factores']['pestanas'][0]['plan_url']);
+    // La nota concuerda con la cuenta: 2 «formuladas», 1 «formulada».
+    $notas = array_column($resultado['factores']['pestanas'], 'plan_note', 'key');
+    $this->assertSame(['f01' => 'formuladas para este factor', 'f02' => 'formulada para este factor'], $notas);
     $this->assertContains('node_list:meta', $cache->getCacheTags());
   }
 
@@ -786,10 +789,10 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->assertTrue($datos['unico']);
     $this->assertSame(1, $datos['total_programas']);
     $this->assertSame([
-      ['value' => '1', 'label' => 'Factores evaluados'],
+      ['value' => '1', 'label' => 'Factor evaluado'],
       ['value' => '2', 'label' => 'Fortalezas identificadas'],
-      ['value' => '1', 'label' => 'Aspectos por mejorar'],
-      ['value' => '1', 'label' => 'Acciones de mejora formuladas'],
+      ['value' => '1', 'label' => 'Aspecto por mejorar'],
+      ['value' => '1', 'label' => 'Acción de mejora formulada'],
     ], $datos['cifras']);
     $this->assertCount(1, $datos['programas']);
     $this->assertSame('Programa', $datos['programas'][0]['title']);
@@ -934,8 +937,8 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->assertSame(1, $datos['total_programas']);
     $this->assertSame('Proceso de autoevaluación 2018–2022', $datos['eyebrow']);
     $this->assertSame([
-      ['value' => '1', 'label' => 'Factores evaluados'],
-      ['value' => '1', 'label' => 'Fortalezas identificadas'],
+      ['value' => '1', 'label' => 'Factor evaluado'],
+      ['value' => '1', 'label' => 'Fortaleza identificada'],
     ], $datos['cifras']);
     // Los chips muestran el mismo proceso que las cifras.
     $this->assertSame(4.1, $datos['factores'][0]['score']);

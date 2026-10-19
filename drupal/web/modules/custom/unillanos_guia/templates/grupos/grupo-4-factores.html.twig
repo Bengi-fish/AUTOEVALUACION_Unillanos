@@ -57,14 +57,18 @@
 {% set opciones_plan = [] %}
 {% set filas_plan = [] %}
 {% for factor in datos.institucional.factores %}
-  {% set items_tabs = items_tabs|merge([{key: factor.key, group: 'Factores'|t, number: '%02d'|format(factor.n), name: factor.name, label: factor.label, score: factor.score, grade: factor.grado, desc: factor.desc, strengths: factor.strengths, plan_count: factor.plan|length, plan_note: 'formuladas para este factor'|t, plan_url: '#plan-filter', report_meta: 'PDF · 2,4 MB'}]) %}
+  {% set cuenta_plan = factor.plan|length %}
+  {% set nota_plan %}{% trans %}formulada para este factor{% plural cuenta_plan %}formuladas para este factor{% endtrans %}{% endset %}
+  {% set items_tabs = items_tabs|merge([{key: factor.key, group: 'Factores'|t, number: '%02d'|format(factor.n), name: factor.name, label: factor.label, score: factor.score, grade: factor.grado, desc: factor.desc, strengths: factor.strengths, plan_count: factor.plan|length, plan_note: nota_plan, plan_url: '#plan-filter', report_meta: 'PDF · 2,4 MB'}]) %}
   {% set opciones_plan = opciones_plan|merge([{value: factor.key, label: factor.tag ~ ' · ' ~ factor.name}]) %}
   {% for accion in factor.plan %}
     {% set filas_plan = filas_plan|merge([{key: factor.key, plazo: accion[3], tag: factor.tag, cells: [{type: 'text', value: accion[0]}, {type: 'text', value: accion[1]}, {type: 'list', items: accion[2]}, {type: 'plazo', value: accion[3]}]}]) %}
   {% endfor %}
 {% endfor %}
 {% for adenda in datos.institucional.adendas %}
-  {% set items_tabs = items_tabs|merge([{key: adenda.key, group: 'Adendas'|t, number: adenda.n, name: adenda.name, label: adenda.label, desc: adenda.desc, strengths: adenda.strengths, plan_count: adenda.plan|length, plan_note: 'formuladas para esta adenda'|t, plan_url: '#plan-filter', report_meta: 'PDF · 2,4 MB'}]) %}
+  {% set cuenta_plan = adenda.plan|length %}
+  {% set nota_plan %}{% trans %}formulada para esta adenda{% plural cuenta_plan %}formuladas para esta adenda{% endtrans %}{% endset %}
+  {% set items_tabs = items_tabs|merge([{key: adenda.key, group: 'Adendas'|t, number: adenda.n, name: adenda.name, label: adenda.label, desc: adenda.desc, strengths: adenda.strengths, plan_count: adenda.plan|length, plan_note: nota_plan, plan_url: '#plan-filter', report_meta: 'PDF · 2,4 MB'}]) %}
   {% set opciones_plan = opciones_plan|merge([{value: adenda.key, label: adenda.tag ~ ' · ' ~ adenda.name}]) %}
   {% for accion in adenda.plan %}
     {% set filas_plan = filas_plan|merge([{key: adenda.key, plazo: accion[3], tag: adenda.tag, cells: [{type: 'text', value: accion[0]}, {type: 'text', value: accion[1]}, {type: 'list', items: accion[2]}, {type: 'plazo', value: accion[3]}]}]) %}
@@ -252,7 +256,7 @@
   {# --------------------------------------------------------- plan-filter #}
   <div class="ug-block" id="plan-filter">
     <h3 class="ug-block__title">plan-filter</h3>
-    <p class="ug-block__text">{{ 'Filtros por factor y por plazo sobre las 44 acciones de datos-ejemplo.js. Filtra sin recargar, actualiza las cifras y avisa a los lectores de pantalla cuántas acciones quedan. Los enlaces «Ver en el plan de mejoramiento» de las pestañas filtran esta tabla por su factor. Solo cuenta y filtra las filas recibidas.'|t }}</p>
+    <p class="ug-block__text">{{ 'Filtros por factor y por plazo sobre las 44 acciones de datos-ejemplo.js. Filtra sin recargar, actualiza las cifras y avisa a los lectores de pantalla cuántas acciones quedan. Los enlaces «Ver en el plan de mejoramiento» de las pestañas filtran esta tabla por su factor. Solo cuenta y filtra las filas recibidas. El rótulo de la cifra total concuerda con el número («1 acción de mejora», «2 acciones de mejora»).'|t }}</p>
     <figure class="ug-frame">
       <figcaption class="ug-frame__cap">{{ 'plan completo'|t }}</figcaption>
       <div class="ug-frame__body">

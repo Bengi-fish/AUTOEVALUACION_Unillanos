@@ -39,10 +39,13 @@
 {% if datos.programas %}
   {% embed 'unillanos:section' with {id: 'programas', datos: datos} only %}
     {% block content %}
+      {# Los textos concuerdan con la cantidad de programas mostrados. #}
+      {% set eyebrow %}{% trans %}Programa{% plural datos.total_programas %}Programas{% endtrans %}{% endset %}
+      {% set lead %}{% trans %}Entra al programa para ver su autoevaluación por factores y su plan de mejoramiento.{% plural datos.total_programas %}Entra por el programa que te interesa para ver su autoevaluación por factores y su plan de mejoramiento.{% endtrans %}{% endset %}
       {% include 'unillanos:section-head' with {
-        eyebrow: 'Programas'|t,
+        eyebrow: eyebrow,
         title: 'Lo que se ha evaluado, en un solo lugar'|t,
-        lead: datos.unico ? 'Entra al programa para ver su autoevaluación por factores y su plan de mejoramiento.'|t : 'Entra por el programa que te interesa para ver su autoevaluación por factores y su plan de mejoramiento.'|t,
+        lead: lead,
       } only %}
       {% if datos.unico %}
         {% set programa = datos.programas|first %}

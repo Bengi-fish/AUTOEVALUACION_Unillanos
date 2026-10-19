@@ -410,7 +410,7 @@ class PresentadorAutoevaluacion {
           $cuenta = $plan['cuenta'][$pestana['key']] ?? 0;
           if ($cuenta > 0) {
             $factores['pestanas'][$indice]['plan_count'] = $cuenta;
-            $factores['pestanas'][$indice]['plan_note'] = (string) $this->t('formuladas para este factor');
+            $factores['pestanas'][$indice]['plan_note'] = (string) $this->formatPlural($cuenta, 'formulada para este factor', 'formuladas para este factor');
             $factores['pestanas'][$indice]['plan_url'] = '#plan';
           }
         }
@@ -1224,14 +1224,28 @@ class PresentadorAutoevaluacion {
       return (int) $consulta->count()->execute();
     };
     $es_factor = ['field_elemento.entity:taxonomy_term.field_tipo_elemento' => 'factor'];
-    $primera = $programas === 1
-      ? [(string) $this->t('Factores evaluados'), $contar('valoracion', $es_factor)]
-      : [(string) $this->t('Programas con autoevaluación'), $programas];
+    // El rótulo concuerda con la cifra: «1 fortaleza identificada», «2
+    // fortalezas identificadas».
+    $fortalezas = $contar('hallazgo', ['field_tipo_hallazgo' => 'fortaleza']);
+    $aspectos = $contar('hallazgo', ['field_tipo_hallazgo' => 'aspecto_por_mejorar']);
+    $acciones = $contar('meta');
+    $rotulo = fn(int $cantidad, string $singular, string $plural): string
+      => (string) $this->formatPlural($cantidad, $singular, $plural);
+    if ($programas === 1) {
+      $factores = $contar('valoracion', $es_factor);
+      $primera = [$rotulo($factores, 'Factor evaluado', 'Factores evaluados'), $factores];
+    }
+    else {
+      $primera = [
+        $rotulo($programas, 'Programa con autoevaluación', 'Programas con autoevaluación'),
+        $programas,
+      ];
+    }
     $cifras = [
       $primera,
-      [(string) $this->t('Fortalezas identificadas'), $contar('hallazgo', ['field_tipo_hallazgo' => 'fortaleza'])],
-      [(string) $this->t('Aspectos por mejorar'), $contar('hallazgo', ['field_tipo_hallazgo' => 'aspecto_por_mejorar'])],
-      [(string) $this->t('Acciones de mejora formuladas'), $contar('meta')],
+      [$rotulo($fortalezas, 'Fortaleza identificada', 'Fortalezas identificadas'), $fortalezas],
+      [$rotulo($aspectos, 'Aspecto por mejorar', 'Aspectos por mejorar'), $aspectos],
+      [$rotulo($acciones, 'Acción de mejora formulada', 'Acciones de mejora formuladas'), $acciones],
     ];
     $resultado = [];
     foreach ($cifras as [$etiqueta, $valor]) {
