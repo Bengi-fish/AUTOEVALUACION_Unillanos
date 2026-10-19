@@ -63,11 +63,12 @@
           {% set tarjetas = tarjetas|merge([{icon: 'cap', title: programa.title, text: programa.lines|join("\n"), url: programa.url, cta: programa.cta}]) %}
         {% endfor %}
         {% include 'unillanos:card' with {heading: 'h3', items: tarjetas} only %}
-        {% if datos.ver_todos %}
-          <p class="ua-portada__mas">
-            {% include 'unillanos:button' with {label: 'Ver todos los programas'|t, variant: 'secundario', url: datos.ver_todos, icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
-          </p>
-        {% endif %}
+      {% endif %}
+      {# El enlace al listado va con uno o con varios programas (si la ruta existe). #}
+      {% if datos.ver_todos %}
+        <p class="ua-portada__mas">
+          {% include 'unillanos:button' with {label: 'Ver todos los programas'|t, variant: 'secundario', url: datos.ver_todos, icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
+        </p>
       {% endif %}
     {% endblock %}
   {% endembed %}

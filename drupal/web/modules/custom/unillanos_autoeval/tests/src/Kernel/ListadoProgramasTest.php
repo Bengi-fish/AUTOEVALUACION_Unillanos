@@ -10,6 +10,7 @@ use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\user\Traits\UserCreationTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
@@ -354,6 +355,159 @@ class ListadoProgramasTest extends UnillanosKernelTestBase {
     $this->assertContains('node_list:proceso', $registro->etiquetas);
     // Y el resultado cambia de verdad.
     $this->assertSame(0, $listado->listado(new CacheableMetadata())['con_autoevaluacion']);
+  }
+
+  /**
+   * Sin parámetros no se oculta nada.
+   */
+  public function testSinConsultaNoHayOcultos(): void {
+    $listado = $this->container->get('unillanos_autoeval.listado_programas');
+    $this->programa('Uno');
+    $this->programa('Dos');
+    $datos = $listado->listadoFiltrado([], new CacheableMetadata());
+    $this->assertSame(2, $datos['total']);
+    $this->assertSame(2, $datos['visibles']);
+    $this->assertSame([], $datos['valores']);
+    $this->assertFalse($datos['consulta']['invalida']);
+    $this->assertFalse($datos['consulta']['con_texto']);
+    foreach ($datos['programas'] as $programa) {
+      $this->assertArrayNotHasKey('oculto', $programa);
+    }
+  }
+
+  /**
+   * El filtro marca como ocultos a los que no coinciden pero no recorta.
+   */
+  public function testListadoFiltradoNoRecortaLaLista(): void {
+    $listado = $this->container->get('unillanos_autoeval.listado_programas');
+    $salud = $this->termino('facultad', 'Facultad de Salud');
+    $humanas = $this->termino('facultad', 'Facultad de Humanas');
+    for ($i = 1; $i <= 40; $i++) {
+      $this->programa(sprintf('Programa %02d', $i), [
+        'field_facultad' => $i % 2 ? $salud->id() : $humanas->id(),
+        'field_nivel' => $i % 4 === 0 ? 'maestria' : 'pregrado',
+      ]);
+    }
+    $datos = $listado->listadoFiltrado(['nivel' => 'maestria'], new CacheableMetadata());
+    // Los 40 siguen en la lista; solo 10 coinciden.
+    $this->assertCount(40, $datos['programas']);
+    $this->assertSame(40, $datos['total']);
+    $this->assertSame(10, $datos['visibles']);
+    $ocultos = array_filter($datos['programas'], fn(array $p): bool => !empty($p['oculto']));
+    $this->assertCount(30, $ocultos);
+    foreach ($datos['programas'] as $programa) {
+      $this->assertSame($programa['nivel_clave'] !== 'maestria', !empty($programa['oculto']));
+    }
+    $this->assertSame(['level' => 'maestria'], $datos['valores']);
+
+    // Facultad y nivel juntos: se combinan.
+    $datos = $listado->listadoFiltrado(
+      ['facultad' => (string) $salud->id(), 'nivel' => 'pregrado'],
+      new CacheableMetadata(),
+    );
+    $this->assertCount(40, $datos['programas']);
+    $this->assertSame(['Programa 01', 'Programa 03'], array_slice($this->visibles($datos), 0, 2));
+    foreach ($datos['programas'] as $programa) {
+      $esperado = $programa['facultad'] === 'Facultad de Salud' && $programa['nivel_clave'] === 'pregrado';
+      $this->assertSame(!$esperado, !empty($programa['oculto']));
+    }
+  }
+
+  /**
+   * Los nombres de los programas que no están ocultos.
+   *
+   * @param array<string, mixed> $datos
+   *   Resultado de listadoFiltrado().
+   *
+   * @return string[]
+   *   Nombres, en el orden de la lista.
+   */
+  protected function visibles(array $datos): array {
+    return array_column(array_filter($datos['programas'], fn(array $p): bool => empty($p['oculto'])), 'nombre');
+  }
+
+  /**
+   * El texto busca sin tildes ni mayúsculas, como el JavaScript.
+   */
+  public function testTextoSinTildesNiMayusculas(): void {
+    $listado = $this->container->get('unillanos_autoeval.listado_programas');
+    $facultad = $this->termino('facultad', 'Facultad de Ciencias Básicas e Ingeniería');
+    $this->programa('Ingeniería Electrónica', ['field_facultad' => $facultad->id(), 'field_nivel' => 'pregrado']);
+    $this->programa('Enfermería', ['field_nivel' => 'maestria']);
+    foreach (['electronica', 'ELECTRÓNICA', 'ingeniería electrónica', '  Electrónica  '] as $texto) {
+      $datos = $listado->listadoFiltrado(['q' => $texto], new CacheableMetadata());
+      $this->assertSame(['Ingeniería Electrónica'], $this->visibles($datos), $texto);
+    }
+    // También por facultad y por nivel (el campo buscar los incluye).
+    $this->assertSame(['Ingeniería Electrónica'], $this->visibles($listado->listadoFiltrado(['q' => 'basicas'], new CacheableMetadata())));
+    $this->assertSame(['Enfermería'], $this->visibles($listado->listadoFiltrado(['q' => 'maestria'], new CacheableMetadata())));
+    $datos = $listado->listadoFiltrado(['q' => 'zzz'], new CacheableMetadata());
+    $this->assertSame([], $this->visibles($datos));
+    $this->assertSame(0, $datos['visibles']);
+    $this->assertSame(2, $datos['total']);
+  }
+
+  /**
+   * Lo que llega de la URL se valida y lo que no sirve se descarta.
+   *
+   * @param array<string, mixed> $crudo
+   *   Parámetros de la URL.
+   * @param array<string, mixed> $esperado
+   *   Valores esperados de la consulta (q, facultad, nivel, sede, invalida y
+   *   con_texto).
+   */
+  #[DataProvider('proveedorDeConsultas')]
+  public function testConsultaDescartaLoInvalido(array $crudo, array $esperado): void {
+    $listado = $this->container->get('unillanos_autoeval.listado_programas');
+    $filtros = [
+      'facultad' => [['valor' => '7', 'etiqueta' => 'Facultad A']],
+      'nivel' => [['valor' => 'pregrado', 'etiqueta' => 'Pregrado']],
+    ];
+    $this->assertSame($esperado, $listado->consulta($crudo, $filtros));
+  }
+
+  /**
+   * Casos: vacío, válidos, fuera de la lista, arreglos, largos y peligrosos.
+   *
+   * @return array<string, array{array<string, mixed>, array<string, mixed>}>
+   *   Parámetros y consulta esperada.
+   */
+  public static function proveedorDeConsultas(): array {
+    $base = ['q' => '', 'facultad' => '', 'nivel' => '', 'sede' => '', 'invalida' => FALSE, 'con_texto' => FALSE];
+    return [
+      'sin parámetros' => [[], $base],
+      'selectores vacíos del formulario' => [['q' => '', 'facultad' => '', 'nivel' => '', 'sede' => ''], $base],
+      'valores válidos' => [
+        ['q' => 'hola', 'facultad' => '7', 'nivel' => 'pregrado'],
+        array_merge($base, ['q' => 'hola', 'facultad' => '7', 'nivel' => 'pregrado', 'con_texto' => TRUE]),
+      ],
+      'facultad fuera de la lista' => [['facultad' => 'xyz'], array_merge($base, ['invalida' => TRUE])],
+      'nivel fuera de la lista' => [['nivel' => 'doctorado'], array_merge($base, ['invalida' => TRUE])],
+      'sede sin filtro de sede' => [['sede' => '1'], array_merge($base, ['invalida' => TRUE])],
+      'arreglo en nivel' => [['nivel' => ['a']], array_merge($base, ['invalida' => TRUE])],
+      'arreglo en q' => [['q' => ['x']], array_merge($base, ['invalida' => TRUE])],
+      'q de 500 caracteres' => [
+        ['q' => str_repeat('a', 500)],
+        array_merge($base, ['q' => str_repeat('a', 100), 'con_texto' => TRUE]),
+      ],
+      'q de 500 caracteres con tilde' => [
+        ['q' => str_repeat('é', 500)],
+        array_merge($base, ['q' => str_repeat('é', 100), 'con_texto' => TRUE]),
+      ],
+      'q con espacios' => [['q' => '  hola  '], array_merge($base, ['q' => 'hola', 'con_texto' => TRUE])],
+      'q con caracteres de control' => [
+        ['q' => "ab\x00\x1Fcd\x7F"],
+        array_merge($base, ['q' => 'abcd', 'con_texto' => TRUE]),
+      ],
+      'q con UTF-8 no válido' => [
+        ['q' => "\xC3\x28"],
+        array_merge($base, ['invalida' => TRUE]),
+      ],
+      'q con etiqueta' => [
+        ['q' => '"><script>alert(1)</script>'],
+        array_merge($base, ['q' => '"><script>alert(1)</script>', 'con_texto' => TRUE]),
+      ],
+    ];
   }
 
 }

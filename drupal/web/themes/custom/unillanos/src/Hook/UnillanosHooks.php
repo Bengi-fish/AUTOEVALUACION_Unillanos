@@ -141,6 +141,11 @@ class UnillanosHooks {
         'template' => 'unillanos-documentos',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
+      'unillanos_programas' => [
+        'variables' => ['datos' => []],
+        'template' => 'unillanos-programas',
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ],
       'unillanos_portada' => [
         'variables' => ['datos' => []],
         'template' => 'unillanos-portada',
@@ -164,9 +169,10 @@ class UnillanosHooks {
     $programa = $this->routeMatch->getRouteName() === 'entity.node.canonical'
       && $nodo instanceof NodeInterface
       && $nodo->bundle() === 'programa';
-    // La portada y la página de documentos también traen su propio h1.
+    // La portada, la de documentos y la de programas también traen su propio
+    // h1.
     $variables['pagina_propia'] = $programa || !empty($variables['is_front'])
-      || $this->routeMatch->getRouteName() === 'unillanos_autoeval.documentos';
+      || in_array($this->routeMatch->getRouteName(), ['unillanos_autoeval.documentos', 'unillanos_autoeval.programas'], TRUE);
   }
 
   /**

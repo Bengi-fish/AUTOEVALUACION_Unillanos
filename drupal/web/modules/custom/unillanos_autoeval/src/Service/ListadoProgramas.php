@@ -27,6 +27,11 @@ class ListadoProgramas {
   const MAX_OTROS_DE_LA_FACULTAD = 4;
 
   /**
+   * Largo máximo del texto de búsqueda.
+   */
+  const MAX_LARGO_BUSQUEDA = 100;
+
+  /**
    * Constructor.
    */
   public function __construct(
@@ -115,6 +120,110 @@ class ListadoProgramas {
       'con_autoevaluacion' => count(array_filter(array_column($tarjetas, 'con_autoevaluacion'))),
       'filtros' => $filtros,
     ];
+  }
+
+  /**
+   * Arma el listado y marca como ocultos los programas que no coinciden.
+   *
+   * No recorta la lista: devuelve todos los programas, y a los que no cumplen
+   * los filtros activos les pone `oculto`. Así el JavaScript puede ampliar el
+   * filtro y sin JavaScript el servidor deja la lista ya filtrada.
+   *
+   * @param array<string, mixed> $crudo
+   *   Parámetros de la URL (solo se leen q, facultad, nivel y sede).
+   * @param \Drupal\Core\Cache\CacheableMetadata $cache
+   *   Recibe los metadatos de caché de lo que se lee.
+   *
+   * @return array<string, mixed>
+   *   Lo de ::listado() más: consulta (ver ::consulta()), valores (los ya
+   *   validados, solo los que tienen algo, con las claves q, faculty, level y
+   *   campus), visibles (programas sin `oculto`) y, en cada programa que no
+   *   coincide, oculto con TRUE.
+   */
+  public function listadoFiltrado(array $crudo, CacheableMetadata $cache): array {
+    $datos = $this->listado($cache);
+    $consulta = $this->consulta($crudo, $datos['filtros']);
+    $termino = $this->normalizar($consulta['q']);
+    $visibles = 0;
+    foreach ($datos['programas'] as &$programa) {
+      $coincide = ($termino === '' || str_contains($programa['buscar'], $termino))
+        && ($consulta['facultad'] === '' || ($programa['facultad_id'] ?? '') === $consulta['facultad'])
+        && ($consulta['nivel'] === '' || ($programa['nivel_clave'] ?? '') === $consulta['nivel'])
+        && ($consulta['sede'] === '' || ($programa['sede_id'] ?? '') === $consulta['sede']);
+      if ($coincide) {
+        $visibles++;
+      }
+      else {
+        $programa['oculto'] = TRUE;
+      }
+    }
+    unset($programa);
+    $datos['consulta'] = $consulta;
+    $datos['visibles'] = $visibles;
+    $datos['valores'] = array_filter([
+      'q' => $consulta['q'],
+      'faculty' => $consulta['facultad'],
+      'level' => $consulta['nivel'],
+      'campus' => $consulta['sede'],
+    ], fn(string $valor): bool => $valor !== '');
+    return $datos;
+  }
+
+  /**
+   * Lee y valida los parámetros de búsqueda de la URL.
+   *
+   * Facultad, nivel y sede se aceptan solo si son texto y están entre las
+   * opciones que ofrece el listado (lista blanca); si no, se ignoran. El texto
+   * de búsqueda debe ser texto en UTF-8; se le quitan los caracteres de
+   * control, se recorta y se limita a MAX_LARGO_BUSQUEDA caracteres. Nunca
+   * lanza una excepción: lo que no sirve se descarta.
+   *
+   * @param array<string, mixed> $crudo
+   *   Parámetros de la URL.
+   * @param array<string, array<int, array{valor: string, etiqueta: string}>> $filtros
+   *   Opciones de ::listado() (clave filtros).
+   *
+   * @return array{q: string, facultad: string, nivel: string, sede: string, invalida: bool, con_texto: bool}
+   *   Los valores ya validados (vacíos si no hay o no sirven); invalida es TRUE
+   *   si llegó algún parámetro que se descartó (valor fuera de la lista
+   *   blanca, arreglo o UTF-8 no válido); con_texto es TRUE si hay texto.
+   */
+  public function consulta(array $crudo, array $filtros): array {
+    $invalida = FALSE;
+    $q = '';
+    if (array_key_exists('q', $crudo)) {
+      $valor = $crudo['q'];
+      if (is_string($valor) && mb_check_encoding($valor, 'UTF-8')) {
+        $limpio = preg_replace('/[\x00-\x1F\x7F]/u', '', $valor) ?? '';
+        $q = mb_substr(trim($limpio), 0, self::MAX_LARGO_BUSQUEDA);
+      }
+      else {
+        $invalida = TRUE;
+      }
+    }
+    $resultado = ['q' => $q];
+    foreach (['facultad' => 'facultad', 'nivel' => 'nivel', 'sede' => 'sede'] as $parametro => $filtro) {
+      $resultado[$parametro] = '';
+      if (!array_key_exists($parametro, $crudo)) {
+        continue;
+      }
+      $valor = $crudo[$parametro];
+      if (!is_string($valor)) {
+        $invalida = TRUE;
+      }
+      elseif ($valor !== '') {
+        $permitidos = array_column($filtros[$filtro] ?? [], 'valor');
+        if (in_array($valor, $permitidos, TRUE)) {
+          $resultado[$parametro] = $valor;
+        }
+        else {
+          $invalida = TRUE;
+        }
+      }
+    }
+    $resultado['invalida'] = $invalida;
+    $resultado['con_texto'] = $q !== '';
+    return $resultado;
   }
 
   /**

@@ -1,0 +1,66 @@
+{#
+/**
+ * @file
+ * Listado y buscador de programas (/programas).
+ *
+ * Variables:
+ * - datos: lo arma ListadoProgramas::listadoFiltrado(): programas (con
+ *   oculto en los que no coinciden con la búsqueda), total, filtros, valores
+ *   (la búsqueda ya validada) y consulta. Solo trae lo que existe: lo vacío
+ *   se omite. La plantilla solo cambia los nombres de las claves a los props
+ *   del componente; no decide nada.
+ *
+ * El h1 es el título de la cabecera (la página omite el bloque de título). La
+ * bajada es un texto editorial pendiente de confirmar por Acreditación
+ * (docs/pendientes-acreditacion.md): el del prototipo promete registro
+ * calificado, autoevaluación y plan, que no todos los programas tienen.
+ */
+#}
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Programas académicos'|t,
+  title: 'Encuentra un'|t,
+  title_accent: 'programa'|t,
+  lead: 'Busca un programa por su nombre o su facultad y consulta lo que se ha publicado de él.'|t,
+  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Programas'|t}],
+} only %}
+
+{% embed 'unillanos:section' with {id: 'programas', datos: datos} only %}
+  {% block content %}
+    {# Las claves del servicio pasan a los props del componente. #}
+    {% set programas = [] %}
+    {% for programa in datos.programas %}
+      {% set programas = programas|merge([{
+        name: programa.nombre,
+        id: programa.id,
+        url: programa.url,
+        faculty: programa.facultad|default(''),
+        level: programa.nivel|default(''),
+        campus: programa.sede|default(''),
+        evaluated: programa.con_autoevaluacion|default(false),
+        search: programa.buscar,
+        faculty_id: programa.facultad_id|default(''),
+        level_key: programa.nivel_clave|default(''),
+        campus_id: programa.sede_id|default(''),
+        hidden: programa.oculto|default(false),
+      }]) %}
+    {% endfor %}
+    {% set filtros = {faculty: [], level: [], campus: []} %}
+    {% for opcion in datos.filtros.facultad|default([]) %}
+      {% set filtros = filtros|merge({faculty: filtros.faculty|merge([{value: opcion.valor, label: opcion.etiqueta}])}) %}
+    {% endfor %}
+    {% for opcion in datos.filtros.nivel|default([]) %}
+      {% set filtros = filtros|merge({level: filtros.level|merge([{value: opcion.valor, label: opcion.etiqueta}])}) %}
+    {% endfor %}
+    {% for opcion in datos.filtros.sede|default([]) %}
+      {% set filtros = filtros|merge({campus: filtros.campus|merge([{value: opcion.valor, label: opcion.etiqueta}])}) %}
+    {% endfor %}
+    {% include 'unillanos:program-search' with {
+      programs: programas,
+      total: datos.total,
+      filters: filtros,
+      values: datos.valores,
+      action: '/programas',
+      heading: 'h2',
+    } only %}
+  {% endblock %}
+{% endembed %}

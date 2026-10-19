@@ -33,7 +33,7 @@ class PresentadorAutoevaluacion {
   const MAX_PROGRAMAS_PORTADA = 12;
 
   /**
-   * Ruta del listado de programas (aún no existe: Fase 7).
+   * Ruta del listado de programas.
    */
   const RUTA_PROGRAMAS = '/programas';
 
@@ -1023,7 +1023,7 @@ class PresentadorAutoevaluacion {
       'unico' => $total === 1,
       'programas' => $tarjetas,
       'total_programas' => $total,
-      'ver_todos' => $total > self::MAX_PROGRAMAS_PORTADA && $this->rutaExiste(self::RUTA_PROGRAMAS) ? self::RUTA_PROGRAMAS : '',
+      'ver_todos' => $total >= 1 && $this->rutaExiste(self::RUTA_PROGRAMAS) ? self::RUTA_PROGRAMAS : '',
       'factores' => [],
       'hay_grado' => FALSE,
       'documentos' => $this->rutaExiste(self::RUTA_DOCUMENTOS) ? self::RUTA_DOCUMENTOS : '',

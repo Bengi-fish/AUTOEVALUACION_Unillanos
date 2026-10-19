@@ -13,3 +13,11 @@ unillanos_autoeval.documentos:
     _title: 'Documentos'
   requirements:
     _permission: 'access content'
+
+unillanos_autoeval.programas:
+  path: '/programas'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\ProgramasController::programas'
+    _title: 'Programas'
+  requirements:
+    _permission: 'access content'

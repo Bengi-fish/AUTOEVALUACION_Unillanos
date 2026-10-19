@@ -863,9 +863,28 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $con_rutas = $this->presentadorConRutas(['/programas', '/documentos'])->datosPortada(new CacheableMetadata());
     $this->assertSame('/programas', $con_rutas['ver_todos']);
     $this->assertSame('/documentos', $con_rutas['documentos']);
-    // Con 12 o menos no hay «Ver todos» aunque la ruta exista.
-    $pocos = $this->presentadorConRutas(['/programas']);
-    $this->assertSame('/programas', $pocos->datosPortada(new CacheableMetadata())['ver_todos']);
+  }
+
+  /**
+   * «Ver todos los programas» sale con uno o con varios, si la ruta existe.
+   */
+  public function testEnlaceVerTodosSegunLosProgramas(): void {
+    $modelo = $this->crearLineamiento('Modelo');
+    $con_ruta = $this->presentadorConRutas(['/programas']);
+    $sin_ruta = $this->presentadorConRutas([]);
+
+    // Sin programas con autoevaluación no hay enlace aunque la ruta exista.
+    $this->assertSame('', $con_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
+
+    // Con uno: el enlace sale solo si la ruta existe.
+    $this->programaConProceso('Uno', (int) $modelo->id());
+    $this->assertSame('/programas', $con_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
+    $this->assertSame('', $sin_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
+
+    // Con dos (bastante menos que el tope de la portada) también.
+    $this->programaConProceso('Dos', (int) $modelo->id());
+    $this->assertSame('/programas', $con_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
+    $this->assertSame('', $sin_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
   }
 
   /**
