@@ -14,10 +14,14 @@
 #}
 {% set enlaces = [] %}
 {% for item in items %}
+  {# La página exacta (aria-current="page") y, aparte, el recorrido: un enlace
+     que contiene la página actual sin serlo (aria-current="true"). #}
+  {% set exacto = (enlace_activo and item.original_link.pluginId == enlace_activo) or (item.url.toString == path('<current>')) %}
   {% set enlaces = enlaces|merge([{
     title: item.title,
     url: item.url.toString,
-    active: item.in_active_trail or (item.url.toString == path('<current>')),
+    active: exacto,
+    trail: item.in_active_trail and not exacto,
   }]) %}
 {% endfor %}
 {% set cuenta = logged_in

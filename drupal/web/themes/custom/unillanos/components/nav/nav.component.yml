@@ -22,6 +22,10 @@ props:
             type: string
           active:
             type: boolean
+            description: 'La página actual: aria-current="page".'
+          trail:
+            type: boolean
+            description: 'Una sección que contiene la página actual: aria-current="true" y la clase is-current.'
     login:
       type: object
       title: Enlace «Ingresar» del menú móvil

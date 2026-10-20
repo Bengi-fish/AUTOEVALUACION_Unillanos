@@ -26,7 +26,7 @@
     title: programa.nombre_inicio,
     title_accent: programa.nombre_acento,
     lead: lead,
-    breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: programa.nombre}],
+    breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Programas'|t, url: path('unillanos_autoeval.programas')}, {title: programa.nombre}],
     etiquetas: programa.etiquetas,
   } only %}
     {% block meta %}

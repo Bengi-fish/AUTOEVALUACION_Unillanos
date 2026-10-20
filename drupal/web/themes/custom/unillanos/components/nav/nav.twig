@@ -7,6 +7,10 @@
  * espacios detrás), ancla, consulta, http(s), mailto o tel se imprime sin
  * href (mismo filtro que unillanos:button).
  *
+ * Un elemento `active` es la página actual (aria-current="page"); uno `trail` es
+ * una sección que contiene la página actual (aria-current="true" y la clase
+ * is-current): se ve igual que el activo.
+ *
  * `login` añade un último elemento («Ingresar») que solo se ve en pantallas
  * pequeñas con el menú abierto: allí el botón del encabezado está oculto.
  */
@@ -16,7 +20,7 @@
   <div class="ua-container">
     <ul class="ua-nav__list">
       {% for item in items %}
-        <li class="ua-nav__item"><a class="ua-nav__link"{% if item.url and ((item.url ~ '') matches seguro) %} href="{{ item.url }}"{% endif %}{% if item.active %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+        <li class="ua-nav__item"><a class="ua-nav__link{% if item.trail and not item.active %} is-current{% endif %}"{% if item.url and ((item.url ~ '') matches seguro) %} href="{{ item.url }}"{% endif %}{% if item.active %} aria-current="page"{% elseif item.trail %} aria-current="true"{% endif %}>{{ item.title }}</a></li>
       {% endfor %}
       {% if login and login.url and ((login.url ~ '') matches seguro) %}
         <li class="ua-nav__item ua-nav__item--movil"><a class="ua-nav__link" href="{{ login.url }}">{{ login.title }}</a></li>

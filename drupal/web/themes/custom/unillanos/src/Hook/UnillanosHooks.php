@@ -10,9 +10,11 @@ use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Menu\MenuActiveTrailInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\NodeInterface;
+use Drupal\unillanos_autoeval\Service\EnlacesDelPie;
 use Drupal\unillanos_autoeval\Service\PaginaPrograma;
 use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -33,6 +35,8 @@ class UnillanosHooks {
     protected RendererInterface $renderer,
     protected PresentadorAutoevaluacion $presentador,
     protected PaginaPrograma $paginaPrograma,
+    protected EnlacesDelPie $enlacesDelPie,
+    protected MenuActiveTrailInterface $rastroActivo,
   ) {}
 
   /**
@@ -154,6 +158,19 @@ class UnillanosHooks {
   }
 
   /**
+   * Implements hook_preprocess_menu().
+   *
+   * Entrega a la plantilla el enlace activo del menú (el de la página exacta);
+   * los demás enlaces del rastro (por ejemplo «Programas» en la página de un
+   * programa) se marcan como parte del recorrido, no como la página actual.
+   */
+  #[Hook('preprocess_menu')]
+  public function preprocessMenu(array &$variables): void {
+    $enlace = $this->rastroActivo->getActiveLink($variables['menu_name'] ?? NULL);
+    $variables['enlace_activo'] = $enlace ? $enlace->getPluginId() : '';
+  }
+
+  /**
    * Implements hook_preprocess_page().
    *
    * Los programas y la portada pintan su propia cabecera (con su h1): en la
@@ -172,6 +189,13 @@ class UnillanosHooks {
     // h1.
     $variables['pagina_propia'] = $programa || !empty($variables['is_front'])
       || in_array($this->routeMatch->getRouteName(), ['unillanos_autoeval.documentos', 'unillanos_autoeval.programas'], TRUE);
+    // Enlaces del pie desde el menú `footer` (sin enlaces, no hay columna). El
+    // arreglo `pie_cache` no imprime nada: lleva a la página las etiquetas y
+    // los contextos de caché del menú, del acceso y de las URL.
+    $cache = new CacheableMetadata();
+    $variables['pie_enlaces'] = $this->enlacesDelPie->enlaces($cache);
+    $variables['pie_cache'] = [];
+    $cache->applyTo($variables['pie_cache']);
   }
 
   /**
