@@ -39,9 +39,14 @@ services:
     arguments: ['@entity_type.manager', '@unillanos_autoeval.programas_y_procesos']
   Drupal\unillanos_autoeval\Service\FactoresPrograma: '@unillanos_autoeval.factores_programa'
 
+  unillanos_autoeval.plan_mejoramiento_programa:
+    class: Drupal\unillanos_autoeval\Service\PlanMejoramientoPrograma
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.programas_y_procesos']
+  Drupal\unillanos_autoeval\Service\PlanMejoramientoPrograma: '@unillanos_autoeval.plan_mejoramiento_programa'
+
   unillanos_autoeval.presentador:
     class: Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion
-    arguments: ['@entity_type.manager', '@path.validator', '@unillanos_autoeval.listado_programas', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.factores_programa', '@unillanos_autoeval.programas_y_procesos']
+    arguments: ['@entity_type.manager', '@path.validator', '@unillanos_autoeval.listado_programas', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.factores_programa', '@unillanos_autoeval.programas_y_procesos', '@unillanos_autoeval.plan_mejoramiento_programa']
   Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion: '@unillanos_autoeval.presentador'
 
   unillanos_autoeval.pagina_programa:
