@@ -2,14 +2,19 @@
 
 namespace Drupal\unillanos_autoeval\Hook;
 
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Drupal\unillanos_autoeval\Service\CalculadorGrado;
 use Drupal\unillanos_autoeval\Service\ModeloProceso;
+use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
 use Drupal\unillanos_autoeval\Service\SugerenciaDestino;
 
 /**
@@ -38,6 +43,41 @@ class UnillanosAutoevalHooks {
       'hallazgo' => $this->sugerirDestino($node),
       default => NULL,
     };
+  }
+
+  /**
+   * Implements hook_node_view_alter().
+   *
+   * Lo invoca el núcleo solo para los módulos (no para el tema): por eso vive
+   * aquí. La página del programa nombra la facultad y la sede, lee procesos,
+   * valoraciones, hallazgos y términos del modelo y lista los demás programas
+   * de su facultad: si cualquiera cambia, debe volver a pintarse.
+   */
+  #[Hook('node_view_alter')]
+  public function nodeViewAlter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void {
+    if (!$entity instanceof FieldableEntityInterface || $entity->bundle() !== 'programa') {
+      return;
+    }
+    $build['#cache']['tags'] = Cache::mergeTags(
+      $build['#cache']['tags'] ?? [],
+      PresentadorAutoevaluacion::ETIQUETAS_AUTOEVALUACION,
+    );
+    // Los demás programas de la facultad dependen de la lista de programas, de
+    // los términos de facultad y sede y de las etiquetas de nivel.
+    $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], [
+      'node_list:programa',
+      'taxonomy_term_list:facultad',
+      'taxonomy_term_list:sede',
+      'config:field.storage.node.field_nivel',
+    ]);
+    // Las consultas del presentador respetan el acceso del visitante.
+    $build['#cache']['contexts'][] = 'user.permissions';
+    foreach (['field_facultad', 'field_sede'] as $campo) {
+      $termino = $entity->get($campo)->entity;
+      if ($termino) {
+        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $termino->getCacheTags());
+      }
+    }
   }
 
   /**

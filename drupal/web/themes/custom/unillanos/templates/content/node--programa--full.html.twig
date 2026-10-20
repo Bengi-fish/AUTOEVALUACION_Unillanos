@@ -10,6 +10,9 @@
  *   (vacío si el programa no tiene un plan con metas).
  * - documentos: items, informe y plan del programa (vacío si no tiene
  *   documentos).
+ * - lead, otros y enlaces: los arma PaginaPrograma (bajada según las secciones que
+ *   existen; los demás programas de la facultad y los enlaces solo si el
+ *   programa no tiene nada de autoevaluación).
  * - programa: (solo en la ruta canónica) datos armados por el presentador (nombre_inicio,
  *   nombre_acento, eyebrow, etiquetas y ficha). Solo trae valores que
  *   existen; no se muestran los títulos de otros nodos ni datos calculados.
@@ -22,7 +25,7 @@
     eyebrow: programa.eyebrow,
     title: programa.nombre_inicio,
     title_accent: programa.nombre_acento,
-    lead: 'Registro calificado, autoevaluación y plan de mejoramiento del programa, en un solo lugar.'|t,
+    lead: lead,
     breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: programa.nombre}],
     etiquetas: programa.etiquetas,
   } only %}
@@ -164,6 +167,41 @@
       {% endblock %}
     {% endembed %}
   {% endif %}
+  {%- if otros or enlaces -%}
+    {# Sin nada de autoevaluación: los demás programas de la facultad y los enlaces. #}
+    {% embed 'unillanos:section' with {id: 'otros-programas', otros: otros, enlaces: enlaces} only %}
+      {% block content %}
+        {% if otros %}
+          {# La facultad ya está en la cabecera y en el título: no se repite. #}
+          {% include 'unillanos:section-head' with {title: otros.titulo} only %}
+          <ul class="ua-prog-list" role="list">
+            {% for otro in otros.programas %}
+              <li>
+                {# Un dato ausente se pasa vacío: el esquema del componente no admite NULL. #}
+                {% include 'unillanos:program-card' with {
+                  name: otro.nombre,
+                  id: otro.id,
+                  url: otro.url|default(''),
+                  faculty: '',
+                  level: otro.nivel|default(''),
+                  campus: otro.sede|default(''),
+                  evaluated: otro.con_autoevaluacion|default(false),
+                  heading: 'h3',
+                } only %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% if enlaces %}
+          <div class="ua-programa__enlaces">
+            {% for enlace in enlaces %}
+              {% include 'unillanos:button' with {label: enlace.label, variant: 'secundario', url: enlace.url, icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endblock %}
+    {% endembed %}
+  {%- endif %}
 {% else %}
   {{ content }}
 {% endif %}

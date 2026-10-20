@@ -28,3 +28,8 @@ services:
     class: Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion
     arguments: ['@entity_type.manager', '@path.validator', '@unillanos_autoeval.listado_programas']
   Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion: '@unillanos_autoeval.presentador'
+
+  unillanos_autoeval.pagina_programa:
+    class: Drupal\unillanos_autoeval\Service\PaginaPrograma
+    arguments: ['@unillanos_autoeval.listado_programas', '@url_generator', '@access_manager', '@current_user']
+  Drupal\unillanos_autoeval\Service\PaginaPrograma: '@unillanos_autoeval.pagina_programa'

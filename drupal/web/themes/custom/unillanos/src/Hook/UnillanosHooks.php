@@ -8,14 +8,12 @@ use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\NodeInterface;
+use Drupal\unillanos_autoeval\Service\PaginaPrograma;
 use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -34,6 +32,7 @@ class UnillanosHooks {
     protected RequestStack $requestStack,
     protected RendererInterface $renderer,
     protected PresentadorAutoevaluacion $presentador,
+    protected PaginaPrograma $paginaPrograma,
   ) {}
 
   /**
@@ -200,32 +199,12 @@ class UnillanosHooks {
       $variables['factores'] = $resultado['factores'];
       $variables['plan'] = $resultado['plan'];
       $variables['documentos'] = $this->presentador->documentosDelPrograma($nodo, $cache);
-    }
-  }
-
-  /**
-   * Implements hook_node_view_alter().
-   *
-   * La cabecera nombra la facultad y la sede, y la sección de autoevaluación
-   * lee procesos, valoraciones, hallazgos y términos del modelo: si cambian,
-   * el programa debe volver a pintarse.
-   */
-  #[Hook('node_view_alter')]
-  public function nodeViewAlter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void {
-    if (!$entity instanceof FieldableEntityInterface || $entity->bundle() !== 'programa') {
-      return;
-    }
-    $build['#cache']['tags'] = Cache::mergeTags(
-      $build['#cache']['tags'] ?? [],
-      PresentadorAutoevaluacion::ETIQUETAS_AUTOEVALUACION,
-    );
-    // Las consultas del presentador respetan el acceso del visitante.
-    $build['#cache']['contexts'][] = 'user.permissions';
-    foreach (['field_facultad', 'field_sede'] as $campo) {
-      $termino = $entity->get($campo)->entity;
-      if ($termino) {
-        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'] ?? [], $termino->getCacheTags());
-      }
+      // La bajada y, si el programa no tiene nada de autoevaluación, los demás
+      // programas de la facultad y los enlaces al listado y a los documentos.
+      $pagina = $this->paginaPrograma->armar($nodo, $variables['factores'], $variables['plan'], $variables['documentos'], $cache);
+      $variables['lead'] = $pagina['lead'];
+      $variables['otros'] = $pagina['otros'];
+      $variables['enlaces'] = $pagina['enlaces'];
     }
   }
 
