@@ -49,11 +49,6 @@ services:
     arguments: ['@entity_type.manager', '@unillanos_autoeval.listado_programas', '@unillanos_autoeval.factores_programa', '@url_generator', '@access_manager', '@current_user']
   Drupal\unillanos_autoeval\Service\DatosPortada: '@unillanos_autoeval.datos_portada'
 
-  unillanos_autoeval.presentador:
-    class: Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion
-    arguments: ['@entity_type.manager', '@unillanos_autoeval.listado_programas', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.factores_programa', '@unillanos_autoeval.programas_y_procesos', '@unillanos_autoeval.plan_mejoramiento_programa', '@unillanos_autoeval.datos_portada']
-  Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion: '@unillanos_autoeval.presentador'
-
   unillanos_autoeval.pagina_programa:
     class: Drupal\unillanos_autoeval\Service\PaginaPrograma
     arguments: ['@unillanos_autoeval.listado_programas', '@url_generator', '@access_manager', '@current_user']

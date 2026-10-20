@@ -262,9 +262,8 @@ class ListadoProgramasTest extends UnillanosKernelTestBase {
    */
   public function testListadoCoincideConLaPortada(): void {
     $listado = $this->container->get('unillanos_autoeval.listado_programas');
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $comparar = function () use ($listado, $presentador): array {
-      $portada = $presentador->datosPortada(new CacheableMetadata());
+    $comparar = function () use ($listado): array {
+      $portada = $this->portada()->armar(new CacheableMetadata());
       $datos = $listado->listado(new CacheableMetadata());
       $this->assertSame($datos['con_autoevaluacion'], $portada['total_programas']);
       return [$portada, $datos];

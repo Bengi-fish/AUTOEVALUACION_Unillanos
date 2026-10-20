@@ -10,18 +10,23 @@ use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
+use Drupal\unillanos_autoeval\Traits\EtiquetasYOrdenTrait;
+use Drupal\unillanos_autoeval\Traits\FormatoTextoTrait;
 
 /**
- * Arma lo que depende de qué tiene publicado un programa en su página.
+ * Arma lo que muestra la página de un programa.
  *
- * Decide la bajada de la cabecera según las secciones que existen y, cuando el
- * programa no tiene nada de autoevaluación (ni factores, ni plan, ni
- * documentos), entrega los demás programas de su facultad y los enlaces al
- * listado y a los documentos. Solo usa datos guardados y no calcula nada.
+ * Arma la cabecera y la ficha (datosPrograma). Decide la bajada de la
+ * cabecera según las secciones que existen y, cuando el programa no tiene
+ * nada de autoevaluación (ni factores, ni plan, ni documentos), entrega los
+ * demás programas de su facultad y los enlaces al listado y a los documentos.
+ * Solo usa datos guardados y no calcula nada.
  */
 class PaginaPrograma {
 
   use StringTranslationTrait;
+  use EtiquetasYOrdenTrait;
+  use FormatoTextoTrait;
 
   /**
    * Constructor.
@@ -172,6 +177,60 @@ class PaginaPrograma {
       $enlaces[] = ['label' => $etiqueta, 'url' => $url->getGeneratedUrl()];
     }
     return $enlaces;
+  }
+
+  /**
+   * Arma los datos de la cabecera y la ficha de un programa.
+   *
+   * Solo incluye lo que tiene valor: un dato vacío no se devuelve, para que
+   * la plantilla no deje huecos. La facultad va en `eyebrow` (como en el
+   * prototipo) y no se repite en la ficha.
+   *
+   * @param \Drupal\node\NodeInterface $programa
+   *   Nodo `programa`.
+   *
+   * @return array<string, mixed>
+   *   Con: nombre, nombre_inicio (primera palabra), nombre_acento (resto),
+   *   eyebrow (facultad y sede), etiquetas (nivel y modalidad) y ficha (lista
+   *   de pares term/value).
+   */
+  public function datosPrograma(NodeInterface $programa): array {
+    $nombre = trim((string) $programa->label());
+    $palabras = preg_split('/\s+/', $nombre, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    // Como el prototipo: la primera palabra en negro y el resto en acento.
+    // En nombres largos (más de cuatro palabras) solo las dos últimas.
+    $corte = count($palabras) > 4 ? count($palabras) - 2 : min(1, count($palabras));
+    $inicio = implode(' ', array_slice($palabras, 0, $corte));
+    $acento = implode(' ', array_slice($palabras, $corte));
+    $facultad = (string) $programa->get('field_facultad')->entity?->label();
+    $sede = (string) $programa->get('field_sede')->entity?->label();
+    $nivel = $this->etiquetaLista($programa->get('field_nivel'));
+    $modalidad = $this->etiquetaLista($programa->get('field_modalidad'));
+    $datos = [
+      'Nivel' => $nivel,
+      'Modalidad' => $modalidad,
+      'Sede' => $sede,
+      'Dirección del programa' => (string) $programa->get('field_director')->value,
+      'Código SNIES' => (string) $programa->get('field_codigo_snies')->value,
+      'Resolución de registro' => (string) $programa->get('field_resolucion_registro')->value,
+      'Registro vigente hasta' => $this->fechaMesAnio($programa->get('field_registro_hasta')->value),
+      'Resolución de acreditación' => (string) $programa->get('field_resolucion_acreditacion')->value,
+      'Acreditación vigente hasta' => $this->fechaMesAnio($programa->get('field_acreditacion_hasta')->value),
+    ];
+    $ficha = [];
+    foreach ($datos as $termino => $valor) {
+      if (trim($valor) !== '') {
+        $ficha[] = ['term' => $termino, 'value' => trim($valor)];
+      }
+    }
+    return [
+      'nombre' => $nombre,
+      'nombre_inicio' => $inicio,
+      'nombre_acento' => $acento,
+      'eyebrow' => implode(' · ', array_filter([$facultad, $sede])),
+      'etiquetas' => array_values(array_filter([$nivel, $modalidad])),
+      'ficha' => $ficha,
+    ];
   }
 
 }

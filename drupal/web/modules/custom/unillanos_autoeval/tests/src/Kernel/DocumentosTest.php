@@ -120,21 +120,19 @@ class DocumentosTest extends UnillanosKernelTestBase {
    * Sin documentos no hay nada que mostrar.
    */
   public function testSinDocumentos(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $datos = $presentador->documentosPublicados(new CacheableMetadata());
+    $datos = $this->documentos()->publicados(new CacheableMetadata());
     $this->assertSame(0, $datos['total']);
     $this->assertSame([], $datos['generales']);
     $this->assertSame([], $datos['programas']);
     $this->assertFalse($datos['salto']);
     $d = $this->programa('Electrónica');
-    $this->assertSame([], $presentador->documentosDelPrograma($d['programa'], new CacheableMetadata()));
+    $this->assertSame([], $this->documentos()->delPrograma($d['programa'], $this->idsDeProceso($d['programa']), new CacheableMetadata()));
   }
 
   /**
    * Cuatro documentos: normativa general y los del programa, bien ordenados.
    */
   public function testCuatroDocumentos(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $modelo = $this->crearLineamiento('Lineamientos modelo 2020');
     $d = $this->programa('Electrónica');
     $this->documento('Acuerdo CESU 02 de 2020', 'acuerdo-2020.pdf', 1168556, 'normatividad', [
@@ -145,7 +143,7 @@ class DocumentosTest extends UnillanosKernelTestBase {
     $this->documento('Informe 2022', 'informe.pdf', 5434130, 'informe', ['field_proceso' => $d['proceso']->id()]);
 
     $cache = new CacheableMetadata();
-    $datos = $presentador->documentosPublicados($cache);
+    $datos = $this->documentos()->publicados($cache);
     $this->assertSame(4, $datos['total']);
     $this->assertSame(['normatividad'], array_column($datos['generales'], 'categoria'));
     $normativa = $datos['generales'][0]['items'];
@@ -170,7 +168,7 @@ class DocumentosTest extends UnillanosKernelTestBase {
     $this->assertFalse($datos['salto']);
     $this->assertContains('media_list', $cache->getCacheTags());
 
-    $propios = $presentador->documentosDelPrograma($d['programa'], new CacheableMetadata());
+    $propios = $this->documentos()->delPrograma($d['programa'], $this->idsDeProceso($d['programa']), new CacheableMetadata());
     $this->assertCount(2, $propios['items']);
     $this->assertSame('Informe 2022', $propios['informe']['title']);
     $this->assertSame('Plan FO-GCL-20', $propios['plan']['title']);
@@ -181,7 +179,6 @@ class DocumentosTest extends UnillanosKernelTestBase {
    * Lo no publicado, o de un programa que no se ve, no se muestra.
    */
   public function testSinPublicarNiProgramaOculto(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $visible = $this->programa('Visible');
     $oculto = $this->programa('Oculto', ['status' => 0]);
     $proceso_borrador = $this->crearNodo('proceso', [
@@ -198,30 +195,29 @@ class DocumentosTest extends UnillanosKernelTestBase {
     $this->documento('De un proceso sin publicar', 'd.pdf', 1000, 'informe', ['field_proceso' => $proceso_borrador->id()]);
     $this->documento('Institucional', 'e.pdf', 1000, 'soporte', ['field_proceso' => $institucional->id()]);
 
-    $datos = $presentador->documentosPublicados(new CacheableMetadata());
+    $datos = $this->documentos()->publicados(new CacheableMetadata());
     $this->assertSame(2, $datos['total']);
     $this->assertSame(['Del visible'], array_column($datos['programas'][0]['items'], 'title'));
     // Un proceso sin programa (institucional) es un documento general.
     $this->assertSame(['soporte'], array_column($datos['generales'], 'categoria'));
     $this->assertSame(['Institucional'], array_column($datos['generales'][0]['items'], 'title'));
-    $this->assertSame([], $presentador->documentosDelPrograma($oculto['programa'], new CacheableMetadata()));
+    $this->assertSame([], $this->documentos()->delPrograma($oculto['programa'], $this->idsDeProceso($oculto['programa']), new CacheableMetadata()));
   }
 
   /**
    * Con muchos programas se ofrece la lista de salto y salen por nombre.
    */
   public function testMuchosProgramas(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     foreach (['Zoología', 'Biología', 'Contaduría', 'Agronomía', 'Enfermería'] as $nombre) {
       $d = $this->programa($nombre);
       $this->documento('Informe ' . $nombre, strtolower($nombre) . '.pdf', 2048, 'informe', ['field_proceso' => $d['proceso']->id()]);
     }
-    $cinco = $presentador->documentosPublicados(new CacheableMetadata());
+    $cinco = $this->documentos()->publicados(new CacheableMetadata());
     $this->assertCount(5, $cinco['programas']);
     $this->assertFalse($cinco['salto']);
     $d = $this->programa('Matemáticas');
     $this->documento('Informe Matemáticas', 'mate.pdf', 2048, 'informe', ['field_proceso' => $d['proceso']->id()]);
-    $seis = $presentador->documentosPublicados(new CacheableMetadata());
+    $seis = $this->documentos()->publicados(new CacheableMetadata());
     $this->assertCount(6, $seis['programas']);
     $this->assertTrue($seis['salto']);
     $nombres = array_column($seis['programas'], 'nombre');
@@ -235,11 +231,10 @@ class DocumentosTest extends UnillanosKernelTestBase {
    * Dentro de una categoría, la fecha más reciente primero.
    */
   public function testFechasOrden(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $this->documento('Antiguo', 'a.pdf', 1000, 'normatividad', ['field_fecha_publicacion' => '2022-01-10']);
     $this->documento('Reciente', 'b.pdf', 1000, 'normatividad', ['field_fecha_publicacion' => '2024-06-19']);
     $this->documento('Sin fecha', 'c.pdf', 1000, 'normatividad');
-    $items = $presentador->documentosPublicados(new CacheableMetadata())['generales'][0]['items'];
+    $items = $this->documentos()->publicados(new CacheableMetadata())['generales'][0]['items'];
     $this->assertSame(['Reciente', 'Antiguo', 'Sin fecha'], array_column($items, 'title'));
     $this->assertSame('PDF · 1000 B · junio de 2024', $items[0]['meta']);
     $this->assertSame('PDF · 1000 B', $items[2]['meta']);
@@ -251,49 +246,45 @@ class DocumentosTest extends UnillanosKernelTestBase {
    * Solo cambia lo que se muestra: el título guardado queda igual.
    */
   public function testPeriodoSinCortes(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $guardado = 'Plan de mejoramiento FO-GCL-20 · 2024-2 – 2030';
     $medio = $this->documento($guardado, 'p.xlsx', 1000, 'documento_base');
-    $items = $presentador->documentosPublicados(new CacheableMetadata())['generales'][0]['items'];
+    $items = $this->documentos()->publicados(new CacheableMetadata())['generales'][0]['items'];
     $esperado = "Plan de mejoramiento FO-GCL-20 · 2024-\u{2060}2 –\u{2060}\u{00A0}2030";
     $this->assertSame($esperado, $items[0]['title']);
     // Sin los marcadores, el texto es el mismo que está guardado.
     $this->assertSame($guardado, str_replace(["\u{2060}", "\u{00A0}"], ['', ' '], $items[0]['title']));
     $this->assertSame($guardado, $medio->label());
     // Un título sin periodo no cambia.
-    $this->assertSame('FO-GCL-20 sin periodo', $presentador->sinCortesEnPeriodo('FO-GCL-20 sin periodo'));
+    $this->assertSame('FO-GCL-20 sin periodo', $this->formato()->sinCortesEnPeriodo('FO-GCL-20 sin periodo'));
   }
 
   /**
    * Los tamaños se escriben con coma decimal y la unidad que corresponde.
    */
   public function testTamano(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $this->assertSame('', $presentador->tamano(0));
-    $this->assertSame('', $presentador->tamano(-5));
-    $this->assertSame('512 B', $presentador->tamano(512));
-    $this->assertSame('197 KB', $presentador->tamano(201497));
-    $this->assertSame('992 KB', $presentador->tamano(1016012));
-    $this->assertSame('1,1 MB', $presentador->tamano(1168556));
-    $this->assertSame('5,2 MB', $presentador->tamano(5434130));
+    $this->assertSame('', $this->documentos()->tamano(0));
+    $this->assertSame('', $this->documentos()->tamano(-5));
+    $this->assertSame('512 B', $this->documentos()->tamano(512));
+    $this->assertSame('197 KB', $this->documentos()->tamano(201497));
+    $this->assertSame('992 KB', $this->documentos()->tamano(1016012));
+    $this->assertSame('1,1 MB', $this->documentos()->tamano(1168556));
+    $this->assertSame('5,2 MB', $this->documentos()->tamano(5434130));
   }
 
   /**
    * Los tamaños del borde de 1 MB no salen como «1.024 KB».
    */
   public function testTamanoEnElBordeDeUnMegabyte(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $this->assertSame('1.022 KB', $presentador->tamano(1046528));
-    $this->assertSame('1.023 KB', $presentador->tamano(1048000));
-    $this->assertSame('1,0 MB', $presentador->tamano(1048575));
-    $this->assertSame('1,0 MB', $presentador->tamano(1048576));
+    $this->assertSame('1.022 KB', $this->documentos()->tamano(1046528));
+    $this->assertSame('1.023 KB', $this->documentos()->tamano(1048000));
+    $this->assertSame('1,0 MB', $this->documentos()->tamano(1048575));
+    $this->assertSame('1,0 MB', $this->documentos()->tamano(1048576));
   }
 
   /**
    * Los nombres con acentos se ordenan como en español.
    */
   public function testOrdenConAcentos(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     foreach (['Zoología', 'Álgebra', 'Biología', 'Économía'] as $nombre) {
       $d = $this->programa($nombre);
       $this->documento('Informe ' . $nombre, 'a' . md5($nombre) . '.pdf', 2048, 'informe', ['field_proceso' => $d['proceso']->id()]);
@@ -301,7 +292,7 @@ class DocumentosTest extends UnillanosKernelTestBase {
     $this->documento('Zeta', 'z.pdf', 100, 'normatividad');
     $this->documento('Ácido', 'x.pdf', 100, 'normatividad');
     $this->documento('Beta', 'y.pdf', 100, 'normatividad');
-    $datos = $presentador->documentosPublicados(new CacheableMetadata());
+    $datos = $this->documentos()->publicados(new CacheableMetadata());
     $this->assertSame(['Álgebra', 'Biología', 'Économía', 'Zoología'], array_column($datos['programas'], 'nombre'));
     $this->assertSame(['Ácido', 'Beta', 'Zeta'], array_column($datos['generales'][0]['items'], 'title'));
   }
@@ -310,17 +301,16 @@ class DocumentosTest extends UnillanosKernelTestBase {
    * Varios informes o varios documentos base: ninguno se destaca como único.
    */
   public function testNoSeDestacaSiHayVarios(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $d = $this->programa('Programa');
     $this->documento('Informe 2018', 'i1.pdf', 100, 'informe', ['field_proceso' => $d['proceso']->id()]);
     $this->documento('Informe 2022', 'i2.pdf', 100, 'informe', ['field_proceso' => $d['proceso']->id()]);
     $this->documento('Plan', 'p1.xlsx', 100, 'documento_base', ['field_proceso' => $d['proceso']->id()]);
-    $propios = $presentador->documentosDelPrograma($d['programa'], new CacheableMetadata());
+    $propios = $this->documentos()->delPrograma($d['programa'], $this->idsDeProceso($d['programa']), new CacheableMetadata());
     $this->assertCount(3, $propios['items']);
     $this->assertNull($propios['informe']);
     $this->assertSame('Plan', $propios['plan']['title']);
     $this->documento('Matriz', 'm.xlsx', 100, 'documento_base', ['field_proceso' => $d['proceso']->id()]);
-    $propios = $presentador->documentosDelPrograma($d['programa'], new CacheableMetadata());
+    $propios = $this->documentos()->delPrograma($d['programa'], $this->idsDeProceso($d['programa']), new CacheableMetadata());
     $this->assertNull($propios['plan']);
   }
 
@@ -328,12 +318,11 @@ class DocumentosTest extends UnillanosKernelTestBase {
    * Categoría desconocida, archivo sin extensión y lineamiento sin publicar.
    */
   public function testCasosRaros(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $borrador = $this->crearLineamiento('Lineamiento sin publicar');
     $borrador->setUnpublished()->save();
     $this->documento('Rara', 'sin-extension', 100, 'otra_categoria');
     $this->documento('Con lineamiento oculto', 'l.pdf', 100, 'normatividad', ['field_lineamiento' => $borrador->id()]);
-    $datos = $presentador->documentosPublicados(new CacheableMetadata());
+    $datos = $this->documentos()->publicados(new CacheableMetadata());
     // La categoría desconocida va al final.
     $this->assertSame(['normatividad', 'otra_categoria'], array_column($datos['generales'], 'categoria'));
     $rara = $datos['generales'][1]['items'][0];
@@ -349,49 +338,52 @@ class DocumentosTest extends UnillanosKernelTestBase {
   public function testSinPermisoDeVerMedios(): void {
     $this->documento('Visible solo con permiso', 'v.pdf', 100, 'normatividad');
     $this->setUpCurrentUser(['uid' => 5], ['access content']);
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $this->assertSame(0, $presentador->documentosPublicados(new CacheableMetadata())['total']);
+    $this->assertSame(0, $this->documentos()->publicados(new CacheableMetadata())['total']);
   }
 
   /**
-   * El presentador delega en DocumentosPublicados sin cambiar el resultado.
+   * DocumentosPublicados da lo mismo en dos llamadas y con ids ordenados.
    */
-  public function testLaFachadaDelegaEnElServicio(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
+  public function testDocumentosDeFormaEstable(): void {
     $servicio = $this->container->get('unillanos_autoeval.documentos_publicados');
     $d = $this->programa('Electrónica');
     // Un segundo proceso, más reciente: el orden de los ids es «más reciente
-    // primero» y es el que la fachada entrega al servicio.
+    // primero».
     $segundo = $this->crearNodo('proceso', ['title' => 'Proceso nuevo', 'field_programa' => $d['programa']->id()]);
     $this->documento('Plan FO-GCL-20', 'plan.xlsx', 201497, 'documento_base', ['field_proceso' => $d['proceso']->id()]);
     $this->documento('Informe 2022', 'informe.pdf', 5434130, 'informe', ['field_proceso' => $segundo->id()]);
     $this->documento('Acuerdo CESU 01 de 2025', 'acuerdo-2025.docx', 1016012, 'normatividad');
 
-    $ids = array_keys($presentador->procesosDelPrograma($d['programa']));
+    $ids = array_keys($this->procesos()->procesosDelPrograma($d['programa']));
     $this->assertSame([(int) $segundo->id(), (int) $d['proceso']->id()], array_map('intval', $ids));
 
     // La página de documentos.
     $cache_a = new CacheableMetadata();
     $cache_b = new CacheableMetadata();
-    $this->assertEquals($servicio->publicados($cache_b), $presentador->documentosPublicados($cache_a));
+    $this->assertEquals($servicio->publicados($cache_b), $this->documentos()->publicados($cache_a));
     $this->assertEquals($cache_b->getCacheTags(), $cache_a->getCacheTags());
 
     // Los documentos de un programa.
     $cache_a = new CacheableMetadata();
     $cache_b = new CacheableMetadata();
-    $propios = $presentador->documentosDelPrograma($d['programa'], $cache_a);
+    $propios = $this->documentos()->delPrograma($d['programa'], $this->idsDeProceso($d['programa']), $cache_a);
     $this->assertEquals($servicio->delPrograma($d['programa'], $ids, $cache_b), $propios);
     $this->assertEquals($cache_b->getCacheTags(), $cache_a->getCacheTags());
     $this->assertCount(2, $propios['items']);
     $this->assertSame('Informe 2022', $propios['informe']['title']);
 
-    // El tamaño y las constantes (alias de las del servicio).
-    foreach ([0, 512, 202_000, 5_434_130] as $bytes) {
-      $this->assertSame($servicio->tamano($bytes), $presentador->tamano($bytes));
+    // El tamaño y las constantes de orden.
+    foreach ([0 => '', 512 => '512 B', 202_000 => '197 KB', 5_434_130 => '5,2 MB'] as $bytes => $esperado) {
+      $this->assertSame($esperado, $servicio->tamano($bytes));
     }
-    $this->assertSame(DocumentosPublicados::CATEGORIAS_DOCUMENTO, $presentador::CATEGORIAS_DOCUMENTO);
-    $this->assertSame(DocumentosPublicados::CATEGORIAS_PROGRAMA, $presentador::CATEGORIAS_PROGRAMA);
-    $this->assertSame(DocumentosPublicados::MIN_PROGRAMAS_SALTO, $presentador::MIN_PROGRAMAS_SALTO);
+    $constantes = [
+      'CATEGORIAS_DOCUMENTO' => ['normatividad', 'documento_base', 'informe', 'acto_administrativo', 'soporte'],
+      'CATEGORIAS_PROGRAMA' => ['informe', 'documento_base', 'acto_administrativo', 'soporte', 'normatividad'],
+      'MIN_PROGRAMAS_SALTO' => 6,
+    ];
+    foreach ($constantes as $nombre => $esperado) {
+      $this->assertSame($esperado, (new \ReflectionClassConstant(DocumentosPublicados::class, $nombre))->getValue());
+    }
   }
 
 }

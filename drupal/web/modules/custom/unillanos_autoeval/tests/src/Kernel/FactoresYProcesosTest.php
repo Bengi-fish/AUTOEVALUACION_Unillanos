@@ -12,14 +12,14 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
 
 /**
- * Comprueba que el presentador delega en los servicios de factores y procesos.
+ * Prueba los servicios de factores y de procesos de un programa.
  *
- * El presentador es una fachada: da el mismo resultado que los servicios
+ * Los servicios dan lo mismo en llamadas seguidas
  * ProgramasYProcesos y FactoresPrograma.
  */
 #[Group('unillanos_autoeval')]
 #[RunTestsInSeparateProcesses]
-class DelegacionFactoresYProcesosTest extends UnillanosKernelTestBase {
+class FactoresYProcesosTest extends UnillanosKernelTestBase {
 
   /**
    * {@inheritdoc}
@@ -51,10 +51,9 @@ class DelegacionFactoresYProcesosTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * Buscar el programa y sus procesos da lo mismo por la fachada y el servicio.
+   * Buscar el programa y sus procesos da lo mismo en dos llamadas seguidas.
    */
-  public function testLaFachadaDelegaEnLosProcesos(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
+  public function testBuscaElProgramaConSusProcesos(): void {
     $servicio = $this->container->get('unillanos_autoeval.programas_y_procesos');
     $programa = $this->crearNodo('programa', ['title' => 'Electrónica', 'field_clave' => 'electronica']);
     $otro = $this->crearNodo('programa', ['title' => 'Otro', 'field_clave' => 'otro']);
@@ -62,31 +61,30 @@ class DelegacionFactoresYProcesosTest extends UnillanosKernelTestBase {
     $reciente = $this->crearNodo('proceso', ['title' => 'Reciente', 'field_programa' => $programa->id()]);
     $this->crearNodo('proceso', ['title' => 'Borrador', 'field_programa' => $programa->id(), 'status' => 0]);
 
-    $this->assertSame($programa->id(), $presentador->programaPorClave('electronica')?->id());
-    $this->assertSame($servicio->programaPorClave('electronica')?->id(), $presentador->programaPorClave('electronica')?->id());
-    $this->assertNull($presentador->programaPorClave('no-existe'));
+    $this->assertSame($programa->id(), $this->procesos()->programaPorClave('electronica')?->id());
+    $this->assertSame($servicio->programaPorClave('electronica')?->id(), $this->procesos()->programaPorClave('electronica')?->id());
+    $this->assertNull($this->procesos()->programaPorClave('no-existe'));
     $this->assertNull($servicio->programaPorClave('no-existe'));
 
     // El orden es «más reciente primero» y el borrador no cuenta.
-    $ids = array_keys($presentador->procesosDelPrograma($programa));
+    $ids = array_keys($this->procesos()->procesosDelPrograma($programa));
     $this->assertSame([(int) $reciente->id(), (int) $antiguo->id()], array_map('intval', $ids));
     $this->assertSame($ids, array_keys($servicio->procesosDelPrograma($programa)));
-    $this->assertSame([], $presentador->procesosDelPrograma($otro));
+    $this->assertSame([], $this->procesos()->procesosDelPrograma($otro));
 
-    $this->assertSame($reciente->id(), $presentador->procesoDelPrograma($programa)?->id());
-    $this->assertSame($servicio->procesoDelPrograma($programa)?->id(), $presentador->procesoDelPrograma($programa)?->id());
-    $this->assertNull($presentador->procesoDelPrograma($otro));
+    $this->assertSame($reciente->id(), $this->procesos()->procesoDelPrograma($programa)?->id());
+    $this->assertSame($servicio->procesoDelPrograma($programa)?->id(), $this->procesos()->procesoDelPrograma($programa)?->id());
+    $this->assertNull($this->procesos()->procesoDelPrograma($otro));
     $this->assertNull($servicio->procesoDelPrograma($otro));
 
-    // La constante de etiquetas es la misma (alias).
-    $this->assertSame(ProgramasYProcesos::ETIQUETAS_AUTOEVALUACION, $presentador::ETIQUETAS_AUTOEVALUACION);
+    // Las etiquetas de caché de la autoevaluación incluyen las de los procesos.
+    $this->assertContains('node_list:proceso', ProgramasYProcesos::ETIQUETAS_AUTOEVALUACION);
   }
 
   /**
-   * Los factores dan lo mismo por la fachada y por el servicio.
+   * Los factores dan lo mismo en dos llamadas seguidas y traen lo guardado.
    */
-  public function testLaFachadaDelegaEnFactoresPrograma(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
+  public function testArmaLosFactoresDeFormaEstable(): void {
     $servicio = $this->container->get('unillanos_autoeval.factores_programa');
     $this->cargarGrados();
     $modelo = $this->crearLineamiento('Modelo A');
@@ -115,18 +113,18 @@ class DelegacionFactoresYProcesosTest extends UnillanosKernelTestBase {
       'body' => ['value' => 'Una fortaleza', 'format' => 'plain_text'],
     ]);
 
-    $cache_fachada = new CacheableMetadata();
-    $cache_servicio = new CacheableMetadata();
-    $por_fachada = $presentador->factoresDelPrograma($programa, $cache_fachada);
-    $por_servicio = $servicio->delPrograma($programa, $cache_servicio);
-    $this->assertEquals($por_servicio, $por_fachada);
-    $this->assertEquals($cache_servicio->getCacheTags(), $cache_fachada->getCacheTags());
+    $cache_primera = new CacheableMetadata();
+    $cache_segunda = new CacheableMetadata();
+    $primera = $this->factores()->delPrograma($programa, $cache_primera);
+    $segunda = $servicio->delPrograma($programa, $cache_segunda);
+    $this->assertEquals($segunda, $primera);
+    $this->assertEquals($cache_segunda->getCacheTags(), $cache_primera->getCacheTags());
     // No es una comparación vacía: hay dos factores con datos.
-    $this->assertSame(['f01', 'f02'], array_column($por_fachada['pestanas'], 'key'));
-    $this->assertSame('Proceso 2018–2022', $por_fachada['proceso']);
+    $this->assertSame(['f01', 'f02'], array_column($primera['pestanas'], 'key'));
+    $this->assertSame('Proceso 2018–2022', $primera['proceso']);
 
     // Los factores del modelo (con todos los del modelo, también el sin datos).
-    $del_modelo = array_map(fn(TermInterface $t): string => (string) $t->label(), $presentador->factoresDelModelo((int) $modelo->id()));
+    $del_modelo = array_map(fn(TermInterface $t): string => (string) $t->label(), $this->factores()->delModelo((int) $modelo->id()));
     $this->assertSame(
       array_map(fn(TermInterface $t): string => (string) $t->label(), $servicio->delModelo((int) $modelo->id())),
       $del_modelo,
@@ -135,7 +133,7 @@ class DelegacionFactoresYProcesosTest extends UnillanosKernelTestBase {
 
     // Un programa sin proceso: vacío por ambos lados.
     $sin = $this->crearNodo('programa', ['title' => 'Sin proceso', 'field_clave' => 's']);
-    $this->assertSame([], $presentador->factoresDelPrograma($sin, new CacheableMetadata()));
+    $this->assertSame([], $this->factores()->delPrograma($sin, new CacheableMetadata()));
     $this->assertSame([], $servicio->delPrograma($sin, new CacheableMetadata()));
   }
 

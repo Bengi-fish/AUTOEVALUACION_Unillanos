@@ -12,7 +12,8 @@ use Drupal\Core\Field\FieldItemListInterface;
  * Lectura de campos de Drupal y orden de textos en español.
  *
  * Funciones sin estado que reciben un campo o un ítem de campo (o comparan
- * textos) y que comparten el presentador y el listado de programas. El formato
+ * textos) y que comparten los servicios que arman las páginas y el
+ * listado de programas. El formato
  * de escalares está en FormatoTextoTrait.
  */
 trait EtiquetasYOrdenTrait {

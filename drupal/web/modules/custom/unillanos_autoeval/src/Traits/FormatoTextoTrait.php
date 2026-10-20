@@ -10,8 +10,8 @@ use Drupal\Component\Utility\Html;
  * Formato puro de valores: números, textos y fechas.
  *
  * Funciones sin estado que reciben un escalar (no un campo de Drupal; para eso
- * está EtiquetasYOrdenTrait) y que comparten el presentador y los servicios
- * que arman las páginas.
+ * está EtiquetasYOrdenTrait) y que comparten los servicios que arman las
+ * páginas.
  */
 trait FormatoTextoTrait {
 

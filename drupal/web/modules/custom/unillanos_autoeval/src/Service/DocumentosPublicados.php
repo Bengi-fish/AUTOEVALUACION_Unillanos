@@ -247,7 +247,7 @@ class DocumentosPublicados {
    *   Nodo `programa`.
    * @param int[] $ids_proceso
    *   IDs de los procesos del programa, el más reciente primero (los calcula
-   *   quien llama: este servicio no depende del presentador).
+   *   quien llama: no depende de otros servicios de la página).
    * @param \Drupal\Core\Cache\CacheableMetadata $cache
    *   Recibe los metadatos de caché de todo lo que se lee.
    *

@@ -6,7 +6,6 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\ParagraphsType;
 use Drupal\unillanos_autoeval\Service\DatosPortada;
-use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\user\Traits\UserCreationTrait;
@@ -14,11 +13,11 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * Prueba el presentador de las páginas públicas.
+ * Prueba los servicios que arman las páginas públicas.
  */
 #[Group('unillanos_autoeval')]
 #[RunTestsInSeparateProcesses]
-class PresentadorTest extends UnillanosKernelTestBase {
+class PaginasPublicasTest extends UnillanosKernelTestBase {
 
   use UserCreationTrait;
 
@@ -79,20 +78,18 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Los números salen con coma decimal y lo no numérico queda vacío.
    */
   public function testNumeroConComaDecimal(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $this->assertSame('4,27', $presentador->numero('4.27'));
-    $this->assertSame('4,50', $presentador->numero(4.5));
-    $this->assertSame('4,5', $presentador->numero('4.50', 1));
-    $this->assertSame('', $presentador->numero(NULL));
-    $this->assertSame('', $presentador->numero(''));
-    $this->assertSame('', $presentador->numero('abc'));
+    $this->assertSame('4,27', $this->formato()->numero('4.27'));
+    $this->assertSame('4,50', $this->formato()->numero(4.5));
+    $this->assertSame('4,5', $this->formato()->numero('4.50', 1));
+    $this->assertSame('', $this->formato()->numero(NULL));
+    $this->assertSame('', $this->formato()->numero(''));
+    $this->assertSame('', $this->formato()->numero('abc'));
   }
 
   /**
    * Busca el programa por clave y su proceso más reciente publicado.
    */
   public function testBuscaProgramaConSuProceso(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $programa = $this->crearNodo('programa', [
       'title' => 'Ingeniería Electrónica',
       'field_clave' => 'ingenieria-electronica',
@@ -105,17 +102,16 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $reciente = $this->crearNodo('proceso', ['title' => 'Reciente', 'field_programa' => $programa->id()]);
     $this->crearNodo('proceso', ['title' => 'Borrador', 'field_programa' => $programa->id(), 'status' => 0]);
 
-    $this->assertSame($programa->id(), $presentador->programaPorClave('ingenieria-electronica')->id());
-    $this->assertNull($presentador->programaPorClave('no-existe'));
-    $this->assertSame($reciente->id(), $presentador->procesoDelPrograma($programa)->id());
-    $this->assertNull($presentador->procesoDelPrograma($otro));
+    $this->assertSame($programa->id(), $this->procesos()->programaPorClave('ingenieria-electronica')->id());
+    $this->assertNull($this->procesos()->programaPorClave('no-existe'));
+    $this->assertSame($reciente->id(), $this->procesos()->procesoDelPrograma($programa)->id());
+    $this->assertNull($this->procesos()->procesoDelPrograma($otro));
   }
 
   /**
    * La ficha del programa solo trae los datos que existen.
    */
   public function testDatosProgramaOmiteLoVacio(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $facultad = Term::create(['vid' => 'facultad', 'name' => 'Facultad de Ciencias']);
     $facultad->save();
     $sede = Term::create(['vid' => 'sede', 'name' => 'Sede Barcelona']);
@@ -130,7 +126,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
       'field_director' => 'Persona Directora',
       'field_registro_hasta' => '2029-12-31',
     ]);
-    $datos = $presentador->datosPrograma($programa);
+    $datos = $this->paginaPrograma()->datosPrograma($programa);
     $this->assertSame('Ingeniería', $datos['nombre_inicio']);
     $this->assertSame('Electrónica', $datos['nombre_acento']);
     $this->assertSame('Facultad de Ciencias · Sede Barcelona', $datos['eyebrow']);
@@ -151,14 +147,14 @@ class PresentadorTest extends UnillanosKernelTestBase {
       'field_clave' => 'd',
       'field_facultad' => 99999,
     ]);
-    $datos = $presentador->datosPrograma($roto);
+    $datos = $this->paginaPrograma()->datosPrograma($roto);
     $this->assertSame('', $datos['eyebrow']);
     // Más de cuatro palabras: solo las dos últimas van en acento.
     $this->assertSame('Doctorado en Ciencias del Mar y de', $datos['nombre_inicio']);
     $this->assertSame('la Costa', $datos['nombre_acento']);
 
     $vacio = $this->crearNodo('programa', ['title' => 'Maestría', 'field_clave' => 'm']);
-    $datos = $presentador->datosPrograma($vacio);
+    $datos = $this->paginaPrograma()->datosPrograma($vacio);
     $this->assertSame('Maestría', $datos['nombre_inicio']);
     $this->assertSame('', $datos['nombre_acento']);
     $this->assertSame('', $datos['eyebrow']);
@@ -170,13 +166,12 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Las fechas se escriben como mes y año, y lo inválido queda vacío.
    */
   public function testFechaMesAnio(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
-    $this->assertSame('enero de 2030', $presentador->fechaMesAnio('2030-01-15'));
-    $this->assertSame('diciembre de 2029', $presentador->fechaMesAnio('2029-12-31T00:00:00'));
-    $this->assertSame('', $presentador->fechaMesAnio(NULL));
-    $this->assertSame('', $presentador->fechaMesAnio(''));
-    $this->assertSame('', $presentador->fechaMesAnio('2029-13-01'));
-    $this->assertSame('', $presentador->fechaMesAnio('texto'));
+    $this->assertSame('enero de 2030', $this->formato()->fechaMesAnio('2030-01-15'));
+    $this->assertSame('diciembre de 2029', $this->formato()->fechaMesAnio('2029-12-31T00:00:00'));
+    $this->assertSame('', $this->formato()->fechaMesAnio(NULL));
+    $this->assertSame('', $this->formato()->fechaMesAnio(''));
+    $this->assertSame('', $this->formato()->fechaMesAnio('2029-13-01'));
+    $this->assertSame('', $this->formato()->fechaMesAnio('texto'));
   }
 
   /**
@@ -213,7 +208,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Los factores salen del modelo del proceso, con sus datos guardados.
    */
   public function testFactoresDelPrograma(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $this->cargarGrados();
     $modelo = $this->crearLineamiento('Modelo A');
     $otro_modelo = $this->crearLineamiento('Modelo B');
@@ -251,7 +245,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->hallazgo((int) $proceso->id(), 'fortaleza', '   ', (int) $f1->id());
 
     $cache = new CacheableMetadata();
-    $datos = $presentador->factoresDelPrograma($programa, $cache);
+    $datos = $this->factores()->delPrograma($programa, $cache);
     $this->assertSame('Proceso 2018–2022', $datos['proceso']);
     $this->assertSame('Cumplimiento en alto grado (4,508 · 90 %)', $datos['resultado']);
     // El factor 3 no tiene valoración ni hallazgos: no aparece.
@@ -277,7 +271,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Un hallazgo sobre una característica o un aspecto va a su factor.
    */
   public function testHallazgoDeCaracteristicaVaAlFactor(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $modelo = $this->crearLineamiento('Modelo 2025');
     $factor = $this->elemento('Factor', 4, $modelo->id());
     $caracteristica = $this->elemento('Característica', 10, $modelo->id(), 'caracteristica', [$factor->id()]);
@@ -291,7 +284,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->hallazgo((int) $proceso->id(), 'fortaleza', 'Por aspecto', (int) $aspecto->id());
     $this->hallazgo((int) $proceso->id(), 'fortaleza', 'Por característica', (int) $caracteristica->id());
     $this->hallazgo((int) $proceso->id(), 'aspecto_por_mejorar', 'Sin padre', (int) $suelto->id());
-    $datos = $presentador->factoresDelPrograma($programa, new CacheableMetadata());
+    $datos = $this->factores()->delPrograma($programa, new CacheableMetadata());
     $this->assertSame(['f04', 'sin-factor'], array_column($datos['pestanas'], 'key'));
     $this->assertSame(['Por aspecto', 'Por característica'], $datos['pestanas'][0]['strengths']);
     $this->assertSame(['Sin padre'], $datos['pestanas'][1]['improvements']);
@@ -304,22 +297,20 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Sin proceso, sin modelo o sin factores no se devuelve nada.
    */
   public function testFactoresVaciosSinProcesoNiModelo(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $programa = $this->crearNodo('programa', ['title' => 'Programa', 'field_clave' => 'p']);
-    $this->assertSame([], $presentador->factoresDelPrograma($programa, new CacheableMetadata()));
+    $this->assertSame([], $this->factores()->delPrograma($programa, new CacheableMetadata()));
     $this->crearNodo('proceso', ['field_programa' => $programa->id()]);
-    $this->assertSame([], $presentador->factoresDelPrograma($programa, new CacheableMetadata()));
+    $this->assertSame([], $this->factores()->delPrograma($programa, new CacheableMetadata()));
     $modelo = $this->crearLineamiento('Modelo sin factores');
     $otro = $this->crearNodo('programa', ['title' => 'Otro', 'field_clave' => 'o']);
     $this->crearNodo('proceso', ['field_programa' => $otro->id(), 'field_lineamiento' => $modelo->id()]);
-    $this->assertSame([], $presentador->factoresDelPrograma($otro, new CacheableMetadata()));
+    $this->assertSame([], $this->factores()->delPrograma($otro, new CacheableMetadata()));
   }
 
   /**
    * Se usa el proceso más reciente que tenga factores y datos.
    */
   public function testUsaElProcesoMasRecienteConFactores(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $acreditacion = $this->crearLineamiento('Acreditación');
     $registro = $this->crearLineamiento('Registro calificado', 'registro_calificado');
     $factor = $this->elemento('Estudiantes', 2, $acreditacion->id());
@@ -342,7 +333,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
       'field_programa' => $programa->id(),
       'field_lineamiento' => $registro->id(),
     ]);
-    $datos = $presentador->factoresDelPrograma($programa, new CacheableMetadata());
+    $datos = $this->factores()->delPrograma($programa, new CacheableMetadata());
     $this->assertSame('Acreditación 2018', $datos['proceso']);
     $this->assertSame(['Fortaleza antigua'], $datos['pestanas'][0]['strengths']);
   }
@@ -351,7 +342,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Las claves de pestaña son únicas aunque falten o se repitan los números.
    */
   public function testClavesDePestanaUnicas(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $modelo = $this->crearLineamiento('Modelo');
     $a = $this->elemento('Factor A', 1, $modelo->id());
     $b = $this->elemento('Factor B repetido', 1, $modelo->id());
@@ -371,7 +361,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     foreach ([$a, $b, $c] as $factor) {
       $this->hallazgo((int) $proceso->id(), 'fortaleza', 'Fortaleza ' . $factor->label(), (int) $factor->id());
     }
-    $datos = $presentador->factoresDelPrograma($programa, new CacheableMetadata());
+    $datos = $this->factores()->delPrograma($programa, new CacheableMetadata());
     $claves = array_column($datos['pestanas'], 'key');
     $this->assertCount(3, $claves);
     $this->assertSame($claves, array_values(array_unique($claves)));
@@ -474,7 +464,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Arma el plan: filas por meta, factores de cada una y enlace desde ellos.
    */
   public function testPlanArmaFilasConEnlace(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $d = $this->programaConPlan();
     $id = (int) $d['proceso']->id();
     $this->hallazgo($id, 'aspecto_por_mejorar', 'Situación uno', (int) $d['f1']->id());
@@ -517,9 +506,9 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->seguimiento($m1, '2025-2', NULL);
     $this->seguimiento($m2, '2025-1', '0.50');
 
-    $datos = $presentador->factoresDelPrograma($d['programa'], new CacheableMetadata());
+    $datos = $this->factores()->delPrograma($d['programa'], new CacheableMetadata());
     $cache = new CacheableMetadata();
-    $resultado = $presentador->planDelPrograma($d['programa'], $datos, $cache);
+    $resultado = $this->plan()->delPrograma($d['programa'], $datos, $cache);
     $plan = $resultado['plan'];
     $this->assertCount(3, $plan['filas']);
     $this->assertSame('Formato FO-GCL-20 · versión 03 · periodo 2024-2 – 2030 · suscrito en junio de 2024', $plan['lead']);
@@ -576,19 +565,18 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Sin plan, sin metas o sin factores el plan se comporta bien.
    */
   public function testPlanVacioSinMetasNiFactores(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $d = $this->programaConPlan();
     $this->hallazgo((int) $d['proceso']->id(), 'fortaleza', 'Fortaleza', (int) $d['f1']->id());
-    $factores = $presentador->factoresDelPrograma($d['programa'], new CacheableMetadata());
+    $factores = $this->factores()->delPrograma($d['programa'], new CacheableMetadata());
 
     // Plan sin metas: no hay sección y los factores no traen enlace.
-    $resultado = $presentador->planDelPrograma($d['programa'], $factores, new CacheableMetadata());
+    $resultado = $this->plan()->delPrograma($d['programa'], $factores, new CacheableMetadata());
     $this->assertSame([], $resultado['plan']);
     $this->assertArrayNotHasKey('plan_count', $resultado['factores']['pestanas'][0]);
 
     // Programa sin ningún proceso.
     $otro = $this->crearNodo('programa', ['title' => 'Otro', 'field_clave' => 'o']);
-    $resultado = $presentador->planDelPrograma($otro, [], new CacheableMetadata());
+    $resultado = $this->plan()->delPrograma($otro, [], new CacheableMetadata());
     $this->assertSame(['factores' => [], 'plan' => []], $resultado);
 
     // Sin factores (modelo sin ellos): el plan sale sin filtro por factor.
@@ -600,7 +588,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     ]);
     $plan = $this->crearNodo('plan_mejoramiento', ['field_proceso' => $proceso->id()]);
     $this->meta($plan, 1, '1');
-    $resultado = $presentador->planDelPrograma($sin_modelo, [], new CacheableMetadata());
+    $resultado = $this->plan()->delPrograma($sin_modelo, [], new CacheableMetadata());
     $this->assertCount(1, $resultado['plan']['filas']);
     $this->assertSame([], $resultado['plan']['filas'][0]['keys']);
     $this->assertSame([], $resultado['plan']['opciones']);
@@ -612,15 +600,14 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * El aviso de «no verificado» solo sale si hay seguimientos sin verificar.
    */
   public function testAvisoSoloConSeguimientosSinVerificar(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $d = $this->programaConPlan();
     $meta = $this->meta($d['plan'], 1, '1');
     $this->seguimiento($meta, '2025-1', '1.00', 'verificado');
-    $plan = $presentador->planDelPrograma($d['programa'], [], new CacheableMetadata())['plan'];
+    $plan = $this->plan()->delPrograma($d['programa'], [], new CacheableMetadata())['plan'];
     $this->assertFalse($plan['aviso']);
     $this->assertSame("2025-1 · 100 %\nVerificado", $plan['filas'][0]['cells'][3]['value']);
     $this->seguimiento($meta, '2025-2', '0.00');
-    $plan = $presentador->planDelPrograma($d['programa'], [], new CacheableMetadata())['plan'];
+    $plan = $this->plan()->delPrograma($d['programa'], [], new CacheableMetadata())['plan'];
     $this->assertTrue($plan['aviso']);
     // Un avance de 0 es un valor, no un hueco.
     $this->assertSame("2025-2 · 0 %\nReportado", $plan['filas'][0]['cells'][3]['value']);
@@ -630,7 +617,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Los textos salen sin doble escape y los datos raros no rompen el plan.
    */
   public function testPlanSinDobleEscapeNiErrores(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $d = $this->programaConPlan();
     $id = (int) $d['proceso']->id();
     $this->hallazgo($id, 'aspecto_por_mejorar', "Aspecto de A & B y 'C'", (int) $d['f1']->id());
@@ -672,8 +658,8 @@ class PresentadorTest extends UnillanosKernelTestBase {
       'field_medios_verificacion' => "Acta & 'anexo'",
     ]);
 
-    $factores = $presentador->factoresDelPrograma($d['programa'], new CacheableMetadata());
-    $plan = $presentador->planDelPrograma($d['programa'], $factores, new CacheableMetadata())['plan'];
+    $factores = $this->factores()->delPrograma($d['programa'], new CacheableMetadata());
+    $plan = $this->plan()->delPrograma($d['programa'], $factores, new CacheableMetadata())['plan'];
     $celdas = $plan['filas'][0]['cells'];
     // Una sola situación (la del mismo proceso).
     $this->assertSame(['type' => 'text', 'value' => "Aspecto de A & B y 'C'"], $celdas[0]);
@@ -693,18 +679,18 @@ class PresentadorTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * Presentador con rutas simuladas.
+   * Portada con rutas simuladas.
    *
-   * La portada decide qué enlaces da por disponibles con DatosPortada; aquí se
-   * sustituye esa decisión por la lista recibida (las rutas del sitio sí
+   * DatosPortada decide qué enlaces da por disponibles; aquí se sustituye esa
+   * decisión por la lista recibida (las rutas del sitio sí
    * existen en la prueba, pero se simula que no).
    *
    * @param string[] $rutas
    *   Rutas (por ejemplo `/programas`) que se darán por disponibles.
    */
-  protected function presentadorConRutas(array $rutas): PresentadorAutoevaluacion {
+  protected function portadaConRutas(array $rutas): DatosPortada {
     $contenedor = $this->container;
-    $portada = new class($contenedor->get('entity_type.manager'), $contenedor->get('unillanos_autoeval.listado_programas'), $contenedor->get('unillanos_autoeval.factores_programa'), $contenedor->get('url_generator'), $contenedor->get('access_manager'), $contenedor->get('current_user'), $rutas) extends DatosPortada {
+    return new class($contenedor->get('entity_type.manager'), $contenedor->get('unillanos_autoeval.listado_programas'), $contenedor->get('unillanos_autoeval.factores_programa'), $contenedor->get('url_generator'), $contenedor->get('access_manager'), $contenedor->get('current_user'), $rutas) extends DatosPortada {
 
       /**
        * Constructor.
@@ -723,15 +709,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
       }
 
     };
-    return new PresentadorAutoevaluacion(
-      $contenedor->get('entity_type.manager'),
-      $contenedor->get('unillanos_autoeval.listado_programas'),
-      $contenedor->get('unillanos_autoeval.documentos_publicados'),
-      $contenedor->get('unillanos_autoeval.factores_programa'),
-      $contenedor->get('unillanos_autoeval.programas_y_procesos'),
-      $contenedor->get('unillanos_autoeval.plan_mejoramiento_programa'),
-      $portada,
-    );
   }
 
   /**
@@ -758,7 +735,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Sin procesos publicados la portada no trae datos.
    */
   public function testPortadaSinProcesos(): void {
-    $datos = $this->container->get('unillanos_autoeval.presentador')->datosPortada(new CacheableMetadata());
+    $datos = $this->portada()->armar(new CacheableMetadata());
     $this->assertSame('', $datos['eyebrow']);
     $this->assertSame([], $datos['cifras']);
     $this->assertSame([], $datos['programas']);
@@ -774,7 +751,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Con un programa: cifras de su proceso, fila destacada y chips con valor.
    */
   public function testPortadaConUnPrograma(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $this->cargarGrados();
     $d = $this->programaConPlan();
     $sede = Term::create(['vid' => 'sede', 'name' => 'Sede Barcelona']);
@@ -799,7 +775,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->meta($d['plan'], 1, '1');
 
     $cache = new CacheableMetadata();
-    $datos = $presentador->datosPortada($cache);
+    $datos = $this->portada()->armar($cache);
     $this->assertSame('Proceso de autoevaluación 2018–2022', $datos['eyebrow']);
     $this->assertTrue($datos['unico']);
     $this->assertSame(1, $datos['total_programas']);
@@ -830,15 +806,14 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Una cifra en cero se omite; sin ninguna no hay cifras.
    */
   public function testPortadaOmiteCifrasEnCero(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $modelo = $this->crearLineamiento('Modelo');
     $this->programaConProceso('Uno', (int) $modelo->id());
-    $this->assertSame([], $presentador->datosPortada(new CacheableMetadata())['cifras']);
+    $this->assertSame([], $this->portada()->armar(new CacheableMetadata())['cifras']);
     $this->programaConProceso('Dos', (int) $modelo->id());
     // Con dos programas solo queda la cifra de programas.
     $this->assertSame(
       [['value' => '2', 'label' => 'Programas con autoevaluación']],
-      $presentador->datosPortada(new CacheableMetadata())['cifras'],
+      $this->portada()->armar(new CacheableMetadata())['cifras'],
     );
   }
 
@@ -855,7 +830,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
       $d = $this->programaConProceso($nombres[$i], (int) $modelo->id());
       $this->hallazgo((int) $d['proceso']->id(), 'fortaleza', 'Fortaleza ' . $i, (int) $factor->id());
     }
-    $sin_rutas = $this->presentadorConRutas([])->datosPortada(new CacheableMetadata());
+    $sin_rutas = $this->portadaConRutas([])->armar(new CacheableMetadata());
     $this->assertSame(14, $sin_rutas['total_programas']);
     $this->assertFalse($sin_rutas['unico']);
     $this->assertCount(12, $sin_rutas['programas']);
@@ -874,7 +849,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->assertFalse($sin_rutas['hay_grado']);
 
     // «Ver todos» y documentos solo si esas rutas existen.
-    $con_rutas = $this->presentadorConRutas(['/programas', '/documentos'])->datosPortada(new CacheableMetadata());
+    $con_rutas = $this->portadaConRutas(['/programas', '/documentos'])->armar(new CacheableMetadata());
     $this->assertSame('/programas', $con_rutas['ver_todos']);
     $this->assertSame('/documentos', $con_rutas['documentos']);
   }
@@ -884,28 +859,27 @@ class PresentadorTest extends UnillanosKernelTestBase {
    */
   public function testEnlaceVerTodosSegunLosProgramas(): void {
     $modelo = $this->crearLineamiento('Modelo');
-    $con_ruta = $this->presentadorConRutas(['/programas']);
-    $sin_ruta = $this->presentadorConRutas([]);
+    $con_ruta = $this->portadaConRutas(['/programas']);
+    $sin_ruta = $this->portadaConRutas([]);
 
     // Sin programas con autoevaluación no hay enlace aunque la ruta exista.
-    $this->assertSame('', $con_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
+    $this->assertSame('', $con_ruta->armar(new CacheableMetadata())['ver_todos']);
 
     // Con uno: el enlace sale solo si la ruta existe.
     $this->programaConProceso('Uno', (int) $modelo->id());
-    $this->assertSame('/programas', $con_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
-    $this->assertSame('', $sin_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
+    $this->assertSame('/programas', $con_ruta->armar(new CacheableMetadata())['ver_todos']);
+    $this->assertSame('', $sin_ruta->armar(new CacheableMetadata())['ver_todos']);
 
     // Con dos (bastante menos que el tope de la portada) también.
     $this->programaConProceso('Dos', (int) $modelo->id());
-    $this->assertSame('/programas', $con_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
-    $this->assertSame('', $sin_ruta->datosPortada(new CacheableMetadata())['ver_todos']);
+    $this->assertSame('/programas', $con_ruta->armar(new CacheableMetadata())['ver_todos']);
+    $this->assertSame('', $sin_ruta->armar(new CacheableMetadata())['ver_todos']);
   }
 
   /**
    * Un programa sin publicar y un proceso institucional no salen.
    */
   public function testPortadaIgnoraLoQueNoSeMuestra(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $modelo = $this->crearLineamiento('Modelo');
     $visible = $this->programaConProceso('Visible', (int) $modelo->id());
     $oculto = $this->crearNodo('programa', ['title' => 'Oculto', 'field_clave' => 'oculto', 'status' => 0]);
@@ -918,7 +892,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $otro = $this->crearNodo('programa', ['title' => 'Otro', 'field_clave' => 'otro']);
     $this->crearNodo('proceso', ['field_programa' => $otro->id(), 'field_lineamiento' => $modelo->id(), 'status' => 0]);
 
-    $datos = $presentador->datosPortada(new CacheableMetadata());
+    $datos = $this->portada()->armar(new CacheableMetadata());
     $this->assertSame(1, $datos['total_programas']);
     $this->assertSame(['Visible'], array_column($datos['programas'], 'title'));
     $this->assertTrue($datos['unico']);
@@ -929,7 +903,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Los chips usan el modelo del proceso más reciente que tenga factores.
    */
   public function testPortadaUsaElModeloDelProcesoMasReciente(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $viejo = $this->crearLineamiento('Modelo 2020');
     $nuevo = $this->crearLineamiento('Modelo 2025');
     $registro = $this->crearLineamiento('Registro', 'registro_calificado');
@@ -940,7 +913,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->programaConProceso('Nuevo', (int) $nuevo->id());
     // El más reciente es de registro calificado (sin factores): se salta.
     $this->programaConProceso('Registro', (int) $registro->id());
-    $datos = $presentador->datosPortada(new CacheableMetadata());
+    $datos = $this->portada()->armar(new CacheableMetadata());
     $this->assertSame(['Factor A del 2025', 'Factor B del 2025'], array_column($datos['factores'], 'name'));
     $this->assertSame(3, $datos['total_programas']);
   }
@@ -950,7 +923,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    */
   public function testPortadaUsaElProcesoConDatos(): void {
     $this->cargarGrados();
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $d = $this->programaConPlan();
     $d['proceso']->set('field_periodo_evaluado', '2018–2022')->save();
     $alto = array_values($this->container->get('entity_type.manager')->getStorage('taxonomy_term')->loadByProperties(['name' => 'Alto']));
@@ -967,7 +939,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
       'field_lineamiento' => $d['proceso']->get('field_lineamiento')->target_id,
       'field_periodo_evaluado' => '2024–2028',
     ]);
-    $datos = $presentador->datosPortada(new CacheableMetadata());
+    $datos = $this->portada()->armar(new CacheableMetadata());
     $this->assertSame(1, $datos['total_programas']);
     $this->assertSame('Proceso de autoevaluación 2018–2022', $datos['eyebrow']);
     $this->assertSame([
@@ -983,7 +955,6 @@ class PresentadorTest extends UnillanosKernelTestBase {
    * Las acciones de mejora cuentan solo metas de planes publicados.
    */
   public function testPortadaCuentaSoloMetasDePlanesPublicados(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
     $d = $this->programaConPlan();
     $this->meta($d['plan'], 1, '1');
     $this->meta($d['plan'], 2, '2');
@@ -991,7 +962,7 @@ class PresentadorTest extends UnillanosKernelTestBase {
     $this->meta($borrador, 1, '1');
     $this->meta($borrador, 2, '2');
     $this->meta($borrador, 3, '3');
-    $cifras = $presentador->datosPortada(new CacheableMetadata())['cifras'];
+    $cifras = $this->portada()->armar(new CacheableMetadata())['cifras'];
     $this->assertSame([['value' => '2', 'label' => 'Acciones de mejora formuladas']], $cifras);
   }
 

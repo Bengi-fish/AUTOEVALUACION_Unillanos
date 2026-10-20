@@ -14,7 +14,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Drupal\unillanos_autoeval\Service\CalculadorGrado;
 use Drupal\unillanos_autoeval\Service\ModeloProceso;
-use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
+use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
 use Drupal\unillanos_autoeval\Service\SugerenciaDestino;
 
 /**
@@ -60,7 +60,7 @@ class UnillanosAutoevalHooks {
     }
     $build['#cache']['tags'] = Cache::mergeTags(
       $build['#cache']['tags'] ?? [],
-      PresentadorAutoevaluacion::ETIQUETAS_AUTOEVALUACION,
+      ProgramasYProcesos::ETIQUETAS_AUTOEVALUACION,
     );
     // Los demás programas de la facultad dependen de la lista de programas, de
     // los términos de facultad y sede y de las etiquetas de nivel.
@@ -70,7 +70,7 @@ class UnillanosAutoevalHooks {
       'taxonomy_term_list:sede',
       'config:field.storage.node.field_nivel',
     ]);
-    // Las consultas del presentador respetan el acceso del visitante.
+    // Las consultas de los servicios respetan el acceso del visitante.
     $build['#cache']['contexts'][] = 'user.permissions';
     foreach (['field_facultad', 'field_sede'] as $campo) {
       $termino = $entity->get($campo)->entity;

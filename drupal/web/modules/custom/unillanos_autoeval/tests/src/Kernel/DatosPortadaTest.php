@@ -12,14 +12,14 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * Comprueba que el presentador delega en DatosPortada.
+ * Prueba DatosPortada: la portada y sus enlaces.
  *
- * El presentador es una fachada: da el mismo resultado que el servicio. Los
- * enlaces de la portada salen de la comprobación de acceso por nombre de ruta.
+ * Los enlaces de la portada salen de la comprobación de acceso por nombre de
+ * ruta. El servicio da lo mismo en llamadas seguidas (sin estado oculto).
  */
 #[Group('unillanos_autoeval')]
 #[RunTestsInSeparateProcesses]
-class DelegacionPortadaTest extends UnillanosKernelTestBase {
+class DatosPortadaTest extends UnillanosKernelTestBase {
 
   use UserCreationTrait;
 
@@ -56,35 +56,35 @@ class DelegacionPortadaTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * La portada da lo mismo por la fachada y por el servicio.
+   * La portada da lo mismo en dos llamadas seguidas y con datos completos.
    */
-  public function testLaFachadaDelegaEnDatosPortada(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
+  public function testArmaLaPortadaDeFormaEstable(): void {
     $servicio = $this->container->get('unillanos_autoeval.datos_portada');
 
     // Sin programas: la misma portada vacía, sin enlace a «Ver todos».
-    $vacia = $presentador->datosPortada(new CacheableMetadata());
+    $vacia = $this->portada()->armar(new CacheableMetadata());
     $this->assertEquals($servicio->armar(new CacheableMetadata()), $vacia);
     $this->assertSame('', $vacia['ver_todos']);
     $this->assertSame([], $vacia['cifras']);
 
     $this->programaConProceso('Uno');
     $this->programaConProceso('Dos');
-    $cache_fachada = new CacheableMetadata();
-    $cache_servicio = new CacheableMetadata();
-    $por_fachada = $presentador->datosPortada($cache_fachada);
-    $por_servicio = $servicio->armar($cache_servicio);
-    $this->assertEquals($por_servicio, $por_fachada);
-    $this->assertEquals($cache_servicio->getCacheTags(), $cache_fachada->getCacheTags());
+    $cache_primera = new CacheableMetadata();
+    $cache_segunda = new CacheableMetadata();
+    $primera = $this->portada()->armar($cache_primera);
+    $segunda = $servicio->armar($cache_segunda);
+    $this->assertEquals($segunda, $primera);
+    $this->assertEquals($cache_segunda->getCacheTags(), $cache_primera->getCacheTags());
     // No es una comparación vacía.
-    $this->assertSame(2, $por_fachada['total_programas']);
-    $this->assertCount(2, $por_fachada['programas']);
-    $this->assertNotEmpty($por_fachada['cifras']);
-    $this->assertContains('routes', $cache_fachada->getCacheTags());
+    $this->assertSame(2, $primera['total_programas']);
+    $this->assertCount(2, $primera['programas']);
+    $this->assertNotEmpty($primera['cifras']);
+    $this->assertContains('routes', $cache_primera->getCacheTags());
     // Los enlaces salen de las rutas del sitio, con acceso.
-    $this->assertSame('/programas', $por_fachada['ver_todos']);
-    $this->assertSame('/documentos', $por_fachada['documentos']);
-    $this->assertSame(DatosPortada::MAX_PROGRAMAS_PORTADA, $presentador::MAX_PROGRAMAS_PORTADA);
+    $this->assertSame('/programas', $primera['ver_todos']);
+    $this->assertSame('/documentos', $primera['documentos']);
+    // Nunca más tarjetas que el tope de la portada.
+    $this->assertLessThanOrEqual(DatosPortada::MAX_PROGRAMAS_PORTADA, count($primera['programas']));
   }
 
   /**

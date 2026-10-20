@@ -13,13 +13,13 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * Comprueba que el presentador delega en PlanMejoramientoPrograma.
+ * Prueba PlanMejoramientoPrograma: el plan de mejoramiento de un programa.
  *
- * El presentador es una fachada: da el mismo resultado que el servicio.
+ * El servicio da lo mismo en llamadas seguidas (sin estado oculto).
  */
 #[Group('unillanos_autoeval')]
 #[RunTestsInSeparateProcesses]
-class DelegacionPlanTest extends UnillanosKernelTestBase {
+class PlanMejoramientoProgramaTest extends UnillanosKernelTestBase {
 
   /**
    * {@inheritdoc}
@@ -111,10 +111,9 @@ class DelegacionPlanTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * El plan da lo mismo por la fachada y por el servicio.
+   * El plan da lo mismo en dos llamadas seguidas y trae lo guardado.
    */
-  public function testLaFachadaDelegaEnPlanMejoramientoPrograma(): void {
-    $presentador = $this->container->get('unillanos_autoeval.presentador');
+  public function testArmaElPlanDeFormaEstable(): void {
     $servicio = $this->container->get('unillanos_autoeval.plan_mejoramiento_programa');
     $modelo = $this->crearLineamiento('Modelo');
     $f1 = $this->factor('Estudiantes', 1, (int) $modelo->id());
@@ -178,25 +177,25 @@ class DelegacionPlanTest extends UnillanosKernelTestBase {
       ]);
     }
 
-    $factores = $presentador->factoresDelPrograma($programa, new CacheableMetadata());
-    $cache_fachada = new CacheableMetadata();
-    $cache_servicio = new CacheableMetadata();
-    $por_fachada = $presentador->planDelPrograma($programa, $factores, $cache_fachada);
-    $por_servicio = $servicio->delPrograma($programa, $factores, $cache_servicio);
-    $this->assertEquals($por_servicio, $por_fachada);
-    $this->assertEquals($cache_servicio->getCacheTags(), $cache_fachada->getCacheTags());
+    $factores = $this->factores()->delPrograma($programa, new CacheableMetadata());
+    $cache_primera = new CacheableMetadata();
+    $cache_segunda = new CacheableMetadata();
+    $primera = $this->plan()->delPrograma($programa, $factores, $cache_primera);
+    $segunda = $servicio->delPrograma($programa, $factores, $cache_segunda);
+    $this->assertEquals($segunda, $primera);
+    $this->assertEquals($cache_segunda->getCacheTags(), $cache_primera->getCacheTags());
     // No es una comparación vacía: dos metas con su factor y el seguimiento.
-    $this->assertCount(2, $por_fachada['plan']['filas']);
-    $this->assertTrue($por_fachada['plan']['aviso']);
+    $this->assertCount(2, $primera['plan']['filas']);
+    $this->assertTrue($primera['plan']['aviso']);
     // El factor 1 tiene una meta (la primera) y el 2 tiene dos (ambas).
-    $this->assertSame(['f01' => 1, 'f02' => 2], array_column($por_fachada['factores']['pestanas'], 'plan_count', 'key'));
-    $this->assertContains('node_list:meta', $cache_fachada->getCacheTags());
+    $this->assertSame(['f01' => 1, 'f02' => 2], array_column($primera['factores']['pestanas'], 'plan_count', 'key'));
+    $this->assertContains('node_list:meta', $cache_primera->getCacheTags());
 
     // Un programa sin plan: la misma forma vacía por ambos lados.
     $sin = $this->crearNodo('programa', ['title' => 'Sin plan', 'field_clave' => 's']);
-    $vacio_fachada = $presentador->planDelPrograma($sin, [], new CacheableMetadata());
-    $this->assertSame(['factores' => [], 'plan' => []], $vacio_fachada);
-    $this->assertSame($vacio_fachada, $servicio->delPrograma($sin, [], new CacheableMetadata()));
+    $vacio_primero = $this->plan()->delPrograma($sin, [], new CacheableMetadata());
+    $this->assertSame(['factores' => [], 'plan' => []], $vacio_primero);
+    $this->assertSame($vacio_primero, $servicio->delPrograma($sin, [], new CacheableMetadata()));
   }
 
 }
