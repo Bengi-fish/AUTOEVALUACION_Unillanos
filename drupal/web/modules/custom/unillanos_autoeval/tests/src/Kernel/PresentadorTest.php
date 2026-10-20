@@ -701,13 +701,13 @@ class PresentadorTest extends UnillanosKernelTestBase {
    */
   protected function presentadorConRutas(array $rutas): PresentadorAutoevaluacion {
     $contenedor = $this->container;
-    return new class($contenedor->get('entity_type.manager'), $contenedor->get('path.validator'), $contenedor->get('unillanos_autoeval.listado_programas'), $contenedor->get('unillanos_autoeval.documentos_publicados'), $rutas) extends PresentadorAutoevaluacion {
+    return new class($contenedor->get('entity_type.manager'), $contenedor->get('path.validator'), $contenedor->get('unillanos_autoeval.listado_programas'), $contenedor->get('unillanos_autoeval.documentos_publicados'), $contenedor->get('unillanos_autoeval.factores_programa'), $contenedor->get('unillanos_autoeval.programas_y_procesos'), $rutas) extends PresentadorAutoevaluacion {
 
       /**
        * Constructor.
        */
-      public function __construct($gestor, $validador, $listado, $documentos, protected array $rutas) {
-        parent::__construct($gestor, $validador, $listado, $documentos);
+      public function __construct($gestor, $validador, $listado, $documentos, $factores, $procesos, protected array $rutas) {
+        parent::__construct($gestor, $validador, $listado, $documentos, $factores, $procesos);
       }
 
       /**
