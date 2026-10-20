@@ -5,6 +5,7 @@ namespace Drupal\Tests\unillanos_autoeval\Kernel;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\ParagraphsType;
+use Drupal\unillanos_autoeval\Service\DatosPortada;
 use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
@@ -694,30 +695,43 @@ class PresentadorTest extends UnillanosKernelTestBase {
   /**
    * Presentador con rutas simuladas.
    *
-   * En la prueba no existen /programas ni /documentos.
+   * La portada decide qué enlaces da por disponibles con DatosPortada; aquí se
+   * sustituye esa decisión por la lista recibida (las rutas del sitio sí
+   * existen en la prueba, pero se simula que no).
    *
    * @param string[] $rutas
-   *   Rutas que se darán por existentes.
+   *   Rutas (por ejemplo `/programas`) que se darán por disponibles.
    */
   protected function presentadorConRutas(array $rutas): PresentadorAutoevaluacion {
     $contenedor = $this->container;
-    return new class($contenedor->get('entity_type.manager'), $contenedor->get('path.validator'), $contenedor->get('unillanos_autoeval.listado_programas'), $contenedor->get('unillanos_autoeval.documentos_publicados'), $contenedor->get('unillanos_autoeval.factores_programa'), $contenedor->get('unillanos_autoeval.programas_y_procesos'), $contenedor->get('unillanos_autoeval.plan_mejoramiento_programa'), $rutas) extends PresentadorAutoevaluacion {
+    $portada = new class($contenedor->get('entity_type.manager'), $contenedor->get('unillanos_autoeval.listado_programas'), $contenedor->get('unillanos_autoeval.factores_programa'), $contenedor->get('url_generator'), $contenedor->get('access_manager'), $contenedor->get('current_user'), $rutas) extends DatosPortada {
 
       /**
        * Constructor.
        */
-      public function __construct($gestor, $validador, $listado, $documentos, $factores, $procesos, $plan, protected array $rutas) {
-        parent::__construct($gestor, $validador, $listado, $documentos, $factores, $procesos, $plan);
+      public function __construct($gestor, $listado, $factores, $generador, $accesos, $usuario, protected array $rutas) {
+        parent::__construct($gestor, $listado, $factores, $generador, $accesos, $usuario);
       }
 
       /**
        * {@inheritdoc}
        */
-      protected function rutaExiste(string $ruta): bool {
-        return in_array($ruta, $this->rutas, TRUE);
+      protected function enlaceDeRuta(string $ruta): string {
+        $urls = ['unillanos_autoeval.programas' => '/programas', 'unillanos_autoeval.documentos' => '/documentos'];
+        $url = $urls[$ruta] ?? '';
+        return in_array($url, $this->rutas, TRUE) ? $url : '';
       }
 
     };
+    return new PresentadorAutoevaluacion(
+      $contenedor->get('entity_type.manager'),
+      $contenedor->get('unillanos_autoeval.listado_programas'),
+      $contenedor->get('unillanos_autoeval.documentos_publicados'),
+      $contenedor->get('unillanos_autoeval.factores_programa'),
+      $contenedor->get('unillanos_autoeval.programas_y_procesos'),
+      $contenedor->get('unillanos_autoeval.plan_mejoramiento_programa'),
+      $portada,
+    );
   }
 
   /**
