@@ -24,9 +24,14 @@ services:
     arguments: ['@entity_type.manager']
   Drupal\unillanos_autoeval\Service\ListadoProgramas: '@unillanos_autoeval.listado_programas'
 
+  unillanos_autoeval.documentos_publicados:
+    class: Drupal\unillanos_autoeval\Service\DocumentosPublicados
+    arguments: ['@entity_type.manager']
+  Drupal\unillanos_autoeval\Service\DocumentosPublicados: '@unillanos_autoeval.documentos_publicados'
+
   unillanos_autoeval.presentador:
     class: Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion
-    arguments: ['@entity_type.manager', '@path.validator', '@unillanos_autoeval.listado_programas']
+    arguments: ['@entity_type.manager', '@path.validator', '@unillanos_autoeval.listado_programas', '@unillanos_autoeval.documentos_publicados']
   Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion: '@unillanos_autoeval.presentador'
 
   unillanos_autoeval.pagina_programa:

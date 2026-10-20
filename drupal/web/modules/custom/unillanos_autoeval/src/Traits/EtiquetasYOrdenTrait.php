@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Drupal\unillanos_autoeval\Traits;
 
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 
 /**
- * Etiquetas de campos de lista y orden de textos en español.
+ * Lectura de campos de Drupal y orden de textos en español.
  *
- * Funciones sin estado que comparten el presentador y el listado de programas.
+ * Funciones sin estado que reciben un campo o un ítem de campo (o comparan
+ * textos) y que comparten el presentador y el listado de programas. El formato
+ * de escalares está en FormatoTextoTrait.
  */
 trait EtiquetasYOrdenTrait {
 
@@ -53,6 +57,34 @@ trait EtiquetasYOrdenTrait {
       }
     }
     return strcmp(mb_strtolower($a), mb_strtolower($b));
+  }
+
+  /**
+   * Devuelve el texto de un campo de texto largo como texto plano.
+   *
+   * Un campo `plain_text` (o de texto corto, sin formato) ya es texto: solo
+   * se recortan los espacios (así un «puntaje < 4 y > 3» no pierde lo que
+   * queda entre los signos). Con otro
+   * formato se quitan las etiquetas HTML y se decodifican las entidades. En
+   * ambos casos la plantilla imprime escapado.
+   *
+   * @param \Drupal\Core\Field\FieldItemInterface|null $item
+   *   Primer valor del campo, o NULL si está vacío.
+   *
+   * @return string
+   *   El texto, o una cadena vacía.
+   */
+  protected function textoDeCampo(?FieldItemInterface $item): string {
+    if (!$item) {
+      return '';
+    }
+    $texto = (string) $item->get('value')->getValue();
+    // Un campo de texto corto no tiene formato: es texto plano.
+    $formato = isset($item->getProperties()['format']) ? (string) $item->get('format')->getValue() : 'plain_text';
+    if ($formato === 'plain_text') {
+      return trim($texto);
+    }
+    return trim(Html::decodeEntities(strip_tags($texto)));
   }
 
 }

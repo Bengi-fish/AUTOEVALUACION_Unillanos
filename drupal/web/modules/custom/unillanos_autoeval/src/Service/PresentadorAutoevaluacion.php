@@ -2,15 +2,13 @@
 
 namespace Drupal\unillanos_autoeval\Service;
 
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemInterface;
-use Drupal\file\FileInterface;
 use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Drupal\unillanos_autoeval\Traits\EtiquetasYOrdenTrait;
+use Drupal\unillanos_autoeval\Traits\FormatoTextoTrait;
 
 /**
  * Arma, desde las entidades, los datos que muestran las páginas públicas.
@@ -26,6 +24,7 @@ class PresentadorAutoevaluacion {
 
   use StringTranslationTrait;
   use EtiquetasYOrdenTrait;
+  use FormatoTextoTrait;
 
   /**
    * Programas que muestra la portada como máximo.
@@ -43,19 +42,19 @@ class PresentadorAutoevaluacion {
   const RUTA_DOCUMENTOS = '/documentos';
 
   /**
-   * Orden de las categorías de documento (la clave guardada).
+   * Orden de las categorías de documento (alias de DocumentosPublicados).
    */
-  const CATEGORIAS_DOCUMENTO = ['normatividad', 'documento_base', 'informe', 'acto_administrativo', 'soporte'];
+  const CATEGORIAS_DOCUMENTO = DocumentosPublicados::CATEGORIAS_DOCUMENTO;
 
   /**
    * Orden de las categorías dentro de los documentos de un programa.
    */
-  const CATEGORIAS_PROGRAMA = ['informe', 'documento_base', 'acto_administrativo', 'soporte', 'normatividad'];
+  const CATEGORIAS_PROGRAMA = DocumentosPublicados::CATEGORIAS_PROGRAMA;
 
   /**
    * Programas con documentos desde los que se ofrece una lista de salto.
    */
-  const MIN_PROGRAMAS_SALTO = 6;
+  const MIN_PROGRAMAS_SALTO = DocumentosPublicados::MIN_PROGRAMAS_SALTO;
 
   /**
    * Etiquetas de caché de lo que lee la sección de autoevaluación.
@@ -82,25 +81,8 @@ class PresentadorAutoevaluacion {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected PathValidatorInterface $pathValidator,
     protected ListadoProgramas $listado,
+    protected DocumentosPublicados $documentos,
   ) {}
-
-  /**
-   * Da formato numérico con coma decimal (4,27).
-   *
-   * @param float|int|string|null $valor
-   *   Valor guardado.
-   * @param int $decimales
-   *   Cantidad de decimales.
-   *
-   * @return string
-   *   El número formateado, o una cadena vacía si no es numérico.
-   */
-  public function numero(float|int|string|NULL $valor, int $decimales = 2): string {
-    if ($valor === NULL || !is_numeric($valor)) {
-      return '';
-    }
-    return number_format((float) $valor, $decimales, ',', '');
-  }
 
   /**
    * Busca un programa publicado por su clave (`field_clave`).
@@ -743,23 +725,6 @@ class PresentadorAutoevaluacion {
   }
 
   /**
-   * Devuelve una cadena traducida como texto plano, sin escapar.
-   *
-   * Los marcadores `@` de t() escapan el HTML, y la plantilla vuelve a
-   * escapar al imprimir (un «&» se vería «&amp;amp;»). Aquí se decodifican
-   * para que el escape ocurra una sola vez, en la plantilla.
-   *
-   * @param \Stringable|string $texto
-   *   El resultado de $this->t().
-   *
-   * @return string
-   *   El texto plano.
-   */
-  protected function plano(\Stringable|string $texto): string {
-    return Html::decodeEntities((string) $texto);
-  }
-
-  /**
    * Devuelve el mapa de padres del vocabulario de elementos del modelo.
    *
    * @return array<int, int[]>
@@ -806,34 +771,6 @@ class PresentadorAutoevaluacion {
       }
     }
     return 0;
-  }
-
-  /**
-   * Devuelve el texto de un campo de texto largo como texto plano.
-   *
-   * Un campo `plain_text` (o de texto corto, sin formato) ya es texto: solo
-   * se recortan los espacios (así un «puntaje < 4 y > 3» no pierde lo que
-   * queda entre los signos). Con otro
-   * formato se quitan las etiquetas HTML y se decodifican las entidades. En
-   * ambos casos la plantilla imprime escapado.
-   *
-   * @param \Drupal\Core\Field\FieldItemInterface|null $item
-   *   Primer valor del campo, o NULL si está vacío.
-   *
-   * @return string
-   *   El texto, o una cadena vacía.
-   */
-  protected function textoDeCampo(?FieldItemInterface $item): string {
-    if (!$item) {
-      return '';
-    }
-    $texto = (string) $item->get('value')->getValue();
-    // Un campo de texto corto no tiene formato: es texto plano.
-    $formato = isset($item->getProperties()['format']) ? (string) $item->get('format')->getValue() : 'plain_text';
-    if ($formato === 'plain_text') {
-      return trim($texto);
-    }
-    return trim(Html::decodeEntities(strip_tags($texto)));
   }
 
   /**
@@ -888,37 +825,6 @@ class PresentadorAutoevaluacion {
       'etiquetas' => array_values(array_filter([$nivel, $modalidad])),
       'ficha' => $ficha,
     ];
-  }
-
-  /**
-   * Escribe una fecha (AAAA-MM-DD) como «diciembre de 2029».
-   *
-   * @param string|null $fecha
-   *   Fecha guardada.
-   *
-   * @return string
-   *   El mes y el año, o una cadena vacía si no hay fecha válida.
-   */
-  public function fechaMesAnio(?string $fecha): string {
-    if (!$fecha || !preg_match('/^(\d{4})-(\d{2})-\d{2}/', $fecha, $partes)) {
-      return '';
-    }
-    $meses = [
-      1 => 'enero',
-      2 => 'febrero',
-      3 => 'marzo',
-      4 => 'abril',
-      5 => 'mayo',
-      6 => 'junio',
-      7 => 'julio',
-      8 => 'agosto',
-      9 => 'septiembre',
-      10 => 'octubre',
-      11 => 'noviembre',
-      12 => 'diciembre',
-    ];
-    $mes = $meses[(int) $partes[2]] ?? '';
-    return $mes === '' ? '' : $mes . ' de ' . $partes[1];
   }
 
   /**
@@ -1231,129 +1137,7 @@ class PresentadorAutoevaluacion {
    *   El tamaño con coma decimal; vacío si no hay tamaño.
    */
   public function tamano(int $bytes): string {
-    if ($bytes <= 0) {
-      return '';
-    }
-    if ($bytes < 1024) {
-      return $bytes . ' B';
-    }
-    // Hasta 1.023 KB; por encima (incluido lo que redondearía a 1.024 KB), MB.
-    if (round($bytes / 1024) < 1024) {
-      return number_format($bytes / 1024, 0, ',', '.') . ' KB';
-    }
-    return number_format($bytes / 1048576, 1, ',', '.') . ' MB';
-  }
-
-  /**
-   * Lee los documentos publicados que el visitante puede ver.
-   *
-   * Un documento ligado a un proceso se asigna al programa de ese proceso; si
-   * el proceso o su programa no están publicados (o no se pueden ver), el
-   * documento no se muestra. Sin proceso, o con un proceso sin programa
-   * (institucional), es un documento general.
-   *
-   * @param \Drupal\Core\Cache\CacheableMetadata $cache
-   *   Recibe los metadatos de caché de todo lo que se lee.
-   * @param int[]|null $ids_proceso
-   *   Si se indica, solo los documentos ligados a esos procesos.
-   *
-   * @return array<int, array<string, mixed>>
-   *   Cada documento con: item (title, cat, desc, meta, kind y url),
-   *   categoria (clave), fecha, programa (nodo o NULL) y orden.
-   */
-  protected function documentosVisibles(CacheableMetadata $cache, ?array $ids_proceso = NULL): array {
-    $cache->addCacheTags(['media_list', 'node_list:proceso', 'node_list:programa', 'node_list:lineamiento']);
-    $cache->addCacheContexts(['user.permissions']);
-    $medios_almacen = $this->entityTypeManager->getStorage('media');
-    $consulta = $medios_almacen->getQuery()
-      ->accessCheck(TRUE)
-      ->condition('bundle', 'documento')
-      ->condition('status', 1);
-    if ($ids_proceso !== NULL) {
-      if (!$ids_proceso) {
-        return [];
-      }
-      $consulta->condition('field_proceso', $ids_proceso, 'IN');
-    }
-    $ids = $consulta->execute();
-    $medios = $medios_almacen->loadMultiple($ids);
-
-    // Procesos y programas de una vez.
-    $almacen = $this->entityTypeManager->getStorage('node');
-    $ids_proceso = array_filter(array_map(fn($medio) => $medio->get('field_proceso')->target_id, $medios));
-    $procesos = $ids_proceso ? $almacen->loadMultiple(array_unique($ids_proceso)) : [];
-    $ids_programa = array_filter(array_map(fn($proceso) => $proceso->get('field_programa')->target_id, $procesos));
-    $programas = $ids_programa ? $almacen->loadMultiple(array_unique($ids_programa)) : [];
-
-    $documentos = [];
-    foreach ($medios as $medio) {
-      // La consulta no filtra los medios por permiso: se comprueba cada uno.
-      $acceso_medio = $medio->access('view', NULL, TRUE);
-      $cache->addCacheableDependency($acceso_medio);
-      if (!$acceso_medio->isAllowed()) {
-        continue;
-      }
-      $archivo = $medio->get('field_media_file')->entity;
-      if (!$archivo instanceof FileInterface) {
-        continue;
-      }
-      $proceso = $procesos[(int) $medio->get('field_proceso')->target_id] ?? NULL;
-      $programa = NULL;
-      if ($medio->get('field_proceso')->target_id) {
-        // Ligado a un proceso: debe poder verse, y su programa también.
-        if (!$proceso instanceof NodeInterface || !$proceso->isPublished() || !$proceso->access('view')) {
-          continue;
-        }
-        $id_programa = $proceso->get('field_programa')->target_id;
-        if ($id_programa) {
-          $candidato = $programas[(int) $id_programa] ?? NULL;
-          if (!$candidato instanceof NodeInterface || !$candidato->isPublished()) {
-            continue;
-          }
-          $acceso = $candidato->access('view', NULL, TRUE);
-          $cache->addCacheableDependency($acceso);
-          if (!$acceso->isAllowed()) {
-            continue;
-          }
-          $programa = $candidato;
-          $cache->addCacheableDependency($programa);
-        }
-      }
-      $cache->addCacheableDependency($medio);
-      $cache->addCacheableDependency($archivo);
-      $lineamiento = $medio->get('field_lineamiento')->entity;
-      // El título del lineamiento solo se usa si está publicado.
-      $lineamiento = $lineamiento instanceof NodeInterface && $lineamiento->isPublished() ? $lineamiento : NULL;
-      $descripcion = $lineamiento ? (string) $lineamiento->label() : ($proceso ? (string) $proceso->label() : '');
-      $nombre_archivo = (string) $archivo->getFilename();
-      // Sin extensión no se sabe el tipo: rótulo genérico (nunca «PDF»).
-      $tipo = strtoupper(pathinfo($nombre_archivo, PATHINFO_EXTENSION)) ?: 'DOC';
-      $fecha = $this->fechaMesAnio($medio->get('field_fecha_publicacion')->value);
-      $categoria = (string) $medio->get('field_categoria')->value;
-      $orden = array_search($categoria, self::CATEGORIAS_DOCUMENTO, TRUE);
-      $orden_programa = array_search($categoria, self::CATEGORIAS_PROGRAMA, TRUE);
-      $documentos[] = [
-        'item' => [
-          'title' => $this->sinCortesEnPeriodo(trim((string) $medio->label())),
-          'cat' => $this->etiquetaLista($medio->get('field_categoria')),
-          'desc' => $descripcion,
-          'meta' => implode(' · ', array_filter([$tipo, $this->tamano((int) $archivo->getSize()), $fecha])),
-          'kind' => $tipo,
-          'url' => $archivo->createFileUrl(),
-        ],
-        'categoria' => $categoria,
-        'fecha' => (string) $medio->get('field_fecha_publicacion')->value,
-        'programa' => $programa,
-        'orden' => $orden === FALSE ? count(self::CATEGORIAS_DOCUMENTO) : $orden,
-        'orden_programa' => $orden_programa === FALSE ? count(self::CATEGORIAS_PROGRAMA) : $orden_programa,
-      ];
-    }
-    // Por categoría; dentro de ella, la fecha más reciente y el nombre.
-    usort($documentos, function (array $a, array $b): int {
-      return [$a['orden'], $b['fecha']] <=> [$b['orden'], $a['fecha']]
-        ?: $this->compararTextos($a['item']['title'], $b['item']['title']);
-    });
-    return $documentos;
+    return $this->documentos->tamano($bytes);
   }
 
   /**
@@ -1368,50 +1152,7 @@ class PresentadorAutoevaluacion {
    *   muchos programas con documentos y conviene una lista de salto).
    */
   public function documentosPublicados(CacheableMetadata $cache): array {
-    $generales = [];
-    $por_programa = [];
-    $total = 0;
-    foreach ($this->documentosVisibles($cache) as $documento) {
-      $total++;
-      if ($documento['programa'] instanceof NodeInterface) {
-        $id = (int) $documento['programa']->id();
-        $por_programa[$id]['programa'] = $documento['programa'];
-        $por_programa[$id]['documentos'][] = $documento;
-        continue;
-      }
-      $generales[$documento['categoria']]['items'][] = $documento['item'];
-    }
-    $listas_generales = [];
-    foreach (self::CATEGORIAS_DOCUMENTO as $categoria) {
-      if (!empty($generales[$categoria]['items'])) {
-        $listas_generales[] = ['categoria' => $categoria, 'items' => $generales[$categoria]['items']];
-      }
-    }
-    // Categorías no previstas, al final.
-    foreach ($generales as $categoria => $datos) {
-      if (!in_array($categoria, self::CATEGORIAS_DOCUMENTO, TRUE)) {
-        $listas_generales[] = ['categoria' => $categoria, 'items' => $datos['items']];
-      }
-    }
-    $programas = [];
-    foreach ($por_programa as $id => $datos) {
-      $url = $datos['programa']->toUrl()->toString(TRUE);
-      $items = array_column($this->ordenarDeProgramas($datos['documentos']), 'item');
-      $cache->addCacheableDependency($url);
-      $programas[] = [
-        'id' => $id,
-        'nombre' => (string) $datos['programa']->label(),
-        'url' => $url->getGeneratedUrl(),
-        'items' => $items,
-      ];
-    }
-    usort($programas, fn($a, $b) => $this->compararTextos($a['nombre'], $b['nombre']));
-    return [
-      'generales' => $listas_generales,
-      'programas' => $programas,
-      'total' => $total,
-      'salto' => count($programas) >= self::MIN_PROGRAMAS_SALTO,
-    ];
+    return $this->documentos->publicados($cache);
   }
 
   /**
@@ -1431,78 +1172,9 @@ class PresentadorAutoevaluacion {
    *   que sea «el informe» o «el plan» (no hay categoría propia para el plan).
    */
   public function documentosDelPrograma(NodeInterface $programa, CacheableMetadata $cache): array {
-    $items = [];
-    $informes = [];
-    $planes = [];
-    // Solo los documentos de los procesos de este programa.
-    $ids_proceso = array_keys($this->procesosDelPrograma($programa));
-    $propios = array_filter(
-      $this->documentosVisibles($cache, $ids_proceso),
-      fn(array $d) => $d['programa'] instanceof NodeInterface && (int) $d['programa']->id() === (int) $programa->id()
-    );
-    foreach ($this->ordenarDeProgramas($propios) as $documento) {
-      $items[] = $documento['item'];
-      if ($documento['categoria'] === 'informe') {
-        $informes[] = $documento['item'];
-      }
-      elseif ($documento['categoria'] === 'documento_base') {
-        $planes[] = $documento['item'];
-      }
-    }
-    if (!$items) {
-      return [];
-    }
-    return [
-      'items' => $items,
-      'informe' => count($informes) === 1 ? $informes[0] : NULL,
-      'plan' => count($planes) === 1 ? $planes[0] : NULL,
-    ];
-  }
-
-  /**
-   * Ordena los documentos de un programa: informe, documento base y demás.
-   *
-   * Dentro de cada categoría, la fecha más reciente primero y luego el nombre.
-   *
-   * @param array<int, array<string, mixed>> $documentos
-   *   Documentos de ::documentosVisibles().
-   *
-   * @return array<int, array<string, mixed>>
-   *   Los mismos documentos, ordenados.
-   */
-  protected function ordenarDeProgramas(array $documentos): array {
-    $documentos = array_values($documentos);
-    usort($documentos, function (array $a, array $b): int {
-      return [$a['orden_programa'], $b['fecha']] <=> [$b['orden_programa'], $a['fecha']]
-        ?: $this->compararTextos($a['item']['title'], $b['item']['title']);
-    });
-    return $documentos;
-  }
-
-  /**
-   * Evita que un salto de línea parta un periodo como «2024-2 – 2030».
-   *
-   * Solo cambia la presentación (espacios sin salto y unión de palabras);
-   * el título guardado no se modifica. Si el periodo no cabe en una línea,
-   * el único corte posible queda antes del guion largo («2024-2» y
-   * «– 2030»), nunca en medio de un año.
-   *
-   * @param string $titulo
-   *   El título tal como está guardado.
-   *
-   * @return string
-   *   El título con el periodo indivisible.
-   */
-  public function sinCortesEnPeriodo(string $titulo): string {
-    return preg_replace_callback(
-      '/\d{4}-\d(?:\s+[–-]\s+\d{4}(?:-\d)?)?/u',
-      static fn(array $m): string => preg_replace(
-        ['/\s+([–-])\s+/u', '/(?<=\d)-(?=\d)/'],
-        [" $1\u{2060}\u{00A0}", "-\u{2060}"],
-        $m[0],
-      ),
-      $titulo,
-    ) ?? $titulo;
+    // Los procesos del programa, el más reciente primero: el servicio de
+    // documentos no depende del presentador.
+    return $this->documentos->delPrograma($programa, array_keys($this->procesosDelPrograma($programa)), $cache);
   }
 
 }

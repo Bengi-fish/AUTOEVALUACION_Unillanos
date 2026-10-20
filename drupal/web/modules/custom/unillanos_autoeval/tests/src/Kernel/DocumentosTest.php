@@ -7,6 +7,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
 use Drupal\media\Entity\MediaType;
+use Drupal\unillanos_autoeval\Service\DocumentosPublicados;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -350,6 +351,47 @@ class DocumentosTest extends UnillanosKernelTestBase {
     $this->setUpCurrentUser(['uid' => 5], ['access content']);
     $presentador = $this->container->get('unillanos_autoeval.presentador');
     $this->assertSame(0, $presentador->documentosPublicados(new CacheableMetadata())['total']);
+  }
+
+  /**
+   * El presentador delega en DocumentosPublicados sin cambiar el resultado.
+   */
+  public function testLaFachadaDelegaEnElServicio(): void {
+    $presentador = $this->container->get('unillanos_autoeval.presentador');
+    $servicio = $this->container->get('unillanos_autoeval.documentos_publicados');
+    $d = $this->programa('Electrónica');
+    // Un segundo proceso, más reciente: el orden de los ids es «más reciente
+    // primero» y es el que la fachada entrega al servicio.
+    $segundo = $this->crearNodo('proceso', ['title' => 'Proceso nuevo', 'field_programa' => $d['programa']->id()]);
+    $this->documento('Plan FO-GCL-20', 'plan.xlsx', 201497, 'documento_base', ['field_proceso' => $d['proceso']->id()]);
+    $this->documento('Informe 2022', 'informe.pdf', 5434130, 'informe', ['field_proceso' => $segundo->id()]);
+    $this->documento('Acuerdo CESU 01 de 2025', 'acuerdo-2025.docx', 1016012, 'normatividad');
+
+    $ids = array_keys($presentador->procesosDelPrograma($d['programa']));
+    $this->assertSame([(int) $segundo->id(), (int) $d['proceso']->id()], array_map('intval', $ids));
+
+    // La página de documentos.
+    $cache_a = new CacheableMetadata();
+    $cache_b = new CacheableMetadata();
+    $this->assertEquals($servicio->publicados($cache_b), $presentador->documentosPublicados($cache_a));
+    $this->assertEquals($cache_b->getCacheTags(), $cache_a->getCacheTags());
+
+    // Los documentos de un programa.
+    $cache_a = new CacheableMetadata();
+    $cache_b = new CacheableMetadata();
+    $propios = $presentador->documentosDelPrograma($d['programa'], $cache_a);
+    $this->assertEquals($servicio->delPrograma($d['programa'], $ids, $cache_b), $propios);
+    $this->assertEquals($cache_b->getCacheTags(), $cache_a->getCacheTags());
+    $this->assertCount(2, $propios['items']);
+    $this->assertSame('Informe 2022', $propios['informe']['title']);
+
+    // El tamaño y las constantes (alias de las del servicio).
+    foreach ([0, 512, 202_000, 5_434_130] as $bytes) {
+      $this->assertSame($servicio->tamano($bytes), $presentador->tamano($bytes));
+    }
+    $this->assertSame(DocumentosPublicados::CATEGORIAS_DOCUMENTO, $presentador::CATEGORIAS_DOCUMENTO);
+    $this->assertSame(DocumentosPublicados::CATEGORIAS_PROGRAMA, $presentador::CATEGORIAS_PROGRAMA);
+    $this->assertSame(DocumentosPublicados::MIN_PROGRAMAS_SALTO, $presentador::MIN_PROGRAMAS_SALTO);
   }
 
 }
