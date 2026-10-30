@@ -8,8 +8,16 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\unillanos_autoeval\Service\DatosPortada;
+use Drupal\unillanos_autoeval\Service\DocumentosPublicados;
+use Drupal\unillanos_autoeval\Service\FactoresPrograma;
+use Drupal\unillanos_autoeval\Service\PaginaPrograma;
+use Drupal\unillanos_autoeval\Service\PlanMejoramientoPrograma;
+use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
+use Drupal\unillanos_autoeval\Traits\FormatoTextoTrait;
 
 /**
  * Base de las pruebas Kernel: crea el subconjunto del modelo que se usa.
@@ -210,6 +218,69 @@ abstract class UnillanosKernelTestBase extends KernelTestBase {
     $nodo = Node::create($valores + ['type' => $tipo, 'title' => $tipo]);
     $nodo->save();
     return $nodo;
+  }
+
+  /**
+   * Servicio de los factores de un programa.
+   */
+  protected function factores(): FactoresPrograma {
+    return $this->container->get('unillanos_autoeval.factores_programa');
+  }
+
+  /**
+   * Servicio del plan de mejoramiento de un programa.
+   */
+  protected function plan(): PlanMejoramientoPrograma {
+    return $this->container->get('unillanos_autoeval.plan_mejoramiento_programa');
+  }
+
+  /**
+   * Servicio de los documentos publicados.
+   */
+  protected function documentos(): DocumentosPublicados {
+    return $this->container->get('unillanos_autoeval.documentos_publicados');
+  }
+
+  /**
+   * Servicio que busca programas y procesos.
+   */
+  protected function procesos(): ProgramasYProcesos {
+    return $this->container->get('unillanos_autoeval.programas_y_procesos');
+  }
+
+  /**
+   * Servicio de los datos de la portada.
+   */
+  protected function portada(): DatosPortada {
+    return $this->container->get('unillanos_autoeval.datos_portada');
+  }
+
+  /**
+   * Servicio de la página de un programa (cabecera, bajada y relacionados).
+   */
+  protected function paginaPrograma(): PaginaPrograma {
+    return $this->container->get('unillanos_autoeval.pagina_programa');
+  }
+
+  /**
+   * Los procesos de un programa, el más reciente primero (sus ids).
+   *
+   * @return int[]
+   *   Ids de proceso.
+   */
+  protected function idsDeProceso(NodeInterface $programa): array {
+    return array_keys($this->procesos()->procesosDelPrograma($programa));
+  }
+
+  /**
+   * Un objeto con las funciones de formato puro (FormatoTextoTrait).
+   */
+  protected function formato(): object {
+    return new class() {
+
+      use FormatoTextoTrait;
+
+    };
   }
 
 }

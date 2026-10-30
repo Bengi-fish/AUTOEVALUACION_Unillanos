@@ -1,15 +1,27 @@
-# Menú principal de la demostración: solo páginas que existen. «Inicio» lo
-# aporta el perfil standard (standard.front_page).
-# El programa se enlaza por su ruta (Pathauto: /programas/[node:field_clave]).
-# PENDIENTE (Fase 7): sustituir por «Programas» (/programas) cuando exista el
-# listado, y añadir Institucional y Participa (Fase 8).
-unillanos_autoeval.menu.programa_electronica:
-  title: 'Programa de Electrónica'
-  url: 'internal:/programas/ingenieria-electronica'
+# Menús de la demostración: solo páginas que existen. «Inicio» lo aporta el
+# perfil standard (standard.front_page). Los enlaces apuntan a la ruta y no a
+# una URL escrita, así que solo existen si la ruta existe.
+# «Institucional» y «Participa» se añaden cuando existan sus rutas (Participa,
+# Fase 8): no se deja ningún enlace a una página que no existe.
+unillanos_autoeval.menu.programas:
+  title: 'Programas'
+  route_name: unillanos_autoeval.programas
   menu_name: main
   weight: 1
 unillanos_autoeval.menu.documentos:
   title: 'Documentos'
-  url: 'internal:/documentos'
+  route_name: unillanos_autoeval.documentos
   menu_name: main
+  weight: 2
+
+# Menú del pie: la columna «Explora» (se omite si no hay enlaces).
+unillanos_autoeval.pie.programas:
+  title: 'Programas'
+  route_name: unillanos_autoeval.programas
+  menu_name: footer
+  weight: 1
+unillanos_autoeval.pie.documentos:
+  title: 'Documentos'
+  route_name: unillanos_autoeval.documentos
+  menu_name: footer
   weight: 2

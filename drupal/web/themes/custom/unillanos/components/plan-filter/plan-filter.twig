@@ -44,14 +44,14 @@
     <button type="button" class="ua-btn ua-btn--texto" data-f-clear hidden>{{ 'Quitar filtros'|t }}</button>
     {% if not con_plazo %}
       {# Una sola cifra compacta, junto a los filtros (la actualiza el JS). #}
-      <p class="ua-planall-count"><span class="ua-planall-count__value" data-kpi="total">{{ total }}</span><span class="ua-planall-count__label">{{ 'Acciones de mejora'|t }}</span></p>
+      <p class="ua-planall-count"><span class="ua-planall-count__value" data-kpi="total">{{ total }}</span><span class="ua-planall-count__label" data-kpi-label="total">{% trans %}Acción de mejora{% plural total %}Acciones de mejora{% endtrans %}</span></p>
     {% endif %}
   </div>
   <p class="ua-sr" role="status" aria-live="polite" aria-atomic="true" data-ua-plan-live></p>
   <div data-out>
     {% if con_plazo %}
     <ul class="ua-kpis" role="list">
-      <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="total">{{ total }}</span><span class="ua-kpi__label">{{ 'Acciones de mejora'|t }}</span></li>
+      <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="total">{{ total }}</span><span class="ua-kpi__label" data-kpi-label="total">{% trans %}Acción de mejora{% plural total %}Acciones de mejora{% endtrans %}</span></li>
       <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="corto">{{ cuenta.corto }}</span><span class="ua-kpi__label">{% include 'unillanos:plazo' with {variant: 'corto', label: 'Corto'|t} only %} {{ 'plazo'|t }}</span></li>
       <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="mediano">{{ cuenta.mediano }}</span><span class="ua-kpi__label">{% include 'unillanos:plazo' with {variant: 'mediano', label: 'Mediano'|t} only %} {{ 'plazo'|t }}</span></li>
       <li class="ua-kpi"><span class="ua-kpi__value" data-kpi="largo">{{ cuenta.largo }}</span><span class="ua-kpi__label">{% include 'unillanos:plazo' with {variant: 'largo', label: 'Largo'|t} only %} {{ 'plazo'|t }}</span></li>

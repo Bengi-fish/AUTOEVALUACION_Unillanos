@@ -4,7 +4,7 @@ namespace Drupal\unillanos_autoeval\Controller;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
+use Drupal\unillanos_autoeval\Service\DatosPortada;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -19,14 +19,14 @@ final class PortadaController extends ControllerBase {
    * Constructor.
    */
   public function __construct(
-    protected PresentadorAutoevaluacion $presentador,
+    protected DatosPortada $portada,
   ) {}
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
-    return new static($container->get('unillanos_autoeval.presentador'));
+    return new static($container->get('unillanos_autoeval.datos_portada'));
   }
 
   /**
@@ -39,7 +39,7 @@ final class PortadaController extends ControllerBase {
     $cache = new CacheableMetadata();
     $construccion = [
       '#theme' => 'unillanos_portada',
-      '#datos' => $this->presentador->datosPortada($cache),
+      '#datos' => $this->portada->armar($cache),
     ];
     $cache->applyTo($construccion);
     return $construccion;

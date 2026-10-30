@@ -38,6 +38,8 @@ en la práctica, porque el navegador solo descarga latin-ext si hace falta).
 
 Las páginas públicas del demo (portada, programa, plan y `/documentos`) usan
 plantillas de nodo o de página propia (`templates/content/`) más el servicio
-`unillanos_autoeval.presentador`; no usan Views. Las vistas llegan en la
-Fase 7 (listado y buscador de programas). Los datos de ejemplo viven solo en el
+los servicios de `unillanos_autoeval` que arman los datos de cada página
+(`PaginaPrograma`, `FactoresPrograma`, `PlanMejoramientoPrograma`,
+`DatosPortada`, `DocumentosPublicados`); no usan Views. El listado y buscador
+de `/programas` también sale de un servicio (`ListadoProgramas`), no de Views. Los datos de ejemplo viven solo en el
 módulo `unillanos_guia` (`/guia-estilos`).

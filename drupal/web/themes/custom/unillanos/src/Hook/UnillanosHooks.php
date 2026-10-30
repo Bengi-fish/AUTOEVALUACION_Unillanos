@@ -8,15 +8,18 @@ use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Menu\MenuActiveTrailInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\NodeInterface;
-use Drupal\unillanos_autoeval\Service\PresentadorAutoevaluacion;
+use Drupal\unillanos_autoeval\Service\DocumentosPublicados;
+use Drupal\unillanos_autoeval\Service\EnlacesDelPie;
+use Drupal\unillanos_autoeval\Service\FactoresPrograma;
+use Drupal\unillanos_autoeval\Service\PaginaPrograma;
+use Drupal\unillanos_autoeval\Service\PlanMejoramientoPrograma;
+use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -33,7 +36,13 @@ class UnillanosHooks {
     protected RouteMatchInterface $routeMatch,
     protected RequestStack $requestStack,
     protected RendererInterface $renderer,
-    protected PresentadorAutoevaluacion $presentador,
+    protected PaginaPrograma $paginaPrograma,
+    protected FactoresPrograma $factores,
+    protected PlanMejoramientoPrograma $plan,
+    protected DocumentosPublicados $documentos,
+    protected ProgramasYProcesos $procesos,
+    protected EnlacesDelPie $enlacesDelPie,
+    protected MenuActiveTrailInterface $rastroActivo,
   ) {}
 
   /**
@@ -141,12 +150,30 @@ class UnillanosHooks {
         'template' => 'unillanos-documentos',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
+      'unillanos_programas' => [
+        'variables' => ['datos' => []],
+        'template' => 'unillanos-programas',
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ],
       'unillanos_portada' => [
         'variables' => ['datos' => []],
         'template' => 'unillanos-portada',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
     ];
+  }
+
+  /**
+   * Implements hook_preprocess_menu().
+   *
+   * Entrega a la plantilla el enlace activo del menú (el de la página exacta);
+   * los demás enlaces del rastro (por ejemplo «Programas» en la página de un
+   * programa) se marcan como parte del recorrido, no como la página actual.
+   */
+  #[Hook('preprocess_menu')]
+  public function preprocessMenu(array &$variables): void {
+    $enlace = $this->rastroActivo->getActiveLink($variables['menu_name'] ?? NULL);
+    $variables['enlace_activo'] = $enlace ? $enlace->getPluginId() : '';
   }
 
   /**
@@ -164,16 +191,24 @@ class UnillanosHooks {
     $programa = $this->routeMatch->getRouteName() === 'entity.node.canonical'
       && $nodo instanceof NodeInterface
       && $nodo->bundle() === 'programa';
-    // La portada y la página de documentos también traen su propio h1.
+    // La portada, la de documentos y la de programas también traen su propio
+    // h1.
     $variables['pagina_propia'] = $programa || !empty($variables['is_front'])
-      || $this->routeMatch->getRouteName() === 'unillanos_autoeval.documentos';
+      || in_array($this->routeMatch->getRouteName(), ['unillanos_autoeval.documentos', 'unillanos_autoeval.programas'], TRUE);
+    // Enlaces del pie desde el menú `footer` (sin enlaces, no hay columna). El
+    // arreglo `pie_cache` no imprime nada: lleva a la página las etiquetas y
+    // los contextos de caché del menú, del acceso y de las URL.
+    $cache = new CacheableMetadata();
+    $variables['pie_enlaces'] = $this->enlacesDelPie->enlaces($cache);
+    $variables['pie_cache'] = [];
+    $cache->applyTo($variables['pie_cache']);
   }
 
   /**
    * Implements hook_preprocess_node().
    *
-   * Entrega a la plantilla del programa los datos ya armados por el
-   * presentador.
+   * Entrega a la plantilla del programa los datos ya armados por los
+   * servicios de la página del programa.
    */
   #[Hook('preprocess_node')]
   public function preprocessNode(array &$variables): void {
@@ -185,41 +220,23 @@ class UnillanosHooks {
       && $ruta_nodo instanceof NodeInterface
       && $ruta_nodo->id() === $nodo->id();
     if ($canonica && $nodo->bundle() === 'programa' && $variables['view_mode'] === 'full') {
-      $variables['programa'] = $this->presentador->datosPrograma($nodo);
-      // Los metadatos de caché de lo que lee el presentador (nodos, términos y
+      $variables['programa'] = $this->paginaPrograma->datosPrograma($nodo);
+      // Los metadatos de caché de lo que leen los servicios (nodos, términos y
       // permisos) los cubre node_view_alter() para toda la página del nodo.
       $cache = new CacheableMetadata();
-      $factores = $this->presentador->factoresDelPrograma($nodo, $cache);
-      $resultado = $this->presentador->planDelPrograma($nodo, $factores, $cache);
+      $factores = $this->factores->delPrograma($nodo, $cache);
+      $resultado = $this->plan->delPrograma($nodo, $factores, $cache);
       $variables['factores'] = $resultado['factores'];
       $variables['plan'] = $resultado['plan'];
-      $variables['documentos'] = $this->presentador->documentosDelPrograma($nodo, $cache);
-    }
-  }
-
-  /**
-   * Implements hook_node_view_alter().
-   *
-   * La cabecera nombra la facultad y la sede, y la sección de autoevaluación
-   * lee procesos, valoraciones, hallazgos y términos del modelo: si cambian,
-   * el programa debe volver a pintarse.
-   */
-  #[Hook('node_view_alter')]
-  public function nodeViewAlter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display): void {
-    if (!$entity instanceof FieldableEntityInterface || $entity->bundle() !== 'programa') {
-      return;
-    }
-    $build['#cache']['tags'] = Cache::mergeTags(
-      $build['#cache']['tags'] ?? [],
-      PresentadorAutoevaluacion::ETIQUETAS_AUTOEVALUACION,
-    );
-    // Las consultas del presentador respetan el acceso del visitante.
-    $build['#cache']['contexts'][] = 'user.permissions';
-    foreach (['field_facultad', 'field_sede'] as $campo) {
-      $termino = $entity->get($campo)->entity;
-      if ($termino) {
-        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'] ?? [], $termino->getCacheTags());
-      }
+      // Los procesos del programa, el más reciente primero.
+      $ids_proceso = array_keys($this->procesos->procesosDelPrograma($nodo));
+      $variables['documentos'] = $this->documentos->delPrograma($nodo, $ids_proceso, $cache);
+      // La bajada y, si el programa no tiene nada de autoevaluación, los demás
+      // programas de la facultad y los enlaces al listado y a los documentos.
+      $pagina = $this->paginaPrograma->armar($nodo, $variables['factores'], $variables['plan'], $variables['documentos'], $cache);
+      $variables['lead'] = $pagina['lead'];
+      $variables['otros'] = $pagina['otros'];
+      $variables['enlaces'] = $pagina['enlaces'];
     }
   }
 

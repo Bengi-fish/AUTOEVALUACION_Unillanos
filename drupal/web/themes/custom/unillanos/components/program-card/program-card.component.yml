@@ -1,0 +1,48 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Tarjeta de programa
+status: stable
+group: Contenido
+description: 'Tarjeta de un programa en el listado: facultad, nombre, etiquetas (nivel, sede y, solo si la tiene, «Con autoevaluación») y llamada a la acción. Es un único enlace cuyo nombre accesible es el del programa; la facultad y las etiquetas se leen como descripción. Lo vacío se omite. Solo muestra los valores que recibe.'
+props:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      title: Nombre del programa
+    id:
+      type: [string, integer]
+      title: Identificador
+      description: 'Único en la página. Con él el enlace se nombra por el programa (aria-labelledby) y se describe por la facultad y las etiquetas. Solo letras, números, guion y guion bajo; si no, se omite.'
+    url:
+      type: string
+      title: Destino
+      description: 'Sin url segura se imprime sin href, como el resto de enlaces del tema.'
+    faculty:
+      type: string
+      title: Facultad
+      description: 'Tal como está guardada («Facultad de …»); no se le añade prefijo.'
+    level:
+      type: string
+      title: Nivel
+    campus:
+      type: string
+      title: Sede
+    evaluated:
+      type: boolean
+      title: Con autoevaluación
+      description: 'Con true se imprime la etiqueta de acento «Con autoevaluación»; con false no se imprime nada.'
+    heading:
+      type: string
+      title: Nivel del título del nombre
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    cta:
+      type: string
+      title: Llamada a la acción
+      description: 'Por defecto «Ver programa».'

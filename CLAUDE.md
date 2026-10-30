@@ -46,9 +46,9 @@ Antes de tocar código lee `docs/drupal/modelo-de-contenido.md` (nombres de máq
 Reglas del dominio no obvias: el modelo se declara por proceso (`field_lineamiento`; CESU 2020 o CESU 2025) y no hay equivalencias entre ellos; el grado se calcula, no se digita; valoraciones solo para factor y característica.
 
 ## 4. Estado actual
-- **Fase 6 (tema) cerrada a falta del merge**, rama `fase-6-tema`; último commit de contenido `280a1cf` (demo con datos reales, paso 5b) y de documentación `513e7ea`. El merge a `main` lo hace el usuario.
-- **Fase 7** (`fase-7-vistas`): vistas y páginas (`/programas`, `/institucional`, etc.).
-- **Fase 8** (`fase-8-webform-roles`): formulario Participa, roles y permisos (respaldo previo `antes-fase-8`).
+- **Fase 6 (tema)** fusionada en `main` (PR #1).
+- **Fase 7 (vistas y páginas) cerrada a falta del merge**, rama `fase-7-vistas`: `/programas` con listado y buscador (servicio `ListadoProgramas`, sin Views), página de programa sin autoevaluación, menús por `links.menu.yml` y el antiguo presentador dividido en servicios (`ListadoProgramas`, `PaginaPrograma`, `FactoresPrograma`, `ProgramasYProcesos`, `PlanMejoramientoPrograma`, `DocumentosPublicados`, `DatosPortada`, `EnlacesDelPie`). `/institucional` no se creó. El merge a `main` lo hace el usuario. Ajustes pendientes: `docs/pendientes-acreditacion.md`, sección 22.
+- **Siguiente: Fase 8** (`fase-8-webform-roles`): formulario Participa, roles y permisos (respaldo previo `antes-fase-8`).
 - **Fase 9** (`fase-9-revision`): revisión antes de mostrar (accesibilidad, cifras contra el informe, desactivar `unillanos_guia`, control de acceso de `public://`).
 
 ## 5. Pendientes con Acreditación
@@ -78,7 +78,7 @@ Detalle en `docs/pendientes-acreditacion.md`.
 - Propiedades tipadas; PHPDoc en propiedades y métodos; `{@inheritdoc}` en los heredados; excepciones específicas con `@throws`.
 - `declare(strict_types=1);` en el PHP nuevo.
 - Nombres: clases PascalCase, métodos camelCase, variables locales y parámetros de constructor clásico snake_case, constantes MAYÚSCULAS, casos de enum PascalCase.
-- Ficheros de más de 1500 líneas se dividen (traits o servicios). `PresentadorAutoevaluacion` (1553 líneas) está cerca del umbral: se vigila en la Fase 7 y no se divide ahora.
+- Ficheros de más de 1500 líneas se dividen (traits o servicios). El presentador único se dividió en la Fase 7: el servicio más grande es `PlanMejoramientoPrograma` (421 líneas), lejos del umbral.
 
 ### Twig, CSS y JS (tema)
 - Twig: escape automático siempre; textos traducibles con `|t`; componentes SDC en `components/`.

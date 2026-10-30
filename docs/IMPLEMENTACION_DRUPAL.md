@@ -199,7 +199,7 @@ ddev export-db --file=$HOME/respaldos/antes-fase-N.sql.gz
 | 4 | `fase-4-reglas` | Módulo `unillanos_autoeval` | Grado se calcula; pruebas pasan | No |
 | 5 | `fase-5-importacion` | Migraciones y datos de Ingeniería Electrónica | `migrate:status` sin errores; 17 metas | Sí |
 | 6 | `fase-6-tema` | Tema `unillanos` desde la plantilla | Se ve igual que el prototipo | No |
-| 7 | `fase-7-vistas` | Listado de programas con Views y páginas restantes | 6 páginas con datos reales | No |
+| 7 | `fase-7-vistas` | Listado y buscador de programas (`/programas`, por servicio, sin Views), página de programa sin autoevaluación, menús y división del presentador | `/programas` y las páginas de la Fase 6 con datos reales; `/institucional` queda fuera | No |
 | 8 | `fase-8-webform-roles` | Formulario Participa, roles y permisos | Cada rol ve solo lo suyo | Sí |
 | 9 | `fase-9-revision` | Revisión final | Lista de la sección 12 completa | No |
 
@@ -573,8 +573,8 @@ usando `once()`, sin cambiar la lógica de las pestañas animadas, el medidor ni
 3) Crea `page.html.twig` con el encabezado, el menú plano y el pie del prototipo, más las regiones
 necesarias. 4) Crea plantillas de nodo (`node--programa--full`) y de página propia (portada y
 `/documentos`) que reproduzcan el HTML del prototipo con los atributos `data-ua-views`,
-`data-routes` y `data-view`; los datos los prepara el servicio `unillanos_autoeval.presentador`
-(sin Views). 5) Copia los logos de plantilla/assets. No uses datos de
+`data-routes` y `data-view`; los datos los prepara un servicio por página (en la Fase 6 era un único
+presentador, dividido y retirado en la Fase 7; ver sección 11) (sin Views). 5) Copia los logos de plantilla/assets. No uses datos de
 `datos-ejemplo.js`: todo debe salir de los campos de Drupal. Respeta `prefers-reduced-motion`.
 Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
@@ -585,10 +585,10 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 
 **Cómo se resolvió (demo con datos reales de Ingeniería Electrónica, solo local):**
 
-- **Sin Views.** Las páginas públicas (portada `/inicio`, programa, plan de mejoramiento, `/documentos`) son plantillas de nodo o de página propia más el servicio `PresentadorAutoevaluacion` (`unillanos_autoeval.presentador`). Los componentes SDC solo muestran valores ya preparados; no calculan nada. Views queda para la Fase 7 (listado y buscador de programas).
+- **Sin Views.** Las páginas públicas (portada `/inicio`, programa, plan de mejoramiento, `/documentos`) son plantillas de nodo o de página propia más servicios de `unillanos_autoeval` que preparan los datos (ver la sección 11). Los componentes SDC solo muestran valores ya preparados; no calculan nada. Views queda para la Fase 7 (listado y buscador de programas).
 - **El tema se genera con** `ddev exec -d /var/www/html/drupal php vendor/bin/dr generate-theme unillanos --path themes/custom` (el comando `core/scripts/drupal generate-theme` está obsoleto y falla con la estructura de este repositorio).
 - **Alias de URL:** los alias viven en la base de datos, no en la configuración. En una base nueva, o tras importar un respaldo o migrar antes de importar la configuración, ejecuta `ddev drush pathauto:aliases-generate create canonical_entities:node` (solo crea los que faltan). Sin él, el enlace «Programa de Electrónica» del menú no encuentra su alias.
-- **Documentos:** las migraciones de documentos (marcas `%raiz%` y `unillanos_csv_opcional`) copian los archivos a `public://documentos/`; `/documentos` y la sección «Documentos del programa» salen del presentador.
+- **Documentos:** las migraciones de documentos (marcas `%raiz%` y `unillanos_csv_opcional`) copian los archivos a `public://documentos/`; `/documentos` y la sección «Documentos del programa» salen del servicio `DocumentosPublicados`.
 - **Textos editoriales de la portada** («¿Qué es la autoevaluación?», fases del proceso) y de `/documentos`: se conservan los del prototipo y están **pendientes de confirmar con Acreditación**.
 - **«Última actualización» en la portada:** se omite a propósito. Sería la fecha de carga de los datos, no la del informe; se añadirá cuando haya fechas de publicación propias.
 - **Componentes sin usar y sin commitear:** los de los grupos 5 y 6 (`pane`, `program-card`, `program-search`, `progsearch`, `reco-form`, `scope`, `tool`, `view-tabs`) siguen sin usarse; su destino se decide en la Fase 7.
@@ -608,7 +608,7 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 
 ```
 Ejecuta la Fase 7 en la rama fase-7-vistas. Parte de lo que ya existe tras la Fase 6: el programa,
-el plan, la portada y `/documentos` son plantillas más el servicio `unillanos_autoeval.presentador`
+el plan, la portada y `/documentos` son plantillas más servicios de `unillanos_autoeval`
 (sin Views) y no se rehacen. Con la tabla "Páginas del prototipo → Drupal" de
 docs/drupal/modelo-de-contenido.md, crea con Views lo que falta: el listado y buscador de programas
 `/programas` (página con filtros expuestos) y las páginas que aún no existen (`/institucional`).
@@ -619,11 +619,32 @@ Exporta la configuración.
 Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 ```
 
-**[TÚ] verificas:** recorres las 6 páginas del prototipo en Drupal y pruebas el enlace "ver acciones de este factor". Vigila el tamaño de `PresentadorAutoevaluacion` (más de 1500 líneas): se divide si crece (regla de `CLAUDE.md`).
+**[TÚ] verificas:** recorres las 6 páginas del prototipo en Drupal y pruebas el enlace "ver acciones de este factor". Si un servicio pasa de 1500 líneas, se divide (regla de `CLAUDE.md`).
 
 **Hecho cuando:** las 6 páginas existen con datos reales (las de la demo siguen funcionando) y ese enlace abre el plan ya filtrado.
 
-**Pendiente heredado de la Fase 5:** configurar `auto_entitylabel` (títulos de `valoracion` y `seguimiento`, hoy con ids) junto con Pathauto.
+**Pendiente heredado de la Fase 5:** configurar `auto_entitylabel` (títulos de `valoracion` y `seguimiento`, hoy con ids) junto con Pathauto. No se hizo en la Fase 7.
+
+**Cómo se resolvió (rama `fase-7-vistas`, pasos 1 a 7d):**
+
+- **Rutas nuevas:** `/programas` (`ProgramasController`, ruta `unillanos_autoeval.programas`): listado y buscador con un formulario GET (`q`, facultad, nivel, sede; el filtro de sede solo si hay dos o más), resuelto en el servidor y sin Views. Los componentes `program-card` y `program-search` se usan; `pane`, `progsearch`, `reco-form`, `scope`, `tool` y `view-tabs` siguen sin usarse ni commitearse. `/institucional` no se creó.
+- **Concordancia:** los rótulos de cifras, plan y filtro concuerdan en singular y plural (`formatPlural()` en el servicio; el componente solo imprime lo recibido).
+- **Servicios** (`drupal/web/modules/custom/unillanos_autoeval/src/Service/`; ninguno calcula grados, destinos ni avances):
+  - `ListadoProgramas`: tarjetas del listado, filtros y «otros programas de la facultad»; es la única fuente de la regla «con autoevaluación», compartida con la portada.
+  - `ProgramasYProcesos`: consultas de programas y procesos publicados, base de los demás servicios.
+  - `FactoresPrograma`: tarjetas y pestañas de factores de un programa, para cualquier modelo.
+  - `PlanMejoramientoPrograma`: el plan FO-GCL-20 de un programa y su seguimiento.
+  - `DocumentosPublicados`: `/documentos` y los documentos de cada programa.
+  - `DatosPortada`: la portada (cifras, programas, procesos).
+  - `PaginaPrograma`: cabecera, ficha (`datosPrograma()`), bajada y «otros programas» de la página de un programa; si el programa no tiene nada de autoevaluación, cambia la bajada y ofrece los demás programas de su facultad.
+  - `EnlacesDelPie`: lee el menú `footer` que el visitante puede ver.
+  - Traits `EtiquetasYOrdenTrait` y `FormatoTextoTrait` (etiquetas, orden, números y fechas).
+- **División del presentador:** `PresentadorAutoevaluacion` (1508 líneas) se repartió en esos servicios en los pasos 7a a 7d-1, con un presentador fachada de transición; en 7d-2 (`0e1cfcf`) los llamadores (tema, controladores, hooks y pruebas) pasaron a usar los servicios y **la clase y el servicio `unillanos_autoeval.presentador` ya no existen**. Las páginas se comprobaron idénticas byte a byte (SHA-256) antes y después de cada paso.
+- **Menús:** «Programas» y «Documentos» (menú principal) y la columna «Explora» del pie (menú `footer`) son definiciones de `unillanos_autoeval.links.menu.yml` por nombre de ruta, así que solo existen si la ruta existe. «Institucional» y «Participa» se añadirán cuando existan sus rutas.
+- **Elemento activo en el programa:** `UnillanosAutoevalServiceProvider` sustituye la clase del servicio `menu.active_trail` por `RastroActivoProgramas` (`src/Menu/RastroActivoProgramas.php`), subclase de `Drupal\Core\Menu\MenuActiveTrail` que añade «Programas» al rastro del menú principal en la página de un programa, y lo deja no perezoso (`setLazy(FALSE)`). **Mantenimiento:** al actualizar Drupal hay que revisar que siga siendo compatible con la definición de `menu.active_trail` en `core.services.yml` (constructor y argumentos), con `getActiveTrailIds()` / `doGetActiveTrailIds()` y con las propiedades `routeMatch` y `menuLinkManager`; `MenusTest` cubre el comportamiento.
+- **Etiquetas de caché:** el `hook_node_view_alter` que declara las etiquetas de la página del programa vive en el módulo (`UnillanosAutoevalHooks`), porque el núcleo no lo invoca para los hooks de un tema.
+- **Al desplegar o actualizar: `ddev drush cr`.** Hace falta reconstruir el contenedor (la sustitución de `menu.active_trail` y los servicios nuevos) y la tabla de enlaces de menú (los `links.menu.yml`). Sin ello, el menú conserva los enlaces anteriores.
+- **Textos editoriales y ajustes pendientes:** `docs/pendientes-acreditacion.md`, sección 22.
 
 **Push y merge:** sección 2.6 con `fase-7-vistas`.
 
@@ -671,9 +692,9 @@ Marca cada punto. Los comandos los puede correr Claude; la revisión visual es t
 
 Marca cada fase cuando ya esté fusionada en `main`:
 
-- [x] Fase 1 · [x] Fase 2 · [x] Fase 3 · [x] Fase 4 · [x] Fase 5 · [ ] Fase 6 · [ ] Fase 7 · [ ] Fase 8 · [ ] Fase 9
+- [x] Fase 1 · [x] Fase 2 · [x] Fase 3 · [x] Fase 4 · [x] Fase 5 · [x] Fase 6 · [ ] Fase 7 · [ ] Fase 8 · [ ] Fase 9
 
-**Fase 6 cerrada a falta del merge** (rama `fase-6-tema`, sección 10); **siguiente: Fase 7** (rama `fase-7-vistas`, sección 11).
+**Fase 6 fusionada en `main`** (sección 10). **Fase 7 cerrada a falta del merge** (rama `fase-7-vistas`, sección 11); **siguiente: Fase 8** (rama `fase-8-webform-roles`, sección 11).
 
 **Pendientes abiertos** (detalle en 9.5; ninguno bloquea la Fase 6):
 
@@ -681,7 +702,7 @@ Marca cada fase cuando ya esté fusionada en `main`:
 - Verificar en el Excel el proyecto institucional de las metas M15 y M16 (candidatos PI10 y PI12).
 - Completar modalidad, sede, SNIES, director, resoluciones y municipio de la sede de los 40 programas.
 - Seguimientos en estado `reportado` y columnas de los CSV que no se importan: decidir qué hacer.
-- Fase 7: títulos de valoraciones y seguimientos con `auto_entitylabel` y Pathauto.
+- Títulos de valoraciones y seguimientos con `auto_entitylabel` y Pathauto (no se hizo en la Fase 7).
 
 ---
 
@@ -714,6 +735,7 @@ Después de cada `git pull`, en este orden: `ddev composer install` → `ddev dr
 | La importación deja referencias vacías | El orden de las migraciones está mal o el `id` del CSV no coincide. Revisa `migrate:messages <id>`. |
 | El sitio se ve sin estilos | `drush cr` y revisa que la librería del tema esté declarada en `unillanos.libraries.yml`. |
 | Docker lento en Windows | Asegúrate de que el repositorio esté dentro de WSL2 (`/home/...`), no en `/mnt/c/...`. |
+| El menú o la página de un programa no refleja un cambio de servicios o de enlaces tras actualizar | `ddev drush cr`: reconstruye el contenedor y la tabla de enlaces de menú (sección 11, Fase 7). |
 | `.git/index.lock` impide commits | Si no hay otro git corriendo: `rm .git/index.lock`. |
 
 ## 15. Cuando entre tu compañero (adelanto)

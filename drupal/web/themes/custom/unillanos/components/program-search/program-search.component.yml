@@ -1,0 +1,114 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Buscador de programas
+status: stable
+group: Contenido
+description: 'Buscador y listado de programas: campo de búsqueda, filtros por facultad, nivel y sede (cada uno solo si recibe opciones), contador con concordancia y lista de tarjetas unillanos:program-card. Es un formulario GET real (q, facultad, nivel, sede): sin JavaScript se envía y el servidor marca como ocultos (hidden) los programas que no coinciden; con JavaScript filtra al instante, sin recargar, sin quitar el foco al escribir y sin innerHTML. La búsqueda ignora tildes y mayúsculas usando el campo search de cada programa. Solo muestra y filtra lo que recibe: no decide qué programas tienen autoevaluación.'
+props:
+  type: object
+  required:
+    - programs
+  properties:
+    programs:
+      type: array
+      title: Programas
+      description: 'En el orden en que se muestran. Cada uno lleva los datos de unillanos:program-card (name, id, url, faculty, level, campus, evaluated), los de filtro (search, faculty_id, level_key, campus_id) y hidden (true si el servidor lo oculta).'
+      items:
+        type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+          id:
+            type: [string, integer]
+          url:
+            type: string
+          faculty:
+            type: string
+          level:
+            type: string
+          campus:
+            type: string
+          evaluated:
+            type: boolean
+          search:
+            type: string
+            description: 'Nombre, facultad, nivel y sede sin tildes y en minúsculas.'
+          faculty_id:
+            type: [string, integer]
+          level_key:
+            type: string
+          campus_id:
+            type: [string, integer]
+          hidden:
+            type: boolean
+    total:
+      type: integer
+      title: Total de programas
+      description: 'Todos los programas, sin filtrar: es la «M» de «Se muestran N programas de M». Si falta se usa el número de programas recibidos.'
+    filters:
+      type: object
+      title: Opciones de filtro
+      description: 'Cada filtro (faculty, level, campus) solo se imprime si trae opciones.'
+      properties:
+        faculty:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: [string, integer]
+              label:
+                type: string
+        level:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: [string, integer]
+              label:
+                type: string
+        campus:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: [string, integer]
+              label:
+                type: string
+    values:
+      type: object
+      title: Valores actuales de los controles
+      properties:
+        q:
+          type: string
+        faculty:
+          type: [string, integer]
+        level:
+          type: string
+        campus:
+          type: [string, integer]
+    action:
+      type: string
+      title: Destino del formulario
+      description: 'Por defecto la misma página (action vacío).'
+    heading:
+      type: string
+      title: Nivel del título de cada tarjeta
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    id:
+      type: string
+      title: Prefijo de los ids de los controles
+      description: 'Único en la página. Por defecto «prog».'
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once
+    - unillanos/motion

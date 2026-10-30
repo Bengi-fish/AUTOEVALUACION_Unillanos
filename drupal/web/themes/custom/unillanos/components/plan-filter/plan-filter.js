@@ -30,6 +30,7 @@
     raiz.querySelectorAll('[data-kpi]').forEach((cifra) => {
       cifras[cifra.getAttribute('data-kpi')] = cifra;
     });
+    const rotuloTotal = raiz.querySelector('[data-kpi-label="total"]');
     // El filtro de plazo y sus cifras son opcionales (hay datos sin plazo).
     if (!selFactor || !tabla || !limpiar || !aviso || !vacio || !salida || !cifras.total) {
       return;
@@ -62,6 +63,9 @@
       vacio.hidden = visibles > 0;
       tabla.hidden = visibles === 0;
       cifras.total.textContent = String(visibles);
+      if (rotuloTotal) {
+        rotuloTotal.textContent = Drupal.formatPlural(visibles, 'Acción de mejora', 'Acciones de mejora');
+      }
       ['corto', 'mediano', 'largo'].forEach((plazo) => {
         if (cifras[plazo]) {
           cifras[plazo].textContent = String(conteo[plazo]);

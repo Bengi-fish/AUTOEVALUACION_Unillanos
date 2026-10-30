@@ -4,7 +4,7 @@
  * Portada (página de inicio).
  *
  * Variables:
- * - datos: lo arma PresentadorAutoevaluacion::datosPortada(): eyebrow,
+ * - datos: lo arma DatosPortada::armar(): eyebrow,
  *   cifras, unico, programas, ver_todos, factores, hay_grado y documentos.
  *   Solo trae lo que existe: lo vacío se omite (sin etiquetas de pendiente).
  *
@@ -39,10 +39,13 @@
 {% if datos.programas %}
   {% embed 'unillanos:section' with {id: 'programas', datos: datos} only %}
     {% block content %}
+      {# Los textos concuerdan con la cantidad de programas mostrados. #}
+      {% set eyebrow %}{% trans %}Programa{% plural datos.total_programas %}Programas{% endtrans %}{% endset %}
+      {% set lead %}{% trans %}Entra al programa para ver su autoevaluación por factores y su plan de mejoramiento.{% plural datos.total_programas %}Entra por el programa que te interesa para ver su autoevaluación por factores y su plan de mejoramiento.{% endtrans %}{% endset %}
       {% include 'unillanos:section-head' with {
-        eyebrow: 'Programas'|t,
+        eyebrow: eyebrow,
         title: 'Lo que se ha evaluado, en un solo lugar'|t,
-        lead: datos.unico ? 'Entra al programa para ver su autoevaluación por factores y su plan de mejoramiento.'|t : 'Entra por el programa que te interesa para ver su autoevaluación por factores y su plan de mejoramiento.'|t,
+        lead: lead,
       } only %}
       {% if datos.unico %}
         {% set programa = datos.programas|first %}
@@ -60,11 +63,12 @@
           {% set tarjetas = tarjetas|merge([{icon: 'cap', title: programa.title, text: programa.lines|join("\n"), url: programa.url, cta: programa.cta}]) %}
         {% endfor %}
         {% include 'unillanos:card' with {heading: 'h3', items: tarjetas} only %}
-        {% if datos.ver_todos %}
-          <p class="ua-portada__mas">
-            {% include 'unillanos:button' with {label: 'Ver todos los programas'|t, variant: 'secundario', url: datos.ver_todos, icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
-          </p>
-        {% endif %}
+      {% endif %}
+      {# El enlace al listado va con uno o con varios programas (si la ruta existe). #}
+      {% if datos.ver_todos %}
+        <p class="ua-portada__mas">
+          {% include 'unillanos:button' with {label: 'Ver todos los programas'|t, variant: 'secundario', url: datos.ver_todos, icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
+        </p>
       {% endif %}
     {% endblock %}
   {% endembed %}

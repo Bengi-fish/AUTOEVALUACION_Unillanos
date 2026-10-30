@@ -55,13 +55,10 @@
   {% endif %}
 </main>
 
+{# No imprime nada: lleva a la página la caché del menú del pie. #}
+{{ pie_cache }}
 {% include 'unillanos:footer' with {
   description: 'Un espacio para consultar, participar y hacer seguimiento a la mejora continua de la Universidad.'|t,
-  columns: [
-    {title: 'Explora'|t, links: [
-      {title: 'Programa de Electrónica'|t, url: '/programas/ingenieria-electronica'},
-      {title: 'Documentos'|t, url: '/documentos'},
-    ]},
-  ],
+  columns: pie_enlaces ? [{title: 'Explora'|t, links: pie_enlaces}] : [],
   legal: 'Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional. © 2026 Universidad de los Llanos.'|t,
 } only %}

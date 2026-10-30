@@ -46,3 +46,11 @@
     justify-content: flex-start;
   }
 }
+
+/* Enlaces al listado y a los documentos, bajo los demás programas de la facultad. */
+.ua .ua-programa__enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-6);
+}
