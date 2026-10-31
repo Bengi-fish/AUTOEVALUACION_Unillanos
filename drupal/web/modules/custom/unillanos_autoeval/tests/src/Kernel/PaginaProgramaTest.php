@@ -7,6 +7,8 @@ namespace Drupal\Tests\unillanos_autoeval\Kernel;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
 use Drupal\media\Entity\MediaType;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
@@ -365,6 +367,164 @@ class PaginaProgramaTest extends UnillanosKernelTestBase {
     ] as $etiqueta) {
       $this->assertContains($etiqueta, $etiquetas);
     }
+  }
+
+  /**
+   * Un programa con cuatro datos de ficha.
+   */
+  protected function programaConFicha(): Node {
+    $sede = Term::create(['vid' => 'sede', 'name' => 'Sede Barcelona']);
+    $sede->save();
+    return $this->programa('Ingeniería Electrónica', 0, [
+      'field_modalidad' => 'presencial',
+      'field_sede' => $sede->id(),
+      'field_director' => 'Persona Directora',
+    ]);
+  }
+
+  /**
+   * La página del programa lleva el hero de color sólido (el caso normal).
+   */
+  public function testHeroSinFotoEnLaPagina(): void {
+    $html = $this->pagina($this->programaConFicha());
+    $this->assertSame(1, substr_count($html, 'class="ua-pagehead ua-pagehead--hero"'));
+    $this->assertStringNotContainsString('ua-pagehead--foto', $html);
+    $this->assertStringNotContainsString('<picture', $html);
+    // El título del hero es el h1 de la página (el h1 «page-title» que se ve
+    // en estas pruebas lo agrega la vista por defecto del nodo, no el tema).
+    $this->assertSame(1, substr_count($html, '<h1 class="ua-pagehead__title">'));
+  }
+
+  /**
+   * La ficha es un aside con las filas que existen, a la derecha del contenido.
+   */
+  public function testLaFichaEsUnAside(): void {
+    $html = $this->pagina($this->programaConFicha());
+    $this->assertSame(1, substr_count($html, '<aside'));
+    $this->assertMatchesRegularExpression('~<aside [^>]*class="ua-ficha-aside"[^>]*id="ficha"|<aside [^>]*id="ficha"[^>]*class="ua-ficha-aside"~', $html);
+    $this->assertSame(1, substr_count($html, 'id="ficha"'));
+    $this->assertStringContainsString('Ficha del programa', $html);
+    foreach (['Nivel', 'Modalidad', 'Sede', 'Dirección del programa'] as $termino) {
+      $this->assertStringContainsString('<dt class="ua-kv__term">' . $termino . '</dt>', $html);
+    }
+    // Sin datos de registro no hay esas filas (nada de «Pendiente»).
+    $this->assertStringNotContainsString('Código SNIES', $html);
+    $this->assertStringNotContainsString('endiente', $html);
+    // Va después del contenido de la izquierda (en móvil queda debajo).
+    $this->assertLessThan(strpos($html, '<aside'), strpos($html, 'ua-programa__principal'));
+    $this->assertStringNotContainsString('class="ua-ficha"', $html);
+  }
+
+  /**
+   * Con un solo dato la ficha no se imprime (repetiría las etiquetas).
+   */
+  public function testSinFichaNoHayAside(): void {
+    $html = $this->pagina($this->programa('Enfermería'));
+    $this->assertStringNotContainsString('<aside', $html);
+    $this->assertStringNotContainsString('Ficha del programa', $html);
+    $this->assertStringNotContainsString('id="ficha"', $html);
+  }
+
+  /**
+   * Sin factores, la ficha va a la derecha del primer bloque.
+   */
+  public function testFichaJuntoOtrosProgramas(): void {
+    $actual = $this->programaConFicha();
+    $this->otros(2);
+    $html = $this->pagina($actual);
+    $this->assertStringContainsString('ua-programa__zona ua-programa__zona--ficha', $html);
+    $this->assertSame(1, substr_count($html, '<aside'));
+    $this->assertSame(2, substr_count($html, 'class="ua-prog"'));
+    $this->assertLessThan(strpos($html, '<aside'), strpos($html, 'class="ua-prog"'));
+  }
+
+  /**
+   * El listado y los documentos conservan su cabecera gris (sin hero).
+   */
+  public function testLasOtrasPaginasNoUsanElHero(): void {
+    $this->programaConFicha();
+    foreach (['/programas', '/documentos'] as $ruta) {
+      $html = (string) $this->container->get('http_kernel')->handle(Request::create($ruta))->getContent();
+      $this->assertStringContainsString('class="ua-pagehead"', $html, $ruta);
+      $this->assertStringNotContainsString('ua-pagehead--hero', $html, $ruta);
+      $this->assertStringNotContainsString('<aside', $html, $ruta);
+    }
+  }
+
+  /**
+   * Crea un programa con la foto de la cabecera (en la base de la prueba).
+   *
+   * @param bool $con_estilos
+   *   Si existen los estilos de imagen de la cabecera.
+   */
+  protected function programaConFoto(bool $con_estilos): Node {
+    $this->crearCampo('node', 'programa', 'field_imagen', 'image');
+    if ($con_estilos) {
+      foreach (['unillanos_hero_640', 'unillanos_hero_1280', 'unillanos_hero_1920'] as $nombre) {
+        ImageStyle::create(['name' => $nombre, 'label' => $nombre])->save();
+      }
+    }
+    $png = imagecreatetruecolor(20, 10);
+    ob_start();
+    imagepng($png);
+    $datos = (string) ob_get_clean();
+    $uri = $this->container->get('file_system')->saveData($datos, 'public://programa-prueba.png');
+    $archivo = File::create(['uri' => $uri, 'status' => 1, 'uid' => 0]);
+    $archivo->save();
+    return $this->programa('Ingeniería Electrónica', 0, [
+      'field_modalidad' => 'presencial',
+      'field_imagen' => ['target_id' => $archivo->id(), 'alt' => 'Estudiantes de prueba', 'width' => 20, 'height' => 10],
+    ]);
+  }
+
+  /**
+   * Con foto, PaginaPrograma entrega la imagen ya armada.
+   */
+  public function testImagenDelProgramaConEstilos(): void {
+    $programa = $this->programaConFoto(TRUE);
+    $imagen = $this->paginaPrograma()->datosPrograma($programa)['imagen'];
+    $this->assertIsArray($imagen);
+    $this->assertStringEndsWith('/programa-prueba.png', $imagen['src']);
+    $this->assertSame(3, preg_match_all('~ (?:640|1280|1920)w~', $imagen['srcset']));
+    foreach ([640, 1280, 1920] as $ancho) {
+      $this->assertStringContainsString(' ' . $ancho . 'w', $imagen['srcset']);
+    }
+    $this->assertSame('image/webp', $imagen['type']);
+    $this->assertSame(20, $imagen['width']);
+    $this->assertSame(10, $imagen['height']);
+    $this->assertSame('Estudiantes de prueba', $imagen['alt']);
+  }
+
+  /**
+   * Sin estilos de imagen no hay srcset, pero la foto sigue saliendo.
+   */
+  public function testImagenDelProgramaSinEstilos(): void {
+    $imagen = $this->paginaPrograma()->datosPrograma($this->programaConFoto(FALSE))['imagen'];
+    $this->assertIsArray($imagen);
+    $this->assertSame('', $imagen['srcset']);
+    $this->assertNotSame('', $imagen['src']);
+  }
+
+  /**
+   * La página con foto pinta el hero con imagen y velo, y el alt del campo.
+   */
+  public function testLaPaginaConFotoPintaElHeroConImagen(): void {
+    $html = $this->pagina($this->programaConFoto(TRUE));
+    $this->assertStringContainsString('ua-pagehead--hero ua-pagehead--foto', $html);
+    $this->assertSame(1, substr_count($html, '<picture'));
+    $this->assertStringContainsString('alt="Estudiantes de prueba"', $html);
+    $this->assertStringContainsString('fetchpriority="high"', $html);
+    $this->assertStringContainsString('ua-pagehead__velo', $html);
+    $this->assertStringContainsString(' 1280w', $html);
+  }
+
+  /**
+   * Sin imagen en el programa, no hay imagen: la cabecera es sólida.
+   */
+  public function testSinImagenDatosPrograma(): void {
+    $this->assertNull($this->paginaPrograma()->datosPrograma($this->programa('Enfermería'))['imagen']);
+    $this->crearCampo('node', 'programa', 'field_imagen', 'image');
+    $this->assertNull($this->paginaPrograma()->datosPrograma($this->programa('Medicina', 0, ['field_clave' => 'medicina']))['imagen']);
   }
 
 }

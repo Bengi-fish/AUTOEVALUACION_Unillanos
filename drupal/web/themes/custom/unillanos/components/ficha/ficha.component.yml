@@ -8,6 +8,21 @@ props:
   required:
     - items
   properties:
+    variant:
+      type: string
+      title: Variante
+      description: 'aside = aside de 360 px con título y filas término/valor (página del programa); vacío = rejilla.'
+      enum:
+        - ''
+        - aside
+    eyebrow:
+      type: string
+      title: Antetítulo
+      description: 'Solo en el aside.'
+    title:
+      type: string
+      title: Título
+      description: 'Solo en el aside (h2).'
     compact:
       type: boolean
       title: Compacta

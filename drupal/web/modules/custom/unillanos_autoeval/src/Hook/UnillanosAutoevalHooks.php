@@ -78,6 +78,14 @@ class UnillanosAutoevalHooks {
         $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $termino->getCacheTags());
       }
     }
+    // La foto de la cabecera (si la hay) y sus estilos de imagen.
+    if ($entity->hasField('field_imagen') && !$entity->get('field_imagen')->isEmpty()) {
+      $archivo = $entity->get('field_imagen')->entity;
+      if ($archivo) {
+        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $archivo->getCacheTags());
+      }
+      $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], ['config:image_style_list']);
+    }
   }
 
   /**

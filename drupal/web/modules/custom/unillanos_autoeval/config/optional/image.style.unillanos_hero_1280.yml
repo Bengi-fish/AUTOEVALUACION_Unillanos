@@ -1,0 +1,23 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - unillanos_autoeval
+name: unillanos_hero_1280
+label: 'Unillanos: hero de 1280 px'
+effects:
+  8253b83f-f9a0-491f-b81b-344bf583adfc:
+    uuid: 8253b83f-f9a0-491f-b81b-344bf583adfc
+    id: image_scale
+    weight: 1
+    data:
+      width: 1280
+      height: null
+      upscale: false
+  6327d4f5-b955-4a3a-b3d3-697aa04e086d:
+    uuid: 6327d4f5-b955-4a3a-b3d3-697aa04e086d
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

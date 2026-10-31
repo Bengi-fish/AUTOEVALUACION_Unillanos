@@ -1,0 +1,23 @@
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - unillanos_autoeval
+name: unillanos_hero_640
+label: 'Unillanos: hero de 640 px'
+effects:
+  9ccfd592-a2c7-4685-a664-697dbd13e198:
+    uuid: 9ccfd592-a2c7-4685-a664-697dbd13e198
+    id: image_scale
+    weight: 1
+    data:
+      width: 640
+      height: null
+      upscale: false
+  7c528bf2-8440-42a0-8f2d-d5c8926b8a2a:
+    uuid: 7c528bf2-8440-42a0-8f2d-d5c8926b8a2a
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

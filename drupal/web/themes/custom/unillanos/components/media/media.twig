@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ * Imagen con <picture> (fuente WebP con srcset y original de respaldo).
+ *
+ * Sin texto alternativo la imagen es decorativa: alt vacío y aria-hidden. Con
+ * `priority: high` (sobre el pliegue) lleva fetchpriority="high" y no se
+ * difiere; si no, carga diferida. Un src que no sea relativo a la raíz (una
+ * sola barra, sin «\» ni espacios detrás) o http(s) no se imprime.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|https?://)~i' %}
+{% if src and ((src ~ '') matches seguro) %}
+<picture{{ attributes.addClass('ua-media') }}{% if not alt %} aria-hidden="true"{% endif %}>
+  {%- if srcset %}<source type="{{ type|default('image/webp') }}" srcset="{{ srcset }}" sizes="{{ sizes|default('100vw') }}">{% endif -%}
+  <img class="ua-media__img" src="{{ src }}" alt="{{ alt|default('') }}"{% if width and height %} width="{{ width }}" height="{{ height }}"{% endif %} decoding="async"{% if priority == 'high' %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+</picture>
+{% endif %}

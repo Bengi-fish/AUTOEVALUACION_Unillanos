@@ -51,7 +51,7 @@ services:
 
   unillanos_autoeval.pagina_programa:
     class: Drupal\unillanos_autoeval\Service\PaginaPrograma
-    arguments: ['@unillanos_autoeval.listado_programas', '@url_generator', '@access_manager', '@current_user']
+    arguments: ['@unillanos_autoeval.listado_programas', '@url_generator', '@access_manager', '@current_user', '@entity_type.manager', '@file_url_generator']
   Drupal\unillanos_autoeval\Service\PaginaPrograma: '@unillanos_autoeval.pagina_programa'
 
   unillanos_autoeval.enlaces_del_pie:

@@ -1,0 +1,36 @@
+/**
+ * Componente kv-list: etiqueta de 13 px y valor de 16/600, con línea separadora.
+ */
+
+.ua-kv {
+  margin: 0;
+}
+
+.ua-kv__row {
+  padding: var(--espacio-3) 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+.ua-kv__row:first-child {
+  padding-top: 0;
+}
+
+.ua-kv__row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.ua-kv__term {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--tinta-700);
+}
+
+.ua-kv__value {
+  margin: 2px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--tinta-900);
+  overflow-wrap: anywhere;
+}
