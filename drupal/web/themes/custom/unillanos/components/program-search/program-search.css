@@ -3,6 +3,10 @@
  */
 
 .ua-searchbar {
+  padding: var(--espacio-5);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
   display: grid;
   /* La búsqueda ocupa una fila; los filtros (dos o tres) se reparten debajo. */
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -22,15 +26,15 @@
 }
 
 .ua-searchbar__lab {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--tinta-500);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--tinta-900);
 }
 
 .ua-searchbar .ua-search {
   width: 100%;
+  height: 48px;
 }
 
 /* Con poco ancho el texto de ayuda termina en puntos suspensivos. */
@@ -61,6 +65,15 @@
 
   .ua-searchbar {
     grid-template-columns: 1fr;
+  }
+
+}
+
+/* Con poco ancho el relleno de la tarjeta le quita espacio al texto de ayuda. */
+@media (max-width: 560px) {
+
+  .ua-searchbar {
+    padding: var(--espacio-4);
   }
 
 }

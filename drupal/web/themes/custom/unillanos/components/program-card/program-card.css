@@ -13,22 +13,27 @@
   background: var(--Surface);
   text-decoration: none;
   color: inherit;
-  transition: border-color .15s ease, background .15s ease;
+  transition: border-color .15s ease;
 }
 
+/* Sin sombra ni cambio de fondo: el hover oscurece el borde. */
 .ua a.ua-prog:hover {
-  border-color: var(--rojo-100);
-  background: var(--rojo-50);
+  border-color: var(--tinta-500);
+}
+
+/* El foco no cambia las esquinas de la tarjeta. */
+.ua a.ua-prog:focus-visible {
+  border-radius: var(--radio-md);
 }
 
 .ua-prog__icon {
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radio-md);
+  border-radius: 50%;
   background: var(--rojo-50);
   color: var(--rojo-700);
 }
@@ -45,18 +50,18 @@
   overflow-wrap: break-word;
   font-size: 12px;
   line-height: 16px;
-  letter-spacing: .06em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  font-weight: 700;
-  color: var(--tinta-500);
+  font-weight: 600;
+  color: var(--rojo-700);
 }
 
 .ua-prog__name {
   margin: 0;
   overflow-wrap: break-word;
-  font-size: 18px;
-  line-height: 26px;
-  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
   color: var(--tinta-900);
 }
 
@@ -73,7 +78,8 @@
   gap: 6px;
   margin-top: var(--espacio-2);
   font-size: 14px;
-  font-weight: 700;
+  line-height: 20px;
+  font-weight: 600;
   color: var(--rojo-700);
 }
 

@@ -120,6 +120,24 @@ class ProgramComponentsTest extends KernelTestBase {
   }
 
   /**
+   * El campo de texto dice todo lo que busca (ajuste #3 de la Fase 7).
+   *
+   * El texto de ayuda nombra el nombre, la facultad, el nivel y la sede: son
+   * los cuatro datos que contiene el campo de búsqueda de cada programa.
+   */
+  public function testElTextoDeAyudaDiceTodoLoQueBusca(): void {
+    $html = $this->renderizar('unillanos:program-search', [
+      'programs' => [['name' => 'Uno', 'id' => 1, 'url' => '/programas/uno', 'search' => 'uno']],
+      'action' => '/programas',
+    ]);
+    $this->assertStringContainsString('placeholder="Nombre, facultad, nivel o sede"', $html);
+    $this->assertStringNotContainsString('placeholder="Nombre o facultad"', $html);
+    // La etiqueta visible sigue ligada al campo (el placeholder no la suple).
+    $this->assertMatchesRegularExpression('~<label class="ua-searchbar__lab" for="prog-q">Buscar un programa</label>~', $html);
+    $this->assertStringContainsString('maxlength="100"', $html);
+  }
+
+  /**
    * Un destino inseguro o un id inválido no se imprimen.
    */
   public function testTarjetaFiltraDestinoInseguro(): void {

@@ -150,10 +150,18 @@
   /* 280 px (el prototipo tiene 260): con 260 el marcador se recortaba. */
   width: 280px;
   padding: 0 var(--espacio-3);
-  border: 1px solid var(--tinta-400);
+  border: 1px solid var(--tinta-700);
   border-radius: var(--radio-md);
   color: var(--tinta-500);
   background: var(--Surface);
+}
+
+.ua-search:hover {
+  border-color: var(--tinta-900);
+}
+
+.ua-search input::placeholder {
+  color: var(--tinta-500);
 }
 
 .ua-search input {
@@ -207,7 +215,7 @@
   width: 100%;
   min-height: 48px;
   padding: 11px 14px;
-  border: 1px solid var(--tinta-400);
+  border: 1px solid var(--tinta-700);
   border-radius: var(--radio-sm);
   background: var(--Surface);
   font-size: 16px;
@@ -233,7 +241,7 @@
 }
 
 .ua-input:hover, .ua-select:hover, .ua-textarea:hover {
-  border-color: var(--tinta-700);
+  border-color: var(--tinta-900);
 }
 
 .ua-input:focus, .ua-select:focus, .ua-textarea:focus {
