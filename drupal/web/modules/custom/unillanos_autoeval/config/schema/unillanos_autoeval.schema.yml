@@ -1,0 +1,84 @@
+unillanos_autoeval.micrositio:
+  type: config_object
+  label: 'Cabecera, franja superior y pie del micrositio'
+  mapping:
+    nombre_linea1:
+      type: label
+      label: 'Nombre del sistema, primera línea'
+    nombre_linea2:
+      type: label
+      label: 'Nombre del sistema, segunda línea'
+    url_web_principal:
+      type: string
+      label: 'URL de la web principal de la Universidad'
+    franja_superior:
+      type: sequence
+      label: 'Enlaces de la franja superior'
+      sequence:
+        type: unillanos_autoeval.enlace
+    accesibilidad:
+      type: unillanos_autoeval.enlace
+      label: 'Enlace de accesibilidad'
+    pie:
+      type: mapping
+      label: 'Pie de página'
+      mapping:
+        titulo:
+          type: label
+          label: 'Nombre del sistema'
+        descripcion:
+          type: text
+          label: 'Descripción'
+        institucion:
+          type: label
+          label: 'Institución'
+        nota_institucion:
+          type: label
+          label: 'Nota de la institución'
+        entidades:
+          type: sequence
+          label: 'Entidades'
+          sequence:
+            type: unillanos_autoeval.enlace
+        sedes:
+          type: sequence
+          label: 'Sedes'
+          sequence:
+            type: unillanos_autoeval.texto
+        contacto:
+          type: sequence
+          label: 'Contacto'
+          sequence:
+            type: unillanos_autoeval.texto
+        redes:
+          type: sequence
+          label: 'Redes sociales'
+          sequence:
+            type: unillanos_autoeval.enlace
+        enlaces_legales:
+          type: sequence
+          label: 'Enlaces legales'
+          sequence:
+            type: unillanos_autoeval.enlace
+        legal:
+          type: text
+          label: 'Aviso legal'
+
+unillanos_autoeval.enlace:
+  type: mapping
+  label: 'Enlace'
+  mapping:
+    titulo:
+      type: label
+      label: 'Título'
+    url:
+      type: string
+      label: 'URL'
+
+unillanos_autoeval.texto:
+  type: mapping
+  label: 'Texto'
+  mapping:
+    texto:
+      type: label
+      label: 'Texto'

@@ -58,3 +58,8 @@ services:
     class: Drupal\unillanos_autoeval\Service\EnlacesDelPie
     arguments: ['@menu.link_tree']
   Drupal\unillanos_autoeval\Service\EnlacesDelPie: '@unillanos_autoeval.enlaces_del_pie'
+
+  unillanos_autoeval.datos_marco:
+    class: Drupal\unillanos_autoeval\Service\DatosMarco
+    arguments: ['@config.factory']
+  Drupal\unillanos_autoeval\Service\DatosMarco: '@unillanos_autoeval.datos_marco'

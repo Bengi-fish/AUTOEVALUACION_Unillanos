@@ -36,6 +36,8 @@
   <head>
     <head-placeholder token="{{ placeholder_token }}">
     <title>{{ head_title|safe_join(' | ') }}</title>
+    {# Precarga solo del archivo latin de la fuente: lo usa todo el texto. #}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ file_url(directory ~ '/fonts/public-sans-latin-wght-normal.woff2') }}">
     <css-placeholder token="{{ placeholder_token }}">
     <js-placeholder token="{{ placeholder_token }}">
   </head>

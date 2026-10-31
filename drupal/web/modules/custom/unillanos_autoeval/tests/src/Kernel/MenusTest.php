@@ -21,7 +21,10 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
- * Prueba los menús principal y del pie y el elemento activo.
+ * Prueba los menús principal y del pie, el elemento activo y el marco.
+ *
+ * El marco es la franja superior, la cabecera y el pie que arma la
+ * configuración `unillanos_autoeval.micrositio` (servicio DatosMarco).
  *
  * «Inicio» lo aporta el perfil `standard` y no existe en estas pruebas.
  */
@@ -206,6 +209,23 @@ class MenusTest extends UnillanosKernelTestBase {
   }
 
   /**
+   * El HTML de la página en la ruta dada.
+   */
+  protected function pagina(string $ruta): string {
+    return (string) $this->container->get('http_kernel')->handle(Request::create($ruta))->getContent();
+  }
+
+  /**
+   * El elemento <nav> del menú principal.
+   *
+   * No depende de su largo ni de lo que haya antes (franja, logo, buscador).
+   */
+  protected function menu(string $html): string {
+    $this->assertSame(1, preg_match('~<nav [^>]*id="ua-menu".*?</nav>~s', $html, $coincidencia));
+    return $coincidencia[0];
+  }
+
+  /**
    * El rastro del menú principal en /programas.
    */
   public function testRastroEnElListado(): void {
@@ -257,8 +277,7 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->assertMatchesRegularExpression('~<a class="ua-nav__link" href="/programas" aria-current="page">Programas</a>~', $html);
     $this->assertDoesNotMatchRegularExpression('~href="/documentos" aria-current~', $html);
     // En el menú solo «Programas» es la actual (las migas llevan la suya).
-    $menu = substr($html, (int) strpos($html, 'ua-nav__list'), 700);
-    $this->assertSame(1, substr_count($menu, 'aria-current="page"'));
+    $this->assertSame(1, substr_count($this->menu($html), 'aria-current="page"'));
   }
 
   /**
@@ -279,7 +298,7 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->assertMatchesRegularExpression('~<a class="ua-nav__link is-current" href="/programas" aria-current="true">Programas</a>~', $html);
     $this->assertDoesNotMatchRegularExpression('~href="/documentos" aria-current~', $html);
     // Ningún elemento del menú es «la página actual».
-    $this->assertStringNotContainsString('aria-current="page"', substr($html, (int) strpos($html, 'ua-nav__list'), 700));
+    $this->assertStringNotContainsString('aria-current="page"', $this->menu($html));
     // Las migas llevan «Programas».
     $this->assertMatchesRegularExpression('~<a href="/programas">Programas</a>~', $html);
   }
@@ -360,6 +379,122 @@ class MenusTest extends UnillanosKernelTestBase {
     // Pie: la configuración del menú y el acceso de los enlaces.
     $this->assertContains('config:system.menu.footer', $metadatos->getCacheTags());
     $this->assertContains('user.permissions', $metadatos->getCacheContexts());
+  }
+
+  /**
+   * El menú principal conserva su marcado y sus enlaces dentro del encabezado.
+   */
+  public function testElMenuVaDentroDelEncabezado(): void {
+    $html = $this->pagina('/programas');
+    $this->assertSame(1, preg_match('~<header .*?</header>~s', $html, $encabezado));
+    $this->assertStringContainsString('class="ua-nav"', $encabezado[0]);
+    // Programas, Documentos y el «Ingresar» que solo se ve en móvil.
+    $this->assertSame(3, substr_count($this->menu($html), 'class="ua-nav__link'));
+    $this->assertStringContainsString('aria-controls="ua-menu"', $html);
+    $this->assertSame(1, substr_count($html, 'id="ua-menu"'));
+  }
+
+  /**
+   * El buscador del encabezado lleva a /programas con el campo q.
+   */
+  public function testElBuscadorDelEncabezadoLlevaHaciaProgramas(): void {
+    $html = $this->pagina('/documentos');
+    $this->assertMatchesRegularExpression('~<form class="ua-search ua-header__search" action="/programas" method="get" role="search">~', $html);
+    $this->assertMatchesRegularExpression('~<input id="ua-header-q" type="search" name="q" maxlength="100"~', $html);
+    $this->assertMatchesRegularExpression('~<label class="ua-sr" for="ua-header-q">~', $html);
+  }
+
+  /**
+   * La fuente se precarga una sola vez, con crossorigin.
+   */
+  public function testPrecargaDeLaFuente(): void {
+    $html = $this->pagina('/programas');
+    $this->assertSame(1, preg_match_all('~<link rel="preload" as="font" type="font/woff2" crossorigin href="[^"]*/fonts/public-sans-latin-wght-normal\.woff2">~', $html));
+    $this->assertStringNotContainsString('latin-ext-wght-normal.woff2">', substr($html, 0, (int) strpos($html, '</head>')));
+  }
+
+  /**
+   * Sin datos de franja, entidades, sedes, contacto ni redes no se pinta nada.
+   */
+  public function testSinDatosNoSePintaLoVacio(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    $html = $this->pagina('/programas');
+    $this->assertStringNotContainsString('ua-topbar', $html);
+    $this->assertStringNotContainsString('ua-footer__entidades', $html);
+    foreach (['Sedes', 'Contáctanos', 'Síguenos'] as $titulo) {
+      $this->assertStringNotContainsString('<h3>' . $titulo . '</h3>', $html);
+    }
+    // Lo que sí hay por defecto: nombre en dos líneas, «Explora» y aviso legal.
+    $this->assertStringContainsString('<span class="ua-brand__kicker">Sistema de</span><span class="ua-brand__name">Autoevaluación</span>', $html);
+    $this->assertStringContainsString('<h3>Explora</h3>', $html);
+    $this->assertStringContainsString('Institución de educación superior sujeta a inspección y vigilancia', $html);
+    // Un solo logo en el encabezado y los tres en el pie.
+    $this->assertSame(1, preg_match('~<header .*?</header>~s', $html, $encabezado));
+    $this->assertSame(1, substr_count($encabezado[0], 'ua-logos__img--unillanos'));
+    $this->assertSame(0, substr_count($encabezado[0], 'ua-logos__img--acreditacion'));
+    $this->assertSame(1, substr_count($html, 'ua-logos__img--acreditacion'));
+  }
+
+  /**
+   * Con datos aparecen la franja, las entidades y las columnas, y solo ellas.
+   */
+  public function testConDatosSePintaElMarco(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    $this->config('unillanos_autoeval.micrositio')
+      ->set('franja_superior', [
+        ['titulo' => 'Biblioteca de prueba', 'url' => 'https://example.org/b'],
+        ['titulo' => 'Interno de prueba', 'url' => '/documentos'],
+      ])
+      ->set('accesibilidad.url', '/programas')
+      ->set('pie.entidades', [['titulo' => 'Entidad de prueba', 'url' => 'https://example.org/e']])
+      ->set('pie.sedes', [['texto' => 'Sede de prueba']])
+      ->save();
+    $html = $this->pagina('/programas');
+    $this->assertStringContainsString('<div data-component-id="unillanos:topbar" class="ua-topbar">', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="https://example.org/b" rel="noopener">~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="/documentos">~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/programas">~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-footer__entidad" href="https://example.org/e" rel="noopener">Entidad de prueba</a>~', $html);
+    $this->assertStringContainsString('<h3>Sedes</h3>', $html);
+    $this->assertMatchesRegularExpression('~<li>Sede de prueba</li>~', $html);
+    $this->assertStringNotContainsString('<h3>Contáctanos</h3>', $html);
+    $this->assertStringNotContainsString('<h3>Síguenos</h3>', $html);
+    $this->assertStringContainsString('ua-footer__top--c2', $html);
+  }
+
+  /**
+   * Una URL peligrosa de la configuración no llega a ningún href.
+   */
+  public function testUrlPeligrosaNoLlegaAlHtml(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    $this->config('unillanos_autoeval.micrositio')
+      ->set('franja_superior', [
+        ['titulo' => 'Peligrosa uno', 'url' => 'javascript:alert(1)'],
+        ['titulo' => 'Peligrosa dos', 'url' => '//example.org/x'],
+        ['titulo' => 'Peligrosa tres', 'url' => 'data:text/html,hola'],
+      ])
+      ->set('pie.redes', [['titulo' => 'Red peligrosa', 'url' => 'JaVaScRiPt:alert(2)']])
+      ->save();
+    $html = $this->pagina('/programas');
+    $this->assertStringNotContainsString('javascript:', strtolower($html));
+    $this->assertStringNotContainsString('data:text/html', $html);
+    $this->assertStringNotContainsString('Peligrosa', $html);
+    $this->assertStringNotContainsString('Red peligrosa', $html);
+    $this->assertStringNotContainsString('ua-topbar', $html);
+  }
+
+  /**
+   * La página depende de la configuración del micrositio (caché).
+   */
+  public function testCacheDeLaConfiguracionDelMarco(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    $respuesta = $this->container->get('http_kernel')->handle(Request::create('/programas'));
+    $this->assertInstanceOf(CacheableResponseInterface::class, $respuesta);
+    $this->assertContains('config:unillanos_autoeval.micrositio', $respuesta->getCacheableMetadata()->getCacheTags());
+    // Cambiar la configuración cambia lo que se pinta.
+    $this->assertStringNotContainsString('Cambio de prueba', $this->pagina('/programas'));
+    $this->config('unillanos_autoeval.micrositio')->set('pie.sedes', [['texto' => 'Cambio de prueba']])->save();
+    $this->assertStringContainsString('Cambio de prueba', $this->pagina('/programas'));
   }
 
 }

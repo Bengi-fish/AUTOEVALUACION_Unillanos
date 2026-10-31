@@ -90,7 +90,7 @@
   --sombra-2: 0 8px 24px rgba(29,29,27,0.12);
 
   --contenedor-max: 1200px;
-  --alto-encabezado: 88px;
+  --alto-encabezado: 80px;
 
   /* Tipografía. El alias --font-dm-sans lo usan los componentes. */
   --font-base: "Public Sans", "Segoe UI", Arial, sans-serif;

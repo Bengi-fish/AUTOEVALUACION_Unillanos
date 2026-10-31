@@ -28,6 +28,12 @@
   menu_toggle: true,
   menu_id: 'ua-menu',
   menu: page.primary_menu,
+  kicker: marco.nombre.linea1,
+  name: marco.nombre.linea2,
+  solo_logo: 'unillanos',
+  show_search: true,
+  search_url: path('unillanos_autoeval.programas'),
+  topbar: {links: marco.franja, accessibility: marco.accesibilidad},
 } only %}
   {% block nav %}{{ menu }}{% endblock %}
 {% endembed %}
@@ -57,8 +63,26 @@
 
 {# No imprime nada: lleva a la página la caché del menú del pie. #}
 {{ pie_cache }}
+{% set columnas = [] %}
+{% if marco.pie.sedes %}
+  {% set columnas = columnas|merge([{title: 'Sedes'|t, links: marco.pie.sedes|map(texto => {title: texto})}]) %}
+{% endif %}
+{% if marco.pie.contacto %}
+  {% set columnas = columnas|merge([{title: 'Contáctanos'|t, links: marco.pie.contacto|map(texto => {title: texto})}]) %}
+{% endif %}
+{% if pie_enlaces %}
+  {% set columnas = columnas|merge([{title: 'Explora'|t, links: pie_enlaces}]) %}
+{% endif %}
+{% if marco.pie.redes %}
+  {% set columnas = columnas|merge([{title: 'Síguenos'|t, links: marco.pie.redes}]) %}
+{% endif %}
 {% include 'unillanos:footer' with {
-  description: 'Un espacio para consultar, participar y hacer seguimiento a la mejora continua de la Universidad.'|t,
-  columns: pie_enlaces ? [{title: 'Explora'|t, links: pie_enlaces}] : [],
-  legal: 'Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional. © 2026 Universidad de los Llanos.'|t,
+  title: marco.pie.titulo,
+  description: marco.pie.descripcion,
+  institution: marco.pie.institucion,
+  institution_note: marco.pie.nota_institucion,
+  entities: marco.pie.entidades,
+  columns: columnas,
+  legal: marco.pie.legal,
+  legal_links: marco.pie.enlaces_legales,
 } only %}

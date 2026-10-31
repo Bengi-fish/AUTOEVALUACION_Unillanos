@@ -176,6 +176,23 @@
   box-shadow: none;
 }
 
+/* Buscador con formulario: el botón de envío va dentro del contenedor. */
+.ua-search__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 100%;
+  margin-right: calc(var(--espacio-3) * -1);
+  padding: 0;
+  border: 0;
+  border-radius: 0 var(--radio-md) var(--radio-md) 0;
+  background: transparent;
+  color: var(--tinta-900);
+  cursor: pointer;
+}
+
 .ua-search.ua-search--full {
   width: 100%;
 }
@@ -318,11 +335,6 @@
 .ua-footer {
   --foco-interior: var(--carbon);
   --foco-exterior: var(--Surface);
-}
-
-.ua-footer__brand {
-  --foco-interior: var(--Surface);
-  --foco-exterior: var(--tinta-900);
 }
 
 .ua-main:focus {
