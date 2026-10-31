@@ -8,18 +8,28 @@
 
 .ua {
   margin: 0;
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   font-size: 16px;
-  line-height: 1.5;
-  color: var(--tinta-700);
+  line-height: 26px;
+  color: var(--tinta-900);
   background: var(--Surface);
   -webkit-font-smoothing: antialiased;
 }
 
 .ua :where(h1, h2, h3, h4) {
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   color: var(--tinta-900);
   margin: 0;
+}
+
+/* Titulares grandes en peso 400 con tracking −0,01 em; los de apoyo en 600. */
+.ua :where(h1, h2) {
+  font-weight: 400;
+  letter-spacing: -.01em;
+}
+
+.ua :where(h3, h4) {
+  font-weight: 600;
 }
 
 .ua :where(p) {
@@ -49,7 +59,7 @@
 
 .ua :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+  box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
   border-radius: var(--radio-sm);
 }
 
@@ -92,10 +102,10 @@
 
 .ua-eyebrow {
   display: inline-block;
-  font-family: var(--font-dm-sans);
-  font-size: 13px;
+  font-family: var(--font-base);
+  font-size: 12px;
   line-height: 16px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--rojo-700);
@@ -103,22 +113,22 @@
 }
 
 .ua-h2 {
-  font-size: 32px;
-  line-height: 40px;
-  font-weight: 700;
+  font-size: 48px;
+  line-height: 56px;
+  font-weight: 400;
   letter-spacing: -.01em;
 }
 
 .ua-h3 {
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 700;
+  font-size: 26px;
+  line-height: 34px;
+  font-weight: 600;
 }
 
 .ua-h4 {
-  font-size: 18px;
-  line-height: 26px;
-  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
 }
 
 .ua-lead {
@@ -155,8 +165,15 @@
   color: var(--tinta-900);
 }
 
+/* El anillo lo dibuja el contenedor; sin esto el estilo global de foco pinta un
+   segundo anillo dentro del campo. En alto contraste sigue valiendo el
+   contorno de forced-colors. */
 .ua-search:focus-within {
-  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+  box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
+}
+
+.ua .ua-search input:focus-visible {
+  box-shadow: none;
 }
 
 .ua-search.ua-search--full {
@@ -216,11 +233,29 @@
 
 }
 
+@media (max-width: 1100px) {
+
+  .ua-h2 {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+}
+
 @media (max-width: 860px) {
 
   .ua-h2 {
-    font-size: 26px;
-    line-height: 32px;
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-h2 {
+    font-size: 28px;
+    line-height: 36px;
   }
 
 }
@@ -277,6 +312,17 @@
 /* Página base de Drupal (page.html.twig): páginas sin sección propia. */
 .ua-page__migas {
   padding-block: var(--espacio-4) 0;
+}
+
+/* Fondos oscuros: el anillo se invierte (interior carbón, exterior blanco). */
+.ua-footer {
+  --foco-interior: var(--carbon);
+  --foco-exterior: var(--Surface);
+}
+
+.ua-footer__brand {
+  --foco-interior: var(--Surface);
+  --foco-exterior: var(--tinta-900);
 }
 
 .ua-main:focus {

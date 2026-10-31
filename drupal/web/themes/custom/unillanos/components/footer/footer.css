@@ -79,7 +79,7 @@
 }
 
 .ua .ua-footer :focus-visible {
-  box-shadow: 0 0 0 2px var(--Surface);
+  box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
 }
 
 .ua-footer__contact {
