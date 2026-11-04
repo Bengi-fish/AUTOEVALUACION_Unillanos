@@ -88,3 +88,75 @@
   gap: var(--espacio-3);
   margin-top: var(--espacio-6);
 }
+
+/*
+ * Documentos del bloque «Documentos del programa» (Etapa 4b). Solo en la
+ * página del programa: /documentos conserva el estilo de doc-list.
+ */
+.ua-programa .ua-docs {
+  gap: var(--espacio-4);
+}
+
+.ua-programa .ua-doc {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--espacio-4);
+  padding: var(--espacio-4) var(--espacio-5);
+  border-radius: var(--radio-md);
+}
+
+.ua-programa .ua-doc__icon {
+  background: var(--azul-grisaceo-50);
+  color: var(--verde-azulado-700);
+  font-family: var(--font-base);
+  font-weight: 600;
+}
+
+.ua-programa .ua-doc__title {
+  font-family: var(--font-base);
+  font-weight: 600;
+}
+
+.ua-programa .ua-doc__cat {
+  font-weight: 600;
+  color: var(--rojo-texto);
+}
+
+.ua-programa .ua-doc .ua-meta {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--gris-texto);
+}
+
+.ua-programa .ua-doc__title,
+.ua-programa .ua-doc__desc,
+.ua-programa .ua-doc .ua-meta {
+  overflow-wrap: break-word;
+}
+
+.ua-programa .ua-doc .ua-icon-btn {
+  border-color: var(--gris-suave);
+}
+
+.ua-programa .ua-doc .ua-icon-btn:hover {
+  border-color: var(--verde-azulado-700);
+  background: var(--superficie-50);
+  color: var(--verde-azulado-700);
+}
+
+/* En móvil el botón baja a su propia línea para que el título no se parta. */
+@media (max-width: 560px) {
+
+  .ua-programa .ua-doc {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--espacio-3) var(--espacio-4);
+    padding: var(--espacio-4);
+  }
+
+  .ua-programa .ua-doc .ua-icon-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+}
