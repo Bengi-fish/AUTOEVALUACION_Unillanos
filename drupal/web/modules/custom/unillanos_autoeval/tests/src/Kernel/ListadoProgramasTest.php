@@ -258,6 +258,32 @@ class ListadoProgramasTest extends UnillanosKernelTestBase {
   }
 
   /**
+   * La sigla guardada de la facultad llega como clave de tinte (Etapa 5).
+   */
+  public function testSiglaDeFacultadComoClaveDeTinte(): void {
+    $this->crearCampo('taxonomy_term', 'facultad', 'field_sigla', 'string');
+    $listado = $this->container->get('unillanos_autoeval.listado_programas');
+    $salud = Term::create(['vid' => 'facultad', 'name' => 'Facultad de Salud', 'field_sigla' => 'FCS']);
+    $salud->save();
+    $rara = Term::create(['vid' => 'facultad', 'name' => 'Facultad rara', 'field_sigla' => 'A B<x>']);
+    $rara->save();
+    $vacia = $this->termino('facultad', 'Sin sigla');
+    $this->programa('Con sigla', ['field_facultad' => $salud->id()]);
+    $this->programa('Sigla invalida', ['field_facultad' => $rara->id()]);
+    $this->programa('Sin sigla guardada', ['field_facultad' => $vacia->id()]);
+    $this->programa('Sin facultad');
+
+    $por_nombre = [];
+    foreach ($listado->listadoFiltrado([], new CacheableMetadata())['programas'] as $tarjeta) {
+      $por_nombre[$tarjeta['nombre']] = $tarjeta;
+    }
+    $this->assertSame('fcs', $por_nombre['Con sigla']['facultad_sigla']);
+    foreach (['Sigla invalida', 'Sin sigla guardada', 'Sin facultad'] as $nombre) {
+      $this->assertArrayNotHasKey('facultad_sigla', $por_nombre[$nombre], $nombre);
+    }
+  }
+
+  /**
    * El listado y la portada deciden con la misma regla (0, 1 y varios).
    */
   public function testListadoCoincideConLaPortada(): void {

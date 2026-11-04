@@ -16,6 +16,62 @@
   transition: border-color .15s ease;
 }
 
+/*
+ * Tinte por facultad (Etapa 5). Cada clase fija tres valores con los tokens de
+ * la facultad: el fondo de la etiqueta de facultad y del ícono, el color
+ * oscuro del filo superior y el color del texto sobre el fondo. Sin clase
+ * (sin sigla guardada) la tarjeta queda con el rojo de siempre.
+ */
+.ua-prog {
+  --prog-fondo: var(--rojo-tinte);
+  --prog-duo: var(--rojo-texto);
+  --prog-texto: var(--carbon);
+}
+
+.ua-prog--fcarn {
+  --prog-fondo: var(--facultad-fcarn-fondo);
+  --prog-duo: var(--facultad-fcarn-duotono);
+}
+
+.ua-prog--fcs {
+  --prog-fondo: var(--facultad-fcs-fondo);
+  --prog-duo: var(--facultad-fcs-duotono);
+}
+
+.ua-prog--fce {
+  --prog-fondo: var(--facultad-fce-fondo);
+  --prog-duo: var(--facultad-fce-duotono);
+}
+
+.ua-prog--fchye {
+  --prog-fondo: var(--facultad-fchye-fondo);
+  --prog-duo: var(--facultad-fchye-duotono);
+}
+
+/* Ciencias Básicas e Ingeniería: tinte rojo oscuro con letra blanca. */
+.ua-prog--fcbi {
+  --prog-fondo: var(--facultad-fcbi-fondo);
+  --prog-duo: var(--facultad-fcbi-duotono);
+  --prog-texto: var(--Surface);
+}
+
+.ua a.ua-prog[class*="ua-prog--"] {
+  border-top: 4px solid var(--prog-duo);
+}
+
+.ua-prog[class*="ua-prog--"] .ua-prog__icon {
+  background: var(--prog-fondo);
+  color: var(--prog-texto);
+}
+
+.ua-prog[class*="ua-prog--"] .ua-prog__faculty {
+  align-self: flex-start;
+  padding: 2px var(--espacio-2);
+  border-radius: var(--radio-sm);
+  background: var(--prog-fondo);
+  color: var(--prog-texto);
+}
+
 /* Sin sombra ni cambio de fondo: el hover oscurece el borde. */
 .ua a.ua-prog:hover {
   border-color: var(--tinta-500);

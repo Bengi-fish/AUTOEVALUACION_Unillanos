@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Drupal\unillanos_autoeval\Service;
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\node\NodeInterface;
 use Drupal\unillanos_autoeval\Traits\EtiquetasYOrdenTrait;
@@ -272,7 +274,8 @@ class ListadoProgramas {
    *
    * @return array<int, array<string, mixed>>
    *   Por programa, solo lo que existe: id, nombre, url, facultad, facultad_id,
-   *   nivel, nivel_clave, sede, sede_id, con_autoevaluacion (solo si es TRUE)
+   *   facultad_sigla (clave en minúsculas, para el tinte), nivel, nivel_clave,
+   *   sede, sede_id, con_autoevaluacion (solo si es TRUE)
    *   y buscar (nombre, facultad, nivel y sede sin tildes ni mayúsculas).
    */
   protected function tarjetas(array $programas, array $con_proceso, CacheableMetadata $cache): array {
@@ -292,6 +295,7 @@ class ListadoProgramas {
         'url' => $url->getGeneratedUrl(),
         'facultad' => trim((string) $facultad?->label()),
         'facultad_id' => $facultad ? (string) $facultad->id() : '',
+        'facultad_sigla' => $this->siglaDeFacultad($facultad),
         'nivel' => $nivel,
         'nivel_clave' => (string) $programa->get('field_nivel')->value,
         'sede' => trim((string) $sede?->label()),
@@ -310,6 +314,24 @@ class ListadoProgramas {
     usort($tarjetas, fn(array $a, array $b): int => (int) !empty($b['con_autoevaluacion']) <=> (int) !empty($a['con_autoevaluacion'])
       ?: $this->compararTextos($a['nombre'], $b['nombre']));
     return $tarjetas;
+  }
+
+  /**
+   * Devuelve la sigla guardada de una facultad como clave de tinte.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface|null $facultad
+   *   El término de facultad del programa, si lo tiene.
+   *
+   * @return string
+   *   La sigla en minúsculas (solo letras y números) o una cadena vacía si la
+   *   facultad no tiene sigla o esta trae otros caracteres.
+   */
+  protected function siglaDeFacultad(?EntityInterface $facultad): string {
+    if (!$facultad instanceof FieldableEntityInterface || !$facultad->hasField('field_sigla')) {
+      return '';
+    }
+    $sigla = mb_strtolower(trim((string) $facultad->get('field_sigla')->value));
+    return preg_match('/^[a-z0-9]{1,12}$/', $sigla) === 1 ? $sigla : '';
   }
 
   /**

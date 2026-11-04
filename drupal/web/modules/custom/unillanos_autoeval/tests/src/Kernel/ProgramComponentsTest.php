@@ -96,6 +96,25 @@ class ProgramComponentsTest extends KernelTestBase {
   }
 
   /**
+   * La clave de facultad añade el tinte; una clave no válida no añade nada.
+   */
+  public function testTarjetaTineSegunLaFacultad(): void {
+    $con = $this->renderizar('unillanos:program-card', [
+      'name' => 'A',
+      'faculty' => 'Facultad X',
+      'faculty_key' => 'fcs',
+    ]);
+    $this->assertStringContainsString('class="ua-prog ua-prog--fcs"', $con);
+    $this->assertSame(1, substr_count($con, '<a '));
+    foreach (['', 'FCS', 'a b', '"><script>', 'demasiado-larga-clave-1'] as $clave) {
+      $sin = $this->renderizar('unillanos:program-card', ['name' => 'A', 'faculty_key' => $clave]);
+      $this->assertStringContainsString('class="ua-prog"', $sin, $clave);
+      $this->assertStringNotContainsString('ua-prog--', $sin, $clave);
+      $this->assertStringNotContainsString('<script>', $sin, $clave);
+    }
+  }
+
+  /**
    * Lo vacío se omite y la marca solo sale con evaluated.
    */
   public function testTarjetaOmiteLoVacio(): void {
