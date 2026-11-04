@@ -1,5 +1,9 @@
 /**
  * Componente factor-tabs.
+ *
+ * Etapa 4b: lista de pestañas con objetivos de 44 px como mínimo y estado
+ * activo en verde azulado (borde, fondo claro y número lleno). Radios de 4, 8
+ * y píldora; sin sombras.
  */
 
 .ua-tabs {
@@ -14,7 +18,7 @@
   top: var(--espacio-5);
   background: var(--Surface);
   border: 1px solid var(--borde);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-md);
   padding: var(--espacio-2);
   display: flex;
   flex-direction: column;
@@ -26,8 +30,8 @@
   line-height: 16px;
   letter-spacing: .08em;
   text-transform: uppercase;
-  font-weight: 700;
-  color: var(--tinta-500);
+  font-weight: 600;
+  color: var(--gris-texto);
   padding: var(--espacio-3) var(--espacio-3) 6px;
 }
 
@@ -37,19 +41,22 @@
   gap: var(--espacio-3);
   width: 100%;
   text-align: left;
+  min-height: 44px;
   border: 0;
+  border-left: 3px solid transparent;
   background: transparent;
   padding: 10px var(--espacio-3);
-  border-radius: var(--radio-md);
+  border-radius: var(--radio-sm);
   cursor: pointer;
+  font-family: var(--font-base);
   font-size: 15px;
   line-height: 20px;
-  color: var(--tinta-700);
+  color: var(--gris-texto);
 }
 
 .ua-tab:hover {
   background: var(--superficie-50);
-  color: var(--tinta-900);
+  color: var(--carbon);
 }
 
 .ua-tab__num {
@@ -60,28 +67,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-dm-sans);
-  font-weight: 700;
+  font-family: var(--font-base);
+  font-weight: 600;
   font-size: 13px;
   background: var(--superficie-100);
-  color: var(--tinta-700);
+  color: var(--gris-texto);
 }
 
 .ua-tab[aria-selected="true"] {
-  background: var(--rojo-50);
-  color: var(--tinta-900);
+  background: var(--azul-grisaceo-50);
+  border-left-color: var(--verde-azulado-700);
+  color: var(--carbon);
   font-weight: 600;
 }
 
 .ua-tab[aria-selected="true"] .ua-tab__num {
-  background: var(--Unillanos_Red);
+  background: var(--verde-azulado-700);
   color: var(--Surface);
 }
 
 .ua-panel {
   background: var(--Surface);
   border: 1px solid var(--borde);
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-md);
   overflow: hidden;
 }
 
@@ -92,7 +100,21 @@
 .ua-panel__banner .ua-ph {
   border-radius: 0;
   border: 0;
-  aspect-ratio: 21 / 7;
+  aspect-ratio: 21 / 5;
+}
+
+/* Banda del tema en verde azulado, con el círculo rojo de marca (decorativo). */
+.ua-panel__banner .ua-ph--tema {
+  background-color: var(--verde-azulado-700);
+  background-image:
+    radial-gradient(circle at 94% -40%, var(--rojo-marca) 0 30%, transparent 31%),
+    radial-gradient(circle at 80% 140%, color-mix(in srgb, var(--verde-azulado-600) 90%, transparent) 0 28%, transparent 29%);
+}
+
+.ua-panel__banner .ua-ph--tema .ua-ph__num {
+  font-size: clamp(48px, 9vw, 96px);
+  font-weight: 600;
+  color: color-mix(in srgb, var(--Surface) 30%, transparent);
 }
 
 .ua-panel__body {
@@ -152,12 +174,10 @@
     z-index: 5;
     flex-direction: row;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     border-radius: var(--radio-md);
-    scrollbar-width: none;
-  }
-
-  .ua-tabs__list::-webkit-scrollbar {
-    display: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gris-suave) var(--superficie-100);
   }
 
   .ua-tabs__group {
@@ -168,8 +188,14 @@
     width: auto;
     flex: none;
     white-space: nowrap;
+    border-left: 0;
     border-radius: var(--radio-pill);
-    padding: 6px 14px 6px 6px;
+    padding: 7px 16px 7px 7px;
+  }
+
+  .ua-tab[aria-selected="true"] {
+    outline: 2px solid var(--verde-azulado-700);
+    outline-offset: -2px;
   }
 
   .ua-tab__label {
@@ -192,7 +218,7 @@
   }
 
   .ua-panel__banner .ua-ph {
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 16 / 5;
   }
 
 }
@@ -219,7 +245,28 @@
 
 /* El anillo de foco del panel no debe cambiarle las esquinas. */
 .ua-panel:focus-visible {
-  border-radius: var(--radio-lg);
+  border-radius: var(--radio-md);
+}
+
+/* Las pestañas conservan su forma con el anillo de foco global. */
+.ua-tab:focus-visible {
+  border-radius: var(--radio-sm);
+}
+
+@media (max-width: 1080px) {
+
+  .ua-tab:focus-visible {
+    border-radius: var(--radio-pill);
+  }
+
+}
+
+@media (forced-colors: active) {
+
+  .ua-tab[aria-selected="true"] {
+    border: 2px solid Highlight;
+  }
+
 }
 
 /* Reflujo: el título del panel y el texto largo no deben ensanchar el panel
