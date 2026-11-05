@@ -747,6 +747,8 @@ Rediseño visual por etapas sobre `main` tras la Fase 7. Reglas: solo CSS y marc
 
 **Hueco reservado (excepción deliberada a «lo vacío se omite»):** si no hay duración ni sede, o no hay autoevaluación, la línea existe en el marcado con la misma altura que tendría con dato, **sin texto** (nada de «—», «Sin dato» ni «Pendiente») y con `aria-hidden="true"`, para que todas las tarjetas tengan la misma estructura y la misma altura por fila. Los huecos no entran en `aria-describedby`. `ListadoProgramas::tarjetas()` entrega `modalidad` (de `field_modalidad`, solo si tiene valor) y la tarjeta lee `duracion` si la clave existe.
 
+**Duración del programa (cambio de modelo autorizado solo para este campo):** `node.programa.field_duracion` («Duración (semestres)»), entero sin signo, opcional, mínimo 1 y máximo 20, con la ayuda «Número de semestres que dura el programa. Si no lo sabe, déjelo en blanco.» (por confirmar, `docs/pendientes-acreditacion.md`, sección 25). Va en el formulario completo (después de la sede) y en la ficha simple de Acreditación (modo `acreditacion`, después de «Sede»); el rol `acreditacion` ya edita los programas y no necesita permisos nuevos. `ListadoProgramas::tarjetas()` entrega `duracion` (entero) solo si tiene valor y la tarjeta imprime «N semestres». La migración `programas` lee una columna **opcional** `duracion` (si el CSV no la trae, el campo queda vacío); los CSV de `datos/semillas/` no se modificaron y no se cargó ninguna duración. Reflejado en `MER.md` (`duracion_semestres`), `diccionario-datos.md`, `modelo-de-contenido.md` y `scripts/crear_modelo.php`.
+
 ### Registro de avance
 
 Marca cada fase cuando ya esté fusionada en `main`:

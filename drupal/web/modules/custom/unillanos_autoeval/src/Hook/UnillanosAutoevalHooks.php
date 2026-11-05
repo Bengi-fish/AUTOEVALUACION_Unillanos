@@ -226,6 +226,7 @@ class UnillanosAutoevalHooks {
       'field_nivel' => $this->t('Elija si es de pregrado, especialización, maestría o doctorado.'),
       'field_modalidad' => $this->t('Elija cómo se ofrece el programa, por ejemplo presencial. Si no lo sabe, déjelo en blanco.'),
       'field_sede' => $this->t('Elija la sede donde se ofrece el programa. Si no lo sabe, déjelo en blanco.'),
+      'field_duracion' => $this->t('Número de semestres que dura el programa. Si no lo sabe, déjelo en blanco.'),
       'field_director' => $this->t('Nombre de la persona que dirige el programa.'),
       'field_codigo_snies' => $this->t('Número con el que el Ministerio de Educación identifica el programa (código SNIES).'),
       'field_resolucion_registro' => $this->t('Número y fecha de la resolución que dio el registro calificado.'),

@@ -425,3 +425,8 @@ Textos que escribió el equipo técnico (en lenguaje sencillo) y que **Acreditac
 - [ ] **Campos que se dejaron fuera** del formulario simple (siguen en el formulario completo del administrador): la clave del programa (cambiarla rompería las direcciones de las páginas), el autor, la fecha de creación, el alias de URL, el idioma y el enlace externo de los documentos. Confirmar que Acreditación no necesita ninguno.
 - [ ] **Nombres de las pantallas y de los enlaces del panel** («Ficha: …», «Documento: …», «Subir un documento», «Editar la ficha», «Editar el documento …»).
 
+## 25. Duración del programa (ajuste de `/programas` a la plantilla Pregrado)
+
+- [ ] **Campo «Duración (semestres)»** (`field_duracion`, entero de 1 a 20, opcional): el equipo técnico lo creó y aún no se llenó ningún dato. Acreditación debe entregar la duración de cada programa (en la columna opcional `duracion` de `programas.csv` o en la ficha simple). Mientras no haya dato, la tarjeta deja un hueco reservado sin texto.
+- [ ] **Texto de ayuda por confirmar:** «Número de semestres que dura el programa. Si no lo sabe, déjelo en blanco.» (ficha simple y formulario completo).
+- [ ] **Huecos reservados en la tarjeta:** confirmar con el diseñador que se acepta el espacio en blanco de la línea «duración · sede» y de la píldora cuando no hay dato (decisión deliberada para igualar las tarjetas).

@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.programa.field_acreditacion_hasta
     - field.field.node.programa.field_codigo_snies
     - field.field.node.programa.field_director
+    - field.field.node.programa.field_duracion
     - field.field.node.programa.field_facultad
     - field.field.node.programa.field_imagen
     - field.field.node.programa.field_modalidad
@@ -44,6 +45,13 @@ content:
     region: content
     settings:
       size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_duracion:
+    type: number
+    weight: 9
+    region: content
+    settings:
       placeholder: ''
     third_party_settings: {  }
   field_facultad:

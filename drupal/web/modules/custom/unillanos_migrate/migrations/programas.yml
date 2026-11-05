@@ -12,6 +12,11 @@ process:
     plugin: skip_on_empty
     method: process
     source: codigo_snies
+  # Columna opcional: si el CSV no la trae, el campo queda vacío.
+  field_duracion:
+    plugin: skip_on_empty
+    method: process
+    source: duracion
   field_nivel: nivel
   field_modalidad:
     plugin: skip_on_empty

@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.programa.field_clave
     - field.field.node.programa.field_codigo_snies
     - field.field.node.programa.field_director
+    - field.field.node.programa.field_duracion
     - field.field.node.programa.field_facultad
     - field.field.node.programa.field_imagen
     - field.field.node.programa.field_modalidad
@@ -28,13 +29,13 @@ mode: default
 content:
   created:
     type: datetime_timestamp
-    weight: 10
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }
   field_acreditacion_hasta:
     type: datetime_default
-    weight: 11
+    weight: 12
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -56,10 +57,17 @@ content:
     third_party_settings: {  }
   field_director:
     type: string_textfield
-    weight: 7
+    weight: 8
     region: content
     settings:
       size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_duracion:
+    type: number
+    weight: 7
+    region: content
+    settings:
       placeholder: ''
     third_party_settings: {  }
   field_facultad:
@@ -70,7 +78,7 @@ content:
     third_party_settings: {  }
   field_imagen:
     type: image_image
-    weight: 12
+    weight: 13
     region: content
     settings:
       progress_indicator: throbber
@@ -90,13 +98,13 @@ content:
     third_party_settings: {  }
   field_registro_hasta:
     type: datetime_default
-    weight: 9
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
   field_resolucion_acreditacion:
     type: string_textfield
-    weight: 10
+    weight: 11
     region: content
     settings:
       size: 60
@@ -104,7 +112,7 @@ content:
     third_party_settings: {  }
   field_resolucion_registro:
     type: string_textfield
-    weight: 8
+    weight: 9
     region: content
     settings:
       size: 60
