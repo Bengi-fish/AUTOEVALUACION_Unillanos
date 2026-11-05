@@ -130,6 +130,27 @@ class DocumentosTest extends UnillanosKernelTestBase {
   }
 
   /**
+   * Los conteos del filtro salen guardados del servicio (Etapa 6).
+   */
+  public function testConteosPorCategoriaMasPrograma(): void {
+    $d = $this->programa('Electrónica');
+    $this->documento('Acuerdo A', 'a.pdf', 1000, 'normatividad');
+    $this->documento('Acuerdo B', 'b.pdf', 1000, 'normatividad');
+    $this->documento('Base general', 'c.pdf', 1000, 'documento_base');
+    $this->documento('Plan', 'plan.xlsx', 1000, 'documento_base', ['field_proceso' => $d['proceso']->id()]);
+    $this->documento('Informe', 'informe.pdf', 1000, 'informe', ['field_proceso' => $d['proceso']->id()]);
+
+    $datos = $this->documentos()->publicados(new CacheableMetadata());
+    $this->assertSame(5, $datos['total']);
+    $this->assertSame(2, $datos['en_programas']);
+    $por_categoria = array_column($datos['generales'], 'conteo', 'categoria');
+    $this->assertSame(['normatividad' => 2, 'documento_base' => 1], $por_categoria);
+    $this->assertSame(2, $datos['programas'][0]['conteo']);
+    // Los conteos suman el total.
+    $this->assertSame($datos['total'], array_sum($por_categoria) + $datos['en_programas']);
+  }
+
+  /**
    * Cuatro documentos: normativa general y los del programa, bien ordenados.
    */
   public function testCuatroDocumentos(): void {

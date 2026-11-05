@@ -1,0 +1,44 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Filtro de documentos
+status: stable
+group: Contenido
+description: 'Panel con un botón por grupo de documentos y su conteo. Con JavaScript muestra solo el grupo elegido (cada grupo es una sección con el id de la opción) y anuncia cuántos documentos se ven; sin JavaScript el panel no se muestra (hidden) y todas las secciones quedan visibles. Solo muestra los conteos que recibe: no cuenta nada.'
+props:
+  type: object
+  required:
+    - options
+  properties:
+    title:
+      type: string
+      title: Título del panel
+      description: 'Por defecto «Filtrar por tipo».'
+    all_label:
+      type: string
+      title: Rótulo de «todos»
+      description: 'Por defecto «Todos».'
+    total:
+      type: integer
+      title: Total de documentos
+      minimum: 0
+    options:
+      type: array
+      title: Opciones
+      description: 'Una por sección: key es el id de la sección (solo letras, números, guion y guion bajo), label su nombre y count cuántos documentos tiene. Las opciones sin key válida o sin rótulo no se imprimen.'
+      items:
+        type: object
+        required:
+          - key
+          - label
+        properties:
+          key:
+            type: string
+          label:
+            type: string
+          count:
+            type: integer
+            minimum: 0
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once
+    - unillanos/motion
