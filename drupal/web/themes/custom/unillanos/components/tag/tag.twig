@@ -8,4 +8,4 @@
 {% if variant %}
   {% set clases = clases|merge(['ua-tag--' ~ variant]) %}
 {% endif %}
-<span{{ attributes.addClass(clases) }}>{{ label }}</span>
+<span{{ attributes.addClass(clases) }}>{{ label|sin_cortes }}</span>

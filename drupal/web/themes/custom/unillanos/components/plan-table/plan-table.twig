@@ -29,12 +29,12 @@
               {%- elseif celda.type == 'plazo' -%}
                 {% include 'unillanos:plazo' with {variant: celda.value} only %}
               {%- else -%}
-                {%- if celda.eyebrow %}<span class="ua-plan__eyebrow">{{ celda.eyebrow }}</span>{% endif -%}
+                {%- if celda.eyebrow %}<span class="ua-plan__eyebrow">{{ celda.eyebrow|sin_cortes }}</span>{% endif -%}
                 {# Un texto con saltos de línea se imprime con ellos (white-space: pre-line). #}
                 {%- if celda.value and "\n" in celda.value -%}
-                  <span class="ua-plan__text">{{ celda.value }}</span>
+                  <span class="ua-plan__text">{{ celda.value|sin_cortes }}</span>
                 {%- else -%}
-                  {{ celda.value }}
+                  {{ celda.value|sin_cortes }}
                 {%- endif -%}
                 {%- if celda.details and celda.details.groups %}
                   {% set grupos = [] %}

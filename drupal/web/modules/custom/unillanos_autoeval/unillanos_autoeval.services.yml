@@ -63,3 +63,8 @@ services:
     class: Drupal\unillanos_autoeval\Service\DatosMarco
     arguments: ['@config.factory']
   Drupal\unillanos_autoeval\Service\DatosMarco: '@unillanos_autoeval.datos_marco'
+
+  unillanos_autoeval.twig_extension:
+    class: Drupal\unillanos_autoeval\Twig\UnillanosTwigExtension
+    tags:
+      - { name: twig.extension }

@@ -37,10 +37,24 @@
   height: 48px;
 }
 
-/* Con poco ancho el texto de ayuda termina en puntos suspensivos. */
+/* Un campo no puede partir su texto de ayuda en dos líneas: a 320 px se
+   reducen el relleno y el cuerpo para que «Nombre, facultad, nivel o sede»
+   quepa entero (el recorte con «…» queda solo como último recurso). */
 .ua-searchbar .ua-search input {
   min-width: 0;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 360px) {
+
+  .ua-searchbar .ua-search {
+    padding: 0 var(--espacio-2);
+  }
+
+  .ua-searchbar .ua-search input {
+    font-size: 14px;
+  }
+
 }
 
 /* El foco lo muestra el contenedor (.ua-search:focus-within); sin esto el

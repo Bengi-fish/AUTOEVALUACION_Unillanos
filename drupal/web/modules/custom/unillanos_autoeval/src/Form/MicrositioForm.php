@@ -138,7 +138,7 @@ final class MicrositioForm extends ConfigFormBase {
       '#type' => 'textarea',
       '#title' => $this->t('Descripción'),
       '#default_value' => $pie['descripcion'] ?? '',
-      '#rows' => 2,
+      '#rows' => 3,
     ];
     foreach ([
       'entidades' => $this->t('Entidades'),
@@ -169,7 +169,7 @@ final class MicrositioForm extends ConfigFormBase {
       '#type' => 'textarea',
       '#title' => $this->t('Aviso legal'),
       '#default_value' => $pie['legal'] ?? '',
-      '#rows' => 2,
+      '#rows' => 3,
     ];
     return parent::buildForm($form, $form_state);
   }

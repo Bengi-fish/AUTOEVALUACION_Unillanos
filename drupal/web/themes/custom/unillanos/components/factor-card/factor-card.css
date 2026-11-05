@@ -84,7 +84,6 @@
   font-weight: 600;
   color: var(--carbon);
   overflow-wrap: break-word;
-  hyphens: auto;
 }
 
 /* Valoración: cifra y barra, y el grado como etiqueta en píldora. */

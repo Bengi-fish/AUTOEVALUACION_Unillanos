@@ -8,9 +8,9 @@
 {% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h2' %}
 <div{{ attributes.addClass(variant == 'panel' ? 'ua-panel-intro' : 'ua-section__head') }}>
   <div>
-    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
-    <{{ nivel }} class="ua-h2">{{ title }}</{{ nivel }}>
-    {% if lead %}<p>{{ lead }}</p>{% endif %}
+    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow|sin_cortes }}</span>{% endif %}
+    <{{ nivel }} class="ua-h2">{{ title|sin_cortes }}</{{ nivel }}>
+    {% if lead %}<p>{{ lead|sin_cortes }}</p>{% endif %}
   </div>
   {% block right %}{{ right }}{% endblock %}
 </div>

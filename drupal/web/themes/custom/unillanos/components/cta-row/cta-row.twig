@@ -8,8 +8,8 @@
 {% set atributos_boton = view_go ? create_attribute({'data-ua-view-go': view_go}) : create_attribute() %}
 <div{{ attributes.addClass('ua-cta-row') }}>
   <div>
-    <{{ nivel }} class="ua-h3">{{ title }}</{{ nivel }}>
-    {% if text %}<p>{{ text }}</p>{% endif %}
+    <{{ nivel }} class="ua-h3">{{ title|sin_cortes }}</{{ nivel }}>
+    {% if text %}<p>{{ text|sin_cortes }}</p>{% endif %}
   </div>
   {# Con un segundo destino (secondary_label y secondary_url) los dos botones van en una fila. #}
   {% set con_secundario = secondary_label and secondary_url %}

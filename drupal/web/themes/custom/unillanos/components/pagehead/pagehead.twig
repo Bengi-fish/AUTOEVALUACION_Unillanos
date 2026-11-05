@@ -24,9 +24,9 @@
     {% endif %}
     <div class="ua-container ua-pagehead__cuerpo">
       <div class="ua-pagehead__row">{{ block('meta') }}</div>
-      {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
-      <{{ nivel }} class="ua-pagehead__title">{{ title }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
-      {% if lead %}<p class="ua-pagehead__lead">{{ lead }}</p>{% endif %}
+      {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow|sin_cortes }}</span>{% endif %}
+      <{{ nivel }} class="ua-pagehead__title">{{ title|sin_cortes }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
+      {% if lead %}<p class="ua-pagehead__lead">{{ lead|sin_cortes }}</p>{% endif %}
       {{ block('extra') }}
     </div>
   </div>
@@ -38,9 +38,9 @@
       {% include 'unillanos:breadcrumb' with {items: breadcrumb} only %}
     {% endif %}
     <div class="ua-pagehead__row">{% block meta %}{{ meta }}{% endblock %}</div>
-    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
-    <{{ nivel }} class="ua-pagehead__title">{{ title }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
-    {% if lead %}<p class="ua-pagehead__lead">{{ lead }}</p>{% endif %}
+    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow|sin_cortes }}</span>{% endif %}
+    <{{ nivel }} class="ua-pagehead__title">{{ title|sin_cortes }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
+    {% if lead %}<p class="ua-pagehead__lead">{{ lead|sin_cortes }}</p>{% endif %}
     {% block extra %}{{ extra }}{% endblock %}
   </div>
 </section>

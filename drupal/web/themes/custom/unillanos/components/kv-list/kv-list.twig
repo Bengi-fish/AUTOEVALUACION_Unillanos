@@ -11,7 +11,7 @@
 {% if filas %}
 <dl{{ attributes.addClass('ua-kv') }}>
   {% for dato in filas %}
-    <div class="ua-kv__row"><dt class="ua-kv__term">{{ dato.term }}</dt><dd class="ua-kv__value">{{ dato.value }}</dd></div>
+    <div class="ua-kv__row"><dt class="ua-kv__term">{{ dato.term }}</dt><dd class="ua-kv__value">{{ dato.value|sin_cortes }}</dd></div>
   {% endfor %}
 </dl>
 {% endif %}

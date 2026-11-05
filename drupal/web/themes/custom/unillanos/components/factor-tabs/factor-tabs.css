@@ -173,6 +173,7 @@
     top: 0;
     z-index: 5;
     flex-direction: row;
+    align-items: flex-start;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     border-radius: var(--radio-md);
@@ -187,9 +188,9 @@
   .ua-tab {
     width: auto;
     flex: none;
-    white-space: nowrap;
+    white-space: normal;
     border-left: 0;
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-md);
     padding: 7px 16px 7px 7px;
   }
 
@@ -198,10 +199,14 @@
     outline-offset: -2px;
   }
 
+  /* El rótulo pasa a dos o más líneas en lugar de recortarse con «…». */
+  .ua-tab {
+    max-width: min(420px, 86vw);
+  }
+
   .ua-tab__label {
-    max-width: 220px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    min-width: 0;
+    overflow-wrap: break-word;
   }
 
 }
@@ -256,7 +261,7 @@
 @media (max-width: 1080px) {
 
   .ua-tab:focus-visible {
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-md);
   }
 
 }
