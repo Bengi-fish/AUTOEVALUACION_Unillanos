@@ -1,10 +1,14 @@
 /**
  * Componente factor-card.
+ *
+ * Etapa 4b: tarjeta plana (borde de 1 px, sin sombra) con una banda de color
+ * del tema, el número, el nombre y la valoración; el grado va como etiqueta
+ * en píldora. Columnas: 4 en escritorio, 2 en tableta y 1 en móvil.
  */
 
 .ua-factor-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--espacio-5);
 }
 
@@ -16,37 +20,46 @@
   border: 1px solid var(--borde);
   border-radius: var(--radio-md);
   overflow: hidden;
-  box-shadow: var(--sombra-1);
   cursor: pointer;
   padding: 0;
-  transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+  transition: border-color .15s ease, background-color .15s ease;
   text-decoration: none;
   color: inherit;
+  min-width: 0;
 }
 
 .ua a.ua-factor-card[href]:hover {
-  box-shadow: var(--sombra-2);
-  border-color: var(--rojo-100);
+  border-color: var(--verde-azulado-700);
+  background: var(--superficie-50);
 }
 
+/* Banda decorativa del tema: color sólido con un círculo rojo de marca. */
 .ua-factor-card .ua-ph {
   border-radius: 0;
   border: 0;
-  border-bottom: 1px solid var(--borde);
-  aspect-ratio: 16 / 8;
+  aspect-ratio: auto;
+  height: 72px;
+}
+
+.ua-factor-card .ua-ph--tema {
+  background-color: var(--verde-azulado-700);
+  background-image:
+    radial-gradient(circle at 94% -30%, var(--rojo-marca) 0 34%, transparent 35%),
+    radial-gradient(circle at 78% 130%, color-mix(in srgb, var(--verde-azulado-600) 90%, transparent) 0 30%, transparent 31%);
+  filter: none;
 }
 
 .ua-factor-card__num {
   position: absolute;
-  left: var(--espacio-3);
-  top: var(--espacio-3);
-  background: var(--Unillanos_Red);
-  color: var(--Surface);
-  font-family: var(--font-dm-sans);
-  font-weight: 800;
+  left: var(--espacio-4);
+  bottom: var(--espacio-3);
+  background: var(--Surface);
+  color: var(--carbon);
+  font-family: var(--font-base);
+  font-weight: 600;
   font-size: 15px;
   line-height: 20px;
-  padding: 4px 10px;
+  padding: 2px 10px;
   border-radius: var(--radio-sm);
 }
 
@@ -60,14 +73,31 @@
   flex-direction: column;
   gap: var(--espacio-3);
   flex: 1;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .ua-factor-card__title {
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   font-size: 17px;
-  line-height: 23px;
-  font-weight: 700;
-  color: var(--tinta-900);
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--carbon);
+  overflow-wrap: break-word;
+}
+
+/* Valoración: cifra y barra, y el grado como etiqueta en píldora. */
+.ua-factor-card .ua-meter__grade {
+  justify-self: start;
+  margin-top: var(--espacio-1);
+  padding: 2px var(--espacio-3);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-pill);
+  background: var(--superficie-50);
+  color: var(--gris-texto);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 600;
 }
 
 .ua-factor-card__foot {
@@ -75,7 +105,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--rojo-700);
+  min-height: 24px;
+  padding-top: var(--espacio-2);
+  color: var(--rojo-texto);
   font-size: 14px;
   font-weight: 600;
 }
@@ -85,69 +117,8 @@
   color: inherit;
 }
 
-@media (max-width: 1080px) {
-
-  .ua-factor-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-}
-
-@media (max-width: 860px) {
-
-  .ua-factor-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--espacio-4);
-  }
-
-}
-
-@media (max-width: 560px) {
-
-  .ua-factor-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .ua-factor-card {
-    flex-direction: row;
-  }
-
-  .ua-factor-card__media {
-    width: 38%;
-    flex: none;
-  }
-
-  .ua-factor-card .ua-ph {
-    aspect-ratio: auto;
-    height: 100%;
-    border-bottom: 0;
-    border-right: 1px solid var(--borde);
-  }
-
-  .ua-factor-card .ua-ph__label, .ua-factor-card .ua-ph__size, .ua-factor-card .ua-ph svg {
-    display: none;
-  }
-
-  .ua-factor-card__body {
-    padding: var(--espacio-3) var(--espacio-4);
-    gap: var(--espacio-2);
-  }
-
-  .ua-factor-card__title {
-    font-size: 16px;
-    line-height: 21px;
-  }
-
-  .ua-factor-card__foot {
-    display: none;
-  }
-
-}
-
-/* El anillo de foco no debe perderse bajo la sombra del hover, ni cambiar las
-   esquinas de la tarjeta. */
+/* El anillo de foco global no debe cambiar las esquinas de la tarjeta. */
 .ua a.ua-factor-card[href]:focus-visible {
-  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
   border-radius: var(--radio-md);
 }
 
@@ -156,23 +127,31 @@
   cursor: default;
 }
 
-/* La columna de texto no puede ser más ancha que la tarjeta (overflow oculto). */
-.ua-factor-card__body {
-  min-width: 0;
-  max-width: 100%;
+@media (max-width: 1080px) {
+
+  .ua-factor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--espacio-4);
+  }
+
 }
 
-.ua-factor-card__title {
-  overflow-wrap: anywhere;
-  hyphens: auto;
+@media (max-width: 560px) {
+
+  .ua-factor-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ua-factor-card .ua-ph {
+    height: 56px;
+  }
+
 }
 
-/* Con fondo del tema, cada tarjeta gira un poco el degradado para que la cuadrícula no sea uniforme. */
-.ua-factor-card:nth-child(3n + 2) .ua-ph--tema {
-  filter: hue-rotate(-8deg) saturate(1.05);
-}
+@media (forced-colors: active) {
 
-.ua-factor-card:nth-child(3n + 3) .ua-ph--tema {
-  background-position: 30% 0;
-  filter: brightness(.94);
+  .ua-factor-card {
+    border: 1px solid CanvasText;
+  }
+
 }

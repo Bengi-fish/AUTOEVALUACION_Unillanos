@@ -1,0 +1,38 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Franja superior
+status: stable
+group: Página base
+description: 'Franja oscura de 44 px sobre el encabezado: enlaces a la web principal y a servicios de la Universidad, y el enlace de accesibilidad a la derecha. Sin enlaces no imprime nada. Un destino que no es seguro se imprime sin href (mismo filtro que unillanos:button).'
+props:
+  type: object
+  properties:
+    links:
+      type: array
+      title: Enlaces
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          title:
+            type: string
+          url:
+            type: string
+          externo:
+            type: boolean
+            description: 'Añade el ícono de enlace externo.'
+    accessibility:
+      type:
+        - object
+        - 'null'
+      title: Enlace de accesibilidad
+      description: 'Se imprime a la derecha; sin título o sin url no se imprime.'
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+    label:
+      type: string
+      title: Nombre de la región para lectores de pantalla
+      description: 'Por defecto «Enlaces de la Universidad».'

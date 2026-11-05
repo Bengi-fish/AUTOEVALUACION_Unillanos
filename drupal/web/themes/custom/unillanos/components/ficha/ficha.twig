@@ -1,11 +1,25 @@
 {#
 /**
  * @file
- * Ficha de datos (dl).
+ * Ficha de datos. Sin `variant` es la rejilla (dl); con `variant: aside` es un
+ * aside con título y filas término/valor (unillanos:kv-list). En el aside, sin
+ * datos no se imprime nada.
  */
 #}
+{% if variant == 'aside' %}
+  {% set hay_datos = false %}
+  {% for dato in items %}{% if dato.term and dato.value %}{% set hay_datos = true %}{% endif %}{% endfor %}
+  {% if hay_datos %}
+<aside{{ attributes.addClass('ua-ficha-aside').setAttribute('aria-labelledby', 'ua-ficha-aside-titulo') }}>
+  {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
+  <h2 class="ua-ficha-aside__title" id="ua-ficha-aside-titulo">{{ title }}</h2>
+  {% include 'unillanos:kv-list' with {items: items} only %}
+</aside>
+  {% endif %}
+{% else %}
 <dl{{ attributes.addClass(compact ? ['ua-ficha', 'ua-ficha--compact'] : ['ua-ficha']) }}>
   {% for dato in items %}
     <div><dt>{{ dato.term }}</dt><dd>{{ dato.value }}</dd></div>
   {% endfor %}
 </dl>
+{% endif %}

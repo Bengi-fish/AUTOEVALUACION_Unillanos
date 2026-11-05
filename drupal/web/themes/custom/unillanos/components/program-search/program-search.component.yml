@@ -11,7 +11,7 @@ props:
     programs:
       type: array
       title: Programas
-      description: 'En el orden en que se muestran. Cada uno lleva los datos de unillanos:program-card (name, id, url, faculty, level, campus, evaluated), los de filtro (search, faculty_id, level_key, campus_id) y hidden (true si el servidor lo oculta).'
+      description: 'En el orden en que se muestran. Cada uno lleva los datos de unillanos:program-card (name, id, url, faculty, faculty_key, level, campus, evaluated), los de filtro (search, faculty_id, level_key, campus_id) y hidden (true si el servidor lo oculta).'
       items:
         type: object
         required:
@@ -36,6 +36,9 @@ props:
             description: 'Nombre, facultad, nivel y sede sin tildes y en minúsculas.'
           faculty_id:
             type: [string, integer]
+          faculty_key:
+            type: string
+            description: 'Sigla de la facultad en minúsculas; da el tinte de la tarjeta (unillanos:program-card).'
           level_key:
             type: string
           campus_id:

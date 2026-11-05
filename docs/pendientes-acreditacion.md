@@ -405,3 +405,14 @@ Textos que escribió el equipo técnico y que **Acreditación debe confirmar o r
 - [ ] **`/institucional`:** la ruta no se creó en la Fase 7; el menú y el pie solo tienen enlaces a páginas que existen. Definir qué contiene esa página y quién redacta su texto.
 
 Los ajustes técnicos de la Fase 7 (foco del buscador, logos de la guía, placeholder del buscador, etc.) están en `fase-7/ajustes-pendientes.md`, fuera del repositorio.
+
+## 23. Rediseño del micrositio (etapas 1 a 8): textos y datos pendientes
+
+Textos nuevos que escribió el equipo técnico durante el rediseño y que **Acreditación debe confirmar o redactar**. Se muestran tal cual hasta entonces; ninguno se calcula.
+
+- [ ] **Panel de filtro de `/documentos`** (Etapa 6): «Filtrar por tipo», «Todos», el rótulo «Programas» y el aviso «Se muestra 1 documento» / «Se muestran N documentos».
+- [ ] **Cabecera, franja superior y pie:** se editan en `/admin/config/unillanos/micrositio` (Etapa 8). Faltan los datos reales: enlace a la web principal, entidades, sedes, contacto, redes, enlaces legales y enlace de accesibilidad.
+- [ ] **Tarjetas de facultad con conteo** (Etapa 5, no implementadas): requieren una descripción corta y, si se quiere, una imagen por facultad (`field_descripcion` y `field_imagen` en la taxonomía `facultad`) y el texto del conteo («9 programas»). Decidir si se quieren y de dónde sale el dato.
+- [ ] **Título de la portada con League Gothic:** no está incorporada; espera la confirmación del diseñador.
+- [ ] **Textos editoriales de la portada:** siguen siendo los del prototipo (bajada, «¿Qué es la autoevaluación?», principios y fases).
+

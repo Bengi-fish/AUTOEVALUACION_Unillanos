@@ -1,15 +1,18 @@
 /**
- * Componente estado.
+ * Componente estado: píldora con borde de 1 px, ícono (check o información) y
+ * texto de 13 px. El ícono acompaña al color: el estado no depende solo de él.
  */
 
 .ua-estado {
   display: inline-flex;
   align-items: center;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 13px;
   line-height: 18px;
-  font-weight: 700;
+  font-weight: 600;
+  border: 1px solid currentColor;
   border-radius: var(--radio-pill);
-  padding: 1px 10px;
+  padding: 3px var(--espacio-3) 3px var(--espacio-2);
   white-space: nowrap;
 }
 

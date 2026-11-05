@@ -18,10 +18,10 @@
         {{ doc.kind|default('PDF') }}
       </span>
       <div class="ua-doc__main">
-        {% if doc.cat %}<span class="ua-doc__cat">{{ doc.cat }}</span>{% endif %}
-        <{{ nivel }} class="ua-doc__title">{{ doc.title }}</{{ nivel }}>
-        {% if doc.desc %}<p class="ua-doc__desc">{{ doc.desc }}</p>{% endif %}
-        {% if doc.meta %}<p class="ua-meta">{{ doc.meta }}</p>{% endif %}
+        {% if doc.cat %}<span class="ua-doc__cat">{{ doc.cat|sin_cortes }}</span>{% endif %}
+        <{{ nivel }} class="ua-doc__title">{{ doc.title|sin_cortes }}</{{ nivel }}>
+        {% if doc.desc %}<p class="ua-doc__desc">{{ doc.desc|sin_cortes }}</p>{% endif %}
+        {% if doc.meta %}<p class="ua-meta">{{ doc.meta|sin_cortes }}</p>{% endif %}
       </div>
       {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ doc.title ~ (doc.meta ? ' (' ~ doc.meta ~ ')' : '') ~ (doc.url ? '' : ' (' ~ ('aún no disponible'|t) ~ ')'), variant: 'icono', icon: 'download', url: doc.url|default(''), disabled: not doc.url} only %}
     </li>

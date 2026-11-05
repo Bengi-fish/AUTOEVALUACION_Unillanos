@@ -1,5 +1,7 @@
 /**
- * Componente header.
+ * Componente header: 80 px blancos con el logo, el nombre del sistema, el menú
+ * principal en línea y las herramientas. La franja superior es otro componente
+ * (topbar).
  */
 
 .ua-header {
@@ -14,19 +16,18 @@
   align-items: center;
   gap: var(--espacio-5);
   min-height: var(--alto-encabezado);
+  padding: 0 var(--espacio-6);
 }
 
 .ua-brand {
   display: flex;
   align-items: center;
-  gap: var(--espacio-5);
+  gap: var(--espacio-3);
   text-decoration: none;
   min-width: 0;
 }
 
 .ua-brand__system {
-  border-left: 1px solid var(--borde);
-  padding-left: var(--espacio-5);
   line-height: 1.15;
 }
 
@@ -38,9 +39,9 @@
 
 .ua-brand__name {
   display: block;
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--tinta-900);
 }
 
@@ -49,6 +50,10 @@
   display: flex;
   align-items: center;
   gap: var(--espacio-3);
+}
+
+.ua-header .ua-header__search {
+  width: 240px;
 }
 
 .ua-menu-toggle {
@@ -64,26 +69,41 @@
   color: var(--tinta-900);
 }
 
+/* El buscador se reduce a su botón (el campo está en /programas). */
+@media (max-width: 1180px) {
+
+  .ua-header .ua-header__search {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .ua-header .ua-header__search input {
+    display: none;
+  }
+
+  .ua-header .ua-search__submit {
+    width: 100%;
+    margin: 0;
+    border-radius: var(--radio-md);
+  }
+
+}
+
 @media (max-width: 860px) {
 
-  .ua-brand__system, .ua-header__tools .ua-search, .ua-header__tools .ua-btn {
+  .ua-header__tools label.ua-search, .ua-header__tools .ua-btn {
     display: none;
   }
 
   .ua-header__bar {
     min-height: 64px;
+    padding: 0 var(--espacio-4);
+    gap: var(--espacio-3);
   }
 
   .ua-header .ua-logos__img {
     height: 44px;
-  }
-
-  .ua-header .ua-logos {
-    gap: var(--espacio-3);
-  }
-
-  .ua-header .ua-logos__img + .ua-logos__img {
-    padding-left: var(--espacio-3);
   }
 
   .ua-menu-toggle {
@@ -92,18 +112,10 @@
 
 }
 
-@media (max-width: 560px) {
+@media (max-width: 359px) {
 
-  .ua-header .ua-logos__img {
-    height: 42px;
-  }
-
-  .ua-header .ua-logos {
-    gap: var(--espacio-2);
-  }
-
-  .ua-header .ua-logos__img + .ua-logos__img {
-    padding-left: var(--espacio-2);
+  .ua-brand__system {
+    display: none;
   }
 
 }

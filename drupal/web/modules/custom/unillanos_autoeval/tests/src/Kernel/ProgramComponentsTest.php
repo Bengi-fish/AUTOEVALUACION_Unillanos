@@ -96,6 +96,56 @@ class ProgramComponentsTest extends KernelTestBase {
   }
 
   /**
+   * La clave de facultad añade el tinte; una clave no válida no añade nada.
+   */
+  public function testTarjetaTineSegunLaFacultad(): void {
+    $con = $this->renderizar('unillanos:program-card', [
+      'name' => 'A',
+      'faculty' => 'Facultad X',
+      'faculty_key' => 'fcs',
+    ]);
+    $this->assertStringContainsString('class="ua-prog ua-prog--fcs"', $con);
+    $this->assertSame(1, substr_count($con, '<a '));
+    foreach (['', 'FCS', 'a b', '"><script>', 'demasiado-larga-clave-1'] as $clave) {
+      $sin = $this->renderizar('unillanos:program-card', ['name' => 'A', 'faculty_key' => $clave]);
+      $this->assertStringContainsString('class="ua-prog"', $sin, $clave);
+      $this->assertStringNotContainsString('ua-prog--', $sin, $clave);
+      $this->assertStringNotContainsString('<script>', $sin, $clave);
+    }
+  }
+
+  /**
+   * La fila de llamada a la acción: un botón o dos en la misma fila (Etapa 7).
+   */
+  public function testCtaRowImprimeSegundoBotonSoloCompleto(): void {
+    $base = [
+      'title' => 'Ingeniería Electrónica',
+      'heading' => 'h3',
+      'button_label' => 'Ver el programa',
+      'button_url' => '/programas/ingenieria-electronica',
+    ];
+    $uno = $this->renderizar('unillanos:cta-row', $base);
+    $this->assertSame(1, substr_count($uno, '<a '));
+    $this->assertStringNotContainsString('ua-cta-row__acciones', $uno);
+
+    $dos = $this->renderizar('unillanos:cta-row', $base + [
+      'secondary_label' => 'Ver todos los programas',
+      'secondary_url' => '/programas',
+    ]);
+    $this->assertSame(2, substr_count($dos, '<a '));
+    $this->assertStringContainsString('ua-cta-row__acciones', $dos);
+    $this->assertStringContainsString('href="/programas"', $dos);
+    $this->assertStringContainsString('ua-btn--secundario', $dos);
+    $this->assertLessThan(strpos($dos, 'Ver todos los programas'), strpos($dos, 'Ver el programa'));
+
+    // Sin destino o sin rótulo, el segundo botón no se imprime.
+    foreach ([['secondary_label' => 'Ver todos'], ['secondary_url' => '/programas']] as $incompleto) {
+      $html = $this->renderizar('unillanos:cta-row', $base + $incompleto);
+      $this->assertSame(1, substr_count($html, '<a '));
+    }
+  }
+
+  /**
    * Lo vacío se omite y la marca solo sale con evaluated.
    */
   public function testTarjetaOmiteLoVacio(): void {
@@ -117,6 +167,24 @@ class ProgramComponentsTest extends KernelTestBase {
     $this->assertStringNotContainsString('href', $minimo);
     $this->assertStringNotContainsString('aria-labelledby', $minimo);
     $this->assertStringNotContainsString('aria-describedby', $minimo);
+  }
+
+  /**
+   * El campo de texto dice todo lo que busca (ajuste #3 de la Fase 7).
+   *
+   * El texto de ayuda nombra el nombre, la facultad, el nivel y la sede: son
+   * los cuatro datos que contiene el campo de búsqueda de cada programa.
+   */
+  public function testElTextoDeAyudaDiceTodoLoQueBusca(): void {
+    $html = $this->renderizar('unillanos:program-search', [
+      'programs' => [['name' => 'Uno', 'id' => 1, 'url' => '/programas/uno', 'search' => 'uno']],
+      'action' => '/programas',
+    ]);
+    $this->assertStringContainsString('placeholder="Nombre, facultad, nivel o sede"', $html);
+    $this->assertStringNotContainsString('placeholder="Nombre o facultad"', $html);
+    // La etiqueta visible sigue ligada al campo (el placeholder no la suple).
+    $this->assertMatchesRegularExpression('~<label class="ua-searchbar__lab" for="prog-q">Buscar un programa</label>~', $html);
+    $this->assertStringContainsString('maxlength="100"', $html);
   }
 
   /**

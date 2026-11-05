@@ -7,7 +7,8 @@
  * sin él, el formulario se envía y el servidor marca como hidden lo que no
  * coincide. Cada control tiene su etiqueta visible. El contador es una región
  * role="status" que solo cambia de texto cuando la persona usa un control.
- * Lo vacío se omite: un filtro sin opciones no se imprime y sin programas no
+ * El campo de texto busca en el nombre, la facultad, el nivel y la sede (así lo
+ * dice su texto de ayuda). Lo vacío se omite: un filtro sin opciones no se imprime y sin programas no
  * hay controles.
  */
 #}
@@ -31,7 +32,7 @@
         <label class="ua-searchbar__lab" for="{{ uid }}-q">{{ 'Buscar un programa'|t }}</label>
         <div class="ua-search ua-search--full">
           {%- include 'unillanos:icon' with {name: 'search'} only -%}
-          <input type="search" id="{{ uid }}-q" name="q" value="{{ valores.q }}" maxlength="100" autocomplete="off" placeholder="{{ 'Nombre o facultad'|t }}" data-ua-prog-q>
+          <input type="search" id="{{ uid }}-q" name="q" value="{{ valores.q }}" maxlength="100" autocomplete="off" placeholder="{{ 'Nombre, facultad, nivel o sede'|t }}" data-ua-prog-q>
         </div>
       </div>
       {% set controles = [
@@ -75,6 +76,7 @@
             id: programa.id|default(''),
             url: programa.url|default(''),
             faculty: programa.faculty|default(''),
+            faculty_key: programa.faculty_key|default(''),
             level: programa.level|default(''),
             campus: programa.campus|default(''),
             evaluated: programa.evaluated|default(false),

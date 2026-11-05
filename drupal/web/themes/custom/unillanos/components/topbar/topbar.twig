@@ -1,0 +1,43 @@
+{#
+/**
+ * @file
+ * Franja superior (44 px). Sin enlaces ni accesibilidad no imprime nada.
+ *
+ * Un destino que no sea relativo a la raíz (una sola barra, sin «\» ni
+ * espacios detrás), ancla, consulta, http(s), mailto o tel se imprime sin
+ * href (mismo filtro que unillanos:button).
+ *
+ * En pantallas pequeñas solo queda visible el enlace de accesibilidad: los
+ * demás enlaces ya están en la web principal y no caben.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set acceso = accessibility and accessibility.title and accessibility.url and ((accessibility.url ~ '') matches seguro) %}
+{% if links or acceso %}
+  <div{{ attributes.addClass(acceso ? 'ua-topbar' : ['ua-topbar', 'ua-topbar--solo-enlaces']) }}>
+    <nav class="ua-topbar__inner" aria-label="{{ label|default('Enlaces de la Universidad'|t) }}">
+      {% if links %}
+        <ul class="ua-topbar__list" role="list">
+          {% for enlace in links %}
+            <li class="ua-topbar__item">
+              {%- if enlace.url and ((enlace.url ~ '') matches seguro) -%}
+                <a class="ua-topbar__link" href="{{ enlace.url }}"{% if enlace.externo %} rel="noopener"{% endif %}>
+                  <span>{{ enlace.title }}</span>
+                  {%- if enlace.externo %}{% include 'unillanos:icon' with {name: 'external', size: 'sm'} only %}<span class="ua-sr"> ({{ 'enlace externo'|t }})</span>{% endif -%}
+                </a>
+              {%- else -%}
+                <span class="ua-topbar__link">{{ enlace.title }}</span>
+              {%- endif -%}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% if acceso %}
+        <a class="ua-topbar__link ua-topbar__acceso" href="{{ accessibility.url }}">
+          {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
+          <span>{{ accessibility.title }}</span>
+        </a>
+      {% endif %}
+    </nav>
+  </div>
+{% endif %}

@@ -3,7 +3,7 @@
  */
 
 .ua-stats {
-  background: var(--Unillanos_Red);
+  background: var(--verde-azulado-900);
   color: var(--Surface);
 }
 
@@ -14,7 +14,7 @@
 
 .ua-stat {
   padding: var(--espacio-6) var(--espacio-5);
-  border-left: 1px solid rgba(255,255,255,.28);
+  border-left: 1px solid color-mix(in srgb, var(--Surface) 28%, transparent);
 }
 
 .ua-stat:first-child {
@@ -24,10 +24,10 @@
 
 .ua-stat__value {
   display: block;
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   font-size: 40px;
   line-height: 44px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -.02em;
 }
 
@@ -36,6 +36,7 @@
   font-size: 15px;
   line-height: 22px;
   margin-top: 6px;
+  color: var(--azul-grisaceo-100);
 }
 
 @media (max-width: 860px) {
@@ -47,7 +48,7 @@
   .ua-stat {
     padding: var(--espacio-5) var(--espacio-4);
     border-left: 0;
-    border-top: 1px solid rgba(255,255,255,.28);
+    border-top: 1px solid color-mix(in srgb, var(--Surface) 28%, transparent);
   }
 
   .ua-stat:nth-child(-n+2) {
@@ -59,7 +60,7 @@
   }
 
   .ua-stat:nth-child(even) {
-    border-left: 1px solid rgba(255,255,255,.28);
+    border-left: 1px solid color-mix(in srgb, var(--Surface) 28%, transparent);
   }
 
   .ua-stat__value {

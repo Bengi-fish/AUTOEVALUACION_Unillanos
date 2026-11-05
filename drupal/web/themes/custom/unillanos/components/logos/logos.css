@@ -24,6 +24,11 @@
   height: 72px;
 }
 
+/* En el encabezado, un solo logo de 48 px de alto. */
+.ua-header .ua-logos__img {
+  height: 48px;
+}
+
 @media (max-width: 560px) {
 
   .ua-logos--lg .ua-logos__img {

@@ -18,12 +18,13 @@ se adaptó desde el prototipo `plantilla/` del repositorio.
 
 ## Tipografía
 
-DM Sans servida desde `fonts/` (variable, ejes de peso y tamaño óptico
-`[opsz,wght]`, latin y latin-ext). Archivos de `@fontsource-variable/dm-sans`
-5.3.0, licencia OFL 1.1 (`fonts/OFL.txt`). Con el eje `opsz` los títulos grandes
-tienen el mismo trazo (y el mismo ancho) que con la hoja de Google Fonts del
-prototipo; ocupa unos 38 KiB más que la variante solo de peso (unos 25 KiB más
-en la práctica, porque el navegador solo descarga latin-ext si hace falta).
+Public Sans servida desde `fonts/` (variable, eje de peso `wght`, latin y
+latin-ext). Archivos de `@fontsource-variable/public-sans` 5.3.0, licencia OFL
+1.1 (`fonts/OFL-PublicSans.txt`). El sistema usa dos pesos, 400 y 600. DM Sans
+se retiró del rediseño (sin `@font-face` ni referencias; sus archivos y su
+licencia se borraron en el cierre). League Gothic
+(título de la portada) no está incorporada: espera la confirmación del
+diseñador.
 
 ## Estructura
 

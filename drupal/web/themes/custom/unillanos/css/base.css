@@ -8,18 +8,28 @@
 
 .ua {
   margin: 0;
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   font-size: 16px;
-  line-height: 1.5;
-  color: var(--tinta-700);
+  line-height: 26px;
+  color: var(--tinta-900);
   background: var(--Surface);
   -webkit-font-smoothing: antialiased;
 }
 
 .ua :where(h1, h2, h3, h4) {
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   color: var(--tinta-900);
   margin: 0;
+}
+
+/* Titulares grandes en peso 400 con tracking −0,01 em; los de apoyo en 600. */
+.ua :where(h1, h2) {
+  font-weight: 400;
+  letter-spacing: -.01em;
+}
+
+.ua :where(h3, h4) {
+  font-weight: 600;
 }
 
 .ua :where(p) {
@@ -49,7 +59,7 @@
 
 .ua :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+  box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
   border-radius: var(--radio-sm);
 }
 
@@ -92,10 +102,10 @@
 
 .ua-eyebrow {
   display: inline-block;
-  font-family: var(--font-dm-sans);
-  font-size: 13px;
+  font-family: var(--font-base);
+  font-size: 12px;
   line-height: 16px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--rojo-700);
@@ -103,22 +113,22 @@
 }
 
 .ua-h2 {
-  font-size: 32px;
-  line-height: 40px;
-  font-weight: 700;
+  font-size: 48px;
+  line-height: 56px;
+  font-weight: 400;
   letter-spacing: -.01em;
 }
 
 .ua-h3 {
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 700;
+  font-size: 26px;
+  line-height: 34px;
+  font-weight: 600;
 }
 
 .ua-h4 {
-  font-size: 18px;
-  line-height: 26px;
-  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
 }
 
 .ua-lead {
@@ -136,14 +146,23 @@
   display: flex;
   align-items: center;
   gap: var(--espacio-2);
-  height: 44px;
+  /* 46 px: con el borde de 1 px el campo interior mide 44 px (objetivo táctil). */
+  height: 46px;
   /* 280 px (el prototipo tiene 260): con 260 el marcador se recortaba. */
   width: 280px;
   padding: 0 var(--espacio-3);
-  border: 1px solid var(--tinta-400);
+  border: 1px solid var(--tinta-700);
   border-radius: var(--radio-md);
   color: var(--tinta-500);
   background: var(--Surface);
+}
+
+.ua-search:hover {
+  border-color: var(--tinta-900);
+}
+
+.ua-search input::placeholder {
+  color: var(--tinta-500);
 }
 
 .ua-search input {
@@ -151,12 +170,38 @@
   outline: 0;
   background: transparent;
   width: 100%;
+  height: 100%;
+  min-height: 44px;
   font-size: 15px;
   color: var(--tinta-900);
 }
 
+/* El anillo lo dibuja el contenedor; sin esto el estilo global de foco pinta un
+   segundo anillo dentro del campo. En alto contraste sigue valiendo el
+   contorno de forced-colors. */
 .ua-search:focus-within {
-  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
+  box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
+}
+
+.ua .ua-search input:focus-visible {
+  box-shadow: none;
+}
+
+/* Buscador con formulario: el botón de envío va dentro del contenedor. */
+.ua-search__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 100%;
+  margin-right: calc(var(--espacio-3) * -1);
+  padding: 0;
+  border: 0;
+  border-radius: 0 var(--radio-md) var(--radio-md) 0;
+  background: transparent;
+  color: var(--tinta-900);
+  cursor: pointer;
 }
 
 .ua-search.ua-search--full {
@@ -173,7 +218,7 @@
   width: 100%;
   min-height: 48px;
   padding: 11px 14px;
-  border: 1px solid var(--tinta-400);
+  border: 1px solid var(--tinta-700);
   border-radius: var(--radio-sm);
   background: var(--Surface);
   font-size: 16px;
@@ -199,7 +244,7 @@
 }
 
 .ua-input:hover, .ua-select:hover, .ua-textarea:hover {
-  border-color: var(--tinta-700);
+  border-color: var(--tinta-900);
 }
 
 .ua-input:focus, .ua-select:focus, .ua-textarea:focus {
@@ -216,11 +261,29 @@
 
 }
 
+@media (max-width: 1100px) {
+
+  .ua-h2 {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+}
+
 @media (max-width: 860px) {
 
   .ua-h2 {
-    font-size: 26px;
-    line-height: 32px;
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .ua-h2 {
+    font-size: 28px;
+    line-height: 36px;
   }
 
 }
@@ -277,6 +340,12 @@
 /* Página base de Drupal (page.html.twig): páginas sin sección propia. */
 .ua-page__migas {
   padding-block: var(--espacio-4) 0;
+}
+
+/* Fondos oscuros: el anillo se invierte (interior carbón, exterior blanco). */
+.ua-footer {
+  --foco-interior: var(--carbon);
+  --foco-exterior: var(--Surface);
 }
 
 .ua-main:focus {

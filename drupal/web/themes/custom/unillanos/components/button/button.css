@@ -1,5 +1,7 @@
 /**
- * Componente button.
+ * Componente button: primario rojo, secundario de contorno y enlace con flecha.
+ * Alto mínimo de 48 px (44 px el pequeño) para que el objetivo táctil no baje
+ * de 44 px.
  */
 
 .ua-btn {
@@ -8,10 +10,10 @@
   justify-content: center;
   gap: var(--espacio-2);
   min-height: 48px;
-  padding: var(--espacio-3) 22px;
-  border-radius: var(--radio-md);
-  font-family: var(--font-dm-sans);
-  font-size: 15px;
+  padding: var(--espacio-3) var(--espacio-5);
+  border-radius: var(--radio-sm);
+  font-family: var(--font-base);
+  font-size: 14px;
   line-height: 20px;
   font-weight: 600;
   text-decoration: none;
@@ -24,6 +26,7 @@
   text-decoration: none;
 }
 
+/* Primario: texto blanco sobre #e30613 (4,88:1). */
 .ua-btn--primario {
   background: var(--Unillanos_Red);
   color: var(--Surface);
@@ -41,22 +44,28 @@
   background: var(--rojo-800);
 }
 
+/* Secundario: contorno de 2 px en tinta (el borde cumple los 3:1 de los controles). */
 .ua-btn--secundario {
   background: var(--Surface);
-  color: var(--rojo-700);
-  border-color: var(--Unillanos_Red);
+  color: var(--tinta-900);
+  border-color: var(--tinta-900);
 }
 
 .ua-btn--secundario:hover {
-  background: var(--rojo-50);
+  background: var(--superficie-50);
 }
 
+.ua-btn--secundario:active {
+  background: var(--superficie-100);
+}
+
+/* Enlace con flecha: texto rojo oscuro (#a8040e), nunca el rojo de marca. */
 .ua-btn--texto {
   background: transparent;
   color: var(--rojo-700);
   padding-left: 0;
   padding-right: 0;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 .ua-btn--texto:hover {
@@ -64,8 +73,8 @@
 }
 
 .ua-btn--sm {
-  min-height: 40px;
-  padding: 8px 14px;
+  min-height: 44px;
+  padding: var(--espacio-2) var(--espacio-4);
   font-size: 14px;
 }
 
@@ -85,11 +94,6 @@
   background: var(--superficie-100);
   color: var(--tinta-500);
   cursor: not-allowed;
-}
-
-.ua-btn--primario:focus-visible {
-  box-shadow: 0 0 0 2px var(--Surface), 0 0 0 4px var(--tinta-900);
-  border-radius: var(--radio-md);
 }
 
 .ua-icon-btn {

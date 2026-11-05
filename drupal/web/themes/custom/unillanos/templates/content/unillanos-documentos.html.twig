@@ -32,6 +32,24 @@
 } %}
 {% set bandas = 0 %}
 
+{# Panel de filtro: una opción por sección con su conteo guardado. Nace oculto
+   y lo muestra el JS; sin él todas las secciones quedan visibles. #}
+{% set opciones = [] %}
+{% for grupo in datos.generales %}
+  {% set texto = textos[grupo.categoria] ?? {eyebrow: 'Documentos'|t} %}
+  {% set opciones = opciones|merge([{key: 'doc-' ~ grupo.categoria, label: texto.eyebrow, count: grupo.conteo}]) %}
+{% endfor %}
+{% if datos.programas %}
+  {% set opciones = opciones|merge([{key: 'doc-programas', label: 'Programas'|t, count: datos.en_programas}]) %}
+{% endif %}
+{% if opciones|length > 1 %}
+  {% embed 'unillanos:section' with {id: 'filtro-documentos', variant: 'tight', opciones: opciones, total: datos.total} only %}
+    {% block content %}
+      {% include 'unillanos:doc-filter' with {options: opciones, total: total} only %}
+    {% endblock %}
+  {% endembed %}
+{% endif %}
+
 {% if datos.total == 0 %}
   {% embed 'unillanos:section' with {id: 'documentos'} only %}
     {% block content %}

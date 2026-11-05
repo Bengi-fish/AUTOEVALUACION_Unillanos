@@ -3,7 +3,7 @@
  */
 
 .ua-section {
-  padding: var(--espacio-8) 0;
+  padding: 96px 0;
 }
 
 .ua-section--alt {
@@ -13,7 +13,7 @@
 @media (max-width: 860px) {
 
   .ua-section {
-    padding: var(--espacio-7) 0;
+    padding: 64px 0;
   }
 
 }

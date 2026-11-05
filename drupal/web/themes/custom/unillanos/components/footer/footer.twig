@@ -1,33 +1,47 @@
 {#
 /**
  * @file
- * Pie de página.
+ * Pie de página oscuro: fila de entidades, bloque de la institución y
+ * columnas, y aviso legal. Todo lo vacío se omite.
  *
  * Mismo filtro de URL que unillanos:button: un destino no válido o ausente
  * se imprime sin enlace.
  */
 #}
 {% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set institucion = institution is defined ? institution : 'Universidad de los Llanos'|t %}
+{% set nota = institution_note is defined ? institution_note : 'Sedes Villavicencio y Granada · Meta, Colombia'|t %}
+{% set n_columnas = (columns|length) + (contact ? 1 : 0) %}
 <footer{{ attributes.addClass('ua-footer') }}>
-  <div class="ua-footer__brand">
-    <div class="ua-container">
-      {% include 'unillanos:logos' with {large: true} only %}
-      <p class="ua-footer__inst"><strong>{{ institution|default('Universidad de los Llanos'|t) }}</strong><span>{{ institution_note|default('Sedes Villavicencio y Granada · Meta, Colombia'|t) }}</span></p>
-    </div>
-  </div>
-  <div class="ua-footer__rule"></div>
-  <div class="ua-container">
-    <div class="ua-footer__top">
-      <div>
-        <p class="ua-footer__name">{{ title|default('Sistema de Información de Autoevaluación Institucional'|t) }}</p>
+  <div class="ua-footer__marco">
+    {% if entities %}
+      <ul class="ua-footer__entidades" role="list">
+        {% for entidad in entities %}
+          <li>
+            {%- if entidad.url and ((entidad.url ~ '') matches seguro) -%}
+              <a class="ua-footer__entidad" href="{{ entidad.url }}"{% if entidad.externo %} rel="noopener"{% endif %}>{{ entidad.title }}</a>
+            {%- else -%}
+              <span class="ua-footer__entidad">{{ entidad.title }}</span>
+            {%- endif -%}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <div class="ua-footer__top ua-footer__top--c{{ n_columnas }}">
+      <div class="ua-footer__brand">
+        <span class="ua-footer__logos">{% include 'unillanos:logos' with {large: true} only %}</span>
+        {% if title %}<p class="ua-footer__name">{{ title }}</p>{% endif %}
         {% if description %}<p>{{ description }}</p>{% endif %}
+        {% if institucion or nota %}
+          <p class="ua-footer__inst">{% if institucion %}<strong>{{ institucion }}</strong>{% endif %}{% if nota %}<span>{{ nota }}</span>{% endif %}</p>
+        {% endif %}
       </div>
       {% for columna in columns %}
         <div>
           <h3>{{ columna.title }}</h3>
           <ul class="ua-footer__links" role="list">
             {% for enlace in columna.links %}
-              <li>{% if enlace.url and ((enlace.url ~ '') matches seguro) %}<a href="{{ enlace.url }}">{{ enlace.title }}</a>{% else %}{{ enlace.title }}{% endif %}</li>
+              <li>{% if enlace.url and ((enlace.url ~ '') matches seguro) %}<a href="{{ enlace.url }}"{% if enlace.externo %} rel="noopener"{% endif %}>{{ enlace.title }}</a>{% else %}{{ enlace.title }}{% endif %}</li>
             {% endfor %}
           </ul>
         </div>

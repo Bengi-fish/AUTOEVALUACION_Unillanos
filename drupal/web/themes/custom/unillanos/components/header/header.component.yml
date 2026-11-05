@@ -2,7 +2,7 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Encabezado
 status: stable
 group: Página base
-description: 'Encabezado del sitio: enlace para saltar al contenido, fila de tres logos con el nombre del sistema, herramientas (búsqueda opcional, ingreso, botón del menú móvil) y el menú principal en el slot nav.'
+description: 'Encabezado del sitio: enlace para saltar al contenido, franja superior opcional, logo con el nombre del sistema, el menú principal en el slot nav y las herramientas (búsqueda opcional, ingreso, botón del menú móvil).'
 props:
   type: object
   properties:
@@ -20,10 +20,22 @@ props:
       type: string
       title: Destino del enlace «Saltar al contenido»
       description: 'Si se omite no se imprime el enlace.'
+    topbar:
+      type: object
+      title: Franja superior
+      description: 'Objeto con `links` y `accessibility` (ver unillanos:topbar). Sin él no hay franja.'
+    solo_logo:
+      type: string
+      title: Logo único
+      description: 'Si vale «unillanos» solo se imprime el logo de la Universidad (ver unillanos:logos).'
+    search_url:
+      type: string
+      title: Destino del buscador
+      description: 'Con él, el buscador es un formulario GET con el campo q que lleva a esta URL.'
     show_search:
       type: boolean
       title: Mostrar buscador
-      description: 'El campo no tiene acción asociada; activarlo solo cuando exista una búsqueda.'
+      description: 'Sin search_url el campo no tiene acción asociada; activarlo solo cuando exista una búsqueda.'
       default: false
     login_url:
       type: string

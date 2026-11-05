@@ -14,6 +14,7 @@ use Drupal\Core\Menu\MenuActiveTrailInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\NodeInterface;
+use Drupal\unillanos_autoeval\Service\DatosMarco;
 use Drupal\unillanos_autoeval\Service\DocumentosPublicados;
 use Drupal\unillanos_autoeval\Service\EnlacesDelPie;
 use Drupal\unillanos_autoeval\Service\FactoresPrograma;
@@ -43,6 +44,7 @@ class UnillanosHooks {
     protected ProgramasYProcesos $procesos,
     protected EnlacesDelPie $enlacesDelPie,
     protected MenuActiveTrailInterface $rastroActivo,
+    protected DatosMarco $datosMarco,
   ) {}
 
   /**
@@ -200,6 +202,9 @@ class UnillanosHooks {
     // los contextos de caché del menú, del acceso y de las URL.
     $cache = new CacheableMetadata();
     $variables['pie_enlaces'] = $this->enlacesDelPie->enlaces($cache);
+    // Franja superior, nombre, pie: lo que dice la configuración del
+    // micrositio, ya filtrado (sin URLs inseguras ni filas vacías).
+    $variables['marco'] = $this->datosMarco->datos($cache);
     $variables['pie_cache'] = [];
     $cache->applyTo($variables['pie_cache']);
   }

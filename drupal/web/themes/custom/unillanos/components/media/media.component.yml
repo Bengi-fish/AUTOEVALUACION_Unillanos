@@ -1,0 +1,42 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Imagen
+status: stable
+group: Contenido
+description: 'Imagen con <picture>: una fuente WebP con srcset y la imagen original como respaldo. Sin dimensiones no hay reserva de espacio; con ellas el navegador reserva la proporción. Sin texto alternativo la imagen es decorativa (alt vacío y aria-hidden). Solo se imprime un src relativo a la raíz o http(s).'
+props:
+  type: object
+  required:
+    - src
+  properties:
+    src:
+      type: string
+      title: Imagen original (respaldo)
+    srcset:
+      type: string
+      title: Conjunto de imágenes WebP
+      description: 'Lista «url ancho» separada por comas; vacío si no hay estilos de imagen.'
+    type:
+      type: string
+      title: Tipo de la fuente
+      description: 'Por defecto image/webp.'
+    sizes:
+      type: string
+      title: Tamaños
+      description: 'Por defecto 100vw.'
+    width:
+      type: integer
+      title: Ancho original
+    height:
+      type: integer
+      title: Alto original
+    alt:
+      type: string
+      title: Texto alternativo
+      description: 'Solo lo que trae el campo; vacío = decorativa.'
+    priority:
+      type: string
+      title: Prioridad de carga
+      description: 'high para la imagen que está sobre el pliegue (fetchpriority alto y sin carga diferida); si no, carga diferida.'
+      enum:
+        - ''
+        - high

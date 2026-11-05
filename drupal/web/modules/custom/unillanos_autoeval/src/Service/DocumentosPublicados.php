@@ -190,8 +190,10 @@ class DocumentosPublicados {
    *
    * @return array<string, mixed>
    *   Con: generales (una lista por categoría con categoria e items), programas
-   *   (por programa: id, nombre, url e items), total y salto (TRUE si hay
-   *   muchos programas con documentos y conviene una lista de salto).
+   *   (por programa: id, nombre, url, items y conteo), total, en_programas
+   *   (cuántos de los documentos son de programas) y salto (TRUE si hay
+   *   muchos programas con documentos y conviene una lista de salto). Cada
+   *   lista general trae también su conteo.
    */
   public function publicados(CacheableMetadata $cache): array {
     $generales = [];
@@ -210,16 +212,22 @@ class DocumentosPublicados {
     $listas_generales = [];
     foreach (self::CATEGORIAS_DOCUMENTO as $categoria) {
       if (!empty($generales[$categoria]['items'])) {
-        $listas_generales[] = ['categoria' => $categoria, 'items' => $generales[$categoria]['items']];
+        $items = $generales[$categoria]['items'];
+        $listas_generales[] = ['categoria' => $categoria, 'items' => $items, 'conteo' => count($items)];
       }
     }
     // Categorías no previstas, al final.
     foreach ($generales as $categoria => $datos) {
       if (!in_array($categoria, self::CATEGORIAS_DOCUMENTO, TRUE)) {
-        $listas_generales[] = ['categoria' => $categoria, 'items' => $datos['items']];
+        $listas_generales[] = [
+          'categoria' => $categoria,
+          'items' => $datos['items'],
+          'conteo' => count($datos['items']),
+        ];
       }
     }
     $programas = [];
+    $en_programas = 0;
     foreach ($por_programa as $id => $datos) {
       $url = $datos['programa']->toUrl()->toString(TRUE);
       $items = array_column($this->ordenarDeProgramas($datos['documentos']), 'item');
@@ -229,13 +237,16 @@ class DocumentosPublicados {
         'nombre' => (string) $datos['programa']->label(),
         'url' => $url->getGeneratedUrl(),
         'items' => $items,
+        'conteo' => count($items),
       ];
+      $en_programas += count($items);
     }
     usort($programas, fn($a, $b) => $this->compararTextos($a['nombre'], $b['nombre']));
     return [
       'generales' => $listas_generales,
       'programas' => $programas,
       'total' => $total,
+      'en_programas' => $en_programas,
       'salto' => count($programas) >= self::MIN_PROGRAMAS_SALTO,
     ];
   }

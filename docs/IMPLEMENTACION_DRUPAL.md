@@ -688,6 +688,26 @@ Marca cada punto. Los comandos los puede correr Claude; la revisión visual es t
 - [ ] Control de acceso a `public://`: hoy un documento no publicado sigue accesible por su URL directa; decidir y aplicar la protección.
 - [ ] Documentación al día: `README.md`, `CLAUDE.md` y los tres documentos del MER reflejan lo implementado.
 
+### Rediseño del micrositio (rama `rediseno-micrositio`)
+
+Rediseño visual por etapas sobre `main` tras la Fase 7. Reglas: solo CSS y marcado compatible; las clases `ua-*` y los atributos `data-ua-*` no se renombran; la huella de contenido (texto visible, enlaces, encabezados, ids, `data-ua-*`, ARIA y formularios) se compara contra la base de cada etapa y solo se aceptan diferencias deliberadas.
+
+| Etapa | Qué cambió |
+|---|---|
+| 1 | Tokens de color y tipografía Public Sans (400 y 600), un solo anillo de foco. |
+| 2a | Franja superior, cabecera y pie con configuración (`unillanos_autoeval.micrositio`, servicio `DatosMarco`). |
+| 3 | Botones, tarjetas, etiquetas, buscador de programas y placeholder con nivel y sede. |
+| 4a | Hero y ficha lateral de la página de programa (componentes `media`, `kv-list`; estilos de imagen `unillanos_hero_*`). |
+| 4b | Rejilla de factores y pestañas; plan de mejoramiento (tarjetas bajo 760 px) y documentos del programa. |
+| 5 | `/programas` con tarjetas teñidas por facultad (`facultad_sigla` en `ListadoProgramas`; clase `ua-prog--{sigla}`). |
+| 6 | `/documentos` con panel de filtros y conteos (componente `doc-filter`; conteos en `DocumentosPublicados`); título de `doc-list` en 600. |
+| 7 | Portada: hero verde azulado, cifras y pasos; ajustes 4 y 7 de la Fase 7 (`cta-row` con segundo botón; tarjeta única a todo el ancho). |
+| 8 | Limpieza: formulario de administración del micrositio, retiro de DM Sans y de tokens sin uso, documentación. |
+
+**Configuración del micrositio:** `/admin/config/unillanos/micrositio` (permiso `administer site configuration`) edita nombre, franja superior, enlace de accesibilidad y pie. Los enlaces se escriben «Título | URL»; las URL se validan con la misma regla que aplica `DatosMarco` al pintar (ruta con una sola barra, `#`, `?`, `https://`, `mailto:` o `tel:`). Tras guardar, `ddev drush cex -y` y commit de `drupal/config/sync`.
+
+**Cierre del rediseño:** los archivos de DM Sans y su licencia se borraron de `themes/custom/unillanos/fonts/` (queda Public Sans con su `OFL-PublicSans.txt`). `hyphens: auto` solo se aplica a párrafos de varias líneas (textos de fortalezas y de aspectos por mejorar), nunca a títulos, etiquetas, botones, migas ni tarjetas. El filtro Twig `|sin_cortes` (módulo `unillanos_autoeval`) hace indivisibles los rangos de años («2018–2022», «2024-2 – 2030») en los componentes que imprimen texto libre. Los rótulos de las pestañas de factores pasan a varias líneas en lugar de recortarse con «…». Las seis carpetas de componentes sin versionar (`pane`, `progsearch`, `reco-form`, `scope`, `tool`, `view-tabs`; solo CSS, ninguna plantilla las usaba) se archivaron en `~/respaldos/componentes-sin-versionar.tar.gz`, fuera del repositorio.
+
 ### Registro de avance
 
 Marca cada fase cuando ya esté fusionada en `main`:

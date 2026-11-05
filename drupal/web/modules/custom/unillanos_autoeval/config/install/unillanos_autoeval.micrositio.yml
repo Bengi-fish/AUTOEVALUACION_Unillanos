@@ -1,0 +1,21 @@
+# Datos de la cabecera, la franja superior y el pie del micrositio. Lo vacío no
+# se pinta. Los enlaces de la web principal, las entidades, las sedes, el
+# contacto y las redes se completan cuando la Universidad entregue los reales.
+nombre_linea1: 'Sistema de'
+nombre_linea2: 'Autoevaluación'
+url_web_principal: ''
+franja_superior: []
+accesibilidad:
+  titulo: Accesibilidad
+  url: ''
+pie:
+  titulo: 'Sistema de Información de Autoevaluación Institucional'
+  descripcion: 'Un espacio para consultar, participar y hacer seguimiento a la mejora continua de la Universidad.'
+  institucion: 'Universidad de los Llanos'
+  nota_institucion: 'Sedes Villavicencio y Granada · Meta, Colombia'
+  entidades: []
+  sedes: []
+  contacto: []
+  redes: []
+  enlaces_legales: []
+  legal: 'Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional. © 2026 Universidad de los Llanos.'

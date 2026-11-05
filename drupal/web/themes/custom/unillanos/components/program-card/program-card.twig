@@ -17,10 +17,12 @@
 {% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
 {% set uid = id is not null and ((id ~ '') matches '~^[A-Za-z0-9_-]+$~') ? 'ua-prog-' ~ id : '' %}
 {% set hay_etiquetas = level or campus or evaluated %}
+{# Tinte por facultad: solo una sigla válida (letras y números) añade la clase. #}
+{% set tinte = (faculty_key ~ '') matches '~^[a-z0-9]{1,12}$~' ? 'ua-prog--' ~ faculty_key : '' %}
 {% set descripcion = [] %}
 {% if uid and faculty %}{% set descripcion = descripcion|merge([uid ~ '-f']) %}{% endif %}
 {% if uid and hay_etiquetas %}{% set descripcion = descripcion|merge([uid ~ '-e']) %}{% endif %}
-<a{{ attributes.addClass('ua-prog') }}{% if url and ((url ~ '') matches seguro) %} href="{{ url }}"{% endif %}{% if uid %} aria-labelledby="{{ uid }}-n"{% endif %}{% if descripcion %} aria-describedby="{{ descripcion|join(' ') }}"{% endif %}>
+<a{{ attributes.addClass(tinte ? ['ua-prog', tinte] : ['ua-prog']) }}{% if url and ((url ~ '') matches seguro) %} href="{{ url }}"{% endif %}{% if uid %} aria-labelledby="{{ uid }}-n"{% endif %}{% if descripcion %} aria-describedby="{{ descripcion|join(' ') }}"{% endif %}>
   <span class="ua-prog__icon">{% include 'unillanos:icon' with {name: 'cap'} only %}</span>
   <div class="ua-prog__body">
     {% if faculty %}<span class="ua-prog__faculty"{% if uid %} id="{{ uid }}-f"{% endif %}>{{ faculty }}</span>{% endif %}

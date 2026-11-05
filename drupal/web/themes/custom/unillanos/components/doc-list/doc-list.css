@@ -9,7 +9,8 @@
 }
 
 .ua-doc {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--espacio-4);
   padding: var(--espacio-4) var(--espacio-5);
@@ -23,15 +24,15 @@
   width: 48px;
   height: 56px;
   border-radius: var(--radio-sm);
-  background: var(--rojo-50);
-  color: var(--rojo-700);
+  background: var(--azul-grisaceo-50);
+  color: var(--verde-azulado-700);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: .04em;
   gap: 2px;
 }
@@ -42,8 +43,8 @@
 }
 
 .ua-doc__title {
-  font-family: var(--font-dm-sans);
-  font-weight: 700;
+  font-family: var(--font-base);
+  font-weight: 600;
   font-size: 16px;
   line-height: 22px;
   color: var(--tinta-900);
@@ -53,10 +54,10 @@
   display: block;
   font-size: 12px;
   line-height: 16px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: var(--rojo-700);
+  color: var(--rojo-texto);
   margin-bottom: 2px;
 }
 
@@ -88,9 +89,42 @@
   margin: 2px 0 4px;
 }
 
-/* Reflujo: nombres de archivo largos no deben desbordar la tarjeta. */
+/* Reflujo: nombres largos pasan a la línea siguiente sin partir palabras
+   que caben. */
 .ua-doc__title,
 .ua-doc__desc,
 .ua-doc .ua-meta {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+}
+
+.ua-doc .ua-meta {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--gris-texto);
+}
+
+.ua-doc .ua-icon-btn {
+  border-color: var(--gris-suave);
+}
+
+.ua-doc .ua-icon-btn:hover {
+  border-color: var(--verde-azulado-700);
+  background: var(--superficie-50);
+  color: var(--verde-azulado-700);
+}
+
+/* En móvil el botón baja a su propia línea para que el título no se parta. */
+@media (max-width: 560px) {
+
+  .ua-doc {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--espacio-3) var(--espacio-4);
+    padding: var(--espacio-4);
+  }
+
+  .ua-doc .ua-icon-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
 }

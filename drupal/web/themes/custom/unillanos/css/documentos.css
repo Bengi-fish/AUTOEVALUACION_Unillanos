@@ -16,12 +16,15 @@
   margin: 0 0 var(--espacio-4);
   font-size: 20px;
   line-height: 28px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--tinta-900);
 }
 
 /* El nombre del programa es un enlace discreto: subrayado fino en rosa. */
 .ua .ua-docs-programa__titulo a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: inherit;
   text-decoration: underline;
   text-decoration-color: var(--rojo-100);
@@ -37,7 +40,7 @@
 .ua .ua-docs-programa__titulo a:focus-visible {
   outline: none;
   border-radius: 4px;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--tinta-900);
+  box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
 }
 
 /* Lista de salto a cada programa (cuando hay muchos). */
@@ -52,7 +55,7 @@
 
 .ua .ua-docs-salto a {
   display: inline-block;
-  padding: 4px 12px;
+  padding: 10px 14px;
   border: 1px solid var(--borde);
   border-radius: var(--radio-pill);
   background: var(--Surface);
@@ -70,7 +73,7 @@
 
 .ua .ua-docs-salto a:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--tinta-900);
+  box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
 }
 
 .ua .ua-docs-vacio {

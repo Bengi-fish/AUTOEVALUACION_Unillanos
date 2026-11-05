@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Panel de filtro de documentos por grupo, con conteos.
+ *
+ * Nace oculto (hidden): doc-filter.js lo muestra. Sin JavaScript no hay panel
+ * y todas las secciones se ven. Cada opción es un botón con aria-pressed; la
+ * región role="status" está vacía al cargar. Solo imprime los conteos que
+ * recibe. Una opción sin clave válida o sin rótulo se omite.
+ */
+#}
+{% set base = id|default('doc-filtro') %}
+<div{{ attributes.addClass('ua-docfilter').setAttribute('data-ua-doc-filter', true).setAttribute('hidden', true) }}>
+  <p class="ua-docfilter__title" id="{{ base }}-titulo">{{ title|default('Filtrar por tipo'|t) }}</p>
+  <div class="ua-docfilter__opts" role="group" aria-labelledby="{{ base }}-titulo">
+    <button type="button" class="ua-docfilter__opt" data-key="" aria-pressed="true">
+      <span class="ua-docfilter__label">{{ all_label|default('Todos'|t) }}</span>
+      {%- if total is not null %}<span class="ua-docfilter__count">{{ total }}</span>{% endif -%}
+    </button>
+    {% for opcion in options %}
+      {% if opcion.label and (opcion.key ~ '') matches '~^[A-Za-z0-9_-]+$~' %}
+        <button type="button" class="ua-docfilter__opt" data-key="{{ opcion.key }}" aria-pressed="false">
+          <span class="ua-docfilter__label">{{ opcion.label }}</span>
+          {%- if opcion.count is not null %}<span class="ua-docfilter__count">{{ opcion.count }}</span>{% endif -%}
+        </button>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <p class="ua-sr" role="status" aria-live="polite" aria-atomic="true" data-ua-doc-filter-live></p>
+</div>

@@ -28,6 +28,8 @@
     lead: lead,
     breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Programas'|t, url: path('unillanos_autoeval.programas')}, {title: programa.nombre}],
     etiquetas: programa.etiquetas,
+    variant: 'hero',
+    image: programa.imagen,
   } only %}
     {% block meta %}
       {% for etiqueta in etiquetas %}
@@ -36,49 +38,50 @@
     {% endblock %}
   {% endembed %}
 
-  {# Con un solo dato la ficha repetiría las etiquetas de la cabecera. #}
-  {% if programa.ficha|length > 1 %}
-    {% embed 'unillanos:section' with {id: 'ficha', ficha: programa.ficha} only %}
-      {% block content %}
-        {% include 'unillanos:section-head' with {
-          eyebrow: 'Programa académico'|t,
-          title: 'Ficha del programa'|t,
-        } only %}
-        {% include 'unillanos:ficha' with {items: ficha} only %}
-      {% endblock %}
-    {% endembed %}
-  {% endif %}
+  {# Con un solo dato la ficha repetiría las etiquetas de la cabecera. La
+     ficha es un aside a la derecha del primer bloque de contenido. #}
+  {% set hay_ficha = programa.ficha|length > 1 %}
+  {% set ficha_aside %}
+    {%- if hay_ficha -%}
+      {% include 'unillanos:ficha' with {variant: 'aside', eyebrow: 'Programa académico'|t, title: 'Ficha del programa'|t, items: programa.ficha, attributes: create_attribute({id: 'ficha'})} only %}
+    {%- endif -%}
+  {% endset %}
 
   {# Factores del proceso (modelo y cantidad según cada programa). #}
   {% set hay_plan = plan.filas|default([]) is not empty %}
   {% if factores.pestanas %}
     {# Banda alterna salvo que la cabecera gris quede pegada a ella (sin ficha). #}
-    {% set variante = programa.ficha|length > 1 ? 'alt' : '' %}
-    {% embed 'unillanos:section' with {id: 'autoevaluacion', variant: variante, factores: factores, hay_plan: hay_plan, informe: documentos.informe|default(null)} only %}
+    {% set variante = hay_ficha ? 'alt' : '' %}
+    {% embed 'unillanos:section' with {id: 'autoevaluacion', variant: variante, factores: factores, hay_plan: hay_plan, informe: documentos.informe|default(null), hay_ficha: hay_ficha, ficha_aside: ficha_aside} only %}
       {% block content %}
         {% set partes = [] %}
         {% if factores.proceso %}{% set partes = partes|merge([factores.proceso]) %}{% endif %}
         {% if factores.resultado %}{% set partes = partes|merge([('Resultado'|t) ~ ': ' ~ factores.resultado]) %}{% endif %}
-        {% embed 'unillanos:section-head' with {
-          eyebrow: 'Autoevaluación del programa'|t,
-          title: 'Factores y valoración'|t,
-          lead: partes|join('. '),
-          hay_plan: hay_plan,
-          informe: informe,
-        } only %}
-          {% block right %}
-            {% if hay_plan or informe %}
-              <div class="ua-section__acciones">
-                {% if informe %}
-                  {% include 'unillanos:button' with {label: ('Ver'|t) ~ ' ' ~ informe.title ~ ' (' ~ informe.kind ~ ')', variant: 'secundario', url: informe.url, icon: 'download', icon_size: 'sm'} only %}
-                {% endif %}
-                {% if hay_plan %}
-                  {% include 'unillanos:button' with {label: 'Ir al plan de mejoramiento'|t, variant: 'secundario', url: '#plan', icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
-                {% endif %}
-              </div>
-            {% endif %}
-          {% endblock %}
-        {% endembed %}
+        <div class="ua-programa__zona{% if hay_ficha %} ua-programa__zona--ficha{% endif %}">
+          <div class="ua-programa__principal">
+          {% embed 'unillanos:section-head' with {
+            eyebrow: 'Autoevaluación del programa'|t,
+            title: 'Factores y valoración'|t,
+            lead: partes|join('. '),
+            hay_plan: hay_plan,
+            informe: informe,
+          } only %}
+            {% block right %}
+              {% if hay_plan or informe %}
+                <div class="ua-section__acciones">
+                  {% if informe %}
+                    {% include 'unillanos:button' with {label: ('Ver'|t) ~ ' ' ~ informe.title ~ ' (' ~ informe.kind ~ ')', variant: 'secundario', url: informe.url, icon: 'download', icon_size: 'sm'} only %}
+                  {% endif %}
+                  {% if hay_plan %}
+                    {% include 'unillanos:button' with {label: 'Ir al plan de mejoramiento'|t, variant: 'secundario', url: '#plan', icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endblock %}
+          {% endembed %}
+          </div>
+          {% if hay_ficha %}{{ ficha_aside }}{% endif %}
+        </div>
         {% set hay_grado = false %}
         {% for tarjeta in factores.tarjetas %}
           {% if tarjeta.grade %}{% set hay_grado = true %}{% endif %}
@@ -167,10 +170,8 @@
       {% endblock %}
     {% endembed %}
   {% endif %}
-  {%- if otros or enlaces -%}
-    {# Sin nada de autoevaluación: los demás programas de la facultad y los enlaces. #}
-    {% embed 'unillanos:section' with {id: 'otros-programas', otros: otros, enlaces: enlaces} only %}
-      {% block content %}
+  {# Sin nada de autoevaluación: los demás programas de la facultad y los enlaces. #}
+  {% set otros_bloque %}
         {% if otros %}
           {# La facultad ya está en la cabecera y en el título: no se repite. #}
           {% include 'unillanos:section-head' with {title: otros.titulo} only %}
@@ -199,7 +200,20 @@
             {% endfor %}
           </div>
         {% endif %}
+  {% endset %}
+  {% if hay_ficha and not factores.pestanas %}
+    {# Sin factores, la ficha va a la derecha de este primer bloque. #}
+    {% embed 'unillanos:section' with {id: (otros or enlaces) ? 'otros-programas' : 'zona-ficha', principal: otros_bloque, ficha_aside: ficha_aside} only %}
+      {% block content %}
+        <div class="ua-programa__zona ua-programa__zona--ficha">
+          <div class="ua-programa__principal">{{ principal }}</div>
+          {{ ficha_aside }}
+        </div>
       {% endblock %}
+    {% endembed %}
+  {%- elseif otros or enlaces -%}
+    {% embed 'unillanos:section' with {id: 'otros-programas', principal: otros_bloque} only %}
+      {% block content %}{{ principal }}{% endblock %}
     {% endembed %}
   {%- endif %}
 {% else %}

@@ -110,3 +110,24 @@
     grid-column: span 2;
   }
 }
+
+/* Variante aside (página del programa): 360 px, borde de 1 px, radio 8. */
+.ua-ficha-aside {
+  padding: var(--espacio-5);
+  border: 1px solid var(--tinta-500);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
+}
+
+.ua-ficha-aside .ua-eyebrow {
+  display: block;
+}
+
+.ua-ficha-aside__title {
+  margin: 0 0 var(--espacio-4);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--tinta-900);
+}

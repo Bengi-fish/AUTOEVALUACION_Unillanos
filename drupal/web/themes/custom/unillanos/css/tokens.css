@@ -1,30 +1,74 @@
 /**
- * Tokens del sistema de diseño (derivados de plantilla/style.css).
+ * Tokens del sistema de diseño.
+ *
+ * Etapa 1 del rediseño: los valores salen de las plantillas del diseñador
+ * (rediseño/paso-0-plan, sección 1.1; colores leídos del vector del PDF). Los
+ * nombres de variable anteriores se conservan como alias para no tocar los
+ * componentes; las etapas siguientes irán pasando a los nombres nuevos.
  */
 
 :root {
-  --Unillanos_Red: #e3061d;
-  --rojo-700: #b80417;
-  --rojo-800: #8c0312;
-  --rojo-100: #f9d3d7;
-  --rojo-50: #fdedee;
-  --tinta-900: #1a1c20;
-  --tinta-700: #3d424a;
-  --tinta-500: #5f6670;
-  --tinta-400: #8a9099;
-  --tinta-200: #b7bcc4;
-  --borde: #dfe2e6;
+  /* Marca: rojo. */
+  --rojo-marca: #e30613;
+  --rojo-texto: #a8040e;
+  --rojo-oscuro: #85030b;
+  --rojo-tinte: #fde8ea;
+  --rojo-claro: #f9c5ca;
+
+  /* Verde azulado y carbón (nuevos en el sistema). */
+  --verde-azulado-900: #0a2226;
+  --verde-azulado-700: #174349;
+  --verde-azulado-600: #1f5058;
+  --azul-grisaceo-100: #cfe2e4;
+  --azul-grisaceo-50: #e6f0f1;
+  --carbon: #1d1d1b;
+
+  /* Neutros cálidos. */
+  --gris-texto: #52504a;
+  --gris-suave: #6b6860;
+  --borde-calido: #d3d0c7;
+  --superficie-calida: #f1f0ec;
+
+  /* Tintes de facultad: fondo de la cabecera de la tarjeta y tono de la foto. */
+  --facultad-fcarn-fondo: #e9edd3;
+  --facultad-fcarn-duotono: #4f5d1c;
+  --facultad-fcs-fondo: #cfe2e4;
+  --facultad-fcs-duotono: #1f5058;
+  --facultad-fce-fondo: #f3e6c4;
+  --facultad-fce-duotono: #6f4b00;
+  --facultad-fchye-fondo: #f1ddd2;
+  --facultad-fchye-duotono: #7a3b1d;
+  --facultad-fcbi-fondo: #85030b;
+  --facultad-fcbi-duotono: #c40510;
+
+  /* Alias con los nombres anteriores. */
+  --Unillanos_Red: var(--rojo-marca);
+  --rojo-700: var(--rojo-texto);
+  --rojo-800: var(--rojo-oscuro);
+  --rojo-100: var(--rojo-claro);
+  --rojo-50: var(--rojo-tinte);
+  --tinta-900: var(--carbon);
+  --tinta-700: var(--gris-texto);
+  --tinta-500: var(--gris-suave);
+  --tinta-400: var(--gris-suave);
+  --tinta-200: var(--borde-calido);
+  --borde: var(--borde-calido);
   --Surface: #ffffff;
-  --superficie-50: #f4f5f7;
-  --superficie-100: #ebedf0;
+  --superficie-50: var(--superficie-calida);
+  /* Derivado (no medido en las plantillas): un paso más oscuro que la cálida. */
+  --superficie-100: #ebe9e4;
+
+  /* Se mantienen los colores de «plazo» (sin equivalente en las plantillas). */
   --plazo-corto-fondo: #e8f1fb;
   --plazo-corto-texto: #1f5aa6;
   --plazo-mediano-fondo: #fff1cc;
   --plazo-mediano-texto: #8a5a00;
-  --plazo-largo-fondo: #ebedf0;
-  --plazo-largo-texto: #3d424a;
-  --exito-fondo: #e6f4ec;
-  --exito-texto: #17693b;
+  --plazo-largo-fondo: var(--superficie-100);
+  --plazo-largo-texto: var(--gris-texto);
+  --exito-fondo: #ddefe3;
+  --exito-texto: #1b5e37;
+
+  /* Espaciado. */
   --espacio-1: 4px;
   --espacio-2: 8px;
   --espacio-3: 12px;
@@ -33,13 +77,24 @@
   --espacio-6: 32px;
   --espacio-7: 48px;
   --espacio-8: 80px;
+
+  /* Radios (el de 16 px ya no lo usa el diseño; se conserva por los componentes). */
   --radio-sm: 4px;
   --radio-md: 8px;
   --radio-lg: 16px;
   --radio-pill: 999px;
-  --sombra-1: 0 1px 2px rgba(26,28,32,0.08);
-  --sombra-2: 0 8px 24px rgba(26,28,32,0.12);
+
+  /* Sombra: solo la usan la adenda y el botón flotante (las plantillas son
+     planas); no se usa en componentes nuevos. */
+  --sombra-2: 0 8px 24px rgba(29,29,27,0.12);
+
   --contenedor-max: 1200px;
-  --alto-encabezado: 88px;
-  --font-dm-sans: "DM Sans", "Segoe UI", Arial, sans-serif;
+  --alto-encabezado: 80px;
+
+  /* Tipografía: Public Sans (400 y 600). */
+  --font-base: "Public Sans", "Segoe UI", Arial, sans-serif;
+
+  /* Anillo de foco: interior y exterior. En fondos oscuros se invierten. */
+  --foco-interior: var(--Surface);
+  --foco-exterior: var(--tinta-900);
 }

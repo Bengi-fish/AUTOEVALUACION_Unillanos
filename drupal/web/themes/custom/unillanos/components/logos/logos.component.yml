@@ -6,6 +6,14 @@ description: 'Fila de los tres logos institucionales (Universidad de los Llanos,
 props:
   type: object
   properties:
+    solo:
+      type: string
+      title: Solo un logo
+      description: 'Si vale «unillanos» se imprime únicamente el logo de la Universidad (encabezado).'
+      enum:
+        - ''
+        - unillanos
+      default: ''
     large:
       type: boolean
       title: Grande

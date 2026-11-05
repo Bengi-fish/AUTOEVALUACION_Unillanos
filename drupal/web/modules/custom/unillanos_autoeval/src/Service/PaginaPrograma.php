@@ -6,9 +6,12 @@ namespace Drupal\unillanos_autoeval\Service;
 
 use Drupal\Core\Access\AccessManagerInterface;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\file\FileInterface;
 use Drupal\node\NodeInterface;
 use Drupal\unillanos_autoeval\Traits\EtiquetasYOrdenTrait;
 use Drupal\unillanos_autoeval\Traits\FormatoTextoTrait;
@@ -36,7 +39,18 @@ class PaginaPrograma {
     protected UrlGeneratorInterface $generadorUrl,
     protected AccessManagerInterface $accesos,
     protected AccountInterface $usuario,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected FileUrlGeneratorInterface $generadorUrlArchivo,
   ) {}
+
+  /**
+   * Estilos de imagen de la cabecera: nombre y ancho en píxeles.
+   */
+  const ESTILOS_CABECERA = [
+    'unillanos_hero_640' => 640,
+    'unillanos_hero_1280' => 1280,
+    'unillanos_hero_1920' => 1920,
+  ];
 
   /**
    * Arma la bajada y, si corresponde, los relacionados y los enlaces.
@@ -230,6 +244,54 @@ class PaginaPrograma {
       'eyebrow' => implode(' · ', array_filter([$facultad, $sede])),
       'etiquetas' => array_values(array_filter([$nivel, $modalidad])),
       'ficha' => $ficha,
+      'imagen' => $this->imagen($programa),
+    ];
+  }
+
+  /**
+   * Arma la foto de la cabecera a partir de `field_imagen`, si existe.
+   *
+   * Solo entrega lo guardado: la URL del archivo original, el `srcset` de los
+   * estilos de imagen que existan (WebP de 640, 1280 y 1920 px), las
+   * dimensiones y el texto alternativo que trae el campo (vacío si no lo
+   * trae: la imagen es decorativa). Sin imagen, sin acceso al archivo o sin
+   * archivo, devuelve NULL y la cabecera se pinta sin foto.
+   *
+   * @param \Drupal\node\NodeInterface $programa
+   *   Nodo `programa`.
+   *
+   * @return array<string, mixed>|null
+   *   Claves `src`, `srcset`, `type`, `width`, `height` y `alt`; o NULL.
+   */
+  protected function imagen(NodeInterface $programa): ?array {
+    if (!$programa->hasField('field_imagen') || $programa->get('field_imagen')->isEmpty()) {
+      return NULL;
+    }
+    $elemento = $programa->get('field_imagen')->first();
+    $archivo = $elemento->entity ?? NULL;
+    if (!$archivo instanceof FileInterface || !$archivo->access('view', $this->usuario)) {
+      return NULL;
+    }
+    $uri = $archivo->getFileUri();
+    if (!is_string($uri) || $uri === '') {
+      return NULL;
+    }
+    $partes = [];
+    if ($this->entityTypeManager->hasDefinition('image_style')) {
+      $estilos = $this->entityTypeManager->getStorage('image_style')->loadMultiple(array_keys(self::ESTILOS_CABECERA));
+      foreach (self::ESTILOS_CABECERA as $nombre => $ancho) {
+        if (isset($estilos[$nombre])) {
+          $partes[] = $estilos[$nombre]->buildUrl($uri) . ' ' . $ancho . 'w';
+        }
+      }
+    }
+    return [
+      'src' => $this->generadorUrlArchivo->generateString($uri),
+      'srcset' => implode(', ', $partes),
+      'type' => 'image/webp',
+      'width' => (int) $elemento->get('width')->getValue(),
+      'height' => (int) $elemento->get('height')->getValue(),
+      'alt' => trim((string) $elemento->get('alt')->getValue()),
     ];
   }
 

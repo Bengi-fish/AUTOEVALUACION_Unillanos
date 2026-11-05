@@ -1,0 +1,64 @@
+/**
+ * Componente topbar: franja superior de 44 px sobre el encabezado.
+ */
+
+.ua-topbar {
+  background: var(--carbon);
+  color: var(--Surface);
+  /* Anillo de foco invertido sobre fondo oscuro. */
+  --foco-interior: var(--carbon);
+  --foco-exterior: var(--Surface);
+}
+
+.ua-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-5);
+  min-height: 44px;
+  padding: 0 var(--espacio-6);
+}
+
+.ua-topbar__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--espacio-5);
+}
+
+.ua .ua-topbar__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* 36 px: el anillo de foco (4 px) cabe dentro de los 44 px de la franja. */
+  min-height: 36px;
+  color: var(--Surface);
+  font-size: 14px;
+  line-height: 20px;
+  text-decoration: none;
+}
+
+.ua .ua-topbar__link:hover {
+  text-decoration: underline;
+}
+
+.ua-topbar__acceso {
+  margin-left: auto;
+  flex: none;
+}
+
+@media (max-width: 860px) {
+
+  .ua-topbar__inner {
+    padding: 0 var(--espacio-4);
+  }
+
+  .ua-topbar--solo-enlaces {
+    display: none;
+  }
+
+  /* Solo queda el enlace de accesibilidad (ver topbar.twig). */
+  .ua-topbar__list {
+    display: none;
+  }
+
+}

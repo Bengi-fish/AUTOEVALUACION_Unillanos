@@ -64,3 +64,177 @@
 .ua-pagehead .ua-eyebrow {
   display: block;
 }
+
+/* ------------------------------------------------------------------ hero */
+
+/*
+ * Variante hero (solo la página del programa). Migas sobre una franja blanca y
+ * debajo el fondo de color sólido #174349 con un círculo rojo y un semicírculo
+ * teal (decorativos, solo CSS). Con foto (--foto) las formas se retiran y entra
+ * un velo #0a2226 que cubre todo el ancho del texto.
+ */
+.ua-pagehead--hero {
+  position: relative;
+  padding: 0;
+  background: var(--Surface);
+  border-bottom: 0;
+}
+
+.ua-pagehead--hero .ua-pagehead__migas {
+  padding: var(--espacio-1) 0;
+}
+
+/* Objetivo táctil de 44 px en los enlaces de las migas. */
+.ua-pagehead--hero .ua-pagehead__migas a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.ua-pagehead--hero .ua-breadcrumb {
+  margin-bottom: 0;
+}
+
+.ua-pagehead__fondo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 440px;
+  padding: 80px 0 88px;
+  overflow: hidden;
+  background: var(--verde-azulado-700);
+  color: var(--Surface);
+  /* Anillo de foco invertido sobre fondo oscuro. */
+  --foco-interior: var(--verde-azulado-900);
+  --foco-exterior: var(--Surface);
+}
+
+.ua-pagehead__fondo::before {
+  content: "";
+  position: absolute;
+  right: 8%;
+  bottom: -140px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: var(--Unillanos_Red);
+}
+
+.ua-pagehead__fondo::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 360px;
+  height: 180px;
+  border-radius: 0 0 180px 180px;
+  background: var(--verde-azulado-600);
+  opacity: .6;
+}
+
+.ua-pagehead--foto .ua-pagehead__fondo::before,
+.ua-pagehead--foto .ua-pagehead__fondo::after {
+  display: none;
+}
+
+.ua-pagehead__media {
+  position: absolute;
+  inset: 0;
+}
+
+/* Velo #0a2226: nunca por debajo de .5 de opacidad, así el texto blanco queda a
+   3:1 como mínimo incluso sobre una foto blanca. */
+.ua-pagehead__velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(10, 34, 38, .92) 0%, rgba(10, 34, 38, .8) 60%, rgba(10, 34, 38, .62) 80%, rgba(10, 34, 38, .5) 100%);
+}
+
+.ua-pagehead__cuerpo {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.ua-pagehead--hero .ua-pagehead__title {
+  max-width: 900px;
+  color: var(--Surface);
+  font-size: 64px;
+  line-height: 72px;
+  font-weight: 400;
+  letter-spacing: -.01em;
+}
+
+.ua-pagehead--hero .ua-pagehead__title span {
+  color: inherit;
+}
+
+.ua-pagehead--hero .ua-pagehead__lead {
+  max-width: 720px;
+  color: var(--Surface);
+  font-size: 20px;
+  line-height: 32px;
+}
+
+/* Etiqueta en rojo oscuro con texto blanco (12/600, mayúsculas). */
+.ua-pagehead--hero .ua-eyebrow {
+  display: inline-block;
+  margin-bottom: var(--espacio-4);
+  padding: var(--espacio-1) var(--espacio-3);
+  background: var(--rojo-oscuro);
+  color: var(--Surface);
+}
+
+.ua-pagehead--hero .ua-tag,
+.ua-pagehead--hero .ua-tag--acento {
+  background: transparent;
+  border-color: var(--Surface);
+  color: var(--Surface);
+}
+
+@media (max-width: 1100px) {
+
+  .ua-pagehead--hero .ua-pagehead__title {
+    font-size: 48px;
+    line-height: 56px;
+  }
+
+  .ua-pagehead__velo {
+    background: rgba(10, 34, 38, .82);
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .ua-pagehead__fondo {
+    min-height: 0;
+    padding: 48px 0 56px;
+  }
+
+  .ua-pagehead__fondo::before {
+    right: -50px;
+    bottom: -84px;
+    width: 140px;
+    height: 140px;
+  }
+
+  .ua-pagehead__fondo::after {
+    width: 180px;
+    height: 90px;
+    border-radius: 0 0 90px 90px;
+  }
+
+  .ua-pagehead--hero .ua-pagehead__title {
+    font-size: clamp(36px, 10vw, 44px);
+    line-height: 1.15;
+  }
+
+  .ua-pagehead--hero .ua-pagehead__lead {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+}

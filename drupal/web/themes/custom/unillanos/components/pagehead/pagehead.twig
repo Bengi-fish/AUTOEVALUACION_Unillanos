@@ -1,19 +1,47 @@
 {#
 /**
  * @file
- * Cabecera de página interior.
+ * Cabecera de página interior. Con `variant: hero` (solo la página del
+ * programa) es una cabecera de color sólido, o con foto y velo si hay `image`.
  */
 #}
 {% set nivel = (heading ~ '') in ['h1', 'h2', 'h3', 'h4'] ? heading : 'h1' %}
+{% if variant == 'hero' %}
+{# La foto solo cuenta si su src es relativo a la raíz o http(s): sin ella no hay velo ni imagen rota. #}
+{% set foto = image and image.src and ((image.src ~ '') matches '~^(?:/(?![/\\\\\\s])|https?://)~i') %}
+<section{{ attributes.addClass(foto ? ['ua-pagehead', 'ua-pagehead--hero', 'ua-pagehead--foto'] : ['ua-pagehead', 'ua-pagehead--hero']) }}>
+  {% if breadcrumb %}
+    <div class="ua-pagehead__migas">
+      <div class="ua-container">{% include 'unillanos:breadcrumb' with {items: breadcrumb} only %}</div>
+    </div>
+  {% endif %}
+  <div class="ua-pagehead__fondo">
+    {% if foto %}
+      <div class="ua-pagehead__media"{% if not image.alt %} aria-hidden="true"{% endif %}>
+        {% include 'unillanos:media' with {src: image.src, srcset: image.srcset, type: image.type, width: image.width, height: image.height, alt: image.alt, priority: 'high'} only %}
+      </div>
+      <div class="ua-pagehead__velo"></div>
+    {% endif %}
+    <div class="ua-container ua-pagehead__cuerpo">
+      <div class="ua-pagehead__row">{{ block('meta') }}</div>
+      {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow|sin_cortes }}</span>{% endif %}
+      <{{ nivel }} class="ua-pagehead__title">{{ title|sin_cortes }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
+      {% if lead %}<p class="ua-pagehead__lead">{{ lead|sin_cortes }}</p>{% endif %}
+      {{ block('extra') }}
+    </div>
+  </div>
+</section>
+{% else %}
 <section{{ attributes.addClass('ua-pagehead') }}>
   <div class="ua-container">
     {% if breadcrumb %}
       {% include 'unillanos:breadcrumb' with {items: breadcrumb} only %}
     {% endif %}
     <div class="ua-pagehead__row">{% block meta %}{{ meta }}{% endblock %}</div>
-    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow }}</span>{% endif %}
-    <{{ nivel }} class="ua-pagehead__title">{{ title }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
-    {% if lead %}<p class="ua-pagehead__lead">{{ lead }}</p>{% endif %}
+    {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow|sin_cortes }}</span>{% endif %}
+    <{{ nivel }} class="ua-pagehead__title">{{ title|sin_cortes }}{% if title_accent %} <span>{{ title_accent }}</span>{% endif %}</{{ nivel }}>
+    {% if lead %}<p class="ua-pagehead__lead">{{ lead|sin_cortes }}</p>{% endif %}
     {% block extra %}{{ extra }}{% endblock %}
   </div>
 </section>
+{% endif %}

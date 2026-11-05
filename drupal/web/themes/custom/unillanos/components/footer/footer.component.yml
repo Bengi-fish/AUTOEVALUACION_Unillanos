@@ -2,7 +2,7 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Pie de página
 status: stable
 group: Página base
-description: 'Pie de página: banda con los tres logos, franja roja, descripción del sistema, columnas de enlaces, contacto y aviso legal. Los textos de contacto y los enlaces legales los define quien lo usa.'
+description: 'Pie de página oscuro: fila de entidades, bloque de la institución (logos, nombre, descripción), columnas de enlaces o de texto, contacto y aviso legal. Lo vacío se omite; los textos y enlaces los define quien lo usa.'
 props:
   type: object
   properties:
@@ -20,9 +20,25 @@ props:
     description:
       type: string
       title: Descripción
+    entities:
+      type: array
+      title: Entidades
+      description: 'Fila de botones de contorno sobre las columnas (MinEducación, MinTIC…).'
+      items:
+        type: object
+        required:
+          - title
+        properties:
+          title:
+            type: string
+          url:
+            type: string
+          externo:
+            type: boolean
     columns:
       type: array
-      title: Columnas de enlaces
+      title: Columnas de enlaces o de texto
+      description: 'Un elemento sin url se imprime como texto (sedes, contacto).'
       items:
         type: object
         required:

@@ -1,0 +1,104 @@
+/**
+ * Componente doc-filter (Etapa 6): panel plano con botones en píldora; el
+ * activo va en verde azulado. Objetivos de 44 px, sin sombras.
+ */
+
+.ua-docfilter {
+  display: grid;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4) var(--espacio-5);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua-docfilter[hidden] {
+  display: none;
+}
+
+.ua-docfilter__title {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gris-texto);
+}
+
+.ua-docfilter__opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+
+.ua-docfilter__opt {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: 44px;
+  padding: 0 var(--espacio-4);
+  border: 1px solid var(--gris-suave);
+  border-radius: var(--radio-pill);
+  background: var(--Surface);
+  color: var(--carbon);
+  font-family: var(--font-base);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.ua-docfilter__opt:hover {
+  border-color: var(--verde-azulado-700);
+  background: var(--superficie-50);
+}
+
+.ua-docfilter__opt[aria-pressed="true"] {
+  border-color: var(--verde-azulado-700);
+  background: var(--verde-azulado-700);
+  color: var(--Surface);
+}
+
+.ua-docfilter__count {
+  min-width: 24px;
+  padding: 0 var(--espacio-2);
+  border-radius: var(--radio-pill);
+  background: var(--superficie-100);
+  color: var(--carbon);
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.ua-docfilter__opt[aria-pressed="true"] .ua-docfilter__count {
+  background: var(--Surface);
+  color: var(--verde-azulado-900);
+}
+
+.ua .ua-docfilter__opt:focus-visible {
+  border-radius: var(--radio-pill);
+}
+
+@media (max-width: 560px) {
+
+  .ua-docfilter {
+    padding: var(--espacio-4);
+  }
+
+  .ua-docfilter__opt {
+    padding: 0 var(--espacio-3);
+  }
+
+}
+
+@media (forced-colors: active) {
+
+  .ua-docfilter__opt[aria-pressed="true"] {
+    border: 2px solid Highlight;
+  }
+
+}

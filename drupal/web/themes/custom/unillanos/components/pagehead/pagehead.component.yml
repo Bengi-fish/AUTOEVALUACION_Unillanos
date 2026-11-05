@@ -8,6 +8,19 @@ props:
   required:
     - title
   properties:
+    variant:
+      type: string
+      title: Variante
+      description: 'hero = cabecera de color sólido #174349 (o con foto) y migas sobre una franja blanca; vacío = franja gris.'
+      enum:
+        - ''
+        - hero
+    image:
+      type:
+        - object
+        - 'null'
+      title: Foto de la variante hero
+      description: 'Claves src, srcset, type, width, height y alt (ver unillanos:media). Sin ella, la cabecera es de color sólido con formas decorativas.'
     eyebrow:
       type: string
       title: Antetítulo

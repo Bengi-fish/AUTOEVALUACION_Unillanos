@@ -1,0 +1,24 @@
+uuid: ef988ddb-fe0a-40df-934c-24aed4b45cc9
+langcode: es
+status: true
+dependencies:
+  enforced:
+    module:
+      - unillanos_autoeval
+name: unillanos_hero_1920
+label: 'Unillanos: hero de 1920 px'
+effects:
+  45eb0cf6-ff60-45ce-ba44-2687235fcf25:
+    uuid: 45eb0cf6-ff60-45ce-ba44-2687235fcf25
+    id: image_scale
+    weight: 1
+    data:
+      width: 1920
+      height: null
+      upscale: false
+  23f3149d-50ce-48be-95bd-134ce9746333:
+    uuid: 23f3149d-50ce-48be-95bd-134ce9746333
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

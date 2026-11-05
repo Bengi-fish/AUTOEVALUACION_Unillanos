@@ -1,7 +1,11 @@
 {#
 /**
  * @file
- * Estado de una condición o de un registro.
+ * Estado de una condición o de un registro, en píldora: con «ok» un check y
+ * con cualquier otro estado el ícono de información. El ícono es decorativo.
  */
 #}
-<span{{ attributes.addClass(['ua-estado', 'ua-estado--' ~ variant]) }}>{{ label }}</span>
+<span{{ attributes.addClass(['ua-estado', 'ua-estado--' ~ variant]) }}>
+  {%- include 'unillanos:icon' with {name: variant == 'ok' ? 'check' : 'info', size: 'sm'} only -%}
+  {{ label }}
+</span>

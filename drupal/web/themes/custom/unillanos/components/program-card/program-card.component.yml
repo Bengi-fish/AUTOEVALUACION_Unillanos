@@ -23,6 +23,10 @@ props:
       type: string
       title: Facultad
       description: 'Tal como está guardada («Facultad de …»); no se le añade prefijo.'
+    faculty_key:
+      type: string
+      title: Clave de la facultad
+      description: 'Sigla de la facultad en minúsculas (fcs, fce, fcbi, fcarn, fchye). Añade la clase ua-prog--{clave}, que tiñe la tarjeta con los tokens de la facultad; sin clave o con caracteres no válidos la tarjeta queda con el tinte rojo por defecto.'
     level:
       type: string
       title: Nivel

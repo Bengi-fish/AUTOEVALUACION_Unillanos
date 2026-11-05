@@ -1,5 +1,8 @@
 /**
  * Componente plan-table.
+ *
+ * Etapa 4b: tabla en escritorio; bajo 760 px cada fila es una tarjeta con la
+ * etiqueta de cada dato visible. Sin sombras ni !important.
  */
 
 .ua-plan {
@@ -17,14 +20,14 @@
 
 .ua-plan th {
   text-align: left;
-  background: var(--tinta-900);
+  background: var(--verde-azulado-900);
   color: var(--Surface);
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   font-size: 13px;
   line-height: 18px;
   letter-spacing: .04em;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 600;
   padding: var(--espacio-3) var(--espacio-4);
 }
 
@@ -53,8 +56,13 @@
   width: 24%;
 }
 
+/* El avance («2025-2 · 100 %») no se parte entre la cifra y el signo. */
+.ua-plan td:nth-child(4) {
+  min-width: 8.5rem;
+}
+
 .ua-plan tr[hidden] {
-  display: none !important;
+  display: none;
 }
 
 .ua-plan td ul {
@@ -104,7 +112,14 @@
   gap: var(--espacio-2);
 }
 
-@media (max-width: 860px) {
+@media (max-width: 760px) {
+
+  /* Sin borde ni recorte: cada fila es su propia tarjeta. */
+  .ua-plan {
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
 
   /* El encabezado se oculta solo a la vista (no con display: none) para que
      los lectores de pantalla sigan asociando cada celda con su columna. */
@@ -119,29 +134,34 @@
 
   .ua-plan table, .ua-plan tbody, .ua-plan tr, .ua-plan td {
     display: block;
-    width: 100% !important;
   }
 
-  .ua-plan tr {
+  .ua-plan tbody {
+    display: grid;
+    gap: var(--espacio-4);
+  }
+
+  .ua-plan tbody tr {
     padding: var(--espacio-4);
-    border-top: 1px solid var(--borde);
-  }
-
-  .ua-plan tbody tr:first-child {
-    border-top: 0;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    background: var(--Surface);
   }
 
   .ua-plan tbody tr:nth-child(even) {
-    background: var(--superficie-50);
+    background: var(--Surface);
   }
 
-  .ua-plan td {
+  .ua-plan tbody tr:nth-child(n) td:nth-child(n) {
+    width: auto;
+    min-width: 0;
     border: 0;
-    padding: 0 0 var(--espacio-3);
-    background: transparent !important;
+    padding: 0 0 var(--espacio-4);
+    background: transparent;
+    overflow-wrap: break-word;
   }
 
-  .ua-plan td:last-child {
+  .ua-plan tbody td:last-child {
     padding-bottom: 0;
   }
 
@@ -157,9 +177,14 @@
     line-height: 16px;
     letter-spacing: .06em;
     text-transform: uppercase;
-    font-weight: 700;
-    color: var(--tinta-500);
-    margin-bottom: 4px;
+    font-weight: 600;
+    color: var(--gris-texto);
+    margin-bottom: var(--espacio-1);
+  }
+
+  .ua-plan__nav {
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
   }
 
 }
@@ -186,7 +211,7 @@
   color: var(--tinta-700);
   font-size: 12px;
   line-height: 20px;
-  font-weight: 700;
+  font-weight: 600;
   vertical-align: 1px;
 }
 
@@ -198,8 +223,8 @@
   font-size: 12px;
   line-height: 16px;
   letter-spacing: .04em;
-  font-weight: 700;
-  color: var(--rojo-700);
+  font-weight: 600;
+  color: var(--rojo-texto);
 }
 
 /* Detalle desplegable de una fila (details nativo: teclado y lectores sin JS). */
@@ -213,14 +238,15 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-height: 44px;
   padding: 2px 4px;
   margin-left: -4px;
   cursor: pointer;
   font-size: 14px;
   line-height: 20px;
-  font-weight: 700;
-  color: var(--rojo-700);
-  border-radius: var(--radio-sm, 6px);
+  font-weight: 600;
+  color: var(--rojo-texto);
+  border-radius: var(--radio-sm);
 }
 
 .ua-plan .ua-plan__detail > summary:hover {
@@ -230,7 +256,7 @@
 
 .ua-plan .ua-plan__detail > summary:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--tinta-900);
+  box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
 }
 
 .ua-plan .ua-plan__detail[open] > summary {
@@ -253,8 +279,8 @@
   line-height: 16px;
   letter-spacing: .06em;
   text-transform: uppercase;
-  font-weight: 700;
-  color: var(--tinta-500);
+  font-weight: 600;
+  color: var(--gris-texto);
 }
 
 .ua-plan__dl dd {

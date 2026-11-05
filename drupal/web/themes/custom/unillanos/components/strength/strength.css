@@ -49,7 +49,7 @@
   line-height: 21px;
   font-weight: 600;
   color: var(--tinta-900);
-  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 1080px) {

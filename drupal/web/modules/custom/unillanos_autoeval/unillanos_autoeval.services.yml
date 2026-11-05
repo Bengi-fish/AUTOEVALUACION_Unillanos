@@ -51,10 +51,20 @@ services:
 
   unillanos_autoeval.pagina_programa:
     class: Drupal\unillanos_autoeval\Service\PaginaPrograma
-    arguments: ['@unillanos_autoeval.listado_programas', '@url_generator', '@access_manager', '@current_user']
+    arguments: ['@unillanos_autoeval.listado_programas', '@url_generator', '@access_manager', '@current_user', '@entity_type.manager', '@file_url_generator']
   Drupal\unillanos_autoeval\Service\PaginaPrograma: '@unillanos_autoeval.pagina_programa'
 
   unillanos_autoeval.enlaces_del_pie:
     class: Drupal\unillanos_autoeval\Service\EnlacesDelPie
     arguments: ['@menu.link_tree']
   Drupal\unillanos_autoeval\Service\EnlacesDelPie: '@unillanos_autoeval.enlaces_del_pie'
+
+  unillanos_autoeval.datos_marco:
+    class: Drupal\unillanos_autoeval\Service\DatosMarco
+    arguments: ['@config.factory']
+  Drupal\unillanos_autoeval\Service\DatosMarco: '@unillanos_autoeval.datos_marco'
+
+  unillanos_autoeval.twig_extension:
+    class: Drupal\unillanos_autoeval\Twig\UnillanosTwigExtension
+    tags:
+      - { name: twig.extension }
