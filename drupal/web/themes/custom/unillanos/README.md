@@ -21,8 +21,8 @@ se adaptó desde el prototipo `plantilla/` del repositorio.
 Public Sans servida desde `fonts/` (variable, eje de peso `wght`, latin y
 latin-ext). Archivos de `@fontsource-variable/public-sans` 5.3.0, licencia OFL
 1.1 (`fonts/OFL-PublicSans.txt`). El sistema usa dos pesos, 400 y 600. DM Sans
-se retiró en la Etapa 8 del rediseño (sin `@font-face` ni referencias); sus
-archivos siguen en `fonts/` a la espera de decidir si se borran. League Gothic
+se retiró del rediseño (sin `@font-face` ni referencias; sus archivos y su
+licencia se borraron en el cierre). League Gothic
 (título de la portada) no está incorporada: espera la confirmación del
 diseñador.
 
