@@ -173,7 +173,9 @@
     top: 0;
     z-index: 5;
     flex-direction: row;
-    align-items: flex-start;
+    /* Todas las pestañas miden lo mismo que la más alta: bajo la tira no queda
+       un hueco vacío. */
+    align-items: stretch;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     border-radius: var(--radio-md);
@@ -192,6 +194,8 @@
     border-left: 0;
     border-radius: var(--radio-md);
     padding: 7px 16px 7px 7px;
+    font-size: 14px;
+    line-height: 18px;
   }
 
   .ua-tab[aria-selected="true"] {
@@ -199,13 +203,14 @@
     outline-offset: -2px;
   }
 
-  /* El rótulo pasa a dos o más líneas en lugar de recortarse con «…». */
-  .ua-tab {
-    max-width: min(420px, 86vw);
-  }
-
+  /* El rótulo pasa a varias líneas en lugar de recortarse con «…», pero su
+     ancho tiene tope: así la pestaña activa nunca ocupa toda la tira y asoma
+     la siguiente (indica que se puede desplazar). A 390 px el tope es 240 px;
+     a 320 px, 170 px (la pestaña mide el rótulo más 65 px de número y
+     relleno). */
   .ua-tab__label {
     min-width: 0;
+    max-width: min(240px, calc(100vw - 150px));
     overflow-wrap: break-word;
   }
 
@@ -330,8 +335,7 @@
   line-height: 21px;
   font-weight: 500;
   color: var(--tinta-900);
-  overflow-wrap: anywhere;
-  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 560px) {
