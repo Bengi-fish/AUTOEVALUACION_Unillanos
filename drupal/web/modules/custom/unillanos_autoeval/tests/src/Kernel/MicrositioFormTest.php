@@ -142,7 +142,11 @@ class MicrositioFormTest extends KernelTestBase {
     $this->assertSame('Uno | /uno', $form['cabecera']['franja_superior']['#default_value']);
     $ruta = $this->container->get('router.route_provider')->getRouteByName('unillanos_autoeval.micrositio');
     $this->assertSame('/admin/config/unillanos/micrositio', $ruta->getPath());
-    $this->assertSame('administer site configuration', $ruta->getRequirement('_permission'));
+    // Cambio deliberado de la Fase 8.1: la ruta ya no exige «administer site
+    // configuration» sino el permiso propio del módulo (lo recibe el rol
+    // Acreditación; ver RolAcreditacionTest).
+    $this->assertNotSame('administer site configuration', $ruta->getRequirement('_permission'));
+    $this->assertSame('edit unillanos micrositio', $ruta->getRequirement('_permission'));
   }
 
 }

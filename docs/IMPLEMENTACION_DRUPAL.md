@@ -670,6 +670,21 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 
 **Push y merge:** sección 2.6 con `fase-8-webform-roles`.
 
+#### Fase 8.1 (rama `fase-8-acreditacion`): rol «Acreditación»
+
+Primera parte de la Fase 8, hecha antes del formulario Participa. Un solo rol, `acreditacion` («Acreditación», `user.role.acreditacion`, en `config/sync` y en `config/optional` del módulo `unillanos_autoeval`), que **edita todos los programas**.
+
+- **Qué puede:** crear y editar (cualquier contenido) `programa`, `proceso`, `valoracion`, `hallazgo`, `plan_mejoramiento`, `meta` y `seguimiento`, y crear y editar el medio `documento` (con la subida del archivo); ver revisiones, ver su contenido sin publicar, la lista de contenido y de medios, la navegación y el tema de administración; abrir el panel (`access acreditacion panel`, ver 8.2) y el formulario del micrositio (`edit unillanos micrositio`). Las facultades y las sedes solo se **seleccionan** (no puede editar esos vocabularios).
+- **Qué no puede:** borrar nada (para retirar algo se **despublica**), tocar `lineamiento`, ni entrar a configuración, módulos, estructura, personas, informes ni actualizaciones (`/admin/config`, `/admin/modules`, `/admin/structure`, `/admin/people`, `/admin/reports` dan «Acceso denegado»). **Ningún permiso `administer …`** y ningún `bypass`.
+- **Revisiones:** los ocho tipos de nodo y el medio `documento` ya crean revisión nueva al guardar; Acreditación publica directamente.
+- **Permisos propios** (`unillanos_autoeval.permissions.yml`):
+  - `edit unillanos micrositio`: abre y guarda `/admin/config/unillanos/micrositio`. **Diferencia deliberada:** la ruta ya no exige `administer site configuration`; quien solo tenga ese permiso ya no abre el formulario.
+  - `access acreditacion panel`: panel `/admin/acreditacion` (Etapa 8.2).
+  - `change publication status on acreditacion content`: **decisión deliberada.** El núcleo solo deja marcar o desmarcar «Publicado» a quien tenga `administer nodes` o `administer node published status`. En lugar de dar un `administer …` al rol, el módulo implementa `hook_entity_field_access()` (`UnillanosAutoevalHooks::entityFieldAccess()`) y concede **solo editar el campo `status`** en los tipos `programa`, `proceso`, `valoracion`, `hallazgo`, `plan_mejoramiento`, `meta`, `seguimiento` y `lineamiento` y en el medio `documento`. Solo suma (nunca devuelve «prohibido»), no toca otros campos, tipos de contenido ni tipos de medio, y no concede crear ni editar. El rol Acreditación edita siete de esos nodos (no `lineamiento`) y el medio `documento`; el permiso cubre también `lineamiento` por si otro rol lo recibe. En los medios el núcleo no restringe «Publicado»: quien edita un documento ya puede cambiarlo, así que ahí el permiso es neutro.
+- **Registro:** abierto solo al administrador (`register: admin_only`); no se cambió.
+- **Crear una cuenta de Acreditación a mano:** como administrador, ir a *Personas → Añadir usuario* (`/admin/people/create`), escribir nombre de usuario, correo y una contraseña segura, marcar el rol **Acreditación** (ningún otro) y guardar. Entregar la contraseña por un canal seguro y pedir que la cambie al entrar. Para retirar el acceso, bloquear la cuenta (no borrar: así se conserva la autoría de los cambios).
+- **Pruebas:** `RolAcreditacionTest` (foto exacta de los 27 permisos del rol, crear y editar sin borrar, rutas de administración, formulario del micrositio, permiso de publicación y formulario «Publicado»).
+
 ---
 
 ## 12. Fase 9 · Revisión antes de mostrar

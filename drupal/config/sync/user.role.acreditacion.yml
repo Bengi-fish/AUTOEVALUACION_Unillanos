@@ -1,0 +1,51 @@
+uuid: 0b2c8c10-7744-4849-b5b8-4fe207f5b732
+langcode: es
+status: true
+dependencies:
+  config:
+    - media.type.documento
+    - node.type.hallazgo
+    - node.type.meta
+    - node.type.plan_mejoramiento
+    - node.type.proceso
+    - node.type.programa
+    - node.type.seguimiento
+    - node.type.valoracion
+  module:
+    - media
+    - navigation
+    - node
+    - system
+    - unillanos_autoeval
+id: acreditacion
+label: Acreditación
+weight: 4
+is_admin: false
+permissions:
+  - 'access acreditacion panel'
+  - 'access content overview'
+  - 'access media overview'
+  - 'access navigation'
+  - 'change publication status on acreditacion content'
+  - 'create documento media'
+  - 'create hallazgo content'
+  - 'create meta content'
+  - 'create plan_mejoramiento content'
+  - 'create proceso content'
+  - 'create programa content'
+  - 'create seguimiento content'
+  - 'create valoracion content'
+  - 'edit any documento media'
+  - 'edit any hallazgo content'
+  - 'edit any meta content'
+  - 'edit any plan_mejoramiento content'
+  - 'edit any proceso content'
+  - 'edit any programa content'
+  - 'edit any seguimiento content'
+  - 'edit any valoracion content'
+  - 'edit unillanos micrositio'
+  - 'view all media revisions'
+  - 'view all revisions'
+  - 'view own unpublished content'
+  - 'view own unpublished media'
+  - 'view the administration theme'

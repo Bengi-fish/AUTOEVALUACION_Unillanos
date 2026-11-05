@@ -28,4 +28,4 @@ unillanos_autoeval.micrositio:
     _form: '\Drupal\unillanos_autoeval\Form\MicrositioForm'
     _title: 'Micrositio de autoevaluación'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'edit unillanos micrositio'

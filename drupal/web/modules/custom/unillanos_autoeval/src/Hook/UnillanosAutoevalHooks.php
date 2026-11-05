@@ -2,14 +2,19 @@
 
 namespace Drupal\unillanos_autoeval\Hook;
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Drupal\unillanos_autoeval\Service\CalculadorGrado;
@@ -23,6 +28,30 @@ use Drupal\unillanos_autoeval\Service\SugerenciaDestino;
 class UnillanosAutoevalHooks {
 
   use StringTranslationTrait;
+
+  /**
+   * Permiso que habilita editar «Publicado» en el contenido de autoevaluación.
+   */
+  const PERMISO_PUBLICACION = 'change publication status on acreditacion content';
+
+  /**
+   * Tipos de contenido y de medio a los que aplica el permiso de publicación.
+   *
+   * @var array<string, string[]>
+   */
+  const TIPOS_PUBLICACION = [
+    'node' => [
+      'programa',
+      'proceso',
+      'valoracion',
+      'hallazgo',
+      'plan_mejoramiento',
+      'meta',
+      'seguimiento',
+      'lineamiento',
+    ],
+    'media' => ['documento'],
+  ];
 
   /**
    * Constructor.
@@ -43,6 +72,30 @@ class UnillanosAutoevalHooks {
       'hallazgo' => $this->sugerirDestino($node),
       default => NULL,
     };
+  }
+
+  /**
+   * Implements hook_entity_field_access().
+   *
+   * Permite editar el campo «Publicado» (status) del contenido de
+   * autoevaluación a quien tenga el permiso propio del módulo. El núcleo solo
+   * lo concede con «administer nodes» o «administer node published status»; así
+   * el rol de Acreditación puede despublicar sin ningún permiso administrativo.
+   * Solo suma: nunca devuelve «prohibido» ni «neutral con razón», de modo que
+   * quien ya tiene acceso por otra vía lo conserva, y no toca otros campos,
+   * tipos de contenido ni tipos de medio.
+   */
+  #[Hook('entity_field_access')]
+  public function entityFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
+    if ($operation !== 'edit' || $field_definition->getName() !== 'status' || !$items) {
+      return AccessResult::neutral();
+    }
+    $entidad = $items->getEntity();
+    $tipos = self::TIPOS_PUBLICACION[$entidad->getEntityTypeId()] ?? [];
+    if (!in_array($entidad->bundle(), $tipos, TRUE)) {
+      return AccessResult::neutral();
+    }
+    return AccessResult::allowedIfHasPermission($account, self::PERMISO_PUBLICACION);
   }
 
   /**
