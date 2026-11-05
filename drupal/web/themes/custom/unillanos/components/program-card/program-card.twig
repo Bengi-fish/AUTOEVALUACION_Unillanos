@@ -1,14 +1,21 @@
 {#
 /**
  * @file
- * Tarjeta de un programa en el listado.
+ * Tarjeta de un programa en el listado (plantilla Pregrado).
  *
  * Un solo enlace. Con id, el enlace se nombra por el programa
- * (aria-labelledby) y se describe por la facultad y las etiquetas
- * (aria-describedby), así un lector de pantalla no repite «Ver programa» en
- * cada tarjeta. El nombre va en un título (h3 por defecto) dentro del enlace,
- * como unillanos:card. Lo vacío se omite: sin sede no hay etiqueta de sede y
- * solo se imprime «Con autoevaluación» cuando evaluated es verdadero.
+ * (aria-labelledby) y se describe por la etiqueta, la facultad, la línea de
+ * duración y sede y la marca de autoevaluación (aria-describedby), así un
+ * lector de pantalla no repite «Ver programa» en cada tarjeta. El nombre va en
+ * un título (h3 por defecto) dentro del enlace, como unillanos:card.
+ *
+ * Orden fijo: etiqueta «NIVEL · MODALIDAD», nombre, facultad, «duración ·
+ * sede», píldora «Con autoevaluación» y «Ver programa». Excepción documentada
+ * a «lo vacío se omite»: la línea de duración y sede y la píldora, si no
+ * tienen dato, dejan un HUECO RESERVADO (misma altura, sin texto y con
+ * aria-hidden="true") para que todas las tarjetas tengan la misma estructura.
+ * Lo demás vacío se omite. La clase de facultad (ua-prog--{sigla}) se conserva
+ * para la futura rejilla de facultades, pero la tarjeta ya no se tiñe.
  *
  * Mismo filtro de URL que unillanos:button.
  */
@@ -16,23 +23,34 @@
 {% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
 {% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
 {% set uid = id is not null and ((id ~ '') matches '~^[A-Za-z0-9_-]+$~') ? 'ua-prog-' ~ id : '' %}
-{% set hay_etiquetas = level or campus or evaluated %}
-{# Tinte por facultad: solo una sigla válida (letras y números) añade la clase. #}
-{% set tinte = (faculty_key ~ '') matches '~^[a-z0-9]{1,12}$~' ? 'ua-prog--' ~ faculty_key : '' %}
+{# Clase de facultad: solo una sigla válida (letras y números) la añade. #}
+{% set clave = (faculty_key ~ '') matches '~^[a-z0-9]{1,12}$~' ? 'ua-prog--' ~ faculty_key : '' %}
+{% set etiqueta = [level, modality]|filter(parte => parte)|join(' · ') %}
+{% set semestres = duration is not null and ((duration ~ '') matches '~^[1-9][0-9]*$~') ? (duration + 0) : 0 %}
+{% set datos = [] %}
+{% if semestres %}
+  {% set datos = datos|merge([semestres == 1 ? '1 semestre'|t : '@count semestres'|t({'@count': semestres})]) %}
+{% endif %}
+{% if campus %}{% set datos = datos|merge([campus]) %}{% endif %}
 {% set descripcion = [] %}
+{% if uid and etiqueta %}{% set descripcion = descripcion|merge([uid ~ '-e']) %}{% endif %}
 {% if uid and faculty %}{% set descripcion = descripcion|merge([uid ~ '-f']) %}{% endif %}
-{% if uid and hay_etiquetas %}{% set descripcion = descripcion|merge([uid ~ '-e']) %}{% endif %}
-<a{{ attributes.addClass(tinte ? ['ua-prog', tinte] : ['ua-prog']) }}{% if url and ((url ~ '') matches seguro) %} href="{{ url }}"{% endif %}{% if uid %} aria-labelledby="{{ uid }}-n"{% endif %}{% if descripcion %} aria-describedby="{{ descripcion|join(' ') }}"{% endif %}>
-  <span class="ua-prog__icon">{% include 'unillanos:icon' with {name: 'cap'} only %}</span>
+{% if uid and datos %}{% set descripcion = descripcion|merge([uid ~ '-d']) %}{% endif %}
+{% if uid and evaluated %}{% set descripcion = descripcion|merge([uid ~ '-s']) %}{% endif %}
+<a{{ attributes.addClass(clave ? ['ua-prog', clave] : ['ua-prog']) }}{% if url and ((url ~ '') matches seguro) %} href="{{ url }}"{% endif %}{% if uid %} aria-labelledby="{{ uid }}-n"{% endif %}{% if descripcion %} aria-describedby="{{ descripcion|join(' ') }}"{% endif %}>
   <div class="ua-prog__body">
-    {% if faculty %}<span class="ua-prog__faculty"{% if uid %} id="{{ uid }}-f"{% endif %}>{{ faculty }}</span>{% endif %}
+    {% if etiqueta %}<span class="ua-prog__eyebrow"{% if uid %} id="{{ uid }}-e"{% endif %}>{{ etiqueta }}</span>{% endif %}
     <{{ nivel }} class="ua-prog__name"{% if uid %} id="{{ uid }}-n"{% endif %}>{{ name }}</{{ nivel }}>
-    {% if hay_etiquetas %}
-      <span class="ua-prog__meta"{% if uid %} id="{{ uid }}-e"{% endif %}>
-        {%- if campus %}{% include 'unillanos:tag' with {label: campus} only %}{% endif -%}
-        {%- if level %}{% include 'unillanos:tag' with {label: level} only %}{% endif -%}
-        {%- if evaluated %}{% include 'unillanos:tag' with {label: 'Con autoevaluación'|t, variant: 'acento'} only %}{% endif -%}
-      </span>
+    {% if faculty %}<span class="ua-prog__faculty"{% if uid %} id="{{ uid }}-f"{% endif %}>{{ faculty }}</span>{% endif %}
+    {% if datos %}
+      <span class="ua-prog__datos"{% if uid %} id="{{ uid }}-d"{% endif %}>{{ datos|join(' · ') }}</span>
+    {% else %}
+      <span class="ua-prog__datos ua-prog__hueco" aria-hidden="true"></span>
+    {% endif %}
+    {% if evaluated %}
+      <span class="ua-prog__estado"{% if uid %} id="{{ uid }}-s"{% endif %}>{% include 'unillanos:estado' with {label: 'Con autoevaluación'|t, variant: 'ok'} only %}</span>
+    {% else %}
+      <span class="ua-prog__estado ua-prog__hueco" aria-hidden="true"></span>
     {% endif %}
     <span class="ua-prog__cta">{{ cta|default('Ver programa'|t) }}{% include 'unillanos:icon' with {name: 'arrow-right', size: 'sm'} only %}</span>
   </div>

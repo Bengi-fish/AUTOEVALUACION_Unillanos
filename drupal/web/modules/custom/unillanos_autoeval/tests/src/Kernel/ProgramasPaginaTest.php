@@ -147,6 +147,38 @@ class ProgramasPaginaTest extends UnillanosKernelTestBase {
   }
 
   /**
+   * La tarjeta trae nivel y modalidad; sin modalidad, solo el nivel.
+   *
+   * Todas las tarjetas tienen la misma estructura: sin sede ni duración y sin
+   * autoevaluación quedan dos huecos reservados, sin texto de relleno.
+   */
+  public function testTarjetasConModalidadHuecos(): void {
+    $this->crearCampo('node', 'programa', 'field_modalidad', 'list_string', [
+      'allowed_values' => ['presencial' => 'Presencial', 'virtual' => 'Virtual'],
+    ]);
+    $this->crearNodo('programa', [
+      'title' => 'Con modalidad',
+      'field_clave' => 'con-modalidad',
+      'field_nivel' => 'pregrado',
+      'field_modalidad' => 'presencial',
+    ]);
+    $this->crearNodo('programa', [
+      'title' => 'Sin modalidad',
+      'field_clave' => 'sin-modalidad',
+      'field_nivel' => 'maestria',
+    ]);
+    $html = $this->pagina()['html'];
+    $this->assertStringContainsString('>Pregrado · Presencial</span>', $html);
+    $this->assertStringContainsString('>Maestría</span>', $html);
+    $this->assertSame(2, substr_count($html, 'ua-prog__datos ua-prog__hueco'));
+    $this->assertSame(2, substr_count($html, 'ua-prog__estado ua-prog__hueco'));
+    $this->assertSame(4, substr_count($html, 'ua-prog__hueco" aria-hidden="true"></span>'));
+    $this->assertStringNotContainsString('Sin dato', $html);
+    $this->assertStringNotContainsString('endiente', $html);
+    $this->assertStringNotContainsString('—', $html);
+  }
+
+  /**
    * Cuarenta programas sin búsqueda: todos visibles y sin ocultos.
    */
   public function testCuarentaProgramasSinFiltro(): void {

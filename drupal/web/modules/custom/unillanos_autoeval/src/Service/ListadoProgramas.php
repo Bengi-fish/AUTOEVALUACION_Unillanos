@@ -274,9 +274,10 @@ class ListadoProgramas {
    *
    * @return array<int, array<string, mixed>>
    *   Por programa, solo lo que existe: id, nombre, url, facultad, facultad_id,
-   *   facultad_sigla (clave en minúsculas, para el tinte), nivel, nivel_clave,
-   *   sede, sede_id, con_autoevaluacion (solo si es TRUE)
-   *   y buscar (nombre, facultad, nivel y sede sin tildes ni mayúsculas).
+   *   facultad_sigla (clave en minúsculas, para la futura rejilla de
+   *   facultades), nivel, nivel_clave, modalidad, sede, sede_id,
+   *   con_autoevaluacion (solo si es TRUE) y buscar (nombre, facultad, nivel
+   *   y sede sin tildes ni mayúsculas).
    */
   protected function tarjetas(array $programas, array $con_proceso, CacheableMetadata $cache): array {
     $cache->addCacheTags(['node_list:programa', 'taxonomy_term_list:facultad', 'taxonomy_term_list:sede']);
@@ -298,6 +299,7 @@ class ListadoProgramas {
         'facultad_sigla' => $this->siglaDeFacultad($facultad),
         'nivel' => $nivel,
         'nivel_clave' => (string) $programa->get('field_nivel')->value,
+        'modalidad' => $programa->hasField('field_modalidad') ? $this->etiquetaLista($programa->get('field_modalidad')) : '',
         'sede' => trim((string) $sede?->label()),
         'sede_id' => $sede ? (string) $sede->id() : '',
         'con_autoevaluacion' => isset($con_proceso[(int) $programa->id()]),

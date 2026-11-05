@@ -5,9 +5,7 @@
 .ua a.ua-prog {
   flex: 1;
   display: flex;
-  gap: var(--espacio-4);
-  align-items: flex-start;
-  padding: var(--espacio-5);
+  padding: calc(var(--espacio-4) + var(--espacio-1));
   border: 1px solid var(--borde);
   border-radius: var(--radio-md);
   background: var(--Surface);
@@ -17,10 +15,9 @@
 }
 
 /*
- * Tinte por facultad (Etapa 5). Cada clase fija tres valores con los tokens de
- * la facultad: el fondo de la etiqueta de facultad y del ícono, el color
- * oscuro del filo superior y el color del texto sobre el fondo. Sin clase
- * (sin sigla guardada) la tarjeta queda con el rojo de siempre.
+ * Clase de facultad (ua-prog--{sigla}). Desde el ajuste a la plantilla
+ * Pregrado la tarjeta ya NO se tiñe: las variables se conservan para la
+ * futura rejilla de facultades, pero ninguna regla de la tarjeta las usa.
  */
 .ua-prog {
   --prog-fondo: var(--rojo-tinte);
@@ -48,28 +45,10 @@
   --prog-duo: var(--facultad-fchye-duotono);
 }
 
-/* Ciencias Básicas e Ingeniería: tinte rojo oscuro con letra blanca. */
 .ua-prog--fcbi {
   --prog-fondo: var(--facultad-fcbi-fondo);
   --prog-duo: var(--facultad-fcbi-duotono);
   --prog-texto: var(--Surface);
-}
-
-.ua a.ua-prog[class*="ua-prog--"] {
-  border-top: 4px solid var(--prog-duo);
-}
-
-.ua-prog[class*="ua-prog--"] .ua-prog__icon {
-  background: var(--prog-fondo);
-  color: var(--prog-texto);
-}
-
-.ua-prog[class*="ua-prog--"] .ua-prog__faculty {
-  align-self: flex-start;
-  padding: 2px var(--espacio-2);
-  border-radius: var(--radio-sm);
-  background: var(--prog-fondo);
-  color: var(--prog-texto);
 }
 
 /* Sin sombra ni cambio de fondo: el hover oscurece el borde. */
@@ -82,27 +61,17 @@
   border-radius: var(--radio-md);
 }
 
-.ua-prog__icon {
-  flex: none;
-  width: 48px;
-  height: 48px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--rojo-50);
-  color: var(--rojo-700);
-}
-
+/* Seis líneas fijas, alineadas a la izquierda, con el mismo espacio entre ellas. */
 .ua-prog__body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: flex-start;
+  gap: var(--espacio-3);
   min-width: 0;
   flex: 1;
 }
 
-.ua-prog__faculty {
+.ua-prog__eyebrow {
   overflow-wrap: break-word;
   font-size: 12px;
   line-height: 16px;
@@ -121,40 +90,49 @@
   color: var(--tinta-900);
 }
 
-.ua-prog__meta {
+.ua-prog__faculty,
+.ua-prog__datos {
+  overflow-wrap: break-word;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--tinta-700);
+}
+
+/* Píldora de la plantilla: 30 px de alto; el hueco reserva la misma altura. */
+.ua-prog__estado {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 4px;
+  align-items: center;
+  max-width: 100%;
+  min-height: 30px;
+}
+
+.ua-prog__estado .ua-estado {
+  min-height: 30px;
+  box-sizing: border-box;
+}
+
+/* Hueco reservado: ocupa su altura, sin texto, para igualar las tarjetas. */
+.ua-prog__datos.ua-prog__hueco {
+  min-height: 20px;
 }
 
 .ua-prog__cta {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: var(--espacio-2);
+  margin-top: auto;
   font-size: 14px;
   line-height: 20px;
   font-weight: 600;
   color: var(--rojo-700);
 }
 
-/* La etiqueta no se parte en dos líneas: si no cabe, pasa a la siguiente. */
-.ua-prog__meta .ua-tag {
-  max-width: 100%;
-  white-space: nowrap;
-}
-
-/* En pantallas estrechas el ícono (decorativo) y el relleno le quitan ancho
-   al nombre: sin ellos «Especialización» cabe entera a 320 px. */
+/* En pantallas estrechas el relleno se reduce para dar ancho al nombre. */
 @media (max-width: 480px) {
 
   .ua a.ua-prog {
     padding: var(--espacio-4);
-  }
-
-  .ua-prog__icon {
-    display: none;
   }
 
 }
