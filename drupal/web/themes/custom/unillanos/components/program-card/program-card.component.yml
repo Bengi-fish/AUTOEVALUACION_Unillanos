@@ -2,7 +2,7 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Tarjeta de programa
 status: stable
 group: Contenido
-description: 'Tarjeta de un programa en el listado: facultad, nombre, etiquetas (nivel, sede y, solo si la tiene, «Con autoevaluación») y llamada a la acción. Es un único enlace cuyo nombre accesible es el del programa; la facultad y las etiquetas se leen como descripción. Lo vacío se omite. Solo muestra los valores que recibe.'
+description: 'Tarjeta de un programa en el listado (plantilla Pregrado), con seis líneas fijas: etiqueta «NIVEL · MODALIDAD», nombre, facultad, «duración · sede», píldora «Con autoevaluación» y llamada a la acción. Es un único enlace cuyo nombre accesible es el del programa; lo demás se lee como descripción. Lo vacío se omite, salvo la línea de duración y sede y la píldora, que dejan un hueco reservado (misma altura, sin texto, aria-hidden). Solo muestra los valores que recibe.'
 props:
   type: object
   required:
@@ -26,17 +26,25 @@ props:
     faculty_key:
       type: string
       title: Clave de la facultad
-      description: 'Sigla de la facultad en minúsculas (fcs, fce, fcbi, fcarn, fchye). Añade la clase ua-prog--{clave}, que tiñe la tarjeta con los tokens de la facultad; sin clave o con caracteres no válidos la tarjeta queda con el tinte rojo por defecto.'
+      description: 'Sigla de la facultad en minúsculas (fcs, fce, fcbi, fcarn, fchye). Añade la clase ua-prog--{clave}; la tarjeta ya no se tiñe, la clase queda para la futura rejilla de facultades. Con caracteres no válidos no se añade.'
     level:
       type: string
       title: Nivel
+    modality:
+      type: string
+      title: Modalidad
+      description: 'Se une al nivel en la etiqueta («Pregrado · Presencial»); sin ella solo se imprime el nivel.'
+    duration:
+      type: [integer, string]
+      title: Duración en semestres
+      description: 'Entero positivo: se imprime «1 semestre» o «N semestres». Vacío o no válido se trata como ausente.'
     campus:
       type: string
       title: Sede
     evaluated:
       type: boolean
       title: Con autoevaluación
-      description: 'Con true se imprime la etiqueta de acento «Con autoevaluación»; con false no se imprime nada.'
+      description: 'Con true se imprime la píldora «Con autoevaluación»; con false queda un hueco reservado del mismo alto, sin texto.'
     heading:
       type: string
       title: Nivel del título del nombre

@@ -83,7 +83,7 @@ class ProgramComponentsTest extends KernelTestBase {
     $this->assertSame(1, substr_count($html, '<a '));
     $this->assertStringContainsString('href="/programas/ingenieria-electronica"', $html);
     $this->assertStringContainsString('aria-labelledby="ua-prog-18-n"', $html);
-    $this->assertStringContainsString('aria-describedby="ua-prog-18-f ua-prog-18-e"', $html);
+    $this->assertStringContainsString('aria-describedby="ua-prog-18-e ua-prog-18-f ua-prog-18-d ua-prog-18-s"', $html);
     $this->assertStringContainsString('id="ua-prog-18-n"', $html);
     $this->assertStringContainsString('id="ua-prog-18-f"', $html);
     $this->assertStringContainsString('id="ua-prog-18-e"', $html);
@@ -96,7 +96,135 @@ class ProgramComponentsTest extends KernelTestBase {
   }
 
   /**
-   * La clave de facultad añade el tinte; una clave no válida no añade nada.
+   * Las seis líneas salen en el orden de la plantilla Pregrado.
+   */
+  public function testTarjetaSeisLineasEnOrden(): void {
+    $html = $this->renderizar('unillanos:program-card', [
+      'name' => 'Ingeniería Electrónica',
+      'id' => 18,
+      'url' => '/programas/ingenieria-electronica',
+      'faculty' => 'Facultad de Ciencias Básicas e Ingeniería',
+      'level' => 'Pregrado',
+      'modality' => 'Presencial',
+      'duration' => 10,
+      'campus' => 'Sede Barcelona',
+      'evaluated' => TRUE,
+    ]);
+    $posiciones = [];
+    foreach ([
+      'ua-prog__eyebrow',
+      'ua-prog__name',
+      'ua-prog__faculty',
+      'ua-prog__datos',
+      'ua-prog__estado',
+      'ua-prog__cta',
+    ] as $clase) {
+      $posiciones[$clase] = strpos($html, 'class="' . $clase);
+      $this->assertNotFalse($posiciones[$clase], $clase);
+    }
+    $this->assertSame($posiciones, array_unique($posiciones));
+    $anterior = -1;
+    foreach ($posiciones as $clase => $posicion) {
+      $this->assertGreaterThan($anterior, $posicion, $clase);
+      $anterior = $posicion;
+    }
+    $this->assertStringContainsString('>Pregrado · Presencial</span>', $html);
+    $this->assertStringContainsString('>10 semestres · Sede Barcelona</span>', $html);
+    $this->assertStringContainsString('Con autoevaluación', $html);
+    // Ya no hay etiquetas, icono de birrete ni hueco reservado.
+    $this->assertStringNotContainsString('ua-tag', $html);
+    $this->assertStringNotContainsString('ua-prog__icon', $html);
+    $this->assertStringNotContainsString('ua-prog__hueco', $html);
+  }
+
+  /**
+   * El nivel va solo, sin «·» suelto, cuando no hay modalidad.
+   */
+  public function testTarjetaNivelConModalidadOpcional(): void {
+    $con = $this->renderizar('unillanos:program-card', ['name' => 'A', 'level' => 'Pregrado', 'modality' => 'Híbrida']);
+    $this->assertStringContainsString('>Pregrado · Híbrida</span>', $con);
+    $sin = $this->renderizar('unillanos:program-card', ['name' => 'A', 'level' => 'Posgrado', 'modality' => '']);
+    $this->assertStringContainsString('>Posgrado</span>', $sin);
+    $this->assertStringNotContainsString('·', $sin);
+    $solo = $this->renderizar('unillanos:program-card', ['name' => 'A', 'modality' => 'Virtual']);
+    $this->assertStringContainsString('>Virtual</span>', $solo);
+    $nada = $this->renderizar('unillanos:program-card', ['name' => 'A']);
+    $this->assertStringNotContainsString('ua-prog__eyebrow', $nada);
+  }
+
+  /**
+   * Duración y sede: las dos, una sola o ninguna (hueco reservado).
+   */
+  public function testTarjetaDuracionConSede(): void {
+    $casos = [
+      '8 semestres · Sede X' => ['duration' => 8, 'campus' => 'Sede X'],
+      '1 semestre · Sede X' => ['duration' => 1, 'campus' => 'Sede X'],
+      '10 semestres' => ['duration' => 10],
+      'Sede X' => ['campus' => 'Sede X'],
+      '12 semestres' => ['duration' => '12'],
+    ];
+    foreach ($casos as $texto => $props) {
+      $html = $this->renderizar('unillanos:program-card', ['name' => 'A', 'id' => 1] + $props);
+      $this->assertMatchesRegularExpression('~<span class="ua-prog__datos" id="ua-prog-1-d">' . preg_quote($texto, '~') . '</span>~', $html, $texto);
+    }
+    $uno = $this->renderizar('unillanos:program-card', ['name' => 'A', 'duration' => 1]);
+    $this->assertStringNotContainsString('1 semestres', $uno);
+    // Duración no válida: se trata como ausente.
+    foreach ([0, -3, 'abc', '', '2.5'] as $malo) {
+      $html = $this->renderizar('unillanos:program-card', ['name' => 'A', 'duration' => $malo]);
+      $this->assertStringNotContainsString('semestre', $html, (string) $malo);
+      $this->assertStringContainsString('<span class="ua-prog__datos ua-prog__hueco" aria-hidden="true"></span>', $html);
+    }
+    // Ninguna: hueco sin texto, oculto a lectores y fuera de la descripción.
+    $hueco = $this->renderizar('unillanos:program-card', ['name' => 'A', 'id' => 2]);
+    $this->assertStringContainsString('<span class="ua-prog__datos ua-prog__hueco" aria-hidden="true"></span>', $hueco);
+    $this->assertStringNotContainsString('ua-prog-2-d', $hueco);
+  }
+
+  /**
+   * Con autoevaluación: píldora; sin ella, hueco reservado del mismo alto.
+   */
+  public function testTarjetaPildoraConAutoevaluacion(): void {
+    $con = $this->renderizar('unillanos:program-card', ['name' => 'A', 'id' => 3, 'evaluated' => TRUE]);
+    $this->assertStringContainsString('ua-estado--ok', $con);
+    $this->assertStringContainsString('id="ua-prog-3-s"', $con);
+    $this->assertStringNotContainsString('ua-prog__estado ua-prog__hueco', $con);
+    $sin = $this->renderizar('unillanos:program-card', ['name' => 'A', 'id' => 3, 'evaluated' => FALSE]);
+    $this->assertStringNotContainsString('ua-estado', $sin);
+    $this->assertStringNotContainsString('Con autoevaluación', $sin);
+    $this->assertStringContainsString('<span class="ua-prog__estado ua-prog__hueco" aria-hidden="true"></span>', $sin);
+  }
+
+  /**
+   * Ninguna tarjeta lleva marcas de «pendiente», guiones ni «Sin dato».
+   */
+  public function testTarjetaSinMarcasDePendiente(): void {
+    foreach ([['name' => 'Solo nombre'], ['name' => 'B', 'id' => 4, 'level' => 'Pregrado', 'evaluated' => FALSE]] as $props) {
+      $html = $this->renderizar('unillanos:program-card', $props);
+      $texto = trim(preg_replace('~\s+~', ' ', strip_tags($html)));
+      foreach (['endiente', '—', 'Sin dato'] as $marca) {
+        $this->assertStringNotContainsString($marca, $texto, $marca);
+      }
+    }
+  }
+
+  /**
+   * La tarjeta conserva la clase de facultad, pero ninguna regla la tiñe.
+   */
+  public function testTarjetaNoSeTineVisualmente(): void {
+    $html = $this->renderizar('unillanos:program-card', ['name' => 'A', 'faculty_key' => 'fcbi']);
+    $this->assertStringContainsString('ua-prog--fcbi', $html);
+    $ruta = \Drupal::service('extension.list.theme')->getPath('unillanos') . '/components/program-card/program-card.css';
+    $css = (string) file_get_contents(DRUPAL_ROOT . '/' . $ruta);
+    // Las variables --prog-* se definen pero ninguna declaración las usa.
+    $this->assertSame(0, preg_match('~:\s*[^;{}]*var\(--prog-~', $css));
+    $this->assertStringNotContainsString('border-top', $css);
+    $this->assertStringNotContainsString('box-shadow', $css);
+    $this->assertStringNotContainsString('!important', $css);
+  }
+
+  /**
+   * La clave de facultad añade su clase; una clave no válida no añade nada.
    */
   public function testTarjetaTineSegunLaFacultad(): void {
     $con = $this->renderizar('unillanos:program-card', [

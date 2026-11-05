@@ -39,7 +39,7 @@ Antes de tocar código lee `docs/drupal/modelo-de-contenido.md` (nombres de máq
   `ddev exec "cd drupal && vendor/bin/phpstan analyze --level=5 --no-progress web/modules/custom/<modulo>/"`
 - Pruebas: `ddev exec "cd drupal && SIMPLETEST_DB=mysql://db:db@db/db SIMPLETEST_BASE_URL=http://localhost vendor/bin/phpunit -c web/core web/modules/custom/unillanos_autoeval/tests"` (y `unillanos_migrate`).
 - Revisor de seguridad y accesibilidad en cada paso.
-- Sin etiquetas visibles de «Pendiente»: lo vacío se omite.
+- Sin etiquetas visibles de «Pendiente»: lo vacío se omite. Excepción deliberada: la tarjeta de programa (`program-card`) reserva un **hueco** (misma altura, sin texto, `aria-hidden="true"`) para la línea «duración · sede» y la píldora «Con autoevaluación» cuando no hay dato, para que todas las tarjetas tengan la misma estructura; nunca se escribe «—», «Sin dato» ni «Pendiente».
 - Los componentes **solo muestran valores guardados**; no calculan grados, destinos ni avances.
 - Todo funciona para cualquier programa y modelo, no solo para Ingeniería Electrónica.
 
