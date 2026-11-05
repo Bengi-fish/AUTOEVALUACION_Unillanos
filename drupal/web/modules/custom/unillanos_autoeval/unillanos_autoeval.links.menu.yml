@@ -25,3 +25,11 @@ unillanos_autoeval.pie.documentos:
   route_name: unillanos_autoeval.documentos
   menu_name: footer
   weight: 2
+
+# Administración: configuración del micrositio (cabecera, franja superior y pie).
+unillanos_autoeval.admin.micrositio:
+  title: 'Micrositio de autoevaluación'
+  description: 'Nombre, franja superior y pie de página del micrositio.'
+  route_name: unillanos_autoeval.micrositio
+  parent: system.admin_config_system
+  weight: 10

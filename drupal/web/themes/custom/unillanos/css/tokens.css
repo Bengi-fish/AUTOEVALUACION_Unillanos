@@ -14,7 +14,6 @@
   --rojo-oscuro: #85030b;
   --rojo-tinte: #fde8ea;
   --rojo-claro: #f9c5ca;
-  --coral: #ff6b75;
 
   /* Verde azulado y carbón (nuevos en el sistema). */
   --verde-azulado-900: #0a2226;
@@ -85,16 +84,15 @@
   --radio-lg: 16px;
   --radio-pill: 999px;
 
-  /* Sombras: definidas, sin usos nuevos (las plantillas son planas). */
-  --sombra-1: 0 1px 2px rgba(29,29,27,0.08);
+  /* Sombra: solo la usan la adenda y el botón flotante (las plantillas son
+     planas); no se usa en componentes nuevos. */
   --sombra-2: 0 8px 24px rgba(29,29,27,0.12);
 
   --contenedor-max: 1200px;
   --alto-encabezado: 80px;
 
-  /* Tipografía. El alias --font-dm-sans lo usan los componentes. */
+  /* Tipografía: Public Sans (400 y 600). */
   --font-base: "Public Sans", "Segoe UI", Arial, sans-serif;
-  --font-dm-sans: var(--font-base);
 
   /* Anillo de foco: interior y exterior. En fondos oscuros se invierten. */
   --foco-interior: var(--Surface);

@@ -21,3 +21,11 @@ unillanos_autoeval.programas:
     _title: 'Programas'
   requirements:
     _permission: 'access content'
+
+unillanos_autoeval.micrositio:
+  path: '/admin/config/unillanos/micrositio'
+  defaults:
+    _form: '\Drupal\unillanos_autoeval\Form\MicrositioForm'
+    _title: 'Micrositio de autoevaluación'
+  requirements:
+    _permission: 'administer site configuration'
