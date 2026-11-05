@@ -55,6 +55,8 @@
           text: programa.text,
           button_label: programa.cta,
           button_url: programa.url,
+          secondary_label: datos.ver_todos ? 'Ver todos los programas'|t : '',
+          secondary_url: datos.ver_todos|default(''),
         } only %}
       {% else %}
         {% set tarjetas = [] %}
@@ -65,7 +67,8 @@
         {% include 'unillanos:card' with {heading: 'h3', items: tarjetas} only %}
       {% endif %}
       {# El enlace al listado va con uno o con varios programas (si la ruta existe). #}
-      {% if datos.ver_todos %}
+      {# Con un solo programa el enlace ya va junto al botón del programa. #}
+      {% if datos.ver_todos and not datos.unico %}
         <p class="ua-portada__mas">
           {% include 'unillanos:button' with {label: 'Ver todos los programas'|t, variant: 'secundario', url: datos.ver_todos, icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
         </p>

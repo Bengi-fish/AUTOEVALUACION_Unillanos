@@ -40,8 +40,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-dm-sans);
-  font-weight: 700;
+  font-family: var(--font-base);
+  font-weight: 600;
   font-size: 15px;
   background: var(--Surface);
   border: 2px solid var(--tinta-400);
@@ -57,15 +57,15 @@
 
 .ua-step--actual .ua-step__dot {
   border: 3px solid var(--Unillanos_Red);
-  color: var(--rojo-700);
-  box-shadow: 0 0 0 6px var(--rojo-50);
+  color: var(--rojo-texto);
+  background: var(--rojo-tinte);
 }
 
 .ua-step__title {
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-base);
   font-size: 16px;
   line-height: 22px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--tinta-900);
 }
 
@@ -73,7 +73,7 @@
   font-size: 14px;
   line-height: 21px;
   color: var(--tinta-500);
-  margin-top: 4px !important;
+  margin-top: 4px;
 }
 
 .ua-step__state {
@@ -81,7 +81,7 @@
   margin-top: var(--espacio-2);
   font-size: 12px;
   line-height: 18px;
-  font-weight: 700;
+  font-weight: 600;
   border-radius: var(--radio-pill);
   padding: 1px 10px;
   background: var(--superficie-100);

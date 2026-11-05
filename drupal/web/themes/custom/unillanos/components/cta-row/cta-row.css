@@ -13,3 +13,10 @@
 .ua-cta-row p {
   margin-top: var(--espacio-1);
 }
+
+/* Dos botones en una fila; en pantallas estrechas pasan a la línea siguiente. */
+.ua-cta-row__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+}

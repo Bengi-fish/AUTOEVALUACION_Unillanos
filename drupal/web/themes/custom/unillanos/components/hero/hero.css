@@ -1,64 +1,89 @@
 /**
- * Componente hero.
+ * Componente hero (portada).
+ *
+ * Etapa 7: mismo lenguaje que el hero de la página de programa (Etapa 4a):
+ * fondo verde azulado #174349, círculo rojo de marca y semicírculo verde
+ * azulado medio como formas decorativas, título en Public Sans 400 y la
+ * etiqueta en rojo oscuro con letra blanca. Sin League Gothic hasta que el
+ * diseñador lo confirme. La imagen de relleno del bloque media es decorativa
+ * y no se muestra.
  */
 
 .ua-hero {
-  background: var(--Surface);
-  padding: var(--espacio-7) 0 var(--espacio-8);
+  position: relative;
+  background: var(--verde-azulado-700);
+  color: var(--Surface);
+  padding: var(--espacio-8) 0;
   overflow: hidden;
+  /* Anillo de foco invertido sobre fondo oscuro. */
+  --foco-interior: var(--verde-azulado-900);
+  --foco-exterior: var(--Surface);
+}
+
+.ua-hero::before {
+  content: "";
+  position: absolute;
+  right: 8%;
+  bottom: -140px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: var(--Unillanos_Red);
+}
+
+.ua-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 360px;
+  height: 180px;
+  border-radius: 0 0 180px 180px;
+  background: var(--verde-azulado-600);
+  opacity: .6;
 }
 
 .ua-hero__grid {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: 1.05fr .95fr;
-  gap: 56px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-6);
   align-items: center;
 }
 
 .ua-hero__title {
-  font-size: 48px;
-  line-height: 56px;
-  font-weight: 800;
-  letter-spacing: -.02em;
-  margin-bottom: var(--espacio-4) !important;
+  max-width: 900px;
+  color: var(--Surface);
+  font-size: 64px;
+  line-height: 72px;
+  font-weight: 400;
+  letter-spacing: -.01em;
+  margin-bottom: var(--espacio-4);
 }
 
 .ua-hero__title span {
-  color: var(--Unillanos_Red);
+  color: inherit;
 }
 
 .ua-hero__lead {
+  max-width: 720px;
+  color: var(--Surface);
   font-size: 20px;
   line-height: 32px;
-  margin-bottom: var(--espacio-6) !important;
-  max-width: 560px;
+  margin-bottom: var(--espacio-6);
 }
 
 .ua-hero__note {
   display: flex;
   align-items: center;
   gap: var(--espacio-2);
+  color: var(--azul-grisaceo-100);
 }
 
+/* Imagen de relleno decorativa: las formas del fondo la reemplazan. */
 .ua-hero__media {
-  position: relative;
-  padding: 0 0 var(--espacio-5) var(--espacio-5);
-}
-
-.ua-hero__media::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 62%;
-  height: 70%;
-  background: var(--Unillanos_Red);
-  border-radius: var(--radio-lg);
-}
-
-.ua-hero__media .ua-ph {
-  position: relative;
-  border-radius: var(--radio-lg);
+  display: none;
 }
 
 .ua-hero__meta {
@@ -69,35 +94,17 @@
   margin-bottom: var(--espacio-5);
 }
 
-@media (max-width: 860px) {
-
-  .ua-hero {
-    padding: var(--espacio-5) 0 var(--espacio-7);
-  }
-
-  .ua-hero__grid {
-    grid-template-columns: 1fr;
-    gap: var(--espacio-6);
-  }
-
-  .ua-hero__title {
-    font-size: 34px;
-    line-height: 40px;
-  }
-
-  .ua-hero__lead {
-    font-size: 18px;
-    line-height: 28px;
-  }
-
-}
-
 .ua-hero__meta:empty {
   display: none;
 }
 
+/* Etiqueta en rojo oscuro con texto blanco (12/600, mayúsculas). */
 .ua-hero .ua-eyebrow {
-  display: block;
+  display: inline-block;
+  margin-bottom: var(--espacio-4);
+  padding: var(--espacio-1) var(--espacio-3);
+  background: var(--rojo-oscuro);
+  color: var(--Surface);
 }
 
 /* Reflujo: una palabra larga no debe recortarse (overflow: hidden) a 320 px. */
@@ -107,5 +114,50 @@
 
 .ua-hero__title,
 .ua-hero__lead {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 1100px) {
+
+  .ua-hero__title {
+    font-size: 48px;
+    line-height: 56px;
+  }
+
+}
+
+@media (max-width: 860px) {
+
+  .ua-hero {
+    padding: var(--espacio-7) 0 80px;
+  }
+
+  /* El círculo asoma 56 px bajo el texto, sin tocarlo. */
+  .ua-hero::before {
+    right: 4%;
+    width: 200px;
+    height: 200px;
+    bottom: -144px;
+  }
+
+  .ua-hero::after {
+    width: 220px;
+    height: 110px;
+    border-radius: 0 0 110px 110px;
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .ua-hero__title {
+    font-size: clamp(36px, 10vw, 44px);
+    line-height: 1.15;
+  }
+
+  .ua-hero__lead {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
 }

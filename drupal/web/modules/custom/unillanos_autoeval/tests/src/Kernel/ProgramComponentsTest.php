@@ -115,6 +115,37 @@ class ProgramComponentsTest extends KernelTestBase {
   }
 
   /**
+   * La fila de llamada a la acción: un botón o dos en la misma fila (Etapa 7).
+   */
+  public function testCtaRowImprimeSegundoBotonSoloCompleto(): void {
+    $base = [
+      'title' => 'Ingeniería Electrónica',
+      'heading' => 'h3',
+      'button_label' => 'Ver el programa',
+      'button_url' => '/programas/ingenieria-electronica',
+    ];
+    $uno = $this->renderizar('unillanos:cta-row', $base);
+    $this->assertSame(1, substr_count($uno, '<a '));
+    $this->assertStringNotContainsString('ua-cta-row__acciones', $uno);
+
+    $dos = $this->renderizar('unillanos:cta-row', $base + [
+      'secondary_label' => 'Ver todos los programas',
+      'secondary_url' => '/programas',
+    ]);
+    $this->assertSame(2, substr_count($dos, '<a '));
+    $this->assertStringContainsString('ua-cta-row__acciones', $dos);
+    $this->assertStringContainsString('href="/programas"', $dos);
+    $this->assertStringContainsString('ua-btn--secundario', $dos);
+    $this->assertLessThan(strpos($dos, 'Ver todos los programas'), strpos($dos, 'Ver el programa'));
+
+    // Sin destino o sin rótulo, el segundo botón no se imprime.
+    foreach ([['secondary_label' => 'Ver todos'], ['secondary_url' => '/programas']] as $incompleto) {
+      $html = $this->renderizar('unillanos:cta-row', $base + $incompleto);
+      $this->assertSame(1, substr_count($html, '<a '));
+    }
+  }
+
+  /**
    * Lo vacío se omite y la marca solo sale con evaluated.
    */
   public function testTarjetaOmiteLoVacio(): void {

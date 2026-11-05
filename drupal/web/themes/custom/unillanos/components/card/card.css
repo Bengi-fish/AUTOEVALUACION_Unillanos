@@ -83,6 +83,34 @@
 
 }
 
+/* Una sola tarjeta (p. ej. «Documentos» en la portada) ocupa todo el ancho y
+   se dispone en horizontal en lugar de quedar sola en una columna de cuatro. */
+.ua-cards:has(> .ua-card:only-child) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 701px) {
+
+  .ua a.ua-card:only-child {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--espacio-5);
+  }
+
+  .ua-card:only-child .ua-card__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ua-card:only-child .ua-card__cta {
+    margin-top: 0;
+    padding-top: 0;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+}
+
 /* Los saltos de línea del texto se respetan (p. ej. cada dato de un programa
    en su línea). */
 .ua-card__text {

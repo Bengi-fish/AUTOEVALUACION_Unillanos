@@ -29,6 +29,13 @@ props:
       type: string
     button_url:
       type: string
+    secondary_label:
+      type: string
+      title: Rótulo del segundo botón
+      description: 'Con secondary_label y secondary_url se imprime un botón secundario junto al primario, en la misma fila.'
+    secondary_url:
+      type: string
+      title: Destino del segundo botón
     view_go:
       type: string
       title: Pestaña de destino
