@@ -199,7 +199,9 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
     $this->assertStringContainsString('Se muestran 40 programas.', $html);
     $enlaces = $this->enlaces($html);
     foreach ($programas as $programa) {
-      $this->assertContains('/node/' . $programa->id() . '/edit', $enlaces, $programa->label());
+      // Cambio deliberado (8.3): la ficha se edita con el formulario simple.
+      $this->assertContains('/admin/acreditacion/programa/' . $programa->id() . '/ficha', $enlaces, $programa->label());
+      $this->assertNotContains('/node/' . $programa->id() . '/edit', $enlaces, $programa->label());
       $this->assertStringContainsString($programa->label(), $html);
     }
     $this->assertStringContainsString('Facultad de Pruebas', $html);
@@ -231,7 +233,9 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
     $this->assertContains('/node/add/hallazgo?proceso=' . $proceso->id(), $enlaces);
     $this->assertContains('/node/add/meta?plan=' . $plan->id(), $enlaces);
     $this->assertContains('/node/add/proceso?programa=' . $programa->id(), $enlaces);
-    $this->assertContains('/media/add/documento?proceso=' . $proceso->id(), $enlaces);
+    // Cambio deliberado (8.3): los documentos se suben con el simple.
+    $this->assertContains('/admin/acreditacion/documento/nuevo?proceso=' . $proceso->id(), $enlaces);
+    $this->assertNotContains('/media/add/documento?proceso=' . $proceso->id(), $enlaces);
     $this->assertContains('/node/' . $plan->id() . '/edit', $enlaces);
     $this->assertContains('/node/' . $proceso->id() . '/edit', $enlaces);
     // Sin plan ni proceso, el segundo programa solo enlaza a la lista del tipo.

@@ -14,7 +14,9 @@
   width: 100%;
 }
 
-/* Los encabezados de la tabla no se parten con guiones («Pro-grama»). */
-.unillanos-acreditacion__tabla th {
+/* Las palabras de la tabla no se parten con guiones («Pro-grama», «Barce-lona»):
+   el tema de administración las parte solo. */
+.unillanos-acreditacion__tabla th,
+.unillanos-acreditacion__tabla td {
   hyphens: manual;
 }

@@ -53,6 +53,7 @@ final class AcreditacionController extends ControllerBase {
       'node_list:programa',
       'node_list:proceso',
       'node_list:plan_mejoramiento',
+      'media_list',
       'taxonomy_term_list:facultad',
       'taxonomy_term_list:sede',
     ]);
@@ -63,13 +64,14 @@ final class AcreditacionController extends ControllerBase {
     $filtrado = $this->listado->listadoFiltrado(array_key_exists('q', $consulta) ? ['q' => $consulta['q']] : [], $cache);
     $procesos = $this->listado->procesosPorPrograma($cache);
     $planes = $this->planesPorProceso($procesos, $cache);
+    $documentos = $this->documentosPorProceso($procesos, $cache);
 
     $filas = [];
     foreach ($filtrado['programas'] as $programa) {
       if (!empty($programa['oculto'])) {
         continue;
       }
-      $filas[] = $this->fila($programa, $procesos[$programa['id']]['procesos'] ?? [], $planes, $cache);
+      $filas[] = $this->fila($programa, $procesos[$programa['id']]['procesos'] ?? [], $planes, $documentos, $cache);
     }
 
     $construccion = [
@@ -96,13 +98,15 @@ final class AcreditacionController extends ControllerBase {
    *   Procesos publicados del programa, el más reciente primero.
    * @param array<int, int> $planes
    *   Plan de mejoramiento por ID de proceso.
+   * @param array<int, \Drupal\media\MediaInterface[]> $documentos
+   *   Documentos por ID de proceso.
    * @param \Drupal\Core\Cache\CacheableMetadata $cache
    *   Recibe los metadatos de las URL.
    *
    * @return array<string, mixed>
    *   Fila del panel.
    */
-  protected function fila(array $programa, array $procesos, array $planes, CacheableMetadata $cache): array {
+  protected function fila(array $programa, array $procesos, array $planes, array $documentos, CacheableMetadata $cache): array {
     $id = (int) $programa['id'];
     $proceso = $procesos ? reset($procesos) : NULL;
     $proceso_id = $proceso ? (int) $proceso->id() : 0;
@@ -121,7 +125,7 @@ final class AcreditacionController extends ControllerBase {
     $grupos[] = [
       'titulo' => $this->t('Ficha del programa'),
       'enlaces' => array_filter([
-        $this->enlace($this->t('Editar la ficha'), 'entity.node.edit_form', ['node' => $id], [], $cache),
+        $this->enlace($this->t('Editar la ficha'), 'unillanos_autoeval.acreditacion_ficha', ['node' => $id], [], $cache),
       ]),
     ];
     $enlaces_proceso = [];
@@ -151,8 +155,13 @@ final class AcreditacionController extends ControllerBase {
     $grupos[] = $this->grupoDeTipo($this->t('Seguimientos'), $this->t('Crear un seguimiento'), 'seguimiento', [], $cache);
 
     $enlaces_documentos = [];
+    foreach ($procesos as $p) {
+      foreach ($documentos[(int) $p->id()] ?? [] as $documento) {
+        $enlaces_documentos[] = $this->enlace($this->t('Editar el documento «@titulo»', ['@titulo' => $documento->label()]), 'unillanos_autoeval.acreditacion_documento', ['media' => $documento->id()], [], $cache);
+      }
+    }
     if ($proceso_id) {
-      $enlaces_documentos[] = $this->enlace($this->t('Subir un documento'), 'entity.media.add_form', ['media_type' => 'documento'], ['proceso' => $proceso_id], $cache);
+      $enlaces_documentos[] = $this->enlace($this->t('Subir un documento'), 'unillanos_autoeval.acreditacion_documento_nuevo', [], ['proceso' => $proceso_id], $cache);
     }
     $enlaces_documentos[] = $this->enlace($this->t('Ver la lista de documentos'), 'entity.media.collection', [], ['type' => 'documento'], $cache);
     $grupos[] = ['titulo' => $this->t('Documentos'), 'enlaces' => array_filter($enlaces_documentos)];
@@ -209,6 +218,7 @@ final class AcreditacionController extends ControllerBase {
     return array_values(array_filter([
       $this->enlace($this->t('Todo el contenido'), 'system.admin_content', [], [], $cache),
       $this->enlace($this->t('Contenido sin publicar'), 'system.admin_content', [], ['status' => 2], $cache),
+      $this->enlace($this->t('Subir un documento'), 'unillanos_autoeval.acreditacion_documento_nuevo', [], [], $cache),
       $this->enlace($this->t('Documentos'), 'entity.media.collection', [], ['type' => 'documento'], $cache),
       $this->enlace($this->t('Cabecera y pie del micrositio'), 'unillanos_autoeval.micrositio', [], [], $cache),
     ]));
@@ -249,6 +259,42 @@ final class AcreditacionController extends ControllerBase {
       $planes += [$proceso => (int) $plan->id()];
     }
     return $planes;
+  }
+
+  /**
+   * Busca los documentos de cada proceso.
+   *
+   * @param array<int, array{programa: \Drupal\node\NodeInterface, procesos: \Drupal\node\NodeInterface[]}> $procesos
+   *   Resultado de ListadoProgramas::procesosPorPrograma().
+   * @param \Drupal\Core\Cache\CacheableMetadata $cache
+   *   Recibe los metadatos de la consulta.
+   *
+   * @return array<int, \Drupal\media\MediaInterface[]>
+   *   Los documentos que la persona puede ver, por ID de proceso.
+   */
+  protected function documentosPorProceso(array $procesos, CacheableMetadata $cache): array {
+    $ids_proceso = [];
+    foreach ($procesos as $grupo) {
+      foreach ($grupo['procesos'] as $proceso) {
+        $ids_proceso[] = (int) $proceso->id();
+      }
+    }
+    if (!$ids_proceso) {
+      return [];
+    }
+    $almacen = $this->entityTypeManager()->getStorage('media');
+    $ids = $almacen->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('bundle', 'documento')
+      ->condition('field_proceso', $ids_proceso, 'IN')
+      ->sort('mid')
+      ->execute();
+    $por_proceso = [];
+    foreach ($almacen->loadMultiple($ids) as $documento) {
+      $cache->addCacheableDependency($documento);
+      $por_proceso[(int) $documento->get('field_proceso')->target_id][] = $documento;
+    }
+    return $por_proceso;
   }
 
   /**

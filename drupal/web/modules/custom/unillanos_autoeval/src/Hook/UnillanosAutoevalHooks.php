@@ -4,6 +4,7 @@ namespace Drupal\unillanos_autoeval\Hook;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
@@ -16,6 +17,9 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\media\MediaForm;
+use Drupal\node\Form\NodeForm;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -115,7 +119,8 @@ class UnillanosAutoevalHooks {
    */
   #[Hook('entity_prepare_form')]
   public function entityPrepareForm(EntityInterface $entity, string $operation, FormStateInterface $form_state): void {
-    if (!$entity instanceof FieldableEntityInterface || !$entity->isNew() || !in_array($operation, ['default', 'add'], TRUE)) {
+    $operaciones = ['default', 'add', 'acreditacion'];
+    if (!$entity instanceof FieldableEntityInterface || !$entity->isNew() || !in_array($operation, $operaciones, TRUE)) {
       return;
     }
     $reglas = self::PRECARGA[$entity->getEntityTypeId()][$entity->bundle()] ?? [];
@@ -136,6 +141,119 @@ class UnillanosAutoevalHooks {
         $entity->set($campo, $destino->id());
       }
     }
+  }
+
+  /**
+   * Implements hook_form_alter().
+   *
+   * Solo toca los formularios simples de Acreditación (modo «acreditacion» de
+   * la ficha del programa y del documento): añade ayudas en lenguaje sencillo
+   * a cada campo y, al guardar, vuelve al panel. El formulario completo de
+   * Drupal no cambia. Los textos son traducibles (t()).
+   */
+  #[Hook('form_alter')]
+  public function formAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    $ayudas = match ($form_id) {
+      'node_programa_acreditacion_form' => $this->ayudasDeLaFicha(),
+      'media_documento_acreditacion_form' => $this->ayudasDelDocumento(),
+      default => NULL,
+    };
+    if ($ayudas === NULL) {
+      return;
+    }
+    foreach ($ayudas as $campo => $texto) {
+      if (isset($form[$campo])) {
+        $this->ponerAyuda($form[$campo], $texto);
+      }
+    }
+    if (isset($form['actions']['submit'])) {
+      $form['actions']['submit']['#submit'][] = [self::class, 'volverAlPanel'];
+    }
+  }
+
+  /**
+   * Después de guardar un formulario simple, vuelve al panel si se puede abrir.
+   *
+   * @param array<mixed> $form
+   *   Formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   */
+  public static function volverAlPanel(array &$form, FormStateInterface $form_state): void {
+    $url = Url::fromRoute('unillanos_autoeval.acreditacion');
+    if ($url->access()) {
+      $form_state->setRedirectUrl($url);
+    }
+  }
+
+  /**
+   * Pone el texto de ayuda en el elemento de entrada de un campo.
+   *
+   * @param array<mixed> $campo
+   *   El campo del formulario (el contenedor con su `widget`).
+   * @param mixed $texto
+   *   El texto de ayuda, ya traducible.
+   */
+  protected function ponerAyuda(array &$campo, mixed $texto): void {
+    $rutas = [
+      ['widget'],
+      ['widget', 'value'],
+      ['widget', 0, 'value'],
+      ['widget', 0, 'target_id'],
+      ['widget', 0],
+    ];
+    foreach ($rutas as $ruta) {
+      $existe = FALSE;
+      $elemento = &NestedArray::getValue($campo, $ruta, $existe);
+      if ($existe && is_array($elemento) && isset($elemento['#type'])) {
+        $elemento['#description'] = $texto;
+        return;
+      }
+    }
+    $campo['widget']['#description'] = $texto;
+  }
+
+  /**
+   * Ayudas de la ficha del programa (lenguaje sencillo).
+   *
+   * @return array<string, mixed>
+   *   Texto de ayuda por campo.
+   */
+  protected function ayudasDeLaFicha(): array {
+    return [
+      'title' => $this->t('Nombre completo del programa, tal como debe verse en el sitio.'),
+      'field_facultad' => $this->t('Elija la facultad a la que pertenece el programa.'),
+      'field_nivel' => $this->t('Elija si es de pregrado, especialización, maestría o doctorado.'),
+      'field_modalidad' => $this->t('Elija cómo se ofrece el programa, por ejemplo presencial. Si no lo sabe, déjelo en blanco.'),
+      'field_sede' => $this->t('Elija la sede donde se ofrece el programa. Si no lo sabe, déjelo en blanco.'),
+      'field_director' => $this->t('Nombre de la persona que dirige el programa.'),
+      'field_codigo_snies' => $this->t('Número con el que el Ministerio de Educación identifica el programa (código SNIES).'),
+      'field_resolucion_registro' => $this->t('Número y fecha de la resolución que dio el registro calificado.'),
+      'field_registro_hasta' => $this->t('Fecha hasta la que vale el registro calificado.'),
+      'field_resolucion_acreditacion' => $this->t('Número y fecha de la resolución que dio la acreditación de alta calidad.'),
+      'field_acreditacion_hasta' => $this->t('Fecha hasta la que vale la acreditación.'),
+      'field_imagen' => $this->t('Foto que se ve arriba en la página del programa. Es opcional.'),
+      'status' => $this->t('Si quita la marca, la página del programa deja de verse en el sitio público.'),
+    ];
+  }
+
+  /**
+   * Ayudas del documento (lenguaje sencillo).
+   *
+   * @return array<string, mixed>
+   *   Texto de ayuda por campo.
+   */
+  protected function ayudasDelDocumento(): array {
+    return [
+      'name' => $this->t('Nombre del documento, tal como debe verse en la lista.'),
+      'field_media_file' => $this->t('Suba aquí el archivo del documento.'),
+      'field_categoria' => $this->t('Elija qué tipo de documento es, por ejemplo un informe o una norma.'),
+      'field_fecha_publicacion' => $this->t('Fecha en que se publicó el documento.'),
+      'field_version' => $this->t('Versión del documento, si la tiene.'),
+      'field_proceso' => $this->t('Proceso de autoevaluación al que pertenece. Escriba parte del nombre y elíjalo de la lista. Déjelo en blanco si es un documento general.'),
+      'field_lineamiento' => $this->t('Solo para normas: el modelo de evaluación al que corresponde. Si no aplica, déjelo en blanco.'),
+      'status' => $this->t('Si quita la marca, el documento deja de verse en el sitio público.'),
+    ];
   }
 
   /**
@@ -229,6 +347,15 @@ class UnillanosAutoevalHooks {
       if (isset($entity_types[$tipo])) {
         $entity_types[$tipo]->addConstraint('UnillanosClaveUnica');
       }
+    }
+    // Modo de formulario «acreditacion» (ficha y documentos simples): la
+    // operación necesita una clase de formulario; es la misma del formulario
+    // normal, solo cambia la pantalla de campos (core.entity_form_display.*).
+    if (isset($entity_types['node'])) {
+      $entity_types['node']->setFormClass('acreditacion', NodeForm::class);
+    }
+    if (isset($entity_types['media'])) {
+      $entity_types['media']->setFormClass('acreditacion', MediaForm::class);
     }
     if (isset($entity_types['node'])) {
       $entity_types['node']->addConstraint('UnillanosValoracionUnica');

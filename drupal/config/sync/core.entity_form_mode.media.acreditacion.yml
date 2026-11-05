@@ -1,0 +1,11 @@
+uuid: b5acff25-4d25-474c-8980-27597df5ee83
+langcode: es
+status: true
+dependencies:
+  module:
+    - media
+id: media.acreditacion
+label: 'Acreditación (documento simple)'
+description: null
+targetEntityType: media
+cache: true
