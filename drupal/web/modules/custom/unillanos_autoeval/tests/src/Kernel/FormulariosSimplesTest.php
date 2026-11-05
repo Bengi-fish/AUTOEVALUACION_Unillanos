@@ -45,6 +45,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     'field_nivel',
     'field_modalidad',
     'field_sede',
+    'field_duracion',
     'field_director',
     'field_codigo_snies',
     'field_resolucion_registro',
@@ -124,6 +125,14 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     }
     foreach (['field_registro_hasta', 'field_acreditacion_hasta'] as $campo) {
       $this->crearCampo('node', 'programa', $campo, 'datetime', ['datetime_type' => 'date']);
+    }
+    // Duración: entero de 1 a 20 semestres, con la misma ayuda que el sitio.
+    $this->crearCampo('node', 'programa', 'field_duracion', 'integer', ['unsigned' => TRUE]);
+    $duracion = FieldConfig::loadByName('node', 'programa', 'field_duracion');
+    if ($duracion instanceof FieldConfig) {
+      $duracion->setSetting('min', 1)->setSetting('max', 20)->setDescription(
+        'Número de semestres que dura el programa. Si no lo sabe, déjelo en blanco.'
+      )->save();
     }
     $this->crearCampo('node', 'programa', 'field_imagen', 'image');
     // En la prueba no se sube imagen: el texto alternativo no es obligatorio.
@@ -450,6 +459,52 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     $this->assertSame('unillanos_autoeval.acreditacion', $this->destinoAlGuardar()?->getRouteName());
     $formulario = $this->formularioDeLaFicha($guardado);
     $this->assertContains([UnillanosAutoevalHooks::class, 'volverAlPanel'], $formulario['actions']['submit']['#submit']);
+  }
+
+  /**
+   * El campo de duración: entero de 1 a 20, opcional, con su ayuda.
+   */
+  public function testDuracionTieneLimitesConAyuda(): void {
+    $campo = $this->configuracion('field.field.node.programa.field_duracion');
+    $almacen = $this->configuracion('field.storage.node.field_duracion');
+    $this->assertSame('Duración (semestres)', $campo['label']);
+    $this->assertFalse($campo['required']);
+    $this->assertSame(1, $campo['settings']['min']);
+    $this->assertSame(20, $campo['settings']['max']);
+    $this->assertSame('integer', $almacen['type']);
+    $this->assertTrue($almacen['settings']['unsigned']);
+    $this->assertSame('Número de semestres que dura el programa. Si no lo sabe, déjelo en blanco.', $campo['description']);
+    // En la pantalla completa va después de la sede.
+    $completa = $this->configuracion('core.entity_form_display.node.programa.default')['content'];
+    $this->assertGreaterThan($completa['field_sede']['weight'], $completa['field_duracion']['weight']);
+    $otros = array_column(array_diff_key($completa, ['field_duracion' => 1]), 'weight');
+    $this->assertNotContains(
+      $this->configuracion('core.entity_form_display.node.programa.default')['content']['field_duracion']['weight'],
+      $otros,
+      'la duración no comparte peso con otro campo',
+    );
+  }
+
+  /**
+   * El rol edita la duración en la ficha simple; se validan los límites.
+   */
+  public function testElRolEditaLaDuracionEnLaFichaSimple(): void {
+    $programa = $this->programa();
+    $this->container->get('current_user')->setAccount($this->acreditacion());
+    $base = [
+      'title' => [['value' => $programa->label()]],
+      'field_nivel' => 'pregrado',
+      'field_facultad' => $programa->get('field_facultad')->target_id,
+      'status' => ['value' => 1],
+    ];
+    $estado = $this->enviar($programa, $base + ['field_duracion' => [['value' => 8]]]);
+    $this->assertSame([], array_map('strval', $estado->getErrors()));
+    $this->assertSame(8, (int) Node::load($programa->id())->get('field_duracion')->value);
+    foreach ([0, 21] as $fuera) {
+      $estado = $this->enviar(Node::load($programa->id()), $base + ['field_duracion' => [['value' => $fuera]]]);
+      $this->assertNotEmpty($estado->getErrors(), "$fuera fuera de rango");
+    }
+    $this->assertSame(8, (int) Node::load($programa->id())->get('field_duracion')->value);
   }
 
   /**

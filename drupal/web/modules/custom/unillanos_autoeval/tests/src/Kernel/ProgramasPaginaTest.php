@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\unillanos_autoeval\Kernel;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\user\Traits\UserCreationTrait;
@@ -176,6 +177,34 @@ class ProgramasPaginaTest extends UnillanosKernelTestBase {
     $this->assertStringNotContainsString('Sin dato', $html);
     $this->assertStringNotContainsString('endiente', $html);
     $this->assertStringNotContainsString('—', $html);
+  }
+
+  /**
+   * El listado entrega la duración solo si el programa la tiene.
+   *
+   * Y la tarjeta la imprime: «8 semestres», «1 semestre» o nada (hueco).
+   */
+  public function testTarjetasEntreganDuracionSoloConValor(): void {
+    $this->crearCampo('node', 'programa', 'field_duracion', 'integer', ['unsigned' => TRUE]);
+    foreach (['Ocho' => 8, 'Uno' => 1, 'Ninguna' => NULL] as $titulo => $semestres) {
+      $this->crearNodo('programa', [
+        'title' => $titulo,
+        'field_clave' => strtolower($titulo),
+        'field_nivel' => 'pregrado',
+        'field_duracion' => $semestres,
+      ]);
+    }
+    $listado = $this->container->get('unillanos_autoeval.listado_programas')
+      ->listado(new CacheableMetadata());
+    $por_nombre = array_column($listado['programas'], NULL, 'nombre');
+    $this->assertSame(8, $por_nombre['Ocho']['duracion']);
+    $this->assertSame(1, $por_nombre['Uno']['duracion']);
+    $this->assertArrayNotHasKey('duracion', $por_nombre['Ninguna']);
+    $html = $this->pagina()['html'];
+    $this->assertStringContainsString('>8 semestres</span>', $html);
+    $this->assertStringContainsString('>1 semestre</span>', $html);
+    $this->assertSame(2, substr_count($html, 'semestre'));
+    $this->assertSame(1, substr_count($html, 'ua-prog__datos ua-prog__hueco'));
   }
 
   /**

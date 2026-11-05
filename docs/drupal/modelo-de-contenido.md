@@ -73,7 +73,7 @@ La lógica que Drupal no trae se programa en el módulo propio **`unillanos_auto
 `title` del nodo = `nombre` del MER, salvo donde se indique. `status` (publicado) reemplaza a `activo` / `publicado` / `vigente` cuando aplica.
 
 ### `programa`
-`field_clave` (texto, único, ej. `ingenieria-electronica`) · `field_codigo_snies` (texto) · `field_nivel` (lista: `pregrado`, `especializacion`, `maestria`, `doctorado`) · `field_modalidad` (lista: `presencial`, `distancia`, `virtual`, `dual`, `hibrida`) · `field_facultad` (→ `facultad`) · `field_sede` (→ `sede`) · `field_director` (texto) · `field_resolucion_registro` (texto) · `field_registro_hasta` (fecha) · `field_resolucion_acreditacion` (texto) · `field_acreditacion_hasta` (fecha) · `field_imagen` (imagen, para la cabecera del prototipo).
+`field_clave` (texto, único, ej. `ingenieria-electronica`) · `field_codigo_snies` (texto) · `field_duracion` (entero 1–20, semestres, opcional) · `field_nivel` (lista: `pregrado`, `especializacion`, `maestria`, `doctorado`) · `field_modalidad` (lista: `presencial`, `distancia`, `virtual`, `dual`, `hibrida`) · `field_facultad` (→ `facultad`) · `field_sede` (→ `sede`) · `field_director` (texto) · `field_resolucion_registro` (texto) · `field_registro_hasta` (fecha) · `field_resolucion_acreditacion` (texto) · `field_acreditacion_hasta` (fecha) · `field_imagen` (imagen, para la cabecera del prototipo).
 
 ### `lineamiento`
 `field_norma` (texto) · `field_ambito` (lista: `programa`, `unidad_academica`, `institucional`) · `field_tipo_proceso` (lista, ver abajo) · `field_vigente_desde` (fecha).

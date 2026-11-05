@@ -275,7 +275,8 @@ class ListadoProgramas {
    * @return array<int, array<string, mixed>>
    *   Por programa, solo lo que existe: id, nombre, url, facultad, facultad_id,
    *   facultad_sigla (clave en minúsculas, para la futura rejilla de
-   *   facultades), nivel, nivel_clave, modalidad, sede, sede_id,
+   *   facultades), nivel, nivel_clave, modalidad, duracion (semestres,
+   *   entero), sede, sede_id,
    *   con_autoevaluacion (solo si es TRUE) y buscar (nombre, facultad, nivel
    *   y sede sin tildes ni mayúsculas).
    */
@@ -300,6 +301,7 @@ class ListadoProgramas {
         'nivel' => $nivel,
         'nivel_clave' => (string) $programa->get('field_nivel')->value,
         'modalidad' => $programa->hasField('field_modalidad') ? $this->etiquetaLista($programa->get('field_modalidad')) : '',
+        'duracion' => $this->duracion($programa),
         'sede' => trim((string) $sede?->label()),
         'sede_id' => $sede ? (string) $sede->id() : '',
         'con_autoevaluacion' => isset($con_proceso[(int) $programa->id()]),
@@ -316,6 +318,22 @@ class ListadoProgramas {
     usort($tarjetas, fn(array $a, array $b): int => (int) !empty($b['con_autoevaluacion']) <=> (int) !empty($a['con_autoevaluacion'])
       ?: $this->compararTextos($a['nombre'], $b['nombre']));
     return $tarjetas;
+  }
+
+  /**
+   * Devuelve la duración guardada del programa, en semestres.
+   *
+   * @param \Drupal\node\NodeInterface $programa
+   *   El programa.
+   *
+   * @return int|string
+   *   El entero guardado o una cadena vacía si no hay campo o no hay valor.
+   */
+  protected function duracion(NodeInterface $programa): int|string {
+    if (!$programa->hasField('field_duracion') || $programa->get('field_duracion')->isEmpty()) {
+      return '';
+    }
+    return (int) $programa->get('field_duracion')->value;
   }
 
   /**

@@ -283,6 +283,7 @@ $campos['node'] = [
       'descripcion' => 'Identificador estable para URLs. Ej.: ingenieria-electronica.',
     ], 128),
     'field_codigo_snies' => $texto('Código SNIES', [], 20),
+    'field_duracion' => $entero('Duración (semestres)', [], 1, 20),
     'field_nivel' => $lista('Nivel', [
       'pregrado' => 'Pregrado',
       'especializacion' => 'Especialización',

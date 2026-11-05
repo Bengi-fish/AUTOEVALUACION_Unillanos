@@ -53,6 +53,7 @@ erDiagram
         varchar(200) nombre
         enum nivel
         enum modalidad
+        int duracion_semestres
         int facultad_id FK
         int sede_id FK
         varchar(150) director

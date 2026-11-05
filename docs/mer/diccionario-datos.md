@@ -38,6 +38,7 @@ Oferta con registro calificado.
 | `nombre` | `varchar(200)` |  |
 | `nivel` | `enum` |  |
 | `modalidad` | `enum` |  |
+| `duracion_semestres` | `int` |  |
 | `facultad_id` | `int` | FK |
 | `sede_id` | `int` | FK |
 | `director` | `varchar(150)` |  |
