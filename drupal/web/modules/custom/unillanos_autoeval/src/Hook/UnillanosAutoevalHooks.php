@@ -2,16 +2,27 @@
 
 namespace Drupal\unillanos_autoeval\Hook;
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\media\MediaForm;
+use Drupal\node\Form\NodeForm;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\unillanos_autoeval\Service\CalculadorGrado;
 use Drupal\unillanos_autoeval\Service\ModeloProceso;
 use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
@@ -25,13 +36,225 @@ class UnillanosAutoevalHooks {
   use StringTranslationTrait;
 
   /**
+   * Permiso que habilita editar «Publicado» en el contenido de autoevaluación.
+   */
+  const PERMISO_PUBLICACION = 'change publication status on acreditacion content';
+
+  /**
+   * Tipos de contenido y de medio a los que aplica el permiso de publicación.
+   *
+   * @var array<string, string[]>
+   */
+  const TIPOS_PUBLICACION = [
+    'node' => [
+      'programa',
+      'proceso',
+      'valoracion',
+      'hallazgo',
+      'plan_mejoramiento',
+      'meta',
+      'seguimiento',
+      'lineamiento',
+    ],
+    'media' => ['documento'],
+  ];
+
+  /**
    * Constructor.
    */
   public function __construct(
     protected CalculadorGrado $calculadorGrado,
     protected SugerenciaDestino $sugerenciaDestino,
     protected ModeloProceso $modeloProceso,
+    protected RequestStack $requestStack,
+    protected EntityTypeManagerInterface $entityTypeManager,
   ) {}
+
+  /**
+   * Relaciones que se precargan en los formularios de creación.
+   *
+   * Por tipo de entidad y de contenido: campo => [parámetro de la URL, tipo de
+   * contenido al que debe apuntar]. Lo usa el panel de Acreditación para abrir
+   * «crear valoración» con el proceso ya elegido, sin cambiar el modelo.
+   *
+   * @var array<string, array<string, array<string, array{0: string, 1: string}>>>
+   */
+  const PRECARGA = [
+    'node' => [
+      'proceso' => ['field_programa' => ['programa', 'programa']],
+      'valoracion' => ['field_proceso' => ['proceso', 'proceso']],
+      'hallazgo' => ['field_proceso' => ['proceso', 'proceso']],
+      'plan_mejoramiento' => ['field_proceso' => ['proceso', 'proceso']],
+      'meta' => ['field_plan' => ['plan', 'plan_mejoramiento']],
+    ],
+    'media' => [
+      'documento' => ['field_proceso' => ['proceso', 'proceso']],
+    ],
+  ];
+
+  /**
+   * Implements hook_theme().
+   *
+   * Plantilla del panel de Acreditación (vive en el módulo: se pinta con el
+   * tema de administración, no con el tema público).
+   */
+  #[Hook('theme')]
+  public function theme(): array {
+    return [
+      'unillanos_acreditacion_panel' => [
+        'variables' => ['datos' => []],
+        'template' => 'unillanos-acreditacion-panel',
+      ],
+    ];
+  }
+
+  /**
+   * Implements hook_entity_prepare_form().
+   *
+   * En un formulario de creación, si la URL trae el identificador del programa,
+   * el proceso o el plan (`?proceso=49`), precarga esa relación. Solo actúa
+   * sobre entidades nuevas de los tipos de PRECARGA, con un número entero que
+   * sea un contenido del tipo esperado que la persona pueda ver; nunca
+   * sobrescribe un valor que ya exista ni cambia el modelo de datos.
+   */
+  #[Hook('entity_prepare_form')]
+  public function entityPrepareForm(EntityInterface $entity, string $operation, FormStateInterface $form_state): void {
+    $operaciones = ['default', 'add', 'acreditacion'];
+    if (!$entity instanceof FieldableEntityInterface || !$entity->isNew() || !in_array($operation, $operaciones, TRUE)) {
+      return;
+    }
+    $reglas = self::PRECARGA[$entity->getEntityTypeId()][$entity->bundle()] ?? [];
+    $peticion = $this->requestStack->getCurrentRequest();
+    if (!$reglas || !$peticion) {
+      return;
+    }
+    // all(): un parámetro en forma de arreglo (?proceso[]=1) no debe lanzar una
+    // excepción de petición mala; simplemente no se usa.
+    $consulta = $peticion->query->all();
+    foreach ($reglas as $campo => [$parametro, $tipo]) {
+      $valor = $consulta[$parametro] ?? NULL;
+      if (!is_string($valor) || !ctype_digit($valor) || !$entity->hasField($campo) || !$entity->get($campo)->isEmpty()) {
+        continue;
+      }
+      $destino = $this->entityTypeManager->getStorage('node')->load((int) $valor);
+      if ($destino instanceof NodeInterface && $destino->bundle() === $tipo && $destino->access('view')) {
+        $entity->set($campo, $destino->id());
+      }
+    }
+  }
+
+  /**
+   * Implements hook_form_alter().
+   *
+   * Solo toca los formularios simples de Acreditación (modo «acreditacion» de
+   * la ficha del programa y del documento): añade ayudas en lenguaje sencillo
+   * a cada campo y, al guardar, vuelve al panel. El formulario completo de
+   * Drupal no cambia. Los textos son traducibles (t()).
+   */
+  #[Hook('form_alter')]
+  public function formAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    $ayudas = match ($form_id) {
+      'node_programa_acreditacion_form' => $this->ayudasDeLaFicha(),
+      'media_documento_acreditacion_form' => $this->ayudasDelDocumento(),
+      default => NULL,
+    };
+    if ($ayudas === NULL) {
+      return;
+    }
+    foreach ($ayudas as $campo => $texto) {
+      if (isset($form[$campo])) {
+        $this->ponerAyuda($form[$campo], $texto);
+      }
+    }
+    if (isset($form['actions']['submit'])) {
+      $form['actions']['submit']['#submit'][] = [self::class, 'volverAlPanel'];
+    }
+  }
+
+  /**
+   * Después de guardar un formulario simple, vuelve al panel si se puede abrir.
+   *
+   * @param array<mixed> $form
+   *   Formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   */
+  public static function volverAlPanel(array &$form, FormStateInterface $form_state): void {
+    $url = Url::fromRoute('unillanos_autoeval.acreditacion');
+    if ($url->access()) {
+      $form_state->setRedirectUrl($url);
+    }
+  }
+
+  /**
+   * Pone el texto de ayuda en el elemento de entrada de un campo.
+   *
+   * @param array<mixed> $campo
+   *   El campo del formulario (el contenedor con su `widget`).
+   * @param mixed $texto
+   *   El texto de ayuda, ya traducible.
+   */
+  protected function ponerAyuda(array &$campo, mixed $texto): void {
+    $rutas = [
+      ['widget'],
+      ['widget', 'value'],
+      ['widget', 0, 'value'],
+      ['widget', 0, 'target_id'],
+      ['widget', 0],
+    ];
+    foreach ($rutas as $ruta) {
+      $existe = FALSE;
+      $elemento = &NestedArray::getValue($campo, $ruta, $existe);
+      if ($existe && is_array($elemento) && isset($elemento['#type'])) {
+        $elemento['#description'] = $texto;
+        return;
+      }
+    }
+    $campo['widget']['#description'] = $texto;
+  }
+
+  /**
+   * Ayudas de la ficha del programa (lenguaje sencillo).
+   *
+   * @return array<string, mixed>
+   *   Texto de ayuda por campo.
+   */
+  protected function ayudasDeLaFicha(): array {
+    return [
+      'title' => $this->t('Nombre completo del programa, tal como debe verse en el sitio.'),
+      'field_facultad' => $this->t('Elija la facultad a la que pertenece el programa.'),
+      'field_nivel' => $this->t('Elija si es de pregrado, especialización, maestría o doctorado.'),
+      'field_modalidad' => $this->t('Elija cómo se ofrece el programa, por ejemplo presencial. Si no lo sabe, déjelo en blanco.'),
+      'field_sede' => $this->t('Elija la sede donde se ofrece el programa. Si no lo sabe, déjelo en blanco.'),
+      'field_director' => $this->t('Nombre de la persona que dirige el programa.'),
+      'field_codigo_snies' => $this->t('Número con el que el Ministerio de Educación identifica el programa (código SNIES).'),
+      'field_resolucion_registro' => $this->t('Número y fecha de la resolución que dio el registro calificado.'),
+      'field_registro_hasta' => $this->t('Fecha hasta la que vale el registro calificado.'),
+      'field_resolucion_acreditacion' => $this->t('Número y fecha de la resolución que dio la acreditación de alta calidad.'),
+      'field_acreditacion_hasta' => $this->t('Fecha hasta la que vale la acreditación.'),
+      'field_imagen' => $this->t('Foto que se ve arriba en la página del programa. Es opcional.'),
+      'status' => $this->t('Si quita la marca, la página del programa deja de verse en el sitio público.'),
+    ];
+  }
+
+  /**
+   * Ayudas del documento (lenguaje sencillo).
+   *
+   * @return array<string, mixed>
+   *   Texto de ayuda por campo.
+   */
+  protected function ayudasDelDocumento(): array {
+    return [
+      'name' => $this->t('Nombre del documento, tal como debe verse en la lista.'),
+      'field_media_file' => $this->t('Suba aquí el archivo del documento.'),
+      'field_categoria' => $this->t('Elija qué tipo de documento es, por ejemplo un informe o una norma.'),
+      'field_fecha_publicacion' => $this->t('Fecha en que se publicó el documento.'),
+      'field_version' => $this->t('Versión del documento, si la tiene.'),
+      'field_proceso' => $this->t('Proceso de autoevaluación al que pertenece. Escriba parte del nombre y elíjalo de la lista. Déjelo en blanco si es un documento general.'),
+      'field_lineamiento' => $this->t('Solo para normas: el modelo de evaluación al que corresponde. Si no aplica, déjelo en blanco.'),
+      'status' => $this->t('Si quita la marca, el documento deja de verse en el sitio público.'),
+    ];
+  }
 
   /**
    * Implements hook_node_presave().
@@ -43,6 +266,30 @@ class UnillanosAutoevalHooks {
       'hallazgo' => $this->sugerirDestino($node),
       default => NULL,
     };
+  }
+
+  /**
+   * Implements hook_entity_field_access().
+   *
+   * Permite editar el campo «Publicado» (status) del contenido de
+   * autoevaluación a quien tenga el permiso propio del módulo. El núcleo solo
+   * lo concede con «administer nodes» o «administer node published status»; así
+   * el rol de Acreditación puede despublicar sin ningún permiso administrativo.
+   * Solo suma: nunca devuelve «prohibido» ni «neutral con razón», de modo que
+   * quien ya tiene acceso por otra vía lo conserva, y no toca otros campos,
+   * tipos de contenido ni tipos de medio.
+   */
+  #[Hook('entity_field_access')]
+  public function entityFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
+    if ($operation !== 'edit' || $field_definition->getName() !== 'status' || !$items) {
+      return AccessResult::neutral();
+    }
+    $entidad = $items->getEntity();
+    $tipos = self::TIPOS_PUBLICACION[$entidad->getEntityTypeId()] ?? [];
+    if (!in_array($entidad->bundle(), $tipos, TRUE)) {
+      return AccessResult::neutral();
+    }
+    return AccessResult::allowedIfHasPermission($account, self::PERMISO_PUBLICACION);
   }
 
   /**
@@ -100,6 +347,15 @@ class UnillanosAutoevalHooks {
       if (isset($entity_types[$tipo])) {
         $entity_types[$tipo]->addConstraint('UnillanosClaveUnica');
       }
+    }
+    // Modo de formulario «acreditacion» (ficha y documentos simples): la
+    // operación necesita una clase de formulario; es la misma del formulario
+    // normal, solo cambia la pantalla de campos (core.entity_form_display.*).
+    if (isset($entity_types['node'])) {
+      $entity_types['node']->setFormClass('acreditacion', NodeForm::class);
+    }
+    if (isset($entity_types['media'])) {
+      $entity_types['media']->setFormClass('acreditacion', MediaForm::class);
     }
     if (isset($entity_types['node'])) {
       $entity_types['node']->addConstraint('UnillanosValoracionUnica');

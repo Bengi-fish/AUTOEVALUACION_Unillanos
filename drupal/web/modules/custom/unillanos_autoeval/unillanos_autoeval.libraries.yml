@@ -1,0 +1,4 @@
+acreditacion:
+  css:
+    component:
+      css/acreditacion.css: {}

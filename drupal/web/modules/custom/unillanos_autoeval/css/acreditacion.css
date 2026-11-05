@@ -1,0 +1,22 @@
+/**
+ * Panel de Acreditación: solo contiene la tabla dentro de su caja para que, en
+ * pantallas estrechas, se desplace ella y no la página. El aspecto lo da el
+ * tema de administración.
+ */
+/* position: relative para que los textos ocultos (position: absolute) de las
+   celdas se recorten con la caja y no ensanchen la página. */
+.unillanos-acreditacion__tabla {
+  position: relative;
+  overflow-x: auto;
+}
+
+.unillanos-acreditacion__tabla table {
+  width: 100%;
+}
+
+/* Las palabras de la tabla no se parten con guiones («Pro-grama», «Barce-lona»):
+   el tema de administración las parte solo. */
+.unillanos-acreditacion__tabla th,
+.unillanos-acreditacion__tabla td {
+  hyphens: manual;
+}

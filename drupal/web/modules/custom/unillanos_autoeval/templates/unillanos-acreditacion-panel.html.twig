@@ -1,0 +1,91 @@
+{#
+/**
+ * @file
+ * Panel de Acreditación (/admin/acreditacion).
+ *
+ * Variables:
+ * - datos: lo arma AcreditacionController::panel(): q (búsqueda validada),
+ *   total (programas que se muestran), total_general, generales (accesos de la
+ *   parte superior) y programas (por programa: id, nombre, facultad, nivel,
+ *   sede, indicadores y grupos de accesos, cada uno con titulo y enlaces).
+ *   Solo trae lo que tiene dato: lo vacío se omite.
+ *
+ * Los títulos usan solo el encabezado de la página (h1); el resto son etiquetas
+ * y una lista de definiciones, sin saltos de nivel.
+ */
+#}
+<div class="unillanos-acreditacion">
+  <p>{{ 'Programas publicados y accesos a las pantallas de edición. Para encontrar contenido sin publicar usa la lista de contenido.'|t }}</p>
+
+  {% if datos.generales %}
+    <nav aria-label="{{ 'Accesos generales'|t }}">
+      <ul class="unillanos-acreditacion__generales">
+        {% for enlace in datos.generales %}
+          <li><a href="{{ enlace.url }}">{{ enlace.texto }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  {% endif %}
+
+  {% if datos.total_general %}
+    <form method="get" role="search" class="unillanos-acreditacion__buscador">
+      <label for="acreditacion-q">{{ 'Buscar un programa'|t }}</label>
+      <input type="search" id="acreditacion-q" class="form-search form-element form-element--type-search" name="q" value="{{ datos.q }}" maxlength="100" autocomplete="off">
+      <button type="submit" class="button">{{ 'Buscar'|t }}</button>
+      {% if datos.q %}<a href="?">{{ 'Quitar la búsqueda'|t }}</a>{% endif %}
+    </form>
+  {% endif %}
+
+  {% if not datos.total_general %}
+    <p>{{ 'Todavía no hay programas publicados.'|t }}</p>
+  {% elseif not datos.total %}
+    <p role="status">{{ 'Ningún programa coincide con la búsqueda.'|t }}</p>
+  {% else %}
+    <p role="status">{% trans %}Se muestra 1 programa.{% plural datos.total %}Se muestran @count programas.{% endtrans %}</p>
+    <div class="unillanos-acreditacion__tabla" role="region" aria-label="{{ 'Programas'|t }}" tabindex="0">
+      <table>
+        <caption class="visually-hidden">{{ 'Programas de autoevaluación con sus accesos de edición'|t }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'Programa'|t }}</th>
+            <th scope="col">{{ 'Facultad'|t }}</th>
+            <th scope="col">{{ 'Nivel'|t }}</th>
+            <th scope="col">{{ 'Sede'|t }}</th>
+            <th scope="col">{{ 'Estado'|t }}</th>
+            <th scope="col">{{ 'Accesos'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for programa in datos.programas %}
+            <tr>
+              <th scope="row">{{ programa.nombre }}</th>
+              <td>{{ programa.facultad }}</td>
+              <td>{{ programa.nivel }}</td>
+              <td>{{ programa.sede }}</td>
+              <td>{{ programa.indicadores|join(', ') }}</td>
+              <td>
+                {% if programa.grupos %}
+                  <details>
+                    <summary>{{ 'Accesos de edición'|t }}<span class="visually-hidden"> — {{ programa.nombre }}</span></summary>
+                    <dl>
+                      {% for grupo in programa.grupos %}
+                        <dt>{{ grupo.titulo }}</dt>
+                        <dd>
+                          <ul>
+                            {% for enlace in grupo.enlaces %}
+                              <li><a href="{{ enlace.url }}">{{ enlace.texto }}<span class="visually-hidden"> — {{ programa.nombre }}</span></a></li>
+                            {% endfor %}
+                          </ul>
+                        </dd>
+                      {% endfor %}
+                    </dl>
+                  </details>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+</div>

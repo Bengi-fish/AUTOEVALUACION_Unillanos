@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - media
+id: media.acreditacion
+label: 'Acreditación (documento simple)'
+description: null
+targetEntityType: media
+cache: true

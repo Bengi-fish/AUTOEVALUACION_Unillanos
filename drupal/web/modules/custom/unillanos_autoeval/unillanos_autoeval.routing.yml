@@ -28,4 +28,47 @@ unillanos_autoeval.micrositio:
     _form: '\Drupal\unillanos_autoeval\Form\MicrositioForm'
     _title: 'Micrositio de autoevaluación'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'edit unillanos micrositio'
+
+unillanos_autoeval.acreditacion:
+  path: '/admin/acreditacion'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\AcreditacionController::panel'
+    _title: 'Acreditación'
+  requirements:
+    _permission: 'access acreditacion panel'
+
+# Formularios simples de Acreditación. El acceso es el de editar o crear.
+unillanos_autoeval.acreditacion_ficha:
+  path: '/admin/acreditacion/programa/{node}/ficha'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\AcreditacionFormulariosController::ficha'
+    _title: 'Ficha del programa'
+  requirements:
+    _entity_access: 'node.update'
+    node: '\d+'
+  options:
+    parameters:
+      node:
+        type: 'entity:node'
+
+unillanos_autoeval.acreditacion_documento:
+  path: '/admin/acreditacion/documento/{media}/editar'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\AcreditacionFormulariosController::documento'
+    _title: 'Documento'
+  requirements:
+    _entity_access: 'media.update'
+    media: '\d+'
+  options:
+    parameters:
+      media:
+        type: 'entity:media'
+
+unillanos_autoeval.acreditacion_documento_nuevo:
+  path: '/admin/acreditacion/documento/nuevo'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\AcreditacionFormulariosController::documentoNuevo'
+    _title: 'Subir un documento'
+  requirements:
+    _entity_create_access: 'media:documento'

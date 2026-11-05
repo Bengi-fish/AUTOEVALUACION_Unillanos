@@ -1,0 +1,11 @@
+uuid: 197b7f5b-6bfe-49b7-b6be-067dd7412a73
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.acreditacion
+label: 'Acreditación (ficha simple)'
+description: null
+targetEntityType: node
+cache: true
