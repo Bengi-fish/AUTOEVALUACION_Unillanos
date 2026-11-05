@@ -9,6 +9,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -17,6 +18,7 @@ use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\unillanos_autoeval\Service\CalculadorGrado;
 use Drupal\unillanos_autoeval\Service\ModeloProceso;
 use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
@@ -60,7 +62,81 @@ class UnillanosAutoevalHooks {
     protected CalculadorGrado $calculadorGrado,
     protected SugerenciaDestino $sugerenciaDestino,
     protected ModeloProceso $modeloProceso,
+    protected RequestStack $requestStack,
+    protected EntityTypeManagerInterface $entityTypeManager,
   ) {}
+
+  /**
+   * Relaciones que se precargan en los formularios de creación.
+   *
+   * Por tipo de entidad y de contenido: campo => [parámetro de la URL, tipo de
+   * contenido al que debe apuntar]. Lo usa el panel de Acreditación para abrir
+   * «crear valoración» con el proceso ya elegido, sin cambiar el modelo.
+   *
+   * @var array<string, array<string, array<string, array{0: string, 1: string}>>>
+   */
+  const PRECARGA = [
+    'node' => [
+      'proceso' => ['field_programa' => ['programa', 'programa']],
+      'valoracion' => ['field_proceso' => ['proceso', 'proceso']],
+      'hallazgo' => ['field_proceso' => ['proceso', 'proceso']],
+      'plan_mejoramiento' => ['field_proceso' => ['proceso', 'proceso']],
+      'meta' => ['field_plan' => ['plan', 'plan_mejoramiento']],
+    ],
+    'media' => [
+      'documento' => ['field_proceso' => ['proceso', 'proceso']],
+    ],
+  ];
+
+  /**
+   * Implements hook_theme().
+   *
+   * Plantilla del panel de Acreditación (vive en el módulo: se pinta con el
+   * tema de administración, no con el tema público).
+   */
+  #[Hook('theme')]
+  public function theme(): array {
+    return [
+      'unillanos_acreditacion_panel' => [
+        'variables' => ['datos' => []],
+        'template' => 'unillanos-acreditacion-panel',
+      ],
+    ];
+  }
+
+  /**
+   * Implements hook_entity_prepare_form().
+   *
+   * En un formulario de creación, si la URL trae el identificador del programa,
+   * el proceso o el plan (`?proceso=49`), precarga esa relación. Solo actúa
+   * sobre entidades nuevas de los tipos de PRECARGA, con un número entero que
+   * sea un contenido del tipo esperado que la persona pueda ver; nunca
+   * sobrescribe un valor que ya exista ni cambia el modelo de datos.
+   */
+  #[Hook('entity_prepare_form')]
+  public function entityPrepareForm(EntityInterface $entity, string $operation, FormStateInterface $form_state): void {
+    if (!$entity instanceof FieldableEntityInterface || !$entity->isNew() || !in_array($operation, ['default', 'add'], TRUE)) {
+      return;
+    }
+    $reglas = self::PRECARGA[$entity->getEntityTypeId()][$entity->bundle()] ?? [];
+    $peticion = $this->requestStack->getCurrentRequest();
+    if (!$reglas || !$peticion) {
+      return;
+    }
+    // all(): un parámetro en forma de arreglo (?proceso[]=1) no debe lanzar una
+    // excepción de petición mala; simplemente no se usa.
+    $consulta = $peticion->query->all();
+    foreach ($reglas as $campo => [$parametro, $tipo]) {
+      $valor = $consulta[$parametro] ?? NULL;
+      if (!is_string($valor) || !ctype_digit($valor) || !$entity->hasField($campo) || !$entity->get($campo)->isEmpty()) {
+        continue;
+      }
+      $destino = $this->entityTypeManager->getStorage('node')->load((int) $valor);
+      if ($destino instanceof NodeInterface && $destino->bundle() === $tipo && $destino->access('view')) {
+        $entity->set($campo, $destino->id());
+      }
+    }
+  }
 
   /**
    * Implements hook_node_presave().

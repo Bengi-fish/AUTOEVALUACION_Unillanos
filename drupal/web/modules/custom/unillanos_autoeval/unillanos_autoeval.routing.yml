@@ -29,3 +29,11 @@ unillanos_autoeval.micrositio:
     _title: 'Micrositio de autoevaluación'
   requirements:
     _permission: 'edit unillanos micrositio'
+
+unillanos_autoeval.acreditacion:
+  path: '/admin/acreditacion'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\AcreditacionController::panel'
+    _title: 'Acreditación'
+  requirements:
+    _permission: 'access acreditacion panel'

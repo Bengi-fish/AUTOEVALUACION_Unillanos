@@ -33,3 +33,17 @@ unillanos_autoeval.admin.micrositio:
   route_name: unillanos_autoeval.micrositio
   parent: system.admin_config_system
   weight: 10
+
+# Panel de Acreditación: hijo directo de «Administración» (system.admin), al
+# lado de Estructura, Configuración, Personas... No cuelga de «Configuración»
+# (el rol no accede a /admin/config) ni de «Contenido»: el módulo Navigation del
+# núcleo quita system.admin_content de su árbol y lo que cuelga de ahí quedaría
+# oculto en la barra lateral. Navigation pinta la sección «Administración»
+# desde el segundo nivel (level 2), así que este enlace se ve con solo el permiso
+# del panel, sin «access administration pages».
+unillanos_autoeval.admin.acreditacion:
+  title: 'Acreditación'
+  description: 'Programas de autoevaluación y accesos para editar su contenido.'
+  route_name: unillanos_autoeval.acreditacion
+  parent: system.admin
+  weight: -9
