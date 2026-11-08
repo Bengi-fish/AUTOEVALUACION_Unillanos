@@ -17,14 +17,8 @@
  *   (programa); se omiten el bloque de migas y el del título.
  */
 #}
-{% set cuenta = logged_in
-  ? {url: '/user', label: 'Mi cuenta'|t}
-  : {url: '/user/login', label: 'Ingresar'|t}
-%}
 {% embed 'unillanos:header' with {
   skip_target: '#main-content',
-  login_url: cuenta.url,
-  login_label: cuenta.label,
   menu_toggle: true,
   menu_id: 'ua-menu',
   menu: page.primary_menu,
@@ -33,7 +27,7 @@
   solo_logo: 'unillanos',
   show_search: true,
   search_url: path('unillanos_autoeval.programas'),
-  topbar: {links: marco.franja, accessibility: marco.accesibilidad},
+  topbar: {links: marco.franja, accessibility: marco.accesibilidad, social: marco.redes, govco: marco.govco},
 } only %}
   {% block nav %}{{ menu }}{% endblock %}
 {% endembed %}

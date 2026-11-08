@@ -6,6 +6,7 @@ namespace Drupal\unillanos_autoeval\Service;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Entrega a la cabecera, la franja superior y el pie lo que se muestra.
@@ -15,6 +16,8 @@ use Drupal\Core\Config\ConfigFactoryInterface;
  * vacía no se devuelve. Quien pinta (las plantillas) no decide nada.
  */
 class DatosMarco {
+
+  use StringTranslationTrait;
 
   /**
    * Nombre del objeto de configuración.
@@ -30,6 +33,14 @@ class DatosMarco {
   const URL_SEGURA = '~^(?:/(?![/\\\\\s])|#|\?|https?://|mailto:|tel:)~i';
 
   /**
+   * Redes sociales de la cabecera y del pie, en el orden en que se muestran.
+   *
+   * La clave es la de `redes_sociales` en la configuración y el nombre del
+   * ícono autoalojado (images/redes/<clave>.svg).
+   */
+  const REDES = ['facebook', 'x', 'instagram', 'youtube'];
+
+  /**
    * Constructor.
    */
   public function __construct(
@@ -43,7 +54,9 @@ class DatosMarco {
    *   Recibe las etiquetas de caché de la configuración.
    *
    * @return array<string, mixed>
-   *   Claves: `nombre` (dos líneas), `web_principal`, `franja` (enlaces),
+   *   Claves: `nombre` (dos líneas), `web_principal`, `govco` (enlace del
+   *   logo GOV.CO o NULL), `redes` (solo las que tienen URL segura: `red`,
+   *   `title`, `url`), `franja` (enlaces),
    *   `accesibilidad` (enlace o NULL) y `pie` (`titulo`, `descripcion`,
    *   `institucion`, `nota_institucion`, `entidades`, `sedes`, `contacto`,
    *   `redes`, `enlaces_legales` y `legal`; las listas vacías, como arreglos
@@ -59,6 +72,8 @@ class DatosMarco {
         'linea2' => $this->texto($config->get('nombre_linea2')),
       ],
       'web_principal' => $this->urlSegura($config->get('url_web_principal')),
+      'govco' => $this->govco($config->get('url_govco')),
+      'redes' => $this->redes($config->get('redes_sociales')),
       'franja' => $this->enlaces($config->get('franja_superior')),
       'accesibilidad' => $this->enlace((array) ($config->get('accesibilidad') ?? [])),
       'pie' => [
@@ -94,6 +109,50 @@ class DatosMarco {
       return '';
     }
     return $url;
+  }
+
+  /**
+   * Arma el enlace del logo GOV.CO.
+   *
+   * @param mixed $url
+   *   Valor de la configuración.
+   *
+   * @return array{title: string, url: string}|null
+   *   El enlace, o NULL si no hay URL segura.
+   */
+  protected function govco(mixed $url): ?array {
+    $url = $this->urlSegura($url);
+    if ($url === '') {
+      return NULL;
+    }
+    return ['title' => (string) $this->t('GOV.CO, portal único del Estado colombiano'), 'url' => $url];
+  }
+
+  /**
+   * Arma los íconos de redes que tienen una URL segura.
+   *
+   * @param mixed $redes
+   *   Valor de `redes_sociales`: URL por red.
+   *
+   * @return array<int, array{red: string, title: string, url: string}>
+   *   Las redes con URL, en el orden de ::REDES; sin URL no se devuelven.
+   */
+  protected function redes(mixed $redes): array {
+    $redes = is_array($redes) ? $redes : [];
+    $nombres = [
+      'facebook' => $this->t('Facebook de la Universidad de los Llanos'),
+      'x' => $this->t('X de la Universidad de los Llanos'),
+      'instagram' => $this->t('Instagram de la Universidad de los Llanos'),
+      'youtube' => $this->t('YouTube de la Universidad de los Llanos'),
+    ];
+    $lista = [];
+    foreach (self::REDES as $red) {
+      $url = $this->urlSegura($redes[$red] ?? NULL);
+      if ($url !== '') {
+        $lista[] = ['red' => $red, 'title' => (string) $nombres[$red], 'url' => $url];
+      }
+    }
+    return $lista;
   }
 
   /**

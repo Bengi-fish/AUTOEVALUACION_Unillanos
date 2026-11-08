@@ -11,6 +11,25 @@ unillanos_autoeval.micrositio:
     url_web_principal:
       type: string
       label: 'URL de la web principal de la Universidad'
+    url_govco:
+      type: string
+      label: 'URL del logo GOV.CO'
+    redes_sociales:
+      type: mapping
+      label: 'Redes sociales de la Universidad (cabecera y pie)'
+      mapping:
+        facebook:
+          type: string
+          label: 'URL de Facebook'
+        x:
+          type: string
+          label: 'URL de X'
+        instagram:
+          type: string
+          label: 'URL de Instagram'
+        youtube:
+          type: string
+          label: 'URL de YouTube'
     franja_superior:
       type: sequence
       label: 'Enlaces de la franja superior'

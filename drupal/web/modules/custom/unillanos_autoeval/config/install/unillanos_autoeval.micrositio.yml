@@ -4,6 +4,13 @@
 nombre_linea1: 'Sistema de'
 nombre_linea2: 'Autoevaluación'
 url_web_principal: ''
+url_govco: 'https://www.gov.co/'
+# URLs tomadas el 8 de noviembre de 2026 del pie de https://acreditacion.unillanos.edu.co
+redes_sociales:
+  facebook: 'https://www.facebook.com/UnillanosOficial/'
+  x: 'https://twitter.com/unillanos_?lang=es'
+  instagram: 'https://www.instagram.com/unillanos_/'
+  youtube: 'https://www.youtube.com/channel/UCmhXbLrVeyotUiBsaPBcxcA'
 franja_superior: []
 accesibilidad:
   titulo: Accesibilidad

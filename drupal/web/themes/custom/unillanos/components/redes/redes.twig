@@ -1,0 +1,32 @@
+{#
+/**
+ * @file
+ * Lista de íconos de redes sociales.
+ *
+ * Cada ícono es un enlace con su nombre accesible en un texto oculto (el
+ * dibujo es decorativo y se pinta por CSS con el color del texto). Se abre en
+ * la misma pestaña. Un destino que no sea relativo a la raíz, ancla, consulta,
+ * http(s), mailto o tel, o una red desconocida, se omite (mismo filtro que
+ * unillanos:button). Sin ninguna red válida no imprime nada.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set conocidas = ['facebook', 'x', 'instagram', 'youtube'] %}
+{% set validas = [] %}
+{% for red in redes %}
+  {% if red.red in conocidas and red.title and red.url and ((red.url ~ '') matches seguro) %}
+    {% set validas = validas|merge([red]) %}
+  {% endif %}
+{% endfor %}
+{% if validas %}
+  <ul{{ attributes.addClass('ua-redes').setAttribute('role', 'list').setAttribute('aria-label', label|default('Redes sociales de la Universidad'|t)) }}>
+    {% for red in validas %}
+      <li class="ua-redes__item">
+        <a class="ua-redes__enlace" href="{{ red.url }}">
+          <span class="ua-redes__icono ua-redes__icono--{{ red.red }}" aria-hidden="true"></span>
+          <span class="ua-sr">{{ red.title }}</span>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}

@@ -58,6 +58,11 @@ class MicrositioFormTest extends KernelTestBase {
       'nombre_linea1' => 'Sistema de',
       'nombre_linea2' => 'Autoevaluación',
       'url_web_principal' => '',
+      'url_govco' => 'https://www.gov.co/',
+      'red_facebook' => 'https://www.facebook.com/UnillanosOficial/',
+      'red_x' => '',
+      'red_instagram' => '',
+      'red_youtube' => '',
       'franja_superior' => '',
       'accesibilidad_titulo' => 'Accesibilidad',
       'accesibilidad_url' => '',
@@ -103,6 +108,28 @@ class MicrositioFormTest extends KernelTestBase {
   }
 
   /**
+   * GOV.CO y las redes se guardan, se leen y las vacías no se muestran.
+   */
+  public function testGuardaGovcoConRedes(): void {
+    $estado = $this->enviar([
+      'url_govco' => ' https://www.gov.co/ ',
+      'red_x' => 'https://twitter.com/unillanos_?lang=es',
+      'red_youtube' => 'https://www.youtube.com/channel/UCmhXbLrVeyotUiBsaPBcxcA',
+    ] + $this->base());
+    $this->assertSame([], $estado->getErrors());
+    $config = $this->config('unillanos_autoeval.micrositio');
+    $this->assertSame('https://www.gov.co/', $config->get('url_govco'));
+    $this->assertSame([
+      'facebook' => 'https://www.facebook.com/UnillanosOficial/',
+      'x' => 'https://twitter.com/unillanos_?lang=es',
+      'instagram' => '',
+      'youtube' => 'https://www.youtube.com/channel/UCmhXbLrVeyotUiBsaPBcxcA',
+    ], $config->get('redes_sociales'));
+    $datos = $this->container->get('unillanos_autoeval.datos_marco')->datos(new CacheableMetadata());
+    $this->assertSame(['facebook', 'x', 'youtube'], array_column($datos['redes'], 'red'));
+  }
+
+  /**
    * Una URL no segura o una línea mal formada impiden guardar.
    */
   #[DataProvider('urlsInvalidas')]
@@ -123,6 +150,9 @@ class MicrositioFormTest extends KernelTestBase {
     return [
       'javascript en la web' => ['url_web_principal', 'javascript:alert(1)'],
       'ruta sin barra' => ['url_web_principal', 'unillanos.edu.co'],
+      'govco con javascript' => ['url_govco', 'javascript:alert(1)'],
+      'red con datos' => ['red_instagram', 'data:text/html,hola'],
+      'red con doble barra' => ['red_x', '//otro.sitio'],
       'doble barra' => ['accesibilidad_url', '//otro.sitio'],
       'franja sin url' => ['franja_superior', 'Solo título'],
       'franja con javascript' => ['franja_superior', 'Malo | javascript:alert(1)'],

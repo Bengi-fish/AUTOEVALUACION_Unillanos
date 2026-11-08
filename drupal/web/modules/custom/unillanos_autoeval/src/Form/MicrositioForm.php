@@ -97,6 +97,27 @@ final class MicrositioForm extends ConfigFormBase {
       '#default_value' => $config->get('url_web_principal'),
       '#maxlength' => 255,
     ];
+    $form['cabecera']['url_govco'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('URL del logo GOV.CO'),
+      '#default_value' => $config->get('url_govco'),
+      '#maxlength' => 255,
+    ];
+    $redes = (array) ($config->get('redes_sociales') ?? []);
+    foreach ([
+      'facebook' => $this->t('URL de Facebook'),
+      'x' => $this->t('URL de X'),
+      'instagram' => $this->t('URL de Instagram'),
+      'youtube' => $this->t('URL de YouTube'),
+    ] as $red => $titulo) {
+      $form['cabecera']['red_' . $red] = [
+        '#type' => 'textfield',
+        '#title' => $titulo,
+        '#description' => $this->t('Sin URL, el ícono no se muestra (cabecera y pie).'),
+        '#default_value' => $redes[$red] ?? '',
+        '#maxlength' => 255,
+      ];
+    }
     $form['cabecera']['franja_superior'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Enlaces de la franja superior'),
@@ -187,6 +208,11 @@ final class MicrositioForm extends ConfigFormBase {
     $campos_url = [
       'url_web_principal' => $this->t('URL de la web principal de la Universidad'),
       'accesibilidad_url' => $this->t('Enlace de accesibilidad: URL'),
+      'url_govco' => $this->t('URL del logo GOV.CO'),
+      'red_facebook' => $this->t('URL de Facebook'),
+      'red_x' => $this->t('URL de X'),
+      'red_instagram' => $this->t('URL de Instagram'),
+      'red_youtube' => $this->t('URL de YouTube'),
     ];
     foreach ($campos_url as $campo => $titulo) {
       $valor = trim((string) $form_state->getValue($campo));
@@ -214,6 +240,11 @@ final class MicrositioForm extends ConfigFormBase {
       ->set('nombre_linea1', trim((string) $form_state->getValue('nombre_linea1')))
       ->set('nombre_linea2', trim((string) $form_state->getValue('nombre_linea2')))
       ->set('url_web_principal', trim((string) $form_state->getValue('url_web_principal')))
+      ->set('url_govco', trim((string) $form_state->getValue('url_govco')))
+      ->set('redes_sociales', array_combine(DatosMarco::REDES, array_map(
+        fn(string $red): string => trim((string) $form_state->getValue('red_' . $red)),
+        DatosMarco::REDES,
+      )))
       ->set('franja_superior', $enlaces('franja_superior'))
       ->set('accesibilidad', [
         'titulo' => trim((string) $form_state->getValue('accesibilidad_titulo')),

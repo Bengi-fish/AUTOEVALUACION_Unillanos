@@ -4,8 +4,9 @@
  * Menú principal plano: lo pinta el componente unillanos:nav.
  *
  * El menú es plano a propósito (sin submenús): solo se imprimen los
- * elementos del primer nivel. «Ingresar» pasa a ser el último elemento del
- * menú móvil (el botón del encabezado se oculta allí).
+ * elementos del primer nivel. El menú público no lleva «Ingresar» ni «Mi
+ * cuenta»: el acceso de la gente de Acreditación es una ruta propia que no se
+ * enlaza desde el sitio.
  *
  * La página actual se marca por la ruta activa o porque el enlace apunta a
  * la URL actual (los enlaces por alias, como el del programa, no siempre
@@ -24,8 +25,4 @@
     trail: item.in_active_trail and not exacto,
   }]) %}
 {% endfor %}
-{% set cuenta = logged_in
-  ? {url: '/user', title: 'Mi cuenta'|t}
-  : {url: '/user/login', title: 'Ingresar'|t}
-%}
-{% include 'unillanos:nav' with {items: enlaces, id: 'ua-menu', login: cuenta} only %}
+{% include 'unillanos:nav' with {items: enlaces, id: 'ua-menu'} only %}

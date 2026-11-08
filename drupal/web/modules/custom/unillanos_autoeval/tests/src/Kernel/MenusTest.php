@@ -388,10 +388,32 @@ class MenusTest extends UnillanosKernelTestBase {
     $html = $this->pagina('/programas');
     $this->assertSame(1, preg_match('~<header .*?</header>~s', $html, $encabezado));
     $this->assertStringContainsString('class="ua-nav"', $encabezado[0]);
-    // Programas, Documentos y el «Ingresar» que solo se ve en móvil.
-    $this->assertSame(3, substr_count($this->menu($html), 'class="ua-nav__link'));
+    // Programas y Documentos: ya no hay «Ingresar» en el menú (expectativa
+    // cambiada a propósito, la cabecera lleva GOV.CO y redes en su lugar).
+    $this->assertSame(2, substr_count($this->menu($html), 'class="ua-nav__link'));
+    $this->assertStringNotContainsString('Ingresar', $encabezado[0]);
     $this->assertStringContainsString('aria-controls="ua-menu"', $html);
     $this->assertSame(1, substr_count($html, 'id="ua-menu"'));
+  }
+
+  /**
+   * La cabecera lleva GOV.CO y redes; ninguna página dice «Ingresar».
+   */
+  public function testCabeceraSinIngresarConGovcoMasRedes(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    foreach (['/programas', '/documentos'] as $ruta) {
+      $html = $this->pagina($ruta);
+      $this->assertSame(1, preg_match('~<header .*?</header>~s', $html, $encabezado), $ruta);
+      $cabecera = $encabezado[0];
+      $this->assertStringNotContainsString('Ingresar', $html, $ruta);
+      $this->assertStringNotContainsString('Mi cuenta', $html, $ruta);
+      $this->assertStringNotContainsString('/user/login', $html, $ruta);
+      $this->assertStringContainsString('href="https://www.gov.co/"', $cabecera);
+      $this->assertSame(4, substr_count($cabecera, 'ua-redes__enlace"'), $ruta);
+      foreach (['Facebook', 'X', 'Instagram', 'YouTube'] as $red) {
+        $this->assertStringContainsString('>' . $red . ' de la Universidad de los Llanos</span>', $cabecera);
+      }
+    }
   }
 
   /**
@@ -418,6 +440,18 @@ class MenusTest extends UnillanosKernelTestBase {
    */
   public function testSinDatosNoSePintaLoVacio(): void {
     $this->installConfig(['unillanos_autoeval']);
+    // Con lo de fábrica la franja solo lleva redes y GOV.CO (expectativa
+    // cambiada a propósito en el commit de la cabecera): sin enlaces propios
+    // ni accesibilidad.
+    $con_marca = $this->pagina('/programas');
+    $this->assertStringContainsString('ua-topbar__derecha', $con_marca);
+    $this->assertStringNotContainsString('ua-topbar__list', $con_marca);
+    $this->assertStringNotContainsString('ua-topbar__acceso', $con_marca);
+    // Sin GOV.CO ni redes tampoco hay franja.
+    $this->config('unillanos_autoeval.micrositio')
+      ->set('url_govco', '')
+      ->set('redes_sociales', ['facebook' => '', 'x' => '', 'instagram' => '', 'youtube' => ''])
+      ->save();
     $html = $this->pagina('/programas');
     $this->assertStringNotContainsString('ua-topbar', $html);
     $this->assertStringNotContainsString('ua-footer__entidades', $html);
@@ -474,6 +508,13 @@ class MenusTest extends UnillanosKernelTestBase {
         ['titulo' => 'Peligrosa tres', 'url' => 'data:text/html,hola'],
       ])
       ->set('pie.redes', [['titulo' => 'Red peligrosa', 'url' => 'JaVaScRiPt:alert(2)']])
+      ->set('url_govco', 'javascript:alert(3)')
+      ->set('redes_sociales', [
+        'facebook' => 'javascript:alert(4)',
+        'x' => '//example.org/x',
+        'instagram' => 'data:text/html,hola',
+        'youtube' => '',
+      ])
       ->save();
     $html = $this->pagina('/programas');
     $this->assertStringNotContainsString('javascript:', strtolower($html));

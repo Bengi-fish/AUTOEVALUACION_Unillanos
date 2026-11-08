@@ -41,9 +41,33 @@
   text-decoration: underline;
 }
 
-.ua-topbar__acceso {
+.ua-topbar__derecha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0 var(--espacio-4);
   margin-left: auto;
+  /* Aire para que el anillo de foco (4 px) de los íconos de 44 px quepa. */
+  padding: var(--espacio-1) 0;
+  --fondo-redes: var(--carbon);
+}
+
+.ua-topbar__acceso {
   flex: none;
+}
+
+/* Logo GOV.CO: archivo oficial sin modificar, solo escalado. */
+.ua .ua-topbar__govco {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.ua-topbar__govco img {
+  display: block;
+  height: 24px;
+  width: auto;
 }
 
 @media (max-width: 860px) {
@@ -59,6 +83,14 @@
   /* Solo queda el enlace de accesibilidad (ver topbar.twig). */
   .ua-topbar__list {
     display: none;
+  }
+
+  .ua-topbar__derecha {
+    gap: 0 var(--espacio-3);
+  }
+
+  .ua-topbar__govco img {
+    height: 20px;
   }
 
 }

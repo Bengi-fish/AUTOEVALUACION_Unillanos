@@ -65,6 +65,47 @@ class MarcoComponentesTest extends KernelTestBase {
   }
 
   /**
+   * La franja con redes y GOV.CO: enlaces accesibles, solo los que tienen URL.
+   */
+  public function testFranjaConRedesMasGovco(): void {
+    $propio = 'de la Universidad de los Llanos';
+    $html = $this->renderizar('unillanos:topbar', [
+      'social' => [
+        [
+          'red' => 'facebook',
+          'title' => "Facebook $propio",
+          'url' => 'https://www.facebook.com/UnillanosOficial/',
+        ],
+        ['red' => 'x', 'title' => "X $propio", 'url' => 'javascript:alert(1)'],
+        ['red' => 'instagram', 'title' => "Instagram $propio", 'url' => ''],
+        ['red' => 'youtube', 'title' => "YouTube $propio", 'url' => 'https://www.youtube.com/channel/UCx'],
+        ['red' => 'tiktok', 'title' => 'TikTok', 'url' => 'https://example.org'],
+      ],
+      'govco' => ['title' => 'GOV.CO, portal único del Estado colombiano', 'url' => 'https://www.gov.co/'],
+    ]);
+    $this->assertSame(2, substr_count($html, 'ua-redes__enlace"'));
+    $this->assertStringContainsString('href="https://www.facebook.com/UnillanosOficial/"', $html);
+    $this->assertStringContainsString(">Facebook $propio</span>", $html);
+    $this->assertStringContainsString(">YouTube $propio</span>", $html);
+    $this->assertStringNotContainsString('javascript', $html);
+    $this->assertStringNotContainsString('tiktok', $html);
+    $this->assertStringNotContainsString('target=', $html);
+    $this->assertLessThan(strpos($html, 'ua-topbar__govco'), strpos($html, 'ua-redes__enlace'));
+    $this->assertMatchesRegularExpression(
+      '~<a class="ua-topbar__govco" href="https://www.gov.co/"[^>]*>\\s*<img src="[^"]*govco-blanco\\.svg" alt="GOV\\.CO, portal único del Estado colombiano">~',
+      $html,
+    );
+    // Sin ninguna red válida ni GOV.CO la franja no imprime nada.
+    $invalidas = [
+      'social' => [['red' => 'x', 'title' => 'X', 'url' => 'javascript:x']],
+      'govco' => ['title' => 'G', 'url' => ''],
+    ];
+    $this->assertSame('', trim($this->renderizar('unillanos:topbar', $invalidas)));
+    // Las redes solas tampoco se marcan como «solo enlaces» (se ven en móvil).
+    $this->assertStringNotContainsString('ua-topbar--solo-enlaces', $html);
+  }
+
+  /**
    * Con enlaces: lista, ícono y texto para lectores en los externos.
    */
   public function testFranjaConEnlaces(): void {

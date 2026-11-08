@@ -89,6 +89,41 @@ class DatosMarcoTest extends KernelTestBase {
   }
 
   /**
+   * GOV.CO y las redes de la configuración por defecto, en su orden.
+   */
+  public function testGovcoMasRedesPorDefecto(): void {
+    $datos = $this->datos();
+    $this->assertSame('https://www.gov.co/', $datos['govco']['url']);
+    $this->assertSame(['facebook', 'x', 'instagram', 'youtube'], array_column($datos['redes'], 'red'));
+    $this->assertSame([
+      'Facebook de la Universidad de los Llanos',
+      'X de la Universidad de los Llanos',
+      'Instagram de la Universidad de los Llanos',
+      'YouTube de la Universidad de los Llanos',
+    ], array_column($datos['redes'], 'title'));
+  }
+
+  /**
+   * Una red sin URL o con una URL peligrosa no se entrega; sin GOV.CO, NULL.
+   */
+  public function testRedesSinUrlNiInsegurasSeOmiten(): void {
+    $this->fijar('redes_sociales', [
+      'facebook' => '',
+      'x' => 'javascript:alert(1)',
+      'instagram' => 'https://www.instagram.com/unillanos_/',
+      'youtube' => '//otro.sitio',
+    ]);
+    $this->fijar('url_govco', '');
+    $datos = $this->datos();
+    $this->assertSame(['instagram'], array_column($datos['redes'], 'red'));
+    $this->assertNull($datos['govco']);
+    $this->fijar('redes_sociales', ['facebook' => '', 'x' => '', 'instagram' => '', 'youtube' => '']);
+    $this->assertSame([], $this->datos()['redes']);
+    $this->fijar('url_govco', 'javascript:alert(1)');
+    $this->assertNull($this->datos()['govco']);
+  }
+
+  /**
    * Destinos seguros y peligrosos.
    *
    * @return array<string, array{string, bool}>

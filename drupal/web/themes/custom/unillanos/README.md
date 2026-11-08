@@ -44,3 +44,19 @@ los servicios de `unillanos_autoeval` que arman los datos de cada página
 `DatosPortada`, `DocumentosPublicados`); no usan Views. El listado y buscador
 de `/programas` también sale de un servicio (`ListadoProgramas`), no de Views. Los datos de ejemplo viven solo en el
 módulo `unillanos_guia` (`/guia-estilos`).
+
+## Logos de terceros e íconos de redes
+
+Los logos son marcas de sus titulares. Se usan sin modificar (solo se
+escalan), en la versión que publica la fuente oficial. No se redibujan ni se
+cambian sus colores o proporciones.
+
+| Archivo | Titular | Fuente oficial | Descargado |
+|---|---|---|---|
+| `images/logos/govco-blanco.svg` | GOV.CO (Gobierno de Colombia) | https://cdn.www.gov.co/v2/assets/images/logo.svg (CDN de https://www.gov.co/); versión para fondo oscuro | 8 de noviembre de 2026 |
+
+Íconos de redes (`images/redes/`: Facebook, X, Instagram y YouTube): Simple
+Icons 13.21.0 (https://simpleicons.org/, https://cdn.jsdelivr.net/npm/simple-icons@13.21.0/icons/),
+licencia CC0 1.0. Se pintan como máscara con `currentColor`, así que toman el
+color de los tokens. Los nombres y las marcas de Facebook, X, Instagram y
+YouTube pertenecen a sus titulares. Descargados el 8 de noviembre de 2026.
