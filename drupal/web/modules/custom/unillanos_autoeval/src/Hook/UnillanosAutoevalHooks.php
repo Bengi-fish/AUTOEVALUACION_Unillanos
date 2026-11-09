@@ -313,6 +313,9 @@ class UnillanosAutoevalHooks {
     if (!isset($form['actions']['submit']) || ($form['actions']['submit']['#type'] ?? '') !== 'submit') {
       return;
     }
+    // El aspecto del panel (objetivos de 44 px, sin pestañas de párrafos) vale
+    // para todos sus formularios con botón de guardar, también los de creación.
+    $form['#attached']['library'][] = 'unillanos/panel_eliminar';
     $form['#prefix'] = '<div id="ua-panel-formulario">' . ($form['#prefix'] ?? '');
     $form['#suffix'] = ($form['#suffix'] ?? '') . '</div>';
     $form['actions']['submit']['#ajax'] = [

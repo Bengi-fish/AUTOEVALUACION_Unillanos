@@ -80,3 +80,76 @@ body #drupal-off-canvas a[data-ua-cerrar-panel] {
   font-weight: 600;
   text-decoration: none;
 }
+
+/* Formularios del panel lateral para Acreditación: objetivos de 44 px en
+   campos, listas, botones y encabezados desplegables. */
+body #drupal-off-canvas input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]),
+body #drupal-off-canvas select,
+body #drupal-off-canvas summary {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+body #drupal-off-canvas .form-type--checkbox > label,
+body #drupal-off-canvas .form-type--radio > label,
+body #drupal-off-canvas .form-type-checkbox > label,
+body #drupal-off-canvas .form-type-radio > label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* Las pestañas «Content» y «Behavior» de los párrafos no se usan aquí. */
+body #drupal-off-canvas .paragraphs-tabs {
+  display: none;
+}
+
+/* Barra del editor de texto, enlace del archivo actual y controles de filas. */
+body #drupal-off-canvas .ck.ck-toolbar .ck-button,
+body #drupal-off-canvas .ck.ck-toolbar .ck-dropdown__button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+body #drupal-off-canvas .file a,
+body #drupal-off-canvas .tabledrag-toggle-weight,
+body #drupal-off-canvas .tabledrag-handle,
+body #drupal-off-canvas .dropbutton__toggle,
+body #drupal-off-canvas .dropbutton-toggle button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+body #drupal-off-canvas .ck.ck-editor {
+  --ck-ui-component-min-height: 44px;
+}
+
+body #drupal-off-canvas .ck.ck-toolbar .ck-button,
+body #drupal-off-canvas .ck.ck-toolbar .ck-splitbutton__arrow {
+  height: 44px;
+  min-width: 44px;
+}
+
+body #drupal-off-canvas .paragraphs-dropdown-toggle {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+body #drupal-off-canvas .ck.ck-toolbar .ck-splitbutton > .ck-splitbutton__arrow {
+  width: 44px;
+}
+
+/* Nada ensancha el panel: el archivo cabe y las tablas de varios valores
+   (metas, indicadores) se desplazan dentro de su propia caja. */
+body #drupal-off-canvas input[type="file"] {
+  max-width: 100%;
+}
+
+body #drupal-off-canvas .field-multiple-table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
