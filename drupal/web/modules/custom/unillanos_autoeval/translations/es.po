@@ -1,0 +1,17 @@
+# Traducciones propias de Unillanos Autoevaluación (español).
+# Mensajes de validación de imágenes de core que no traen traducción al
+# español. Se importan con: ddev drush locale:import es <esta ruta>.
+msgid ""
+msgstr ""
+"Project-Id-Version: unillanos_autoeval\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "The image is too small. The minimum dimensions are %dimensions pixels and the image size is %widthx%height pixels."
+msgstr "La foto es muy pequeña: debe tener al menos 1280 píxeles de ancho y esta mide %widthx%height píxeles. Usa una foto más grande."
+
+msgid "The image exceeds the maximum allowed dimensions and has been resized to %dimensions pixels."
+msgstr "La foto superaba las dimensiones máximas y se redujo a %dimensions píxeles."

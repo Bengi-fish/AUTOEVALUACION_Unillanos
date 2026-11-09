@@ -10,11 +10,18 @@
  *   sede, indicadores y grupos de accesos, cada uno con titulo y enlaces).
  *   Solo trae lo que tiene dato: lo vacío se omite.
  *
+ * En pantallas pequeñas cada fila se ve como una tarjeta (solo CSS): los roles
+ * explícitos de la tabla conservan su significado para los lectores de pantalla
+ * y data-etiqueta pone el nombre de la columna junto a cada dato.
+ *
  * Los títulos usan solo el encabezado de la página (h1); el resto son etiquetas
  * y una lista de definiciones, sin saltos de nivel.
  */
 #}
 <div class="unillanos-acreditacion">
+  {% if datos.volver %}
+    <p><a class="unillanos-acreditacion__volver" href="{{ datos.volver }}">{{ 'Volver al sitio'|t }}</a></p>
+  {% endif %}
   <p>{{ 'Programas publicados y accesos a las pantallas de edición. Para encontrar contenido sin publicar usa la lista de contenido.'|t }}</p>
 
   {% if datos.generales %}
@@ -43,27 +50,27 @@
   {% else %}
     <p role="status">{% trans %}Se muestra 1 programa.{% plural datos.total %}Se muestran @count programas.{% endtrans %}</p>
     <div class="unillanos-acreditacion__tabla" role="region" aria-label="{{ 'Programas'|t }}" tabindex="0">
-      <table>
+      <table role="table">
         <caption class="visually-hidden">{{ 'Programas de autoevaluación con sus accesos de edición'|t }}</caption>
         <thead>
-          <tr>
-            <th scope="col">{{ 'Programa'|t }}</th>
-            <th scope="col">{{ 'Facultad'|t }}</th>
-            <th scope="col">{{ 'Nivel'|t }}</th>
-            <th scope="col">{{ 'Sede'|t }}</th>
-            <th scope="col">{{ 'Estado'|t }}</th>
-            <th scope="col">{{ 'Accesos'|t }}</th>
+          <tr role="row">
+            <th scope="col" role="columnheader">{{ 'Programa'|t }}</th>
+            <th scope="col" role="columnheader">{{ 'Facultad'|t }}</th>
+            <th scope="col" role="columnheader">{{ 'Nivel'|t }}</th>
+            <th scope="col" role="columnheader">{{ 'Sede'|t }}</th>
+            <th scope="col" role="columnheader">{{ 'Estado'|t }}</th>
+            <th scope="col" role="columnheader">{{ 'Accesos'|t }}</th>
           </tr>
         </thead>
         <tbody>
           {% for programa in datos.programas %}
-            <tr>
-              <th scope="row">{{ programa.nombre }}</th>
-              <td>{{ programa.facultad }}</td>
-              <td>{{ programa.nivel }}</td>
-              <td>{{ programa.sede }}</td>
-              <td>{{ programa.indicadores|join(', ') }}</td>
-              <td>
+            <tr role="row">
+              <th scope="row" role="rowheader">{{ programa.nombre }}</th>
+              <td role="cell" data-etiqueta="{{ 'Facultad'|t }}">{{ programa.facultad }}</td>
+              <td role="cell" data-etiqueta="{{ 'Nivel'|t }}">{{ programa.nivel }}</td>
+              <td role="cell" data-etiqueta="{{ 'Sede'|t }}">{{ programa.sede }}</td>
+              <td role="cell" data-etiqueta="{{ 'Estado'|t }}">{{ programa.indicadores|join(', ') }}</td>
+              <td role="cell">
                 {% if programa.grupos %}
                   <details>
                     <summary>{{ 'Accesos de edición'|t }}<span class="visually-hidden"> — {{ programa.nombre }}</span></summary>

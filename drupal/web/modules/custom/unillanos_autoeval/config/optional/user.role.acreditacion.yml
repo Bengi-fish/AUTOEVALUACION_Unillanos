@@ -12,7 +12,6 @@ dependencies:
     - node.type.valoracion
   module:
     - media
-    - navigation
     - node
     - system
     - unillanos_autoeval
@@ -24,7 +23,6 @@ permissions:
   - 'access acreditacion panel'
   - 'access content overview'
   - 'access media overview'
-  - 'access navigation'
   - 'change publication status on acreditacion content'
   - 'create documento media'
   - 'create hallazgo content'
@@ -34,6 +32,14 @@ permissions:
   - 'create programa content'
   - 'create seguimiento content'
   - 'create valoracion content'
+  - 'delete own documento media'
+  - 'delete own hallazgo content'
+  - 'delete own meta content'
+  - 'delete own plan_mejoramiento content'
+  - 'delete own proceso content'
+  - 'delete own programa content'
+  - 'delete own seguimiento content'
+  - 'delete own valoracion content'
   - 'edit any documento media'
   - 'edit any hallazgo content'
   - 'edit any meta content'

@@ -62,6 +62,20 @@ unillanos_autoeval.acreditacion_ficha:
       node:
         type: 'entity:node'
 
+# Foto de la cabecera del programa: form mode `foto` con solo la imagen.
+unillanos_autoeval.acreditacion_foto:
+  path: '/admin/acreditacion/programa/{node}/foto'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\AcreditacionFormulariosController::foto'
+    _title: 'Foto del programa'
+  requirements:
+    _entity_access: 'node.update'
+    node: '\d+'
+  options:
+    parameters:
+      node:
+        type: 'entity:node'
+
 unillanos_autoeval.acreditacion_documento:
   path: '/admin/acreditacion/documento/{media}/editar'
   defaults:

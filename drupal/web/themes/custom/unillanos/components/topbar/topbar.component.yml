@@ -61,7 +61,7 @@ props:
         - object
         - 'null'
       title: Barra del modo edición
-      description: 'Solo para quien tiene el permiso de edición: interruptor «Modo edición» (aria-pressed), enlace opcional al formulario del micrositio y «Cerrar sesión» (logout_url). Sin logout_url no se imprime.'
+      description: 'Solo para quien tiene el permiso de edición: interruptor «Modo edición» (aria-pressed), enlace opcional al formulario del micrositio, enlace opcional «Panel avanzado» (avanzado: url y title) y «Cerrar sesión» (logout_url). Sin logout_url no se imprime.'
       properties:
         logout_url:
           type: string

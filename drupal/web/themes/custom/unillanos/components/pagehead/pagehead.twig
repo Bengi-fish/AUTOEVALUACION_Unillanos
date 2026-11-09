@@ -22,6 +22,9 @@
       </div>
       <div class="ua-pagehead__velo"></div>
     {% endif %}
+    {% if photo_edit and photo_edit.url %}
+      <div class="ua-pagehead__foto-edit">{% include 'unillanos:edit-link' with {url: photo_edit.url, label: photo_edit.title, variant: photo_edit.tipo, show_label: true} only %}</div>
+    {% endif %}
     <div class="ua-container ua-pagehead__cuerpo">
       <div class="ua-pagehead__row">{{ block('meta') }}</div>
       {% if eyebrow %}<span class="ua-eyebrow">{{ eyebrow|sin_cortes }}</span>{% endif %}

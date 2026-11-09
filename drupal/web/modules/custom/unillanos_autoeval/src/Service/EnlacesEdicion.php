@@ -92,6 +92,22 @@ class EnlacesEdicion {
   }
 
   /**
+   * Botón «Cambiar foto» (o «Añadir foto» si el programa no tiene).
+   *
+   * @param int $id
+   *   Identificador del programa.
+   * @param bool $con_foto
+   *   TRUE si el programa ya tiene imagen de cabecera.
+   *
+   * @return array{url: string, title: string, tipo: string}|null
+   *   El enlace o NULL.
+   */
+  public function foto(int $id, bool $con_foto): ?array {
+    $titulo = $con_foto ? (string) $this->t('Cambiar foto') : (string) $this->t('Añadir foto');
+    return $this->enlace('unillanos_autoeval.acreditacion_foto', ['node' => $id], $titulo, $con_foto ? 'lapiz' : 'mas');
+  }
+
+  /**
    * «+ Añadir programa».
    *
    * @return array{url: string, title: string, tipo: string}|null
@@ -168,11 +184,13 @@ class EnlacesEdicion {
    *   Datos de los factores (ver FactoresPrograma).
    * @param array<string, mixed> $plan
    *   Datos del plan (ver PlanMejoramientoPrograma).
+   * @param bool $con_foto
+   *   TRUE si el programa ya tiene imagen de cabecera.
    *
    * @return array{factores: array<string, mixed>, plan: array<string, mixed>, edicion: array<string, mixed>}
    *   Los datos con `edicion` y, en `edicion`: ficha, plan y documento.
    */
-  public function paraPrograma(int $programa, string $nombre, array $factores, array $plan): array {
+  public function paraPrograma(int $programa, string $nombre, array $factores, array $plan, bool $con_foto = TRUE): array {
     $vacio = ['factores' => $factores, 'plan' => $plan, 'edicion' => []];
     if (!$this->activo()) {
       return $vacio;
@@ -203,6 +221,7 @@ class EnlacesEdicion {
     }
     $edicion = [
       'ficha' => $this->ficha($programa, $nombre),
+      'foto' => $this->foto($programa, $con_foto),
       'plan' => !empty($plan['plan_id']) ? $this->contenido((int) $plan['plan_id'], (string) $this->t('Editar el plan de mejoramiento')) : NULL,
       'documento' => $this->documentoNuevo($proceso),
     ];
@@ -219,6 +238,26 @@ class EnlacesEdicion {
    */
   public function micrositio(): ?array {
     return $this->enlace('unillanos_autoeval.micrositio', [], (string) $this->t('Editar la cabecera y el pie'));
+  }
+
+  /**
+   * Botón «Panel avanzado» de la barra del modo edición.
+   *
+   * Lleva al panel de Acreditación (`/admin/acreditacion`); es una página
+   * completa de Drupal, no el panel lateral, y no lleva `destination`.
+   *
+   * @return array{url: string, title: string}|null
+   *   El enlace, o NULL si la persona no tiene acceso al panel.
+   */
+  public function panelAvanzado(): ?array {
+    if (!$this->activo()) {
+      return NULL;
+    }
+    $url = Url::fromRoute('unillanos_autoeval.acreditacion');
+    if (!$url->access($this->usuario)) {
+      return NULL;
+    }
+    return ['url' => $url->toString(), 'title' => (string) $this->t('Panel avanzado')];
   }
 
   /**

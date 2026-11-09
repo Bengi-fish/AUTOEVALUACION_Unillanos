@@ -1,0 +1,10 @@
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.foto
+label: 'Foto del programa'
+description: null
+targetEntityType: node
+cache: true

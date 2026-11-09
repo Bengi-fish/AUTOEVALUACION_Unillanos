@@ -130,7 +130,6 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
       'access acreditacion panel',
       'access content overview',
       'access media overview',
-      'access navigation',
       self::PUBLICACION,
       'create documento media',
       'edit any documento media',
@@ -144,7 +143,10 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     foreach (self::TIPOS_DEL_ROL as $tipo) {
       $permisos[] = "create $tipo content";
       $permisos[] = "edit any $tipo content";
+      // Solo «propio» (el autor es quien eliminó); nunca «cualquier».
+      $permisos[] = "delete own $tipo content";
     }
+    $permisos[] = 'delete own documento media';
     sort($permisos);
     return $permisos;
   }
@@ -152,10 +154,10 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
   /**
    * Crea el rol en la base de la prueba y devuelve un usuario que lo tiene.
    *
-   * «access navigation» es del módulo navigation, que no está en la prueba.
+   * El rol ya no lleva «access navigation» (la barra lateral de Drupal).
    */
   protected function usuarioAcreditacion(): User {
-    $permisos = array_values(array_diff($this->archivoDelRol('modulo')['permissions'], ['access navigation']));
+    $permisos = $this->archivoDelRol('modulo')['permissions'];
     Role::create(['id' => 'acreditacion', 'label' => 'Acreditación', 'permissions' => $permisos])->save();
     return $this->usuario(['acreditacion']);
   }
@@ -195,26 +197,40 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     $sync = $this->archivoDelRol('sync');
     $this->assertSame($esperados, $modulo['permissions']);
     $this->assertSame($esperados, $sync['permissions']);
-    $this->assertCount(27, $esperados);
+    // 35 antes del paso 14 (commit 4): se quitó «access navigation».
+    $this->assertCount(34, $esperados);
     // El módulo y el sitio declaran el mismo rol.
     unset($sync['uuid']);
     $this->assertEquals($modulo, $sync);
     $this->assertSame('acreditacion', $modulo['id']);
     $this->assertSame('Acreditación', $modulo['label']);
     $this->assertFalse($modulo['is_admin']);
-    // Sin ningún «administer», sin borrar y sin saltarse el control de acceso.
+    // Sin ningún «administer» ni saltarse el control de acceso; solo se borra
+    // lo propio (cambio deliberado del paso 14: antes el rol no borraba nada).
+    $propios = array_merge(
+      array_map(fn($t) => "delete own $t content", self::TIPOS_DEL_ROL),
+      ['delete own documento media'],
+    );
     foreach ($modulo['permissions'] as $permiso) {
       $this->assertStringNotContainsString('administer', $permiso, $permiso);
-      $this->assertStringNotContainsString('delete', $permiso, $permiso);
       $this->assertStringNotContainsString('bypass', $permiso, $permiso);
+      if (str_contains($permiso, 'delete')) {
+        $this->assertContains($permiso, $propios, $permiso);
+      }
     }
+    $this->assertSame([], array_values(array_diff($propios, $modulo['permissions'])));
+    $this->assertNotContains('delete any programa content', $modulo['permissions']);
+    $this->assertNotContains('delete own lineamiento content', $modulo['permissions']);
     // Incluye el permiso nuevo de publicación y los dos propios del módulo.
     foreach (['access acreditacion panel', 'edit unillanos micrositio', self::PUBLICACION] as $propio) {
       $this->assertContains($propio, $modulo['permissions']);
     }
-    // Cada permiso del rol existe; navigation no está en esta prueba.
+    // Sin la barra lateral de Drupal (paso 14): ni el permiso ni su módulo.
+    $this->assertNotContains('access navigation', $modulo['permissions']);
+    $this->assertNotContains('navigation', $modulo['dependencies']['module']);
+    // Cada permiso del rol existe.
     $existentes = array_keys($this->container->get('user.permissions')->getPermissions());
-    foreach (array_diff($modulo['permissions'], ['access navigation']) as $permiso) {
+    foreach ($modulo['permissions'] as $permiso) {
       $this->assertContains($permiso, $existentes, $permiso);
     }
     // La lista de tipos del rol no incluye lineamiento ni otros medios.
@@ -223,7 +239,7 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * Crea y edita cada tipo de autoevaluación y los documentos; no borra.
+   * Crea y edita cada tipo de autoevaluación; no borra lo que no es suyo.
    */
   #[DataProvider('tiposDelRol')]
   public function testCreaEditaSinBorrar(string $tipo): void {
@@ -231,7 +247,7 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     $this->assertTrue(Node::create(['type' => $tipo, 'title' => 'x'])->access('create', $acreditacion), "crear $tipo");
     $nodo = $this->crearNodo($tipo, ['title' => 'Existente ' . $tipo]);
     $this->assertTrue($nodo->access('update', $acreditacion), "editar $tipo");
-    $this->assertFalse($nodo->access('delete', $acreditacion), "no borrar $tipo");
+    $this->assertFalse($nodo->access('delete', $acreditacion), "no borrar $tipo ajeno");
   }
 
   /**
@@ -258,7 +274,7 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * Los documentos (medio «documento»): crea y edita, no borra.
+   * Los documentos (medio «documento»): crea y edita, no borra lo ajeno.
    */
   public function testDocumentosCreaEditaSinBorrar(): void {
     $acreditacion = $this->usuarioAcreditacion();

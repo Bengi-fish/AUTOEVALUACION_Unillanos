@@ -64,6 +64,20 @@ services:
     arguments: ['@config.factory', '@datetime.time']
   Drupal\unillanos_autoeval\Service\DatosMarco: '@unillanos_autoeval.datos_marco'
 
+  unillanos_autoeval.entidades_dependientes:
+    class: Drupal\unillanos_autoeval\Service\EntidadesDependientes
+    arguments: ['@entity_type.manager', '@entity_field.manager']
+  Drupal\unillanos_autoeval\Service\EntidadesDependientes: '@unillanos_autoeval.entidades_dependientes'
+
+  unillanos_autoeval.pertenencia_de_contenido:
+    class: Drupal\unillanos_autoeval\Service\PertenenciaDeContenido
+    arguments: ['@entity_type.manager', '@entity_type.bundle.info']
+  Drupal\unillanos_autoeval\Service\PertenenciaDeContenido: '@unillanos_autoeval.pertenencia_de_contenido'
+
+  logger.channel.unillanos_autoeval:
+    parent: logger.channel_base
+    arguments: ['unillanos_autoeval']
+
   unillanos_autoeval.enlaces_edicion:
     class: Drupal\unillanos_autoeval\Service\EnlacesEdicion
     arguments: ['@current_user', '@redirect.destination']

@@ -20,3 +20,86 @@
 .unillanos-acreditacion__tabla td {
   hyphens: manual;
 }
+
+/* «Volver al sitio»: enlace del principio del panel, con objetivo de 44 px. */
+.unillanos-acreditacion__volver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+}
+
+/* En pantallas pequeñas cada programa es una tarjeta apilada (nombre, facultad,
+   nivel, sede, estado y sus accesos); la tabla solo se ve en pantallas
+   amplias. Los títulos de columna se ocultan solo a la vista. */
+@media (max-width: 760px) {
+  .unillanos-acreditacion__tabla {
+    overflow-x: visible;
+  }
+
+  .unillanos-acreditacion__tabla table,
+  .unillanos-acreditacion__tabla tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .unillanos-acreditacion__tabla thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .unillanos-acreditacion__tabla tbody tr {
+    display: block;
+    height: auto;
+    min-height: 0;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border: 1px solid #d3d0c7;
+    border-radius: 8px;
+  }
+
+  .unillanos-acreditacion__tabla tbody th,
+  .unillanos-acreditacion__tabla tbody td {
+    display: block;
+    height: auto;
+    min-height: 0;
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  .unillanos-acreditacion__tabla tbody th {
+    font-size: 1.1em;
+  }
+
+  .unillanos-acreditacion__tabla tbody td[data-etiqueta]:empty {
+    display: none;
+  }
+
+  .unillanos-acreditacion__tabla tbody td[data-etiqueta]::before {
+    content: attr(data-etiqueta) ": ";
+    font-weight: 600;
+  }
+
+  .unillanos-acreditacion__tabla summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .unillanos-acreditacion__tabla dd {
+    margin-inline-start: 0;
+  }
+
+  .unillanos-acreditacion__tabla li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    overflow-wrap: anywhere;
+  }
+}

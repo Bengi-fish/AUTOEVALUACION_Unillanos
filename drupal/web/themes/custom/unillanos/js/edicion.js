@@ -45,6 +45,22 @@
     },
   };
 
+  // Confirmación de borrado en el panel: «Cancelar» cierra el panel (sin ir a
+  // otra página); el foco vuelve al lápiz que lo abrió.
+  Drupal.behaviors.uaCancelarEnPanel = {
+    attach(context) {
+      once('ua-cancelar-panel', '#drupal-off-canvas [data-ua-cerrar-panel]', context).forEach((enlace) => {
+        enlace.addEventListener('click', (evento) => {
+          const panel = document.getElementById('drupal-off-canvas');
+          if (panel) {
+            evento.preventDefault();
+            Drupal.dialog(panel).close();
+          }
+        });
+      });
+    },
+  };
+
   Drupal.behaviors.uaEdicion = {
     attach(context) {
       once('ua-edicion', '[data-ua-edicion-toggle]', context).forEach((boton) => {
