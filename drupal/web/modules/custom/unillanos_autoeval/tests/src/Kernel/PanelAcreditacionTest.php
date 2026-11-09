@@ -195,7 +195,7 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
   public function testAparecenLosCuarentaProgramas(): void {
     $programas = $this->programas(40);
     [$html] = $this->panel($this->acreditacion());
-    $this->assertSame(40, substr_count($html, '<th scope="row">'));
+    $this->assertSame(40, substr_count($html, '<th scope="row" role="rowheader">'));
     $this->assertStringContainsString('Se muestran 40 programas.', $html);
     $enlaces = $this->enlaces($html);
     foreach ($programas as $programa) {
@@ -250,7 +250,7 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
     $this->programas(3);
     $solo_panel = $this->usuarioConPermisos(['access acreditacion panel']);
     [$html] = $this->panel($solo_panel);
-    $this->assertSame(3, substr_count($html, '<th scope="row">'));
+    $this->assertSame(3, substr_count($html, '<th scope="row" role="rowheader">'));
     $enlaces = $this->enlaces($html);
     foreach ($enlaces as $url) {
       $this->assertStringNotContainsString('/edit', $url);
@@ -275,7 +275,7 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
     $this->assertStringNotContainsString('Sin proceso', $html);
     // El programa sin proceso tiene una celda de estado vacía.
     $this->assertSame('Programa 02', $sin->label());
-    $this->assertMatchesRegularExpression('~Programa 02</th>.*?<td></td>\s*<td>~s', $html);
+    $this->assertMatchesRegularExpression('~Programa 02</th>.*?<td role="cell" data-etiqueta="Estado"></td>\s*<td role="cell">~s', $html);
   }
 
   /**
@@ -285,7 +285,7 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
     $this->programas(12);
     $acreditacion = $this->acreditacion();
     [$html] = $this->panel($acreditacion, ['q' => 'Programa 07']);
-    $this->assertSame(1, substr_count($html, '<th scope="row">'));
+    $this->assertSame(1, substr_count($html, '<th scope="row" role="rowheader">'));
     $this->assertStringContainsString('Se muestra 1 programa.', $html);
     $this->assertStringContainsString('value="Programa 07"', $html);
     // Sin coincidencias.
@@ -323,8 +323,8 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
   public function testTablaAccesible(): void {
     $this->programas(2);
     [$html] = $this->panel($this->acreditacion());
-    $this->assertSame(6, substr_count($html, '<th scope="col">'));
-    $this->assertSame(2, substr_count($html, '<th scope="row">'));
+    $this->assertSame(6, substr_count($html, '<th scope="col" role="columnheader">'));
+    $this->assertSame(2, substr_count($html, '<th scope="row" role="rowheader">'));
     $this->assertStringContainsString('<caption', $html);
     $this->assertStringContainsString('role="region"', $html);
     $this->assertStringContainsString('tabindex="0"', $html);
@@ -528,6 +528,27 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
     [$html] = $this->panel($this->acreditacion());
     $this->assertStringContainsString('Volver al sitio', $html);
     $this->assertMatchesRegularExpression('~<a class="unillanos-acreditacion__volver" href="/[^"]*">Volver al sitio</a>~', $html);
+  }
+
+  /**
+   * Cada fila puede verse como tarjeta en pantallas pequeñas.
+   */
+  public function testFilasListasParaTarjetas(): void {
+    $this->programas(2);
+    [$html] = $this->panel($this->acreditacion());
+    // Roles explícitos: la tabla conserva su significado al verse en bloques.
+    $this->assertStringContainsString('<table role="table">', $html);
+    $this->assertStringContainsString('role="rowheader"', $html);
+    $this->assertStringContainsString('role="columnheader"', $html);
+    $this->assertMatchesRegularExpression('~<td role="cell" data-etiqueta="Facultad">~', $html);
+    $this->assertStringContainsString('data-etiqueta="Nivel"', $html);
+    // La hoja de estilos tiene el cambio a tarjetas y los 44 px.
+    $css = (string) file_get_contents(
+      $this->container->get('extension.list.module')->getPath('unillanos_autoeval') . '/css/acreditacion.css'
+    );
+    $this->assertStringContainsString('@media (max-width: 760px)', $css);
+    $this->assertStringContainsString('attr(data-etiqueta)', $css);
+    $this->assertStringContainsString('min-height: 44px', $css);
   }
 
 }
