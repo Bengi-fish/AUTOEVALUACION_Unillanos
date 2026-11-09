@@ -153,6 +153,10 @@ class UnillanosAutoevalHooks {
    */
   #[Hook('form_alter')]
   public function formAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    if ($form_id === 'user_login_form') {
+      $this->alPortadaTrasEntrar($form);
+      return;
+    }
     $ayudas = match ($form_id) {
       'node_programa_acreditacion_form' => $this->ayudasDeLaFicha(),
       'media_documento_acreditacion_form' => $this->ayudasDelDocumento(),
@@ -169,6 +173,35 @@ class UnillanosAutoevalHooks {
     if (isset($form['actions']['submit'])) {
       $form['actions']['submit']['#submit'][] = [self::class, 'volverAlPanel'];
     }
+  }
+
+  /**
+   * En /acceso-acreditacion, tras iniciar sesión se va a la portada.
+   *
+   * Drupal lleva a la página de la cuenta; solo en la ruta propia se añade un
+   * manejador que cambia el destino a la portada. Un `destination` explícito
+   * en la URL sigue mandando, y /user/login no cambia.
+   *
+   * @param array<mixed> $form
+   *   El formulario de inicio de sesión.
+   */
+  protected function alPortadaTrasEntrar(array &$form): void {
+    $solicitud = $this->requestStack->getCurrentRequest();
+    if ($solicitud?->attributes->get('_route') === 'unillanos_autoeval.acceso' && !$solicitud->query->has('destination')) {
+      $form['#submit'][] = [self::class, 'alPortada'];
+    }
+  }
+
+  /**
+   * Cambia el destino del formulario de inicio de sesión a la portada.
+   *
+   * @param array<mixed> $form
+   *   Formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   */
+  public static function alPortada(array &$form, FormStateInterface $form_state): void {
+    $form_state->setRedirect('<front>');
   }
 
   /**

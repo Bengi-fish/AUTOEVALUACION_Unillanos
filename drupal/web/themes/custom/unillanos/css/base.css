@@ -385,3 +385,59 @@
     outline-offset: 2px;
   }
 }
+
+/*
+ * Formulario de acceso de Drupal (/acceso-acreditacion y /user/login): campos
+ * y botón de 46 px con los tokens del sistema (sin cambiar el marcado de core).
+ */
+.ua .user-login-form {
+  display: grid;
+  gap: var(--espacio-4);
+  max-width: 480px;
+  padding: var(--espacio-4) 0 var(--espacio-6);
+}
+
+.ua .user-login-form .form-item {
+  display: grid;
+  gap: var(--espacio-1);
+  margin: 0;
+}
+
+.ua .user-login-form label {
+  font-weight: 600;
+  color: var(--tinta-900);
+}
+
+.ua .user-login-form input.form-text {
+  box-sizing: border-box;
+  width: 100%;
+  height: 46px;
+  padding: 0 var(--espacio-3);
+  border: 1px solid var(--tinta-700);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
+  color: var(--tinta-900);
+  font-family: var(--font-base);
+  font-size: 16px;
+}
+
+.ua .user-login-form .form-actions {
+  margin: 0;
+}
+
+.ua .user-login-form input.form-submit {
+  min-height: 48px;
+  padding: var(--espacio-3) var(--espacio-5);
+  border: 2px solid transparent;
+  border-radius: var(--radio-sm);
+  background: var(--Unillanos_Red);
+  color: var(--Surface);
+  font-family: var(--font-base);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ua .user-login-form input.form-submit:hover {
+  background: var(--rojo-700);
+}
