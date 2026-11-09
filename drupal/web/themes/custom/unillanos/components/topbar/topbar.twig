@@ -20,9 +20,23 @@
 {% set hay_govco = govco and govco.title and govco.url and ((govco.url ~ '') matches seguro) %}
 {% set tema = componentMetadata.path|split('/components/')|first %}
 {% set redes_validas = (social|default([]))|filter(red => (red.red in ['facebook', 'x', 'instagram', 'youtube']) and red.title and red.url and ((red.url ~ '') matches seguro)) %}
-{% if links or acceso or redes_validas or hay_govco %}
-  <div{{ attributes.addClass((acceso or redes_validas or hay_govco) ? 'ua-topbar' : ['ua-topbar', 'ua-topbar--solo-enlaces']) }}>
+{% set hay_edicion = edicion and edicion.logout_url and ((edicion.logout_url ~ '') matches seguro) %}
+{% if links or acceso or redes_validas or hay_govco or hay_edicion %}
+  <div{{ attributes.addClass((acceso or redes_validas or hay_govco or hay_edicion) ? 'ua-topbar' : ['ua-topbar', 'ua-topbar--solo-enlaces']) }}>
     <nav class="ua-topbar__inner" aria-label="{{ label|default('Enlaces de la Universidad'|t) }}">
+      {% if hay_edicion %}
+        {# Solo para quien tiene el permiso del modo edición. #}
+        <div class="ua-edicion-barra">
+          <button class="ua-edicion-barra__boton" type="button" aria-pressed="false" data-ua-edicion-toggle>
+            {%- include 'unillanos:icon' with {name: 'pencil', size: 'sm'} only -%}
+            <span>{{ 'Modo edición'|t }}</span>
+          </button>
+          {% if edicion.micrositio %}
+            {% include 'unillanos:edit-link' with {url: edicion.micrositio.url, label: edicion.micrositio.title, show_label: true} only %}
+          {% endif %}
+          <a class="ua-topbar__link" href="{{ edicion.logout_url }}">{{ 'Cerrar sesión'|t }}</a>
+        </div>
+      {% endif %}
       {% if links %}
         <ul class="ua-topbar__list" role="list">
           {% for enlace in links %}

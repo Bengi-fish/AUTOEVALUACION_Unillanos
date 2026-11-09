@@ -24,6 +24,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\unillanos_autoeval\Service\CalculadorGrado;
+use Drupal\unillanos_autoeval\Service\EnlacesEdicion;
 use Drupal\unillanos_autoeval\Service\ModeloProceso;
 use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
 use Drupal\unillanos_autoeval\Service\SugerenciaDestino;
@@ -68,6 +69,7 @@ class UnillanosAutoevalHooks {
     protected ModeloProceso $modeloProceso,
     protected RequestStack $requestStack,
     protected EntityTypeManagerInterface $entityTypeManager,
+    protected AccountInterface $usuarioActual,
   ) {}
 
   /**
@@ -89,6 +91,21 @@ class UnillanosAutoevalHooks {
     ],
     'media' => [
       'documento' => ['field_proceso' => ['proceso', 'proceso']],
+    ],
+  ];
+
+  /**
+   * Relaciones con un término que se precargan en los formularios de creación.
+   *
+   * Por tipo de contenido: campo => [parámetro de la URL, vocabulario al que
+   * debe pertenecer el término]. Lo usa el modo edición para abrir «crear
+   * valoración» con el factor ya elegido.
+   *
+   * @var array<string, array<string, array<string, array{0: string, 1: string}>>>
+   */
+  const PRECARGA_TERMINOS = [
+    'node' => [
+      'valoracion' => ['field_elemento' => ['elemento', 'elemento_modelo']],
     ],
   ];
 
@@ -124,8 +141,9 @@ class UnillanosAutoevalHooks {
       return;
     }
     $reglas = self::PRECARGA[$entity->getEntityTypeId()][$entity->bundle()] ?? [];
+    $reglas_terminos = self::PRECARGA_TERMINOS[$entity->getEntityTypeId()][$entity->bundle()] ?? [];
     $peticion = $this->requestStack->getCurrentRequest();
-    if (!$reglas || !$peticion) {
+    if ((!$reglas && !$reglas_terminos) || !$peticion) {
       return;
     }
     // all(): un parámetro en forma de arreglo (?proceso[]=1) no debe lanzar una
@@ -139,6 +157,18 @@ class UnillanosAutoevalHooks {
       $destino = $this->entityTypeManager->getStorage('node')->load((int) $valor);
       if ($destino instanceof NodeInterface && $destino->bundle() === $tipo && $destino->access('view')) {
         $entity->set($campo, $destino->id());
+      }
+    }
+    // Términos (el factor de una valoración): del vocabulario esperado y que
+    // la persona pueda ver.
+    foreach ($reglas_terminos as $campo => [$parametro, $vocabulario]) {
+      $valor = $consulta[$parametro] ?? NULL;
+      if (!is_string($valor) || !ctype_digit($valor) || !$entity->hasField($campo) || !$entity->get($campo)->isEmpty()) {
+        continue;
+      }
+      $termino = $this->entityTypeManager->getStorage('taxonomy_term')->load((int) $valor);
+      if ($termino && $termino->bundle() === $vocabulario && $termino->access('view')) {
+        $entity->set($campo, $termino->id());
       }
     }
   }
@@ -353,6 +383,11 @@ class UnillanosAutoevalHooks {
     ]);
     // Las consultas de los servicios respetan el acceso del visitante.
     $build['#cache']['contexts'][] = 'user.permissions';
+    // Los enlaces del modo edición llevan la URL actual como destino.
+    if ($this->usuarioActual->hasPermission(EnlacesEdicion::PERMISO)) {
+      $build['#cache']['contexts'][] = 'url.path';
+      $build['#cache']['contexts'][] = 'url.query_args';
+    }
     foreach (['field_facultad', 'field_sede'] as $campo) {
       $termino = $entity->get($campo)->entity;
       if ($termino) {

@@ -157,3 +157,14 @@ props:
           type: string
         nit:
           type: string
+    edicion:
+      type:
+        - object
+        - 'null'
+      title: Enlace de edición
+      description: 'Solo en el modo edición: lápiz hacia el formulario del micrositio (url y title).'
+      properties:
+        url:
+          type: string
+        title:
+          type: string

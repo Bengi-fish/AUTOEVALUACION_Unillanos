@@ -64,6 +64,11 @@ services:
     arguments: ['@config.factory', '@datetime.time']
   Drupal\unillanos_autoeval\Service\DatosMarco: '@unillanos_autoeval.datos_marco'
 
+  unillanos_autoeval.enlaces_edicion:
+    class: Drupal\unillanos_autoeval\Service\EnlacesEdicion
+    arguments: ['@current_user', '@redirect.destination']
+  Drupal\unillanos_autoeval\Service\EnlacesEdicion: '@unillanos_autoeval.enlaces_edicion'
+
   unillanos_autoeval.twig_extension:
     class: Drupal\unillanos_autoeval\Twig\UnillanosTwigExtension
     tags:

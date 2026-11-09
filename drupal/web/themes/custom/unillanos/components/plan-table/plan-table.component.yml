@@ -56,6 +56,18 @@ props:
           tag:
             type: string
             description: 'Etiqueta que se antepone a la primera celda (por ejemplo «F01»).'
+          edicion:
+            type: array
+            description: 'Modo edición: enlaces (url, title y tipo) hacia la meta; se ven solo con el modo activo.'
+            items:
+              type: object
+              properties:
+                url:
+                  type: string
+                title:
+                  type: string
+                tipo:
+                  type: string
           cells:
             type: array
             items:

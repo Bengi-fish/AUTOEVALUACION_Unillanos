@@ -96,6 +96,18 @@ props:
             description: 'Por ejemplo «formuladas para este factor».'
           plan_url:
             type: string
+          edicion:
+            type: array
+            description: 'Modo edición: enlaces (url, title y tipo «lapiz» o «mas») hacia la valoración del factor; se ven solo con el modo activo.'
+            items:
+              type: object
+              properties:
+                url:
+                  type: string
+                title:
+                  type: string
+                tipo:
+                  type: string
           report_meta:
             type: string
             description: 'Por ejemplo «PDF · 2,4 MB».'

@@ -1,0 +1,33 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Enlace de edición
+status: stable
+group: Contenido
+description: 'Lápiz (editar) o «+» (añadir) del modo edición. Es un enlace a una pantalla que ya existe, con nombre accesible, objetivo de 44 px y foco visible. Está oculto hasta que se activa el modo edición (data-ua-edicion en la etiqueta html). Un destino que no es seguro no imprime nada.'
+props:
+  type: object
+  required:
+    - url
+    - label
+  properties:
+    url:
+      type: string
+      title: Destino
+      description: 'Ruta del sitio con su ?destination=; si no es segura no se imprime nada (mismo filtro que unillanos:button).'
+    label:
+      type: string
+      title: Nombre accesible
+      description: 'Por ejemplo «Editar el factor 3: …» o «Añadir programa».'
+    variant:
+      type: string
+      title: Variante
+      enum:
+        - ''
+        - lapiz
+        - mas
+      default: lapiz
+      description: 'Vacío o ausente es «lapiz».'
+    show_label:
+      type: boolean
+      title: Mostrar el texto
+      description: 'Con true el nombre se ve junto al ícono (p. ej. «+ Añadir programa»); por defecto solo el ícono.'
+      default: false

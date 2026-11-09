@@ -38,6 +38,18 @@
     {% endblock %}
   {% endembed %}
 
+  {# Modo edición: ficha, plan y documentos (solo con permiso y acceso real;
+     se ve únicamente con el modo activo). #}
+  {% if edicion %}
+    <div class="ua-container">
+      <div class="ua-edicion-zona">
+        {% for enlace in [edicion.ficha|default(null), edicion.plan|default(null), edicion.documento|default(null)] %}
+          {% if enlace %}{% include 'unillanos:edit-link' with {url: enlace.url, label: enlace.title, variant: enlace.tipo, show_label: true} only %}{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
   {# Con un solo dato la ficha repetiría las etiquetas de la cabecera. La
      ficha es un aside a la derecha del primer bloque de contenido. #}
   {% set hay_ficha = programa.ficha|length > 1 %}

@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ * Enlace del modo edición: lápiz o «+» hacia una pantalla que ya existe.
+ *
+ * Mismo filtro de URL que unillanos:button: sin destino seguro no imprime
+ * nada. El nombre accesible va en un texto (visible solo con show_label); el
+ * dibujo es decorativo. Se oculta por CSS hasta activar el modo edición.
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% if url and label and ((url ~ '') matches seguro) %}
+  {% set mas = variant == 'mas' %}
+  <a{{ attributes.addClass(['ua-edit', mas ? 'ua-edit--mas' : 'ua-edit--lapiz', show_label ? 'ua-edit--texto' : '']).setAttribute('href', url).setAttribute('data-ua-edit', true) }}>
+    {%- include 'unillanos:icon' with {name: mas ? 'plus' : 'pencil', size: 'sm'} only -%}
+    <span{% if not show_label %} class="ua-sr"{% endif %}>{{ label }}</span>
+  </a>
+{% endif %}

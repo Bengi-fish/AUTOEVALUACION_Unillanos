@@ -17,6 +17,7 @@ use Drupal\node\NodeInterface;
 use Drupal\unillanos_autoeval\Service\DatosMarco;
 use Drupal\unillanos_autoeval\Service\DocumentosPublicados;
 use Drupal\unillanos_autoeval\Service\EnlacesDelPie;
+use Drupal\unillanos_autoeval\Service\EnlacesEdicion;
 use Drupal\unillanos_autoeval\Service\FactoresPrograma;
 use Drupal\unillanos_autoeval\Service\PaginaPrograma;
 use Drupal\unillanos_autoeval\Service\PlanMejoramientoPrograma;
@@ -45,6 +46,7 @@ class UnillanosHooks {
     protected EnlacesDelPie $enlacesDelPie,
     protected MenuActiveTrailInterface $rastroActivo,
     protected DatosMarco $datosMarco,
+    protected EnlacesEdicion $edicion,
   ) {}
 
   /**
@@ -56,6 +58,18 @@ class UnillanosHooks {
   #[Hook('preprocess_html')]
   public function preprocessHtml(array &$variables): void {
     $variables['attributes']['class'][] = 'ua';
+    // Modo edición: aplica el estado guardado antes del primer pintado para
+    // que los lápices no aparezcan con retraso. Solo para quien tiene el
+    // permiso (la página varía por permisos). Sin almacenamiento, apagado.
+    if ($this->edicion->activo()) {
+      $variables['page']['#attached']['html_head'][] = [
+        [
+          '#tag' => 'script',
+          '#value' => "try{if(window.localStorage.getItem('ua-edicion')==='1'){document.documentElement.setAttribute('data-ua-edicion','on');}}catch(e){}",
+        ],
+        'unillanos_edicion_estado',
+      ];
+    }
     $ruta = '/' . $this->pathResolver->getPath('theme', 'unillanos');
     $variables['page']['#attached']['html_head'][] = [
       [
@@ -205,6 +219,19 @@ class UnillanosHooks {
     // Franja superior, nombre, pie: lo que dice la configuración del
     // micrositio, ya filtrado (sin URLs inseguras ni filas vacías).
     $variables['marco'] = $this->datosMarco->datos($cache);
+    // Modo edición: la barra solo existe para quien tiene el permiso; por eso
+    // la página varía por permisos (el HTML de un anónimo no cambia).
+    $cache->addCacheContexts(['user.permissions']);
+    $variables['edicion_barra'] = NULL;
+    if ($this->edicion->activo()) {
+      $variables['edicion_barra'] = [
+        'logout_url' => $this->edicion->cerrarSesion(),
+        'micrositio' => $this->edicion->micrositio(),
+      ];
+      $variables['edicion_pie'] = $this->edicion->micrositio();
+      $cache->addCacheContexts(['url.path', 'url.query_args']);
+      $variables['#attached']['library'][] = 'unillanos/edicion';
+    }
     $variables['pie_cache'] = [];
     $cache->applyTo($variables['pie_cache']);
   }
@@ -233,6 +260,11 @@ class UnillanosHooks {
       $resultado = $this->plan->delPrograma($nodo, $factores, $cache);
       $variables['factores'] = $resultado['factores'];
       $variables['plan'] = $resultado['plan'];
+      // Modo edición: lápices y «+» (solo con permiso y acceso real).
+      $enriquecido = $this->edicion->paraPrograma((int) $nodo->id(), (string) $nodo->label(), $variables['factores'], $variables['plan']);
+      $variables['factores'] = $enriquecido['factores'];
+      $variables['plan'] = $enriquecido['plan'];
+      $variables['edicion'] = $enriquecido['edicion'];
       // Los procesos del programa, el más reciente primero.
       $ids_proceso = array_keys($this->procesos->procesosDelPrograma($nodo));
       $variables['documentos'] = $this->documentos->delPrograma($nodo, $ids_proceso, $cache);

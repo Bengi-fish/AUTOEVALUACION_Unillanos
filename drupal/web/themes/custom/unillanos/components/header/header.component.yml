@@ -23,7 +23,7 @@ props:
     topbar:
       type: object
       title: Franja superior
-      description: 'Objeto con `links`, `accessibility`, `social` y `govco` (ver unillanos:topbar). Sin él no hay franja.'
+      description: 'Objeto con `links`, `accessibility`, `social`, `govco` y `edicion` (ver unillanos:topbar). Sin él no hay franja.'
     solo_logo:
       type: string
       title: Logo único

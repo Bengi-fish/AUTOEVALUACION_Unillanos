@@ -27,7 +27,7 @@
   solo_logo: 'unillanos',
   show_search: true,
   search_url: path('unillanos_autoeval.programas'),
-  topbar: {links: marco.franja, accessibility: marco.accesibilidad, social: marco.redes, govco: marco.govco},
+  topbar: {links: marco.franja, accessibility: marco.accesibilidad, social: marco.redes, govco: marco.govco, edicion: edicion_barra},
 } only %}
   {% block nav %}{{ menu }}{% endblock %}
 {% endembed %}
@@ -69,4 +69,5 @@
   explora: pie_enlaces,
   logos: pie.logos|map(logo => {clave: logo.clave, title: logo.title, url: logo.url}),
   rights: pie.derechos,
+  edicion: edicion_pie|default(null),
 } only %}

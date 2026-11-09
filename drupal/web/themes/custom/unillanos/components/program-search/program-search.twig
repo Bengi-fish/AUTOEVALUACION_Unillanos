@@ -67,6 +67,10 @@
         {% trans %}Se muestra {{ count }} programa.{% plural count %}Se muestran {{ count }} programas.{% endtrans %}
       {%- endif -%}
     </p>
+    {% if edit_new and edit_new.url and edit_new.title %}
+      {# Modo edición: «+ Añadir programa». #}
+      <div class="ua-prog-nuevo">{% include 'unillanos:edit-link' with {url: edit_new.url, label: edit_new.title, variant: 'mas', show_label: true} only %}</div>
+    {% endif %}
     <ul class="ua-prog-list" data-ua-prog-list>
       {% for programa in programs %}
         <li{% if programa.hidden %} hidden{% endif %} data-ua-prog-item data-search="{{ programa.search }}" data-faculty="{{ programa.faculty_id }}" data-level="{{ programa.level_key }}" data-campus="{{ programa.campus_id }}">
@@ -84,6 +88,10 @@
             evaluated: programa.evaluated|default(false),
             heading: nivel,
           } only %}
+          {% if programa.edit and programa.edit.url %}
+            {# Modo edición: lápiz fuera del enlace de la tarjeta (un enlace no contiene otro enlace). #}
+            {% include 'unillanos:edit-link' with {url: programa.edit.url, label: programa.edit.title, attributes: create_attribute({class: ['ua-edit--esquina']})} only %}
+          {% endif %}
         </li>
       {% endfor %}
       <li class="ua-prog-empty" data-ua-prog-empty{% if visibles > 0 %} hidden{% endif %}>{{ 'No encontramos programas con esos criterios. Prueba con otro nombre o quita los filtros.'|t }}</li>

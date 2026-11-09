@@ -233,3 +233,26 @@
   }
 
 }
+
+/* Lápiz del modo edición: oculto hasta activar el modo y sin ocupar espacio. */
+.ua-footer__edicion {
+  display: none;
+}
+
+html[data-ua-edicion="on"] .ua-footer__edicion {
+  display: flex;
+  padding: var(--espacio-4) 0;
+  border-top: 1px solid rgba(255,255,255,.14);
+}
+
+.ua .ua-footer .ua-edit {
+  border-color: var(--Surface);
+  background: transparent;
+  color: var(--Surface);
+  text-decoration: none;
+}
+
+.ua .ua-footer .ua-edit:hover {
+  background: var(--Surface);
+  color: var(--carbon);
+}

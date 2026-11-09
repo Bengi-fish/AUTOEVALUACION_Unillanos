@@ -24,6 +24,10 @@
           {% for celda in fila.cells %}
             <td role="cell" data-label="{{ (columns[loop.index0] ?? {}).label }}">
               {%- if loop.first and fila.tag %}<span class="ua-plan__tag">{{ fila.tag }}</span>{% endif -%}
+              {%- if loop.first and fila.edicion %}
+                {# Modo edición: lápiz de la meta. #}
+                {% for enlace in fila.edicion %}{% include 'unillanos:edit-link' with {url: enlace.url, label: enlace.title, variant: enlace.tipo} only %}{% endfor %}
+              {% endif -%}
               {%- if celda.type == 'list' -%}
                 <ul role="list">{% for elemento in celda.items %}<li>{{ elemento }}</li>{% endfor %}</ul>
               {%- elseif celda.type == 'plazo' -%}

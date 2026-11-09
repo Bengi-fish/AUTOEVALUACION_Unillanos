@@ -116,6 +116,9 @@
         {% endfor %}
       </ul>
     {% endif %}
+    {% if edicion and edicion.url and edicion.title %}
+      <div class="ua-footer__edicion">{% include 'unillanos:edit-link' with {url: edicion.url, label: edicion.title, show_label: true} only %}</div>
+    {% endif %}
     {% if rights %}
       <div class="ua-footer__bottom">
         <p>©

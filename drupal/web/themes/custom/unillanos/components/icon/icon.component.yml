@@ -37,7 +37,9 @@ props:
         - menu
         - message
         - mic
+        - pencil
         - phone
+        - plus
         - scale
         - search
         - shield
