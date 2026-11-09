@@ -2,6 +2,7 @@
 
 namespace Drupal\unillanos_autoeval\Hook;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseDialogCommand;
@@ -26,9 +27,12 @@ use Drupal\media\MediaForm;
 use Drupal\node\Form\NodeForm;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\unillanos_autoeval\Service\CalculadorGrado;
 use Drupal\unillanos_autoeval\Service\EnlacesEdicion;
+use Drupal\unillanos_autoeval\Service\EntidadesDependientes;
 use Drupal\unillanos_autoeval\Service\ModeloProceso;
 use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
 use Drupal\unillanos_autoeval\Service\SugerenciaDestino;
@@ -74,6 +78,10 @@ class UnillanosAutoevalHooks {
     protected RequestStack $requestStack,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected AccountInterface $usuarioActual,
+    protected EntidadesDependientes $dependientes,
+    protected TimeInterface $tiempo,
+    #[Autowire(service: 'logger.channel.unillanos_autoeval')]
+    protected LoggerInterface $registro,
   ) {}
 
   /**
@@ -208,6 +216,55 @@ class UnillanosAutoevalHooks {
     if (isset($form['actions']['submit'])) {
       $form['actions']['submit']['#submit'][] = [self::class, 'volverAlPanel'];
     }
+  }
+
+  /**
+   * Implements hook_entity_access().
+   *
+   * Impide borrar un contenido de autoevaluación (o un documento) al que otro
+   * contenido todavía apunta: un proceso con valoraciones, hallazgos, planes o
+   * documentos; un programa con procesos; un plan con metas; una meta con
+   * seguimientos; un hallazgo con metas; un documento enlazado desde una
+   * valoración. Aplica a quien NO tiene el acceso de administración del
+   * contenido (el rol Acreditación y cualquier otro rol limitado); quien tiene
+   * «bypass node access» (nodos) o «administer media» (medios) conserva el
+   * acceso de núcleo y no se bloquea. El resultado varía por permisos y se
+   * invalida cuando cambia la lista de los tipos que pueden depender.
+   */
+  #[Hook('entity_access')]
+  public function entityAccess(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
+    if ($operation !== 'delete' || !$this->dependientes->enAlcance($entity)) {
+      return AccessResult::neutral();
+    }
+    $permiso = $entity->getEntityTypeId() === 'media' ? 'administer media' : 'bypass node access';
+    $resultado = $account->hasPermission($permiso) || !$this->dependientes->tieneDependientes($entity)
+      ? AccessResult::neutral()
+      : AccessResult::forbidden('Otro contenido todavía apunta a este: elimina primero lo que depende de él.');
+    return $resultado
+      ->addCacheContexts(['user.permissions'])
+      ->addCacheableDependency($entity)
+      ->addCacheTags($this->dependientes->etiquetasDeCache($entity));
+  }
+
+  /**
+   * Implements hook_entity_delete().
+   *
+   * Anota en el registro del sitio (canal `unillanos_autoeval`) quién eliminó
+   * qué: usuario, fecha, tipo, identificador y título.
+   */
+  #[Hook('entity_delete')]
+  public function entityDelete(EntityInterface $entity): void {
+    if (!$this->dependientes->enAlcance($entity)) {
+      return;
+    }
+    $this->registro->notice('Se eliminó @tipo «@titulo» (id @id) por @usuario (uid @uid) el @fecha.', [
+      '@tipo' => $entity->getEntityTypeId() . ':' . $entity->bundle(),
+      '@titulo' => (string) $entity->label(),
+      '@id' => $entity->id(),
+      '@usuario' => $this->usuarioActual->getAccountName(),
+      '@uid' => $this->usuarioActual->id(),
+      '@fecha' => date('Y-m-d H:i:s', $this->tiempo->getRequestTime()),
+    ]);
   }
 
   /**
