@@ -44,7 +44,9 @@ body #drupal-off-canvas .ua-eliminar-bloqueo a {
 
 /* Botones del pie del formulario del panel: objetivos de 44 px. */
 body #drupal-off-canvas .form-actions input.button,
-body #drupal-off-canvas .form-actions a.button {
+body #drupal-off-canvas .form-actions a.button,
+body #drupal-off-canvas .js-form-managed-file input.button,
+body #drupal-off-canvas .js-form-managed-file input[type="file"] {
   min-height: 44px;
 }
 

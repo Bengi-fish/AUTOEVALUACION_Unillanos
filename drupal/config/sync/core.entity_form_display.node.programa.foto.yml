@@ -1,0 +1,44 @@
+uuid: 95c50fd2-df24-44cb-82bb-28bb5241db9b
+langcode: es
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.node.foto
+    - field.field.node.programa.field_imagen
+    - node.type.programa
+  module:
+    - image
+id: node.programa.foto
+targetEntityType: node
+bundle: programa
+mode: foto
+content:
+  field_imagen:
+    type: image_image
+    weight: 0
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+hidden:
+  created: true
+  field_acreditacion_hasta: true
+  field_clave: true
+  field_codigo_snies: true
+  field_director: true
+  field_duracion: true
+  field_facultad: true
+  field_modalidad: true
+  field_nivel: true
+  field_registro_hasta: true
+  field_resolucion_acreditacion: true
+  field_resolucion_registro: true
+  field_sede: true
+  langcode: true
+  path: true
+  promote: true
+  status: true
+  sticky: true
+  title: true
+  uid: true

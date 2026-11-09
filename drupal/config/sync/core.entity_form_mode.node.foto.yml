@@ -1,0 +1,11 @@
+uuid: ec54542b-ea94-4f73-ae72-7d1cfc084e2a
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.foto
+label: 'Foto del programa'
+description: null
+targetEntityType: node
+cache: true

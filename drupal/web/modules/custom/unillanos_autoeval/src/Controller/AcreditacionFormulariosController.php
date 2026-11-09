@@ -40,6 +40,25 @@ final class AcreditacionFormulariosController extends ControllerBase {
   }
 
   /**
+   * Formulario de la foto de cabecera de un programa (solo la imagen).
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   El programa.
+   *
+   * @return array<string, mixed>
+   *   Render array con el formulario.
+   */
+  public function foto(NodeInterface $node): array {
+    if ($node->bundle() !== 'programa') {
+      throw new NotFoundHttpException();
+    }
+    return [
+      '#title' => $this->t('Foto: @programa', ['@programa' => $node->label()]),
+      'formulario' => $this->entityFormBuilder()->getForm($node, 'foto'),
+    ];
+  }
+
+  /**
    * Formulario simple para editar un documento.
    *
    * @param \Drupal\media\MediaInterface $media

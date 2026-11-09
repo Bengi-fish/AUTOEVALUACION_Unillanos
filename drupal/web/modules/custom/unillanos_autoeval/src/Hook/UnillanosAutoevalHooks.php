@@ -203,6 +203,10 @@ class UnillanosAutoevalHooks {
       return;
     }
     $this->enPanelLateral($form, $form_state, $form_id);
+    if ($form_id === 'node_programa_foto_form') {
+      $this->ayudasDeLaFoto($form, $form_state);
+      return;
+    }
     $ayudas = match ($form_id) {
       'node_programa_acreditacion_form' => $this->ayudasDeLaFicha(),
       'media_documento_acreditacion_form' => $this->ayudasDelDocumento(),
@@ -296,8 +300,14 @@ class UnillanosAutoevalHooks {
     // Al enviar el formulario, Drupal repite `_wrapper_format` en la URL (el
     // del panel y el de AJAX) y PHP se queda con el último: se mira la URL
     // completa de la petición.
-    if (!str_contains($solicitud->getRequestUri(), '_wrapper_format=drupal_dialog.off_canvas')) {
-      return;
+    // Una subida de archivo por AJAX reconstruye el formulario con otra URL
+    // (sin el formato del panel): la primera detección se recuerda en el
+    // estado del formulario, que se conserva entre esas reconstrucciones.
+    if (!$form_state->get('ua_en_panel')) {
+      if (!str_contains($solicitud->getRequestUri(), '_wrapper_format=drupal_dialog.off_canvas')) {
+        return;
+      }
+      $form_state->set('ua_en_panel', TRUE);
     }
     $this->eliminarEnPanel($form, $form_state, $form_id);
     if (!isset($form['actions']['submit']) || ($form['actions']['submit']['#type'] ?? '') !== 'submit') {
@@ -310,6 +320,64 @@ class UnillanosAutoevalHooks {
       'wrapper' => 'ua-panel-formulario',
       'progress' => ['type' => 'throbber'],
     ];
+  }
+
+  /**
+   * Ayudas del formulario «Cambiar foto» (solo el campo de la foto).
+   *
+   * @param array<mixed> $form
+   *   El formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   */
+  protected function ayudasDeLaFoto(array &$form, FormStateInterface $form_state): void {
+    if (!isset($form['field_imagen']['widget'][0])) {
+      return;
+    }
+    $elemento = &$form['field_imagen']['widget'][0];
+    $elemento['#process'][] = [self::class, 'procesarAyudaDeLaFoto'];
+    $limites = [];
+    $objeto = $form_state->getFormObject();
+    $entidad = $objeto instanceof EntityFormInterface ? $objeto->getEntity() : NULL;
+    if ($entidad instanceof FieldableEntityInterface) {
+      $limites = $entidad->getFieldDefinition('field_imagen')?->getSettings() ?? [];
+    }
+    $minimo = (int) explode('x', (string) ($limites['min_resolution'] ?? ''))[0];
+    $partes = [
+      $this->t('Usa solo fotos de la Universidad o con permiso de uso.'),
+      $this->t('Formatos JPG, PNG o WebP.'),
+      $this->t('Peso máximo: @peso.', ['@peso' => $limites['max_filesize'] ?? '5 MB']),
+    ];
+    if ($minimo > 0) {
+      $partes[] = $this->t('Ancho mínimo: @ancho píxeles.', ['@ancho' => $minimo]);
+    }
+    $elemento['#description'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'p',
+      '#value' => implode(' ', array_map('strval', $partes)),
+    ];
+    // «Eliminar» borraría el programa entero: aquí solo se cambia la foto.
+    $form['actions']['delete']['#access'] = FALSE;
+    // La foto no necesita notas de revisión.
+    $form['revision_information']['#access'] = FALSE;
+    $form['revision_log']['#access'] = FALSE;
+  }
+
+  /**
+   * Pone la ayuda del texto alternativo de la foto.
+   *
+   * @param array<mixed> $elemento
+   *   El elemento de imagen.
+   *
+   * @return array<mixed>
+   *   El elemento con la ayuda del texto alternativo.
+   */
+  public static function procesarAyudaDeLaFoto(array $elemento): array {
+    if (isset($elemento['alt'])) {
+      $elemento['alt']['#title'] = t('Descripción de la foto');
+      $elemento['alt']['#description'] = t('Describe lo que se ve en la foto, por ejemplo: estudiantes en el laboratorio de electrónica.');
+    }
+    return $elemento;
   }
 
   /**
@@ -731,6 +799,8 @@ class UnillanosAutoevalHooks {
     // normal, solo cambia la pantalla de campos (core.entity_form_display.*).
     if (isset($entity_types['node'])) {
       $entity_types['node']->setFormClass('acreditacion', NodeForm::class);
+      // «Cambiar foto»: mismo formulario, solo con el campo de la foto.
+      $entity_types['node']->setFormClass('foto', NodeForm::class);
     }
     if (isset($entity_types['media'])) {
       $entity_types['media']->setFormClass('acreditacion', MediaForm::class);

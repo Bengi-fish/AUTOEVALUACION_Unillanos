@@ -300,8 +300,9 @@ class ModoEdicionTest extends UnillanosKernelTestBase {
     foreach ($resultado['plan']['filas'] as $fila) {
       $enlaces = array_merge($enlaces, $fila['edicion'] ?? []);
     }
-    // Ficha, plan, documento, valoración editable, valoración nueva y meta.
-    $this->assertCount(6, $enlaces);
+    // Ficha, foto, plan, documento, valoración editable, valoración nueva y
+    // meta (la foto se agregó en el paso 14).
+    $this->assertCount(7, $enlaces);
     foreach ($enlaces as $enlace) {
       $this->assertStringStartsWith('/', $enlace['url']);
       $this->assertStringContainsString('destination=', $enlace['url']);
@@ -412,8 +413,9 @@ class ModoEdicionTest extends UnillanosKernelTestBase {
     $panel = '/admin/acreditacion/programa/1/ficha?destination=/programas&_wrapper_format=drupal_dialog.off_canvas'
       . '&ajax_form=1&_wrapper_format=drupal_ajax';
     $formulario = fn(): array => ['actions' => ['submit' => ['#type' => 'submit', '#value' => 'Guardar']]];
-    $estado = new FormState();
-    $alterar = function (string $uri, array $form) use ($gancho, $estado): array {
+    // Cada formulario tiene su propio estado: el panel se recuerda en él.
+    $alterar = function (string $uri, array $form) use ($gancho): array {
+      $estado = new FormState();
       $this->container->get('request_stack')->push(Request::create($uri, 'POST'));
       $gancho->formAlter($form, $estado, 'node_valoracion_form');
       $this->container->get('request_stack')->pop();

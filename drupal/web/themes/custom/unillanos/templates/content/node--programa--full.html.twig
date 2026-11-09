@@ -30,6 +30,7 @@
     etiquetas: programa.etiquetas,
     variant: 'hero',
     image: programa.imagen,
+    photo_edit: edicion.foto|default(null),
   } only %}
     {% block meta %}
       {% for etiqueta in etiquetas %}

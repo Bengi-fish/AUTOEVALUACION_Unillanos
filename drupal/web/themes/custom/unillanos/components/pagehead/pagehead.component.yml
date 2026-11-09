@@ -21,6 +21,12 @@ props:
         - 'null'
       title: Foto de la variante hero
       description: 'Claves src, srcset, type, width, height y alt (ver unillanos:media). Sin ella, la cabecera es de color sólido con formas decorativas.'
+    photo_edit:
+      type:
+        - object
+        - 'null'
+      title: Botón «Cambiar foto»
+      description: 'Claves url, title y tipo (ver unillanos:edit-link). Solo en el modo edición y con permiso; se imprime sobre la cabecera hero.'
     eyebrow:
       type: string
       title: Antetítulo

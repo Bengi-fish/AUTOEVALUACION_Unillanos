@@ -261,7 +261,13 @@ class UnillanosHooks {
       $variables['factores'] = $resultado['factores'];
       $variables['plan'] = $resultado['plan'];
       // Modo edición: lápices y «+» (solo con permiso y acceso real).
-      $enriquecido = $this->edicion->paraPrograma((int) $nodo->id(), (string) $nodo->label(), $variables['factores'], $variables['plan']);
+      $enriquecido = $this->edicion->paraPrograma(
+        (int) $nodo->id(),
+        (string) $nodo->label(),
+        $variables['factores'],
+        $variables['plan'],
+        $nodo->hasField('field_imagen') && !$nodo->get('field_imagen')->isEmpty(),
+      );
       $variables['factores'] = $enriquecido['factores'];
       $variables['plan'] = $enriquecido['plan'];
       $variables['edicion'] = $enriquecido['edicion'];
