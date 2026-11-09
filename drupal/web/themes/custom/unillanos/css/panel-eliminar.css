@@ -1,0 +1,80 @@
+/**
+ * Panel lateral: confirmación de borrado y aviso de bloqueo.
+ *
+ * El panel se pinta con el tema de administración: estas reglas fijan colores
+ * con contraste AA (rojo oscuro con texto blanco) y objetivos de 44 px.
+ */
+
+body #drupal-off-canvas .ua-eliminar-confirmacion p {
+  color: #fff;
+}
+
+body #drupal-off-canvas .ua-eliminar-bloqueo p {
+  color: #1d1d1b;
+}
+
+.ua-eliminar-confirmacion p,
+.ua-eliminar-bloqueo p {
+  margin: 0 0 var(--espacio-3, 12px);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+body #drupal-off-canvas .ua-eliminar-bloqueo {
+  margin-top: var(--espacio-5, 24px);
+  padding: var(--espacio-4, 16px);
+  border: 2px solid #85030b;
+  border-radius: 8px;
+  background: #fff;
+  color: #1d1d1b;
+}
+
+body #drupal-off-canvas .ua-eliminar-bloqueo ul {
+  margin: 0;
+  padding-left: var(--espacio-5, 24px);
+}
+
+body #drupal-off-canvas .ua-eliminar-bloqueo a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #85030b;
+  font-weight: 600;
+}
+
+/* Botones del pie del formulario del panel: objetivos de 44 px. */
+body #drupal-off-canvas .form-actions input.button,
+body #drupal-off-canvas .form-actions a.button {
+  min-height: 44px;
+}
+
+/* Más específico que el tema de administración (que pinta el texto en rojo). */
+body #drupal-off-canvas form input.button.button--danger,
+body #drupal-off-canvas form a.button.button--danger {
+  min-height: 44px;
+  border-color: #85030b;
+  background-color: #85030b;
+  color: #fff;
+  font-weight: 600;
+}
+
+body #drupal-off-canvas form input.button.button--danger:hover,
+body #drupal-off-canvas form a.button.button--danger:hover {
+  background-color: #5f0208;
+  color: #fff;
+}
+
+/* «Cancelar»: blanco sobre el fondo oscuro del panel (contraste AA). */
+body #drupal-off-canvas .dialog-cancel,
+body #drupal-off-canvas a[data-ua-cerrar-panel] {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #fff;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}

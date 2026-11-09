@@ -34,8 +34,10 @@ use Drupal\unillanos_autoeval\Service\CalculadorGrado;
 use Drupal\unillanos_autoeval\Service\EnlacesEdicion;
 use Drupal\unillanos_autoeval\Service\EntidadesDependientes;
 use Drupal\unillanos_autoeval\Service\ModeloProceso;
+use Drupal\unillanos_autoeval\Service\PertenenciaDeContenido;
 use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
 use Drupal\unillanos_autoeval\Service\SugerenciaDestino;
+use Drupal\user\EntityOwnerInterface;
 
 /**
  * Hooks del módulo de autoevaluación.
@@ -79,6 +81,7 @@ class UnillanosAutoevalHooks {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected AccountInterface $usuarioActual,
     protected EntidadesDependientes $dependientes,
+    protected PertenenciaDeContenido $pertenencia,
     protected TimeInterface $tiempo,
     #[Autowire(service: 'logger.channel.unillanos_autoeval')]
     protected LoggerInterface $registro,
@@ -199,7 +202,7 @@ class UnillanosAutoevalHooks {
       $this->alPortadaTrasEntrar($form);
       return;
     }
-    $this->enPanelLateral($form);
+    $this->enPanelLateral($form, $form_state, $form_id);
     $ayudas = match ($form_id) {
       'node_programa_acreditacion_form' => $this->ayudasDeLaFicha(),
       'media_documento_acreditacion_form' => $this->ayudasDelDocumento(),
@@ -280,8 +283,12 @@ class UnillanosAutoevalHooks {
    *
    * @param array<mixed> $form
    *   El formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   * @param string $form_id
+   *   Identificador del formulario.
    */
-  protected function enPanelLateral(array &$form): void {
+  protected function enPanelLateral(array &$form, FormStateInterface $form_state, string $form_id): void {
     $solicitud = $this->requestStack->getCurrentRequest();
     if (!$solicitud || !$this->usuarioActual->hasPermission(EnlacesEdicion::PERMISO)) {
       return;
@@ -292,6 +299,7 @@ class UnillanosAutoevalHooks {
     if (!str_contains($solicitud->getRequestUri(), '_wrapper_format=drupal_dialog.off_canvas')) {
       return;
     }
+    $this->eliminarEnPanel($form, $form_state, $form_id);
     if (!isset($form['actions']['submit']) || ($form['actions']['submit']['#type'] ?? '') !== 'submit') {
       return;
     }
@@ -302,6 +310,170 @@ class UnillanosAutoevalHooks {
       'wrapper' => 'ua-panel-formulario',
       'progress' => ['type' => 'throbber'],
     ];
+  }
+
+  /**
+   * Prepara el borrado dentro del panel lateral.
+   *
+   * En el formulario de edición, el enlace «Eliminar» (que core muestra solo
+   * con acceso real de borrado) se abre en el mismo panel; si el borrado está
+   * bloqueado por dependientes, en su lugar se lista lo que cuelga de él. En la
+   * confirmación, se explica qué se elimina y a qué pertenece, se avisa que no
+   * se puede deshacer y se pone «Sí, eliminar» / «Cancelar».
+   *
+   * @param array<mixed> $form
+   *   El formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   * @param string $form_id
+   *   Identificador del formulario.
+   */
+  protected function eliminarEnPanel(array &$form, FormStateInterface $form_state, string $form_id): void {
+    // Un estado sin objeto de formulario (armado a mano) no aplica.
+    $objeto = $form_state->getBuildInfo()['callback_object'] ?? NULL;
+    $entidad = $objeto instanceof EntityFormInterface ? $objeto->getEntity() : NULL;
+    if (!$entidad instanceof EntityInterface || $entidad->isNew() || !$this->dependientes->enAlcance($entidad)) {
+      return;
+    }
+    $solicitud = $this->requestStack->getCurrentRequest();
+    $form['#attached']['library'][] = 'unillanos/panel_eliminar';
+    if (preg_match('/_delete_form$/', $form_id)) {
+      $this->confirmarEliminar($form, $form_state, $entidad);
+      return;
+    }
+    if (isset($form['actions']['delete']) && ($form['actions']['delete']['#type'] ?? '') === 'link'
+      && !empty($form['actions']['delete']['#access'])) {
+      // El enlace de núcleo abre un diálogo modal: aquí se abre en el panel.
+      $form['actions']['delete']['#title'] = $this->t('Eliminar');
+      $form['actions']['delete']['#attributes']['data-dialog-type'] = 'dialog';
+      $form['actions']['delete']['#attributes']['data-dialog-renderer'] = 'off_canvas';
+      $form['actions']['delete']['#attributes']['data-dialog-options'] = '{"width":520}';
+      // Si lo que se borra es la página en la que está la persona, no se puede
+      // volver a ella: tras borrar se va al listado de programas.
+      $volver = $this->destinoTrasEliminar($entidad);
+      if ($volver !== NULL && $form['actions']['delete']['#url'] instanceof Url) {
+        $form['actions']['delete']['#url']->setOption('query', ['destination' => $volver]);
+      }
+      return;
+    }
+    // Bloqueado por dependientes: se explica qué borrar primero. Solo a quien
+    // sería el autor y tiene el permiso de borrar lo propio (si no, el botón
+    // no tiene sentido para esa persona).
+    if (!$entidad->access('delete') && $this->usuarioActual->hasPermission($this->permisoDeBorrarLoPropio($entidad))
+      && $entidad instanceof EntityOwnerInterface
+      && (string) $entidad->getOwnerId() === (string) $this->usuarioActual->id()
+      && $this->dependientes->tieneDependientes($entidad)) {
+      $lista = [];
+      $todos = $this->dependientes->dependientes($entidad, 11);
+      foreach (array_slice($todos, 0, 10) as $dato) {
+        $dependiente = $dato['entidad'];
+        $retorno = ['query' => ['destination' => $solicitud?->query->get('destination') ?? '/']];
+        $enlace = $dependiente->access('update') ? $dependiente->toUrl('edit-form', $retorno) : NULL;
+        $texto = $this->pertenencia->tipo($dependiente) . ': ' . trim((string) $dependiente->label());
+        $atributos = [
+          'class' => ['use-ajax'],
+          'data-dialog-type' => 'dialog',
+          'data-dialog-renderer' => 'off_canvas',
+          'data-dialog-options' => '{"width":520}',
+        ];
+        $lista[] = $enlace
+          ? ['#type' => 'link', '#title' => $texto, '#url' => $enlace, '#attributes' => $atributos]
+          : ['#plain_text' => $texto];
+      }
+      $form['ua_bloqueo'] = [
+        '#type' => 'container',
+        '#weight' => 1000,
+        '#attributes' => ['class' => ['ua-eliminar-bloqueo'], 'role' => 'note'],
+        'aviso' => ['#markup' => '<p><strong>' . $this->t('Todavía no se puede eliminar.') . '</strong> ' . $this->t('Hay contenido que depende de este. Elimina primero:') . '</p>'],
+        'lista' => ['#theme' => 'item_list', '#items' => $lista],
+      ];
+      if (count($todos) > 10) {
+        $form['ua_bloqueo']['mas'] = ['#markup' => '<p>' . $this->t('y más contenido que depende de este.') . '</p>'];
+      }
+    }
+  }
+
+  /**
+   * Destino tras eliminar, si el contenido era la página en la que se estaba.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entidad
+   *   Lo que se va a eliminar.
+   *
+   * @return string|null
+   *   La ruta del listado de programas si el `destination` de la petición es la
+   *   propia página del contenido; NULL en cualquier otro caso (se vuelve a la
+   *   página de origen).
+   */
+  protected function destinoTrasEliminar(EntityInterface $entidad): ?string {
+    $destino = $this->requestStack->getCurrentRequest()?->query->get('destination');
+    if (!is_string($destino) || $destino === '' || !$entidad->hasLinkTemplate('canonical')) {
+      return NULL;
+    }
+    $ruta = '/' . ltrim((string) parse_url($destino, PHP_URL_PATH), '/');
+    $propias = ['/node/' . $entidad->id(), $entidad->toUrl('canonical')->toString()];
+    return in_array($ruta, $propias, TRUE) ? Url::fromRoute('unillanos_autoeval.programas')->toString() : NULL;
+  }
+
+  /**
+   * Permiso de borrar lo propio para el tipo de una entidad.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entidad
+   *   La entidad.
+   *
+   * @return string
+   *   Por ejemplo «delete own meta content» o «delete own documento media».
+   */
+  protected function permisoDeBorrarLoPropio(EntityInterface $entidad): string {
+    return 'delete own ' . $entidad->bundle() . ($entidad->getEntityTypeId() === 'media' ? ' media' : ' content');
+  }
+
+  /**
+   * Personaliza la confirmación de borrado dentro del panel.
+   *
+   * @param array<mixed> $form
+   *   El formulario de confirmación.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   * @param \Drupal\Core\Entity\EntityInterface $entidad
+   *   Lo que se va a eliminar.
+   */
+  protected function confirmarEliminar(array &$form, FormStateInterface $form_state, EntityInterface $entidad): void {
+    $datos = $this->pertenencia->describir($entidad);
+    // «el hallazgo» / «la valoración»: el género de cada tipo.
+    $articulo = in_array($entidad->bundle(), ['valoracion', 'meta'], TRUE) ? 'la' : 'el';
+    $que = $this->t('Vas a eliminar @articulo @tipo «@titulo».', [
+      '@articulo' => $articulo,
+      '@tipo' => mb_strtolower($datos['tipo']),
+      '@titulo' => $datos['titulo'],
+    ]);
+    // El título del panel de núcleo es largo y técnico: se reemplaza.
+    $form['#title'] = $this->t('Eliminar @tipo', ['@tipo' => mb_strtolower($datos['tipo'])]);
+    $partes = [['#markup' => '<p>' . $que . '</p>']];
+    if ($datos['programa'] !== '' || $datos['proceso'] !== '') {
+      $con_proceso = $datos['proceso'] !== ''
+        ? $this->t(', proceso «@proceso»', ['@proceso' => $datos['proceso']])
+        : '';
+      $de_programa = ['@programa' => $datos['programa'], '@proceso' => $con_proceso];
+      $pertenece = $datos['programa'] !== ''
+        ? $this->t('Pertenece al programa «@programa»@proceso.', $de_programa)
+        : $this->t('Pertenece al proceso «@proceso».', ['@proceso' => $datos['proceso']]);
+      $partes[] = ['#markup' => '<p>' . $pertenece . '</p>'];
+    }
+    $partes[] = ['#markup' => '<p><strong>' . $this->t('Esta acción no se puede deshacer.') . '</strong></p>'];
+    $form['description'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['ua-eliminar-confirmacion']],
+    ] + $partes;
+    if (isset($form['actions']['submit'])) {
+      $form['actions']['submit']['#value'] = $this->t('Sí, eliminar');
+      $form['actions']['submit']['#button_type'] = 'danger';
+      $form['actions']['submit']['#attributes']['class'][] = 'button--danger';
+    }
+    if (isset($form['actions']['cancel'])) {
+      $form['actions']['cancel']['#title'] = $this->t('Cancelar');
+      // Dentro del panel, «Cancelar» solo cierra el panel (lo hace edicion.js).
+      $form['actions']['cancel']['#attributes']['data-ua-cerrar-panel'] = 'true';
+    }
   }
 
   /**

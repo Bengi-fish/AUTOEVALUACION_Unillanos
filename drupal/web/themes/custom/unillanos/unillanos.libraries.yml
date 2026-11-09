@@ -26,6 +26,11 @@ edicion:
     - core/once
     - core/drupal.dialog.ajax
     - core/drupal.dialog.off_canvas
+panel_eliminar:
+  version: 1.0.0
+  css:
+    component:
+      css/panel-eliminar.css: {}
 motion:
   version: 1.0.0
   js:
