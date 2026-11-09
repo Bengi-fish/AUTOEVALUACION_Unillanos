@@ -32,6 +32,19 @@
     boton.setAttribute('aria-pressed', activo ? 'true' : 'false');
   };
 
+  // Panel lateral: tras guardar con errores, el foco pasa al mensaje para que
+  // se anuncie y quede a la vista (el formulario se vuelve a pintar entero).
+  Drupal.behaviors.uaPanelErrores = {
+    attach(context) {
+      once('ua-panel-error', '#drupal-off-canvas [role="alert"]', context).forEach((mensaje) => {
+        mensaje.setAttribute('tabindex', '-1');
+        // Drupal devuelve el foco al botón que envió el formulario justo
+        // después de pintar la respuesta: el mensaje lo toma un instante después.
+        window.setTimeout(() => mensaje.focus(), 100);
+      });
+    },
+  };
+
   Drupal.behaviors.uaEdicion = {
     attach(context) {
       once('ua-edicion', '[data-ua-edicion-toggle]', context).forEach((boton) => {

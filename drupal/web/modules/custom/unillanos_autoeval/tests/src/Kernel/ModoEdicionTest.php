@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\unillanos_autoeval\Kernel;
 
 use Drupal\Component\Serialization\Yaml;
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AnonymousUserSession;
@@ -383,6 +384,101 @@ class ModoEdicionTest extends UnillanosKernelTestBase {
   }
 
   /**
+   * Los enlaces abren su pantalla en el panel lateral y siguen siendo enlaces.
+   */
+  public function testElEnlaceAbreElPanelConservandoSuHref(): void {
+    $html = $this->renderizar('unillanos:edit-link', [
+      'url' => '/node/5/edit?destination=/programas/x',
+      'label' => 'Editar la valoración',
+    ]);
+    $this->assertStringContainsString('class="ua-edit ua-edit--lapiz use-ajax"', $html);
+    $this->assertStringContainsString('data-dialog-type="dialog"', $html);
+    $this->assertStringContainsString('data-dialog-renderer="off_canvas"', $html);
+    $this->assertStringContainsString('data-dialog-options="{&quot;width&quot;:520}"', $html);
+    // Sin JavaScript sigue funcionando como un enlace normal.
+    $this->assertStringContainsString('href="/node/5/edit?destination=/programas/x"', $html);
+    // La biblioteca del modo edición trae las herramientas de diálogo de core.
+    $tema = $this->container->get('extension.list.theme')->getPath('unillanos');
+    $bibliotecas = Yaml::decode((string) file_get_contents(DRUPAL_ROOT . '/' . $tema . '/unillanos.libraries.yml'));
+    $this->assertContains('core/drupal.dialog.ajax', $bibliotecas['edicion']['dependencies']);
+    $this->assertContains('core/drupal.dialog.off_canvas', $bibliotecas['edicion']['dependencies']);
+  }
+
+  /**
+   * Guardar se envía por AJAX solo en el panel y solo con permiso.
+   */
+  public function testGuardarEnElPanelActuaSoloEnElPanel(): void {
+    $gancho = $this->container->get(UnillanosAutoevalHooks::class);
+    $panel = '/admin/acreditacion/programa/1/ficha?destination=/programas&_wrapper_format=drupal_dialog.off_canvas'
+      . '&ajax_form=1&_wrapper_format=drupal_ajax';
+    $formulario = fn(): array => ['actions' => ['submit' => ['#type' => 'submit', '#value' => 'Guardar']]];
+    $estado = new FormState();
+    $alterar = function (string $uri, array $form) use ($gancho, $estado): array {
+      $this->container->get('request_stack')->push(Request::create($uri, 'POST'));
+      $gancho->formAlter($form, $estado, 'node_valoracion_form');
+      $this->container->get('request_stack')->pop();
+      return $form;
+    };
+    $this->setCurrentUser($this->usuarioAcreditacion());
+    $con = $alterar($panel, $formulario());
+    $this->assertSame(UnillanosAutoevalHooks::class . '::devolverFormularioAlPanel', $con['actions']['submit']['#ajax']['callback']);
+    $this->assertSame('ua-panel-formulario', $con['actions']['submit']['#ajax']['wrapper']);
+    $this->assertStringContainsString('<div id="ua-panel-formulario">', $con['#prefix']);
+    $this->assertSame('</div>', $con['#suffix']);
+    // En la pantalla completa (sin panel) el formulario no cambia.
+    $this->assertSame($formulario(), $alterar('/admin/acreditacion/programa/1/ficha?destination=/programas', $formulario()));
+    // Un formulario sin botón de guardar tampoco cambia.
+    $this->assertSame(['actions' => []], $alterar($panel, ['actions' => []]));
+    // Sin el permiso del modo edición, ni siquiera en una petición del panel.
+    $this->setCurrentUser($this->usuario(['authenticated']));
+    $this->assertSame($formulario(), $alterar($panel, $formulario()));
+    $this->setCurrentUser(new AnonymousUserSession());
+    $this->assertSame($formulario(), $alterar($panel, $formulario()));
+  }
+
+  /**
+   * Sin errores recarga la página; con errores, vuelve a pintar el panel.
+   */
+  public function testElPanelRecargaSinErroresMuestraConErrores(): void {
+    $gancho = $this->container->get(UnillanosAutoevalHooks::class);
+    $this->setCurrentUser($this->usuarioAcreditacion());
+    $guardar = function (string $destino, bool $con_errores) use ($gancho): mixed {
+      $uri = '/admin/acreditacion/programa/1/ficha?destination=' . rawurlencode($destino);
+      $this->container->get('request_stack')->push(Request::create($uri, 'POST', [], [], [], [], NULL));
+      $this->container->get('request_stack')->getCurrentRequest()->query->set('destination', $destino);
+      $form = ['#id' => 'f'];
+      $estado = new FormState();
+      if ($con_errores) {
+        $estado->setErrorByName('title', 'El campo Título es obligatorio.');
+      }
+      else {
+        // El indicador de errores es global (estático): se limpia entre casos.
+        $estado->clearErrors();
+      }
+      $resultado = $gancho->devolverFormularioAlPanel($form, $estado);
+      $this->container->get('request_stack')->pop();
+      return $resultado;
+    };
+    // Con errores: el formulario, con los mensajes al principio.
+    $con_errores = $guardar('/programas', TRUE);
+    $this->assertIsArray($con_errores);
+    $this->assertSame('status_messages', $con_errores['mensajes_del_panel']['#type']);
+    // Sin errores: cierra el panel y redirige a la página de origen.
+    $respuesta = $guardar('/programas/ingenieria-electronica?x=1', FALSE);
+    $this->assertInstanceOf(AjaxResponse::class, $respuesta);
+    $ordenes = $respuesta->getCommands();
+    $this->assertSame('closeDialog', $ordenes[0]['command']);
+    $this->assertSame('#drupal-off-canvas', $ordenes[0]['selector']);
+    $this->assertSame('redirect', $ordenes[1]['command']);
+    $this->assertSame('/programas/ingenieria-electronica?x=1', $ordenes[1]['url']);
+    // Un destino externo o raro no se sigue: se vuelve a la portada.
+    foreach (['//otro.sitio/x', 'https://otro.sitio/x', 'javascript:alert(1)', '', '/\\otro.sitio', '/\\/otro.sitio'] as $malo) {
+      $ordenes = $guardar($malo, FALSE)->getCommands();
+      $this->assertSame(Url::fromRoute('<front>')->toString(), $ordenes[1]['url'], $malo);
+    }
+  }
+
+  /**
    * Renderiza un componente y devuelve su HTML.
    *
    * @param string $componente
@@ -401,7 +497,7 @@ class ModoEdicionTest extends UnillanosKernelTestBase {
   public function testComponentesDelModoEdicion(): void {
     $construir = fn(array $props): string => $this->renderizar('unillanos:edit-link', $props);
     $lapiz = $construir(['url' => '/node/5/edit?destination=/programas/x', 'label' => 'Editar el factor 3: Egresados']);
-    $this->assertMatchesRegularExpression('~<a data-component-id="unillanos:edit-link" class="ua-edit ua-edit--lapiz" href="/node/5/edit\\?destination=/programas/x" data-ua-edit>~', $lapiz);
+    $this->assertMatchesRegularExpression('~<a data-component-id="unillanos:edit-link" class="ua-edit ua-edit--lapiz use-ajax" href="/node/5/edit\\?destination=/programas/x" data-ua-edit~', $lapiz);
     $this->assertStringContainsString('<span class="ua-sr">Editar el factor 3: Egresados</span>', $lapiz);
     $this->assertStringContainsString('aria-hidden="true"', $lapiz);
     $mas = $construir([

@@ -3,8 +3,12 @@
 namespace Drupal\unillanos_autoeval\Hook;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\CloseDialogCommand;
+use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
@@ -187,6 +191,7 @@ class UnillanosAutoevalHooks {
       $this->alPortadaTrasEntrar($form);
       return;
     }
+    $this->enPanelLateral($form);
     $ayudas = match ($form_id) {
       'node_programa_acreditacion_form' => $this->ayudasDeLaFicha(),
       'media_documento_acreditacion_form' => $this->ayudasDelDocumento(),
@@ -203,6 +208,81 @@ class UnillanosAutoevalHooks {
     if (isset($form['actions']['submit'])) {
       $form['actions']['submit']['#submit'][] = [self::class, 'volverAlPanel'];
     }
+  }
+
+  /**
+   * Hace que un formulario abierto en el panel lateral se guarde sin recargar.
+   *
+   * Los lápices del modo edición abren la pantalla de edición en el panel
+   * lateral (off-canvas). Para que guardar no saque a la persona del panel, el
+   * botón principal se envía por AJAX: con errores, se vuelve a mostrar el
+   * formulario con sus mensajes dentro del panel; sin errores, Drupal
+   * redirige a la página de origen (`?destination=`), que se recarga con el
+   * cambio. Solo actúa para quien tiene el permiso del modo edición y solo en
+   * una petición del panel lateral; fuera de él, ningún formulario cambia.
+   *
+   * @param array<mixed> $form
+   *   El formulario.
+   */
+  protected function enPanelLateral(array &$form): void {
+    $solicitud = $this->requestStack->getCurrentRequest();
+    if (!$solicitud || !$this->usuarioActual->hasPermission(EnlacesEdicion::PERMISO)) {
+      return;
+    }
+    // Al enviar el formulario, Drupal repite `_wrapper_format` en la URL (el
+    // del panel y el de AJAX) y PHP se queda con el último: se mira la URL
+    // completa de la petición.
+    if (!str_contains($solicitud->getRequestUri(), '_wrapper_format=drupal_dialog.off_canvas')) {
+      return;
+    }
+    if (!isset($form['actions']['submit']) || ($form['actions']['submit']['#type'] ?? '') !== 'submit') {
+      return;
+    }
+    $form['#prefix'] = '<div id="ua-panel-formulario">' . ($form['#prefix'] ?? '');
+    $form['#suffix'] = ($form['#suffix'] ?? '') . '</div>';
+    $form['actions']['submit']['#ajax'] = [
+      'callback' => self::class . '::devolverFormularioAlPanel',
+      'wrapper' => 'ua-panel-formulario',
+      'progress' => ['type' => 'throbber'],
+    ];
+  }
+
+  /**
+   * Cierra el panel y recarga la página, o devuelve el formulario con errores.
+   *
+   * Sin errores, el panel se cierra y se redirige a la página de origen
+   * (`?destination=`, solo rutas internas; si no hay, a la portada): como es
+   * la misma página, se recarga y muestra el cambio y el mensaje de Drupal.
+   * Con errores, se vuelve a pintar el formulario con sus mensajes dentro del
+   * panel.
+   *
+   * @param array<mixed> $form
+   *   Formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   *
+   * @return array<mixed>|\Drupal\Core\Ajax\AjaxResponse
+   *   Las órdenes de AJAX, o el formulario con los mensajes al principio.
+   */
+  public function devolverFormularioAlPanel(array &$form, FormStateInterface $form_state): array|AjaxResponse {
+    if ($form_state->hasAnyErrors()) {
+      $form['mensajes_del_panel'] = ['#type' => 'status_messages', '#weight' => -1000];
+      return $form;
+    }
+    $destino = $this->requestStack->getCurrentRequest()?->query->get('destination');
+    $url = Url::fromRoute('<front>');
+    if (is_string($destino) && str_starts_with($destino, '/') && !str_starts_with($destino, '//') && !UrlHelper::isExternal($destino)) {
+      try {
+        $url = Url::fromUserInput($destino);
+      }
+      catch (\InvalidArgumentException) {
+        // Un destino que Drupal no puede construir: se vuelve a la portada.
+      }
+    }
+    $respuesta = new AjaxResponse();
+    $respuesta->addCommand(new CloseDialogCommand('#drupal-off-canvas'));
+    $respuesta->addCommand(new RedirectCommand($url->toString()));
+    return $respuesta;
   }
 
   /**

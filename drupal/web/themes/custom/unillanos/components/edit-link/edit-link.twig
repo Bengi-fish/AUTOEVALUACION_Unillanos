@@ -6,12 +6,17 @@
  * Mismo filtro de URL que unillanos:button: sin destino seguro no imprime
  * nada. El nombre accesible va en un texto (visible solo con show_label); el
  * dibujo es decorativo. Se oculta por CSS hasta activar el modo edición.
+ *
+ * Con JavaScript, el enlace abre su pantalla en el panel lateral de Drupal
+ * (off-canvas, herramientas de diálogo de core: class use-ajax y los
+ * data-dialog-*). Sin JavaScript sigue siendo un enlace normal a la pantalla,
+ * que vuelve a la página al guardar (?destination=).
  */
 #}
 {% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
 {% if url and label and ((url ~ '') matches seguro) %}
   {% set mas = variant == 'mas' %}
-  <a{{ attributes.addClass(['ua-edit', mas ? 'ua-edit--mas' : 'ua-edit--lapiz', show_label ? 'ua-edit--texto' : '']).setAttribute('href', url).setAttribute('data-ua-edit', true) }}>
+  <a{{ attributes.addClass(['ua-edit', mas ? 'ua-edit--mas' : 'ua-edit--lapiz', show_label ? 'ua-edit--texto' : '', 'use-ajax']).setAttribute('href', url).setAttribute('data-ua-edit', true).setAttribute('data-dialog-type', 'dialog').setAttribute('data-dialog-renderer', 'off_canvas').setAttribute('data-dialog-options', '{"width":520}') }}>
     {%- include 'unillanos:icon' with {name: mas ? 'plus' : 'pencil', size: 'sm'} only -%}
     <span{% if not show_label %} class="ua-sr"{% endif %}>{{ label }}</span>
   </a>
