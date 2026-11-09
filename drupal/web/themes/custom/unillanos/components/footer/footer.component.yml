@@ -2,93 +2,158 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Pie de página
 status: stable
 group: Página base
-description: 'Pie de página oscuro: fila de entidades, bloque de la institución (logos, nombre, descripción), columnas de enlaces o de texto, contacto y aviso legal. Lo vacío se omite; los textos y enlaces los define quien lo usa.'
+description: 'Pie de página oscuro con la estructura del sitio de Acreditación: cuatro columnas (Ubícanos, Contacto, Líneas de atención con las redes, Políticas), los enlaces del menú del pie, la fila de logos y la línea de derechos con el NIT. Lo vacío se omite; los textos y enlaces los define quien lo usa. Un destino que no es seguro se imprime sin enlace (mismo filtro que unillanos:button).'
 props:
   type: object
   properties:
-    institution:
-      type: string
-      title: Institución
-      description: 'Por defecto «Universidad de los Llanos».'
-    institution_note:
-      type: string
-      title: Nota de la institución
-      description: 'Por ejemplo las sedes. Por defecto «Sedes Villavicencio y Granada · Meta, Colombia».'
-    title:
-      type: string
-      title: Nombre del sistema
-    description:
-      type: string
-      title: Descripción
-    entities:
-      type: array
-      title: Entidades
-      description: 'Fila de botones de contorno sobre las columnas (MinEducación, MinTIC…).'
-      items:
-        type: object
-        required:
-          - title
-        properties:
-          title:
-            type: string
-          url:
-            type: string
-          externo:
-            type: boolean
-    columns:
-      type: array
-      title: Columnas de enlaces o de texto
-      description: 'Un elemento sin url se imprime como texto (sedes, contacto).'
-      items:
-        type: object
-        required:
-          - title
-          - links
-        properties:
-          title:
-            type: string
-          links:
-            type: array
-            items:
-              type: object
-              required:
-                - title
-              properties:
-                title:
-                  type: string
-                url:
-                  type: string
-    contact_title:
-      type: string
-      title: Título de la columna de contacto
-    contact:
-      type: array
-      title: Contacto
-      items:
-        type: object
-        required:
-          - icon
-          - lines
-        properties:
-          icon:
-            type: string
-          lines:
-            type: array
-            items:
+    ubicanos:
+      type:
+        - object
+        - 'null'
+      title: Ubícanos
+      description: 'title (grupo), sedes (title y text: nombre y dirección) y horario (title y text).'
+      properties:
+        title:
+          type: string
+        sedes:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              text:
+                type: string
+        horario:
+          type:
+            - object
+            - 'null'
+          properties:
+            title:
               type: string
-    legal:
+            text:
+              type: string
+    contacto:
+      type:
+        - object
+        - 'null'
+      title: Contacto
+      description: 'title (grupo) e items: title, text (valor), url (mailto:, https://…) e icon (nombre de unillanos:icon). Con url y sin text, el título es el enlace.'
+      properties:
+        title:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              text:
+                type: string
+              url:
+                type: string
+              icon:
+                type: string
+    lines:
+      type:
+        - object
+        - 'null'
+      title: Líneas de atención
+      description: 'Igual que contacto (tel:, https://wa.me/…).'
+      properties:
+        title:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              text:
+                type: string
+              url:
+                type: string
+              icon:
+                type: string
+    redes_title:
       type: string
-      title: Aviso legal
-    legal_links:
+      title: Título del grupo de redes
+    redes:
       type: array
-      title: Enlaces legales
-      description: 'Sin url se imprimen como texto.'
+      title: Redes sociales
+      description: 'Íconos de redes bajo las líneas de atención (ver unillanos:redes).'
       items:
         type: object
-        required:
-          - title
+        properties:
+          red:
+            type: string
+          title:
+            type: string
+          url:
+            type: string
+    politicas:
+      type:
+        - object
+        - 'null'
+      title: Políticas
+      description: 'title (grupo) y links (title, url, externo).'
+      properties:
+        title:
+          type: string
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              url:
+                type: string
+              externo:
+                type: boolean
+    explora_title:
+      type: string
+      title: Título de los enlaces del menú del pie
+      description: 'Por defecto «Explora».'
+    explora:
+      type: array
+      title: Enlaces del menú del pie
+      items:
+        type: object
         properties:
           title:
             type: string
           url:
             type: string
+    logos:
+      type: array
+      title: Fila de logos
+      description: 'Cada uno con clave (unillanos, mineducacion, colombia o govco: archivo del tema), title (nombre accesible) y url. Una clave desconocida o una url insegura se omite.'
+      items:
+        type: object
+        properties:
+          clave:
+            type: string
+          title:
+            type: string
+          url:
+            type: string
+    rights:
+      type:
+        - object
+        - 'null'
+      title: Línea de derechos
+      description: 'institucion, url, anios («1974 - 2026»; ya calculado), texto y nit.'
+      properties:
+        institucion:
+          type: string
+        url:
+          type: string
+        anios:
+          type: string
+        texto:
+          type: string
+        nit:
+          type: string

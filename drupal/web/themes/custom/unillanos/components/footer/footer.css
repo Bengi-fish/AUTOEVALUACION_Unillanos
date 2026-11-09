@@ -1,5 +1,6 @@
 /**
- * Componente footer.
+ * Componente footer: cuatro columnas en escritorio, dos en tableta y una en
+ * móvil; fila de logos y línea de derechos.
  */
 
 .ua-footer {
@@ -13,92 +14,11 @@
   padding: 0 var(--espacio-6);
 }
 
-.ua-footer__entidades {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--espacio-3);
-  padding: var(--espacio-6) 0 0;
-}
-
-.ua .ua-footer .ua-footer__entidad {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 var(--espacio-4);
-  border: 1px solid var(--borde-calido);
-  border-radius: var(--radio-sm);
-  color: var(--Surface);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.ua .ua-footer a.ua-footer__entidad:hover {
-  background: var(--Surface);
-  color: var(--carbon);
-}
-
 .ua-footer__top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--espacio-6) var(--espacio-5);
-  padding: var(--espacio-7) 0;
-}
-
-.ua-footer__top--c1 {
-  grid-template-columns: 1.4fr 1fr;
-}
-
-.ua-footer__top--c2 {
-  grid-template-columns: 1.4fr 1fr 1fr;
-}
-
-.ua-footer__top--c3 {
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
-}
-
-.ua-footer__top--c4 {
-  grid-template-columns: 1.4fr repeat(4, 1fr);
-}
-
-.ua-footer__logos {
-  display: inline-block;
-  max-width: 100%;
-  padding: var(--espacio-3) var(--espacio-4);
-  margin-bottom: var(--espacio-4);
-  background: var(--Surface);
-  border-radius: var(--radio-md);
-}
-
-.ua-footer__logos .ua-logos {
-  gap: var(--espacio-3);
-}
-
-.ua-footer__logos .ua-logos__img {
-  height: 56px;
-}
-
-.ua-footer__logos .ua-logos__img + .ua-logos__img {
-  padding-left: var(--espacio-3);
-}
-
-.ua-footer__inst {
-  margin-top: var(--espacio-4);
-  font-size: 14px;
-  line-height: 20px;
-}
-
-.ua-footer__inst strong {
-  display: block;
-  color: var(--Surface);
-}
-
-.ua-footer__name {
-  color: var(--Surface);
-  font-size: 18px;
-  line-height: 24px;
-  font-weight: 700;
-  margin-bottom: var(--espacio-3) !important;
+  padding: var(--espacio-7) 0 var(--espacio-6);
 }
 
 .ua .ua-footer h3 {
@@ -111,9 +31,41 @@
   margin-bottom: var(--espacio-4);
 }
 
+.ua .ua-footer h3.ua-footer__redes-titulo {
+  margin-top: var(--espacio-5);
+  margin-bottom: var(--espacio-2);
+}
+
+.ua-footer__datos {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.ua-footer__datos li {
+  display: flex;
+  gap: var(--espacio-3);
+  align-items: flex-start;
+}
+
+.ua-footer__datos .ua-icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--Surface);
+}
+
+.ua-footer__datos strong {
+  display: block;
+  color: var(--Surface);
+  font-weight: 600;
+}
+
+.ua-footer__valor {
+  display: block;
+}
+
 .ua-footer__links {
   display: grid;
-  gap: 10px;
+  gap: var(--espacio-1);
 }
 
 .ua .ua-footer a {
@@ -130,47 +82,132 @@
   box-shadow: 0 0 0 2px var(--foco-interior), 0 0 0 4px var(--foco-exterior);
 }
 
-.ua-footer__contact {
-  display: grid;
-  gap: var(--espacio-3);
+/* Objetivos táctiles de 44 px en los enlaces de las listas. */
+.ua .ua-footer__links a,
+.ua .ua-footer__datos a,
+.ua .ua-footer__explora a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
-.ua-footer__contact li {
+.ua-footer__col .ua-redes {
+  --fondo-redes: var(--carbon);
+  margin-left: calc(-1 * var(--espacio-3));
+}
+
+/* Enlaces del menú del pie: una fila bajo las columnas. */
+.ua-footer__explora {
   display: flex;
-  gap: var(--espacio-3);
-  align-items: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--espacio-5);
+  padding: var(--espacio-4) 0;
+  border-top: 1px solid rgba(255,255,255,.14);
 }
 
-.ua-footer__contact .ua-icon {
-  margin-top: 2px;
+.ua-footer__explora-titulo {
   color: var(--Surface);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.ua-footer__explora ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--espacio-5);
+}
+
+/* Fila de logos: se reparte y se acomoda sin desbordar. */
+.ua-footer__logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-5) var(--espacio-6);
+  padding: var(--espacio-6) 0;
+  border-top: 1px solid rgba(255,255,255,.14);
+}
+
+.ua .ua-footer__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.ua-footer__logo img {
+  display: block;
+  max-width: 100%;
+  height: 48px;
+  width: auto;
+}
+
+/* El logo de la Universidad trae su propio fondo; el de CO Colombia solo mide
+   50 × 45 px: se muestra a su tamaño natural, sin ampliarlo. */
+.ua-footer__logo--unillanos img {
+  height: 56px;
+}
+
+.ua-footer__logo--colombia img {
+  height: 45px;
+  width: 50px;
+}
+
+.ua-footer__logo--govco img {
+  height: 32px;
 }
 
 .ua-footer__bottom {
   border-top: 1px solid rgba(255,255,255,.14);
   padding: var(--espacio-5) 0;
-  display: flex;
-  justify-content: space-between;
-  gap: var(--espacio-4);
-  flex-wrap: wrap;
+  display: grid;
+  gap: var(--espacio-1);
+  justify-items: center;
+  text-align: center;
   font-size: 13px;
   line-height: 20px;
 }
 
-.ua-footer__legal-links {
+.ua-footer__bottom p {
+  margin: 0;
   display: flex;
-  gap: var(--espacio-5);
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  column-gap: .3em;
+}
+
+/* El enlace de la institución también es un objetivo de 44 px. */
+.ua .ua-footer__bottom a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 @media (max-width: 1080px) {
 
-  .ua-footer__top, .ua-footer__top--c1, .ua-footer__top--c2, .ua-footer__top--c3, .ua-footer__top--c4 {
-    grid-template-columns: 1fr 1fr;
+  .ua-footer__top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .ua-footer__brand {
-    grid-column: 1 / -1;
+}
+
+/* En 320 px el correo más largo no cabe junto al ícono: sin ícono y a 14 px
+   cabe entero (un correo no se parte). */
+@media (max-width: 400px) {
+
+  .ua-footer__datos .ua-icon {
+    display: none;
+  }
+
+  .ua-footer__valor {
+    font-size: 14px;
   }
 
 }
@@ -181,18 +218,18 @@
     padding: 0 var(--espacio-4);
   }
 
-  .ua-footer__logos {
-    padding: var(--espacio-2) var(--espacio-3);
-  }
-
-  .ua .ua-footer__logos .ua-logos__img {
-    height: 44px;
-  }
-
-  .ua-footer__top, .ua-footer__top--c1, .ua-footer__top--c2, .ua-footer__top--c3, .ua-footer__top--c4 {
-    grid-template-columns: 1fr;
+  .ua-footer__top {
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--espacio-6);
     padding-top: var(--espacio-6);
+  }
+
+  .ua-footer__logos {
+    justify-content: center;
+  }
+
+  .ua-footer__logo img {
+    max-width: 100%;
   }
 
 }

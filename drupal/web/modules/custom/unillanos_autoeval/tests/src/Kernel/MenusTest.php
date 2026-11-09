@@ -307,6 +307,7 @@ class MenusTest extends UnillanosKernelTestBase {
    * El pie se lee del menú: con varios, uno y ningún enlace.
    */
   public function testPieSegunLaCantidadDeEnlaces(): void {
+    $this->installConfig(['unillanos_autoeval']);
     $nucleo = $this->container->get('http_kernel');
     $html = (string) $nucleo->handle(Request::create('/programas'))->getContent();
     $this->assertStringContainsString('Explora', $html);
@@ -324,7 +325,7 @@ class MenusTest extends UnillanosKernelTestBase {
     $gestor->updateDefinition('unillanos_autoeval.pie.programas', ['enabled' => 0]);
     $html = (string) $nucleo->handle(Request::create('/programas'))->getContent();
     $this->assertStringNotContainsString('Explora', $html);
-    $this->assertStringNotContainsString('ua-footer__links', $html);
+    $this->assertStringNotContainsString('ua-footer__explora', $html);
     $this->assertStringContainsString('ua-footer__bottom', $html);
   }
 
@@ -436,7 +437,7 @@ class MenusTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * Sin datos de franja, entidades, sedes, contacto ni redes no se pinta nada.
+   * Sin datos no se pinta lo vacío; con lo de fábrica sale el pie completo.
    */
   public function testSinDatosNoSePintaLoVacio(): void {
     $this->installConfig(['unillanos_autoeval']);
@@ -447,30 +448,44 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->assertStringContainsString('ua-topbar__derecha', $con_marca);
     $this->assertStringNotContainsString('ua-topbar__list', $con_marca);
     $this->assertStringNotContainsString('ua-topbar__acceso', $con_marca);
-    // Sin GOV.CO ni redes tampoco hay franja.
+    // El pie de fábrica: cuatro grupos, fila de logos y derechos (expectativa
+    // cambiada a propósito: antes llevaba columnas de sedes y contacto vacías).
+    foreach (['Ubícanos', 'Contacto', 'Líneas de atención'] as $titulo) {
+      $this->assertStringContainsString('<h3>' . $titulo . '</h3>', $con_marca, $titulo);
+    }
+    $this->assertStringContainsString('<h3 class="ua-footer__redes-titulo">Redes</h3>', $con_marca);
+    $this->assertStringContainsString('Nit: 892.000.757-3', $con_marca);
+    // Sin GOV.CO ni redes tampoco hay franja; sin grupos, el pie no los pinta.
     $this->config('unillanos_autoeval.micrositio')
       ->set('url_govco', '')
       ->set('redes_sociales', ['facebook' => '', 'x' => '', 'instagram' => '', 'youtube' => ''])
+      ->set('pie', [
+        'ubicanos' => ['titulo' => '', 'sedes' => [], 'horario' => ['titulo' => '', 'texto' => '']],
+        'contacto' => ['titulo' => '', 'items' => []],
+        'lineas' => ['titulo' => '', 'items' => []],
+        'redes_titulo' => '',
+        'politicas' => ['titulo' => '', 'enlaces' => []],
+        'logos' => [],
+        'derechos' => ['institucion' => '', 'url' => '', 'desde' => 0, 'texto' => '', 'nit' => ''],
+      ])
       ->save();
     $html = $this->pagina('/programas');
     $this->assertStringNotContainsString('ua-topbar', $html);
-    $this->assertStringNotContainsString('ua-footer__entidades', $html);
-    foreach (['Sedes', 'Contáctanos', 'Síguenos'] as $titulo) {
-      $this->assertStringNotContainsString('<h3>' . $titulo . '</h3>', $html);
-    }
-    // Lo que sí hay por defecto: nombre en dos líneas, «Explora» y aviso legal.
+    $this->assertStringNotContainsString('ua-footer__top', $html);
+    $this->assertStringNotContainsString('ua-footer__logos', $html);
+    $this->assertStringNotContainsString('ua-footer__bottom', $html);
+    $this->assertStringNotContainsString('<h3>', substr($html, (int) strpos($html, '<footer')));
+    // Lo que sí hay: nombre en dos líneas y los enlaces del menú del pie.
     $this->assertStringContainsString('<span class="ua-brand__kicker">Sistema de</span><span class="ua-brand__name">Autoevaluación</span>', $html);
-    $this->assertStringContainsString('<h3>Explora</h3>', $html);
-    $this->assertStringContainsString('Institución de educación superior sujeta a inspección y vigilancia', $html);
-    // Un solo logo en el encabezado y los tres en el pie.
+    $this->assertStringContainsString('ua-footer__explora', $html);
+    // Un solo logo en el encabezado.
     $this->assertSame(1, preg_match('~<header .*?</header>~s', $html, $encabezado));
     $this->assertSame(1, substr_count($encabezado[0], 'ua-logos__img--unillanos'));
     $this->assertSame(0, substr_count($encabezado[0], 'ua-logos__img--acreditacion'));
-    $this->assertSame(1, substr_count($html, 'ua-logos__img--acreditacion'));
   }
 
   /**
-   * Con datos aparecen la franja, las entidades y las columnas, y solo ellas.
+   * Con datos aparecen la franja y los grupos del pie, y solo ellos.
    */
   public function testConDatosSePintaElMarco(): void {
     $this->installConfig(['unillanos_autoeval']);
@@ -480,20 +495,20 @@ class MenusTest extends UnillanosKernelTestBase {
         ['titulo' => 'Interno de prueba', 'url' => '/documentos'],
       ])
       ->set('accesibilidad.url', '/programas')
-      ->set('pie.entidades', [['titulo' => 'Entidad de prueba', 'url' => 'https://example.org/e']])
-      ->set('pie.sedes', [['texto' => 'Sede de prueba']])
+      ->set('pie.ubicanos.sedes', [['titulo' => 'Sede de prueba', 'texto' => 'Calle de prueba 1']])
+      ->set('pie.lineas', ['titulo' => '', 'items' => []])
       ->save();
     $html = $this->pagina('/programas');
     $this->assertStringContainsString('<div data-component-id="unillanos:topbar" class="ua-topbar">', $html);
     $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="https://example.org/b" rel="noopener">~', $html);
     $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="/documentos">~', $html);
     $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/programas">~', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-footer__entidad" href="https://example.org/e" rel="noopener">Entidad de prueba</a>~', $html);
-    $this->assertStringContainsString('<h3>Sedes</h3>', $html);
-    $this->assertMatchesRegularExpression('~<li>Sede de prueba</li>~', $html);
-    $this->assertStringNotContainsString('<h3>Contáctanos</h3>', $html);
-    $this->assertStringNotContainsString('<h3>Síguenos</h3>', $html);
-    $this->assertStringContainsString('ua-footer__top--c2', $html);
+    $this->assertStringContainsString('<strong>Sede de prueba</strong><span class="ua-footer__valor">Calle de prueba 1</span>', $html);
+    $this->assertStringNotContainsString('Campus Barcelona', $html);
+    // Sin líneas de atención la columna sigue con las redes; sin el grupo no
+    // hay título de líneas.
+    $this->assertStringNotContainsString('<h3>Líneas de atención</h3>', $html);
+    $this->assertStringContainsString('<h3 class="ua-footer__redes-titulo">Redes</h3>', $html);
   }
 
   /**
@@ -507,7 +522,11 @@ class MenusTest extends UnillanosKernelTestBase {
         ['titulo' => 'Peligrosa dos', 'url' => '//example.org/x'],
         ['titulo' => 'Peligrosa tres', 'url' => 'data:text/html,hola'],
       ])
-      ->set('pie.redes', [['titulo' => 'Red peligrosa', 'url' => 'JaVaScRiPt:alert(2)']])
+      ->set('pie.politicas.enlaces', [['titulo' => 'Política peligrosa', 'url' => 'JaVaScRiPt:alert(2)']])
+      ->set('pie.contacto.items', [
+        ['titulo' => 'Dato peligroso', 'texto' => '', 'url' => 'javascript:alert(5)', 'icono' => ''],
+      ])
+      ->set('pie.logos', [['clave' => 'govco', 'titulo' => 'Logo peligroso', 'url' => 'data:text/html,hola']])
       ->set('url_govco', 'javascript:alert(3)')
       ->set('redes_sociales', [
         'facebook' => 'javascript:alert(4)',
@@ -520,7 +539,9 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->assertStringNotContainsString('javascript:', strtolower($html));
     $this->assertStringNotContainsString('data:text/html', $html);
     $this->assertStringNotContainsString('Peligrosa', $html);
-    $this->assertStringNotContainsString('Red peligrosa', $html);
+    $this->assertStringNotContainsString('Política peligrosa', $html);
+    $this->assertStringNotContainsString('Dato peligroso', $html);
+    $this->assertStringNotContainsString('Logo peligroso', $html);
     $this->assertStringNotContainsString('ua-topbar', $html);
   }
 
@@ -534,7 +555,9 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->assertContains('config:unillanos_autoeval.micrositio', $respuesta->getCacheableMetadata()->getCacheTags());
     // Cambiar la configuración cambia lo que se pinta.
     $this->assertStringNotContainsString('Cambio de prueba', $this->pagina('/programas'));
-    $this->config('unillanos_autoeval.micrositio')->set('pie.sedes', [['texto' => 'Cambio de prueba']])->save();
+    $this->config('unillanos_autoeval.micrositio')
+      ->set('pie.ubicanos.sedes', [['titulo' => 'Cambio de prueba', 'texto' => '']])
+      ->save();
     $this->assertStringContainsString('Cambio de prueba', $this->pagina('/programas'));
   }
 

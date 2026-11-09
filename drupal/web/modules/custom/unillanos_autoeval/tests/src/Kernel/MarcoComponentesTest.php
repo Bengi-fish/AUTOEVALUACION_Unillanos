@@ -151,43 +151,102 @@ class MarcoComponentesTest extends KernelTestBase {
   }
 
   /**
-   * El pie omite la fila de entidades y las columnas vacías.
+   * Con redes pero sin título de grupo no queda un encabezado vacío.
    */
-  public function testPieOmiteLoVacio(): void {
-    $html = $this->renderizar('unillanos:footer', ['legal' => 'Aviso']);
-    $this->assertStringNotContainsString('ua-footer__entidades', $html);
-    $this->assertStringNotContainsString('<h3>', $html);
-    $this->assertStringNotContainsString('ua-footer__links', $html);
-    $this->assertStringNotContainsString('ua-footer__name', $html);
-    $this->assertStringContainsString('ua-footer__top--c0', $html);
-    $this->assertStringContainsString('<span>Aviso</span>', $html);
+  public function testPieSinTituloDeRedesNoImprimeH3Vacio(): void {
+    $html = $this->renderizar('unillanos:footer', [
+      'redes' => [['red' => 'x', 'title' => 'X de la Universidad', 'url' => 'https://example.org/x']],
+    ]);
+    $this->assertStringContainsString('ua-redes__enlace', $html);
+    $this->assertStringNotContainsString('<h3', $html);
   }
 
   /**
-   * El pie imprime las entidades, las columnas de texto y de enlaces.
+   * El pie omite las columnas, la fila de logos y la línea final vacías.
+   */
+  public function testPieOmiteLoVacio(): void {
+    $html = $this->renderizar('unillanos:footer', ['rights' => ['institucion' => 'Universidad', 'anios' => '2026']]);
+    $this->assertStringNotContainsString('ua-footer__top', $html);
+    $this->assertStringNotContainsString('<h3>', $html);
+    $this->assertStringNotContainsString('ua-footer__logos', $html);
+    $this->assertStringNotContainsString('ua-footer__explora', $html);
+    $this->assertStringNotContainsString('Nit', $html);
+    $this->assertStringContainsString('ua-footer__bottom', $html);
+    $this->assertSame('', trim(strip_tags($this->renderizar('unillanos:footer', []))));
+  }
+
+  /**
+   * El pie imprime las cuatro columnas, los logos y la línea de derechos.
    */
   public function testPieConDatos(): void {
     $html = $this->renderizar('unillanos:footer', [
-      'entities' => [
-        ['title' => 'Entidad', 'url' => 'https://example.org/e', 'externo' => TRUE],
-        ['title' => 'Sin enlace'],
-        ['title' => 'Peligrosa', 'url' => 'javascript:alert(1)'],
+      'ubicanos' => [
+        'title' => 'Ubícanos',
+        'sedes' => [['title' => 'Campus Uno', 'text' => 'Km 1']],
+        'horario' => ['title' => 'Horario', 'text' => '8 a 5'],
       ],
-      'columns' => [
-        ['title' => 'Sedes', 'links' => [['title' => 'Sede uno'], ['title' => 'Sede dos']]],
-        ['title' => 'Explora', 'links' => [['title' => 'Programas', 'url' => '/programas']]],
+      'contacto' => [
+        'title' => 'Contacto',
+        'items' => [
+          ['title' => 'Correo', 'text' => 'a@example.org', 'url' => 'mailto:a@example.org', 'icon' => 'mail'],
+          ['title' => 'Chat', 'text' => '', 'url' => 'https://example.org/chat'],
+          ['title' => 'Texto', 'text' => 'solo texto', 'url' => 'javascript:alert(1)'],
+        ],
       ],
-      'title' => 'Sistema',
-      'legal' => 'Aviso',
+      'lines' => [
+        'title' => 'Líneas',
+        'items' => [['title' => 'PBX', 'text' => '123', 'url' => 'tel:123', 'icon' => 'phone']],
+      ],
+      'redes_title' => 'Redes',
+      'redes' => [['red' => 'x', 'title' => 'X de la Universidad', 'url' => 'https://example.org/x']],
+      'politicas' => [
+        'title' => 'Políticas',
+        'links' => [
+          ['title' => 'Términos', 'url' => 'https://example.org/t', 'externo' => TRUE],
+          ['title' => 'Peligrosa', 'url' => 'javascript:alert(1)'],
+        ],
+      ],
+      'explora' => [['title' => 'Programas', 'url' => '/programas']],
+      'logos' => [
+        ['clave' => 'unillanos', 'title' => 'Universidad de los Llanos', 'url' => 'https://www.unillanos.edu.co/'],
+        ['clave' => 'colombia', 'title' => 'CO Colombia', 'url' => 'https://www.colombia.co/'],
+        ['clave' => 'inventado', 'title' => 'Otro', 'url' => 'https://example.org'],
+        ['clave' => 'govco', 'title' => 'GOV.CO', 'url' => 'javascript:alert(1)'],
+      ],
+      'rights' => [
+        'institucion' => 'Universidad de los Llanos',
+        'url' => 'https://www.unillanos.edu.co/',
+        'anios' => '1974 - 2026',
+        'texto' => 'Reservados todos los derechos',
+        'nit' => 'Nit: 892.000.757-3',
+      ],
     ]);
-    $this->assertMatchesRegularExpression('~<a class="ua-footer__entidad" href="https://example.org/e" rel="noopener">Entidad</a>~', $html);
-    $this->assertStringContainsString('<span class="ua-footer__entidad">Sin enlace</span>', $html);
-    $this->assertStringContainsString('<span class="ua-footer__entidad">Peligrosa</span>', $html);
+    foreach (['Ubícanos', 'Contacto', 'Líneas', 'Políticas'] as $titulo) {
+      $this->assertStringContainsString('<h3>' . $titulo . '</h3>', $html, $titulo);
+    }
+    $this->assertStringContainsString('<h3 class="ua-footer__redes-titulo">Redes</h3>', $html);
+    // Un título de grupo (h3) por columna; las redes bajo las líneas.
+    $this->assertSame(4, substr_count($html, '<div class="ua-footer__col">'));
+    $this->assertLessThan(strpos($html, 'ua-redes'), strpos($html, '<h3>Líneas</h3>'));
+    $this->assertStringContainsString('<strong>Campus Uno</strong>', $html);
+    $this->assertStringContainsString('<a href="mailto:a@example.org">a@example.org</a>', $html);
+    $this->assertStringContainsString('<a href="tel:123">123</a>', $html);
+    // Sin valor, el título es el enlace; una URL peligrosa deja solo el texto.
+    $this->assertMatchesRegularExpression('~<a href="https://example.org/chat" rel="noopener">Chat</a>~', $html);
+    $this->assertStringContainsString('solo texto', $html);
     $this->assertStringNotContainsString('javascript:', $html);
-    $this->assertStringContainsString('<li>Sede uno</li>', $html);
-    $this->assertStringContainsString('<li><a href="/programas">Programas</a></li>', $html);
-    $this->assertStringContainsString('ua-footer__top--c2', $html);
-    $this->assertSame(2, substr_count($html, '<h3>'));
+    $this->assertStringContainsString('<a href="https://example.org/t" rel="noopener">Términos</a>', $html);
+    $this->assertStringContainsString('<li>Peligrosa</li>', $html);
+    $this->assertMatchesRegularExpression('~<a href="/programas">Programas</a>~', $html);
+    // Logos: solo los conocidos con URL segura, cada uno como enlace con alt.
+    $this->assertSame(2, substr_count($html, 'class="ua-footer__logo ua-footer__logo--'));
+    $this->assertMatchesRegularExpression('~<a class="ua-footer__logo ua-footer__logo--unillanos" href="https://www.unillanos.edu.co/" rel="noopener">\\s*<img src="[^"]*unillanos-blanco\\.png" alt="Universidad de los Llanos">~', $html);
+    $this->assertMatchesRegularExpression('~<img src="[^"]*colombia-marca-pais\\.png" alt="CO Colombia">~', $html);
+    $this->assertStringNotContainsString('Otro', $html);
+    // Línea final: © institución enlazada, años, texto y NIT.
+    $this->assertStringContainsString('<a href="https://www.unillanos.edu.co/" rel="noopener">Universidad de los Llanos</a>', $html);
+    $this->assertStringContainsString('1974 - 2026 Reservados todos los derechos', preg_replace('~\\s+~', ' ', strip_tags($html)));
+    $this->assertStringContainsString('Nit: 892.000.757-3', $html);
   }
 
   /**

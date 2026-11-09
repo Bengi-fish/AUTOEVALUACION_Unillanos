@@ -61,7 +61,7 @@ services:
 
   unillanos_autoeval.datos_marco:
     class: Drupal\unillanos_autoeval\Service\DatosMarco
-    arguments: ['@config.factory']
+    arguments: ['@config.factory', '@datetime.time']
   Drupal\unillanos_autoeval\Service\DatosMarco: '@unillanos_autoeval.datos_marco'
 
   unillanos_autoeval.twig_extension:

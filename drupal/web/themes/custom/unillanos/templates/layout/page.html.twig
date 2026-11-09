@@ -57,26 +57,16 @@
 
 {# No imprime nada: lleva a la página la caché del menú del pie. #}
 {{ pie_cache }}
-{% set columnas = [] %}
-{% if marco.pie.sedes %}
-  {% set columnas = columnas|merge([{title: 'Sedes'|t, links: marco.pie.sedes|map(texto => {title: texto})}]) %}
-{% endif %}
-{% if marco.pie.contacto %}
-  {% set columnas = columnas|merge([{title: 'Contáctanos'|t, links: marco.pie.contacto|map(texto => {title: texto})}]) %}
-{% endif %}
-{% if pie_enlaces %}
-  {% set columnas = columnas|merge([{title: 'Explora'|t, links: pie_enlaces}]) %}
-{% endif %}
-{% if marco.pie.redes %}
-  {% set columnas = columnas|merge([{title: 'Síguenos'|t, links: marco.pie.redes}]) %}
-{% endif %}
+{# El pie lleva los grupos de la configuración del micrositio (ya filtrados). #}
+{% set pie = marco.pie %}
 {% include 'unillanos:footer' with {
-  title: marco.pie.titulo,
-  description: marco.pie.descripcion,
-  institution: marco.pie.institucion,
-  institution_note: marco.pie.nota_institucion,
-  entities: marco.pie.entidades,
-  columns: columnas,
-  legal: marco.pie.legal,
-  legal_links: marco.pie.enlaces_legales,
+  ubicanos: {title: pie.ubicanos.titulo, sedes: pie.ubicanos.sedes, horario: pie.ubicanos.horario},
+  contacto: {title: pie.contacto.titulo, items: pie.contacto.items|map(dato => {title: dato.title, text: dato.text, url: dato.url, icon: dato.icono})},
+  lines: {title: pie.lineas.titulo, items: pie.lineas.items|map(dato => {title: dato.title, text: dato.text, url: dato.url, icon: dato.icono})},
+  redes_title: pie.redes_titulo,
+  redes: marco.redes,
+  politicas: {title: pie.politicas.titulo, links: pie.politicas.enlaces},
+  explora: pie_enlaces,
+  logos: pie.logos|map(logo => {clave: logo.clave, title: logo.title, url: logo.url}),
+  rights: pie.derechos,
 } only %}

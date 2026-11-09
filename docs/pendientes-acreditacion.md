@@ -430,3 +430,18 @@ Textos que escribió el equipo técnico (en lenguaje sencillo) y que **Acreditac
 - [ ] **Campo «Duración (semestres)»** (`field_duracion`, entero de 1 a 20, opcional): el equipo técnico lo creó y aún no se llenó ningún dato. Acreditación debe entregar la duración de cada programa (en la columna opcional `duracion` de `programas.csv` o en la ficha simple). Mientras no haya dato, la tarjeta deja un hueco reservado sin texto.
 - [ ] **Texto de ayuda por confirmar:** «Número de semestres que dura el programa. Si no lo sabe, déjelo en blanco.» (ficha simple y formulario completo).
 - [ ] **Huecos reservados en la tarjeta:** confirmar con el diseñador que se acepta el espacio en blanco de la línea «duración · sede» y de la píldora cuando no hay dato (decisión deliberada para igualar las tarjetas).
+
+## 26. Cabecera y pie (rama `cabecera-pie-y-edicion`)
+
+Datos del pie tomados del HTML de https://acreditacion.unillanos.edu.co (8 de noviembre de 2026). **Acreditación debe confirmarlos.**
+
+- [ ] **PQRS:** el HTML del sitio de Acreditación dice `quejasyreclamos@unillanos.edu` (sin `.co`), igual que la captura. Se dejó tal cual en el pie; probablemente falta el `.co` o el correo es otro.
+- [ ] **Horario:** el HTML dice «7:30am a 11:30m y 2:00pm a 5:30pm» («11:30m», probablemente «11:30am»); se dejó igual.
+- [ ] **Diferencias entre la captura y el HTML:** los títulos del HTML llevan erratas de ortografía («Ubicanos», «Lineas de atención», «Chat en linea», «Via San Juan de Arama», «Politicas de Privacidad y Términos de Uso»); en el pie se escribieron con tilde y en minúscula, como en el prompt («Ubícanos», «Líneas de atención», «Chat en línea», «Vía San Juan de Arama»). Los correos, teléfonos y direcciones coinciden con la captura.
+- [ ] **WhatsApp:** el HTML solo trae el número («+57 322 292 31 94»); el enlace `https://wa.me/573222923194` lo armó el equipo técnico a partir del número.
+- [ ] **Teléfonos:** los enlaces `tel:` también los armó el equipo técnico (`+576086611623` y `018000918641`).
+- [ ] **Redes:** X apunta a `https://twitter.com/unillanos_?lang=es` (así está en el sitio actual); confirmar si debe ser `x.com`.
+- [ ] **Políticas:** los enlaces de «Política de tratamiento…» y «Estatuto sobre propiedad intelectual» son archivos de Google Drive; confirmar que siguen vigentes.
+- [ ] **Logos:** los de Universidad de los Llanos, Vigilada MinEducación y CO Colombia son las copias que la Universidad publica en su sitio de Acreditación (no se pudieron bajar de mineducacion.gov.co ni colombia.co). El de CO Colombia solo mide 50 × 45 px: reemplazarlo por el archivo oficial de la marca país y el de MinEducación por el oficial. El de la Universidad trae un fondo gris oscuro opaco; pedir la versión con fondo transparente.
+- [ ] **Se quitaron del pie** (nueva estructura): el bloque con los tres logos del prototipo, el nombre del sistema con su descripción, el texto «Sedes Villavicencio y Granada · Meta, Colombia», las columnas «Sedes», «Contáctanos» y «Síguenos» y el aviso legal anterior («Institución de educación superior sujeta a inspección y vigilancia…»). Confirmar si el aviso de inspección y vigilancia debe seguir apareciendo.
+

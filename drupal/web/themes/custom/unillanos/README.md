@@ -53,7 +53,16 @@ cambian sus colores o proporciones.
 
 | Archivo | Titular | Fuente oficial | Descargado |
 |---|---|---|---|
-| `images/logos/govco-blanco.svg` | GOV.CO (Gobierno de Colombia) | https://cdn.www.gov.co/v2/assets/images/logo.svg (CDN de https://www.gov.co/); versión para fondo oscuro | 8 de noviembre de 2026 |
+| `images/logos/govco-blanco.svg` | GOV.CO (Gobierno de Colombia) | https://cdn.www.gov.co/v2/assets/images/logo.svg (CDN de https://www.gov.co/); versión para fondo oscuro. Fuente oficial. | 8 de noviembre de 2026 |
+| `images/logos/unillanos-blanco.png` | Universidad de los Llanos | https://acreditacion.unillanos.edu.co/images/logos/trascendencia.png (sitio de la propia Universidad; 555 × 99 px, con fondo gris oscuro opaco incluido en el archivo) | 8 de noviembre de 2026 |
+| `images/logos/mineducacion-vigilada-blanco.png` | Ministerio de Educación Nacional («Vigilada MinEducación») | https://acreditacion.unillanos.edu.co/images/logos/certificaciones.png (copia publicada por la Universidad; 298 × 100 px, blanco). **Pendiente:** reemplazar por el archivo oficial de https://www.mineducacion.gov.co/ cuando se obtenga | 8 de noviembre de 2026 |
+| `images/logos/colombia-marca-pais.png` | Marca País «CO Colombia» (Procolombia / Gobierno de Colombia) | https://acreditacion.unillanos.edu.co/images/logos/m_pais.png (copia publicada por la Universidad; solo 50 × 45 px: se muestra a su tamaño natural, sin ampliarlo). **Pendiente:** reemplazar por el archivo oficial de https://www.colombia.co/ | 8 de noviembre de 2026 |
+
+Los logos de la Universidad, de MinEducación y de CO Colombia no se pudieron
+bajar de las páginas oficiales de sus titulares (no publican un archivo
+descargable directo), por eso se usan las copias que la Universidad publica en
+su sitio de Acreditación, byte a byte iguales (se compararon sus huellas
+SHA-256). Los cuatro son marcas de sus titulares.
 
 Íconos de redes (`images/redes/`: Facebook, X, Instagram y YouTube): Simple
 Icons 13.21.0 (https://simpleicons.org/, https://cdn.jsdelivr.net/npm/simple-icons@13.21.0/icons/),

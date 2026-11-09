@@ -42,46 +42,112 @@ unillanos_autoeval.micrositio:
       type: mapping
       label: 'Pie de página'
       mapping:
-        titulo:
-          type: label
-          label: 'Nombre del sistema'
-        descripcion:
-          type: text
-          label: 'Descripción'
-        institucion:
-          type: label
-          label: 'Institución'
-        nota_institucion:
-          type: label
-          label: 'Nota de la institución'
-        entidades:
-          type: sequence
-          label: 'Entidades'
-          sequence:
-            type: unillanos_autoeval.enlace
-        sedes:
-          type: sequence
-          label: 'Sedes'
-          sequence:
-            type: unillanos_autoeval.texto
+        ubicanos:
+          type: mapping
+          label: 'Ubícanos'
+          mapping:
+            titulo:
+              type: label
+              label: 'Título del grupo'
+            sedes:
+              type: sequence
+              label: 'Sedes con su dirección'
+              sequence:
+                type: unillanos_autoeval.enlace_texto
+            horario:
+              type: unillanos_autoeval.enlace_texto
+              label: 'Horario de atención'
         contacto:
-          type: sequence
+          type: unillanos_autoeval.grupo_contacto
           label: 'Contacto'
-          sequence:
-            type: unillanos_autoeval.texto
-        redes:
+        lineas:
+          type: unillanos_autoeval.grupo_contacto
+          label: 'Líneas de atención'
+        redes_titulo:
+          type: label
+          label: 'Título del grupo de redes'
+        politicas:
+          type: mapping
+          label: 'Políticas'
+          mapping:
+            titulo:
+              type: label
+              label: 'Título del grupo'
+            enlaces:
+              type: sequence
+              label: 'Enlaces'
+              sequence:
+                type: unillanos_autoeval.enlace
+        logos:
           type: sequence
-          label: 'Redes sociales'
+          label: 'Fila de logos'
           sequence:
-            type: unillanos_autoeval.enlace
-        enlaces_legales:
-          type: sequence
-          label: 'Enlaces legales'
-          sequence:
-            type: unillanos_autoeval.enlace
-        legal:
-          type: text
-          label: 'Aviso legal'
+            type: mapping
+            mapping:
+              clave:
+                type: string
+                label: 'Logo (unillanos, mineducacion, colombia o govco)'
+              titulo:
+                type: label
+                label: 'Nombre accesible'
+              url:
+                type: string
+                label: 'URL'
+        derechos:
+          type: mapping
+          label: 'Línea final de derechos'
+          mapping:
+            institucion:
+              type: label
+              label: 'Institución'
+            url:
+              type: string
+              label: 'URL de la institución'
+            desde:
+              type: integer
+              label: 'Año de inicio'
+            texto:
+              type: label
+              label: 'Texto de derechos'
+            nit:
+              type: label
+              label: 'NIT'
+
+unillanos_autoeval.grupo_contacto:
+  type: mapping
+  mapping:
+    titulo:
+      type: label
+      label: 'Título del grupo'
+    items:
+      type: sequence
+      label: 'Datos'
+      sequence:
+        type: mapping
+        mapping:
+          titulo:
+            type: label
+            label: 'Título'
+          texto:
+            type: label
+            label: 'Valor'
+          url:
+            type: string
+            label: 'URL'
+          icono:
+            type: string
+            label: 'Ícono'
+
+unillanos_autoeval.enlace_texto:
+  type: mapping
+  label: 'Título y texto'
+  mapping:
+    titulo:
+      type: label
+      label: 'Título'
+    texto:
+      type: label
+      label: 'Texto'
 
 unillanos_autoeval.enlace:
   type: mapping
