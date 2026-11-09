@@ -445,3 +445,27 @@ Datos del pie tomados del HTML de https://acreditacion.unillanos.edu.co (8 de no
 - [ ] **Logos:** los de Universidad de los Llanos, Vigilada MinEducación y CO Colombia son las copias que la Universidad publica en su sitio de Acreditación (no se pudieron bajar de mineducacion.gov.co ni colombia.co). El de CO Colombia solo mide 50 × 45 px: reemplazarlo por el archivo oficial de la marca país y el de MinEducación por el oficial. El de la Universidad trae un fondo gris oscuro opaco; pedir la versión con fondo transparente.
 - [ ] **Se quitaron del pie** (nueva estructura): el bloque con los tres logos del prototipo, el nombre del sistema con su descripción, el texto «Sedes Villavicencio y Granada · Meta, Colombia», las columnas «Sedes», «Contáctanos» y «Síguenos» y el aviso legal anterior («Institución de educación superior sujeta a inspección y vigilancia…»). Confirmar si el aviso de inspección y vigilancia debe seguir apareciendo.
 
+
+## 27. Eliminar, «Cambiar foto» y barra de Drupal (paso 14, rama `acreditacion-eliminar-y-foto`)
+
+Decisiones tomadas por el equipo técnico que **Acreditación debe confirmar**.
+
+- [ ] **Qué puede eliminar Acreditación:** solo lo que creó su propia cuenta, y solo si nada depende de ello (programa ← proceso; proceso ← valoraciones, hallazgos, plan y documentos; hallazgo y plan ← metas; meta ← seguimientos; documento ← valoraciones). Lo cargado por migración (autor anónimo) **no se puede eliminar** desde Acreditación. Confirmar si es lo deseado o si debe poder eliminar también lo migrado.
+- [ ] **Quién más elimina:** quien administra el contenido (administrador) conserva su acceso y no se bloquea por dependientes. Cada eliminación queda en el registro del sitio (usuario, fecha, tipo, id y título). Confirmar quién revisará ese registro.
+- [ ] **Texto de la confirmación y del bloqueo:** «Esta acción no se puede deshacer.», «Sí, eliminar», «Todavía no se puede eliminar. … Elimina primero:». Confirmar redacción.
+- [ ] **Reglas de la foto del programa:** formatos JPG, PNG o WebP, máximo 5 MB, **ancho mínimo de 1280 px** y **descripción de la foto obligatoria**. Se aplican al volver a guardar un programa que ya tenga una foto menor o sin descripción. Confirmar los límites.
+- [ ] **Textos de ayuda de la foto:** «Usa solo fotos de la Universidad o con permiso de uso.» y «Describe lo que se ve en la foto, por ejemplo: estudiantes en el laboratorio de electrónica.». Confirmar redacción y si hay un banco oficial de fotos.
+- [ ] **Mensaje de foto muy pequeña** (en `translations/es.po`, lleva «1280 píxeles» escrito): si se cambia el ancho mínimo hay que actualizarlo. El encabezado de plural de ese archivo debe seguir siendo `(n != 1)`: con `(n > 1)` el sitio muestra «Se muestra 0 programa».
+- [ ] **Arrastrar y soltar la foto:** el recuadro de la foto acepta soltar el archivo con el comportamiento nativo del navegador (el campo de imagen de Drupal no ofrece otro y no se instaló ningún módulo contribuido). El texto del selector («Choose File», «No file chosen») lo pone el navegador y puede salir en inglés según su idioma: confirmar si se acepta o si se quiere un texto propio.
+- [ ] **Barra lateral de Drupal:** se oculta a Acreditación (la usa solo el administrador); el acceso a las pantallas avanzadas es el botón «Panel avanzado» y se vuelve con «Volver al sitio». Confirmar que Acreditación no necesita la barra lateral.
+- [ ] **Evidencia del paso 13 «como Acreditación»:** las capturas y mediciones del paso 13 se tomaron en realidad con la cuenta de administrador (el enlace de acceso se generó mal). Rehacer con `acreditacion_prueba` si se quieren como evidencia.
+- [ ] **Al desplegar:** importar la traducción propia (`ddev drush locale:import es /var/www/html/drupal/web/modules/custom/unillanos_autoeval/translations/es.po`); su encabezado de plural debe ser `(n != 1)`.
+
+### Ajustes del cierre del paso 14 (commits 5 a 9)
+
+- [ ] **Autor de los documentos:** Acreditación ya no puede cambiar el autor ni la fecha de creación de un documento (antes podía con el formulario normal); solo quien administra medios. El autor decide qué puede eliminar Acreditación («lo propio»). Confirmar que es lo deseado.
+- [ ] **Participaciones del proceso:** la pantalla de edición de Acreditación **no muestra** las participaciones del proceso (decisión del equipo técnico; los datos no se tocan). Confirmar si Acreditación debe editarlas ahí o si basta con el formulario Participa y el rol de participación (Fase 8, pendiente).
+- [ ] **Pestañas Ver · Editar · Eliminar · Revisiones** del contenido: se ocultan a Acreditación en el sitio público; el administrador las conserva. «Información de la revisión» también se oculta: cada guardado sigue creando su revisión sin que la persona lo vea. Confirmar.
+- [ ] **Excepción de 44 px:** la flecha pequeña del botón de lista con viñetas/numerada del editor de texto del panel mide 17 px de ancho (limitación del editor; el botón principal mide 44 px). Aceptar o pedir otro editor.
+- [ ] **Escritorio de `/admin/acreditacion`:** solo el celular se rehízo (tarjetas de 44 px); en la tabla de escritorio los enlaces miden 21 a 42 px de alto. Confirmar si se quiere 44 px también ahí.
+- [ ] **Lectores de pantalla en la subida de la foto:** el aviso «Subiendo…» es el indicador de Drupal y no tiene `aria-live`; no se anuncia al empezar ni al terminar. Probar con un lector real y decidir si se pide un aviso propio.
