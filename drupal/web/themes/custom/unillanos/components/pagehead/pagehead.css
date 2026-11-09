@@ -161,6 +161,18 @@
   z-index: 2;
 }
 
+/* En pantallas pequeñas el botón no se superpone a las etiquetas: la cabecera
+   deja una banda libre arriba (solo si lleva el botón) y el botón va en ella. */
+@media (max-width: 700px) {
+  .ua-pagehead__fondo:has(.ua-pagehead__foto-edit) {
+    padding-top: 68px;
+  }
+
+  .ua-pagehead__foto-edit {
+    right: var(--espacio-4);
+  }
+}
+
 .ua-pagehead__cuerpo {
   position: relative;
   z-index: 1;

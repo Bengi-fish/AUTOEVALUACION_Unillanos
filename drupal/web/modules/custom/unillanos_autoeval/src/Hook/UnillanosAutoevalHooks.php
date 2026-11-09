@@ -323,6 +323,20 @@ class UnillanosAutoevalHooks {
   }
 
   /**
+   * Entidad que edita el formulario, o NULL si no es un formulario de entidad.
+   *
+   * No usa FormState::getFormObject(): con un estado armado a mano (sin
+   * `callback_object`) ese método de core avisa «Undefined array key».
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   */
+  protected function entidadDelFormulario(FormStateInterface $form_state): ?EntityInterface {
+    $objeto = $form_state->getBuildInfo()['callback_object'] ?? NULL;
+    return $objeto instanceof EntityFormInterface ? $objeto->getEntity() : NULL;
+  }
+
+  /**
    * Ayudas del formulario «Cambiar foto» (solo el campo de la foto).
    *
    * @param array<mixed> $form
@@ -337,8 +351,7 @@ class UnillanosAutoevalHooks {
     $elemento = &$form['field_imagen']['widget'][0];
     $elemento['#process'][] = [self::class, 'procesarAyudaDeLaFoto'];
     $limites = [];
-    $objeto = $form_state->getFormObject();
-    $entidad = $objeto instanceof EntityFormInterface ? $objeto->getEntity() : NULL;
+    $entidad = $this->entidadDelFormulario($form_state);
     if ($entidad instanceof FieldableEntityInterface) {
       $limites = $entidad->getFieldDefinition('field_imagen')?->getSettings() ?? [];
     }
@@ -397,9 +410,7 @@ class UnillanosAutoevalHooks {
    *   Identificador del formulario.
    */
   protected function eliminarEnPanel(array &$form, FormStateInterface $form_state, string $form_id): void {
-    // Un estado sin objeto de formulario (armado a mano) no aplica.
-    $objeto = $form_state->getBuildInfo()['callback_object'] ?? NULL;
-    $entidad = $objeto instanceof EntityFormInterface ? $objeto->getEntity() : NULL;
+    $entidad = $this->entidadDelFormulario($form_state);
     if (!$entidad instanceof EntityInterface || $entidad->isNew() || !$this->dependientes->enAlcance($entidad)) {
       return;
     }
@@ -717,11 +728,23 @@ class UnillanosAutoevalHooks {
    * lo concede con «administer nodes» o «administer node published status»; así
    * el rol de Acreditación puede despublicar sin ningún permiso administrativo.
    * Solo suma: nunca devuelve «prohibido» ni «neutral con razón», de modo que
-   * quien ya tiene acceso por otra vía lo conserva, y no toca otros campos,
-   * tipos de contenido ni tipos de medio.
+   * quien ya tiene acceso por otra vía lo conserva.
+   *
+   * Además cierra el autor (`uid`) y la fecha de creación del medio
+   * «documento»: el núcleo los deja editar a quien edita el medio, y el autor
+   * decide qué puede borrar Acreditación, así que solo quien administra medios
+   * (`administer media`) puede cambiarlos. Los nodos ya lo exigen el núcleo
+   * (`administer nodes`).
    */
   #[Hook('entity_field_access')]
   public function entityFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
+    if ($operation === 'edit' && $items && in_array($field_definition->getName(), ['uid', 'created'], TRUE)) {
+      $medio = $items->getEntity();
+      if ($medio->getEntityTypeId() === 'media' && $medio->bundle() === 'documento') {
+        return AccessResult::forbiddenIf(!$account->hasPermission('administer media'), 'Solo quien administra medios cambia el autor y la fecha.')
+          ->cachePerPermissions();
+      }
+    }
     if ($operation !== 'edit' || $field_definition->getName() !== 'status' || !$items) {
       return AccessResult::neutral();
     }
@@ -824,11 +847,7 @@ class UnillanosAutoevalHooks {
    */
   #[Hook('form_node_form_alter')]
   public function nodeFormAlter(array &$form, FormStateInterface $form_state): void {
-    $formulario = $form_state->getFormObject();
-    if (!$formulario instanceof EntityFormInterface) {
-      return;
-    }
-    $nodo = $formulario->getEntity();
+    $nodo = $this->entidadDelFormulario($form_state);
     if (!$nodo instanceof NodeInterface) {
       return;
     }
