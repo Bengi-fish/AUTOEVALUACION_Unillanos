@@ -1,0 +1,102 @@
+/**
+ * Panel «Cambiar foto»: la foto se sube sola al elegirla (o al soltarla sobre el
+ * recuadro) y un solo botón, «Guardar foto», la guarda.
+ *
+ * Solo con JavaScript (html.js): sin él, el botón «Subir al servidor» sigue
+ * visible y el formulario funciona igual, en dos pasos.
+ */
+
+/* El botón de subir se oculta: la subida arranca al elegir el archivo (core).
+   Sigue en la página, así que sus eventos y su indicador funcionan. */
+html.js body #drupal-off-canvas .js-form-managed-file input[type="submit"][name$="_upload_button"] {
+  display: none;
+}
+
+/* El campo de archivo es el recuadro para soltar la foto (arrastrar y soltar
+   nativo del navegador; el núcleo no ofrece otro). */
+html.js body #drupal-off-canvas .js-form-managed-file input[type="file"] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 120px;
+  margin-top: 8px;
+  padding: 36px 16px;
+  border: 2px dashed #d3d0c7;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+
+html.js body #drupal-off-canvas .js-form-managed-file input[type="file"]:hover {
+  background: rgba(255, 255, 255, .12);
+}
+
+html.js body #drupal-off-canvas .js-form-managed-file input[type="file"]::file-selector-button {
+  min-height: 44px;
+  margin-inline-end: 12px;
+  padding: 0 16px;
+  border: 2px solid #fff;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* «Subiendo…»: círculo pequeño y el texto al lado, legibles sobre el fondo
+   oscuro del panel (el tema de administración dibuja el contenedor como el
+   propio círculo giratorio y deja el texto oculto). */
+html.js body #drupal-off-canvas .ajax-progress-throbber {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  height: auto;
+  margin: 8px 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: none;
+  color: #fff;
+  animation: none;
+  transform: none;
+}
+
+html.js body #drupal-off-canvas .ajax-progress-throbber .throbber {
+  flex: none;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  overflow: hidden;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  background: none;
+  font-size: 0;
+  animation: ua-foto-girar 900ms linear infinite;
+}
+
+html.js body #drupal-off-canvas .ajax-progress-throbber .message {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+@keyframes ua-foto-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js body #drupal-off-canvas .ajax-progress-throbber .throbber {
+    animation: none;
+  }
+}

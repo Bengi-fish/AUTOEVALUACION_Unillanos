@@ -360,6 +360,7 @@ class UnillanosAutoevalHooks {
     }
     $minimo = (int) explode('x', (string) ($limites['min_resolution'] ?? ''))[0];
     $partes = [
+      $this->t('Elige la foto o arrástrala sobre el recuadro.'),
       $this->t('Usa solo fotos de la Universidad o con permiso de uso.'),
       $this->t('Formatos JPG, PNG o WebP.'),
       $this->t('Peso máximo: @peso.', ['@peso' => $limites['max_filesize'] ?? '5 MB']),
@@ -374,13 +375,18 @@ class UnillanosAutoevalHooks {
     ];
     // «Eliminar» borraría el programa entero: aquí solo se cambia la foto.
     $form['actions']['delete']['#access'] = FALSE;
+    // Un solo botón: la foto se sube sola al elegirla y este la guarda.
+    if (isset($form['actions']['submit'])) {
+      $form['actions']['submit']['#value'] = $this->t('Guardar foto');
+    }
+    $form['#attached']['library'][] = 'unillanos/panel_foto';
     // La foto no necesita notas de revisión.
     $form['revision_information']['#access'] = FALSE;
     $form['revision_log']['#access'] = FALSE;
   }
 
   /**
-   * Pone la ayuda del texto alternativo de la foto.
+   * Pone la ayuda del texto alternativo y el aviso «Subiendo…» de la foto.
    *
    * @param array<mixed> $elemento
    *   El elemento de imagen.
@@ -389,6 +395,17 @@ class UnillanosAutoevalHooks {
    *   El elemento con la ayuda del texto alternativo.
    */
   public static function procesarAyudaDeLaFoto(array $elemento): array {
+    // La subida ocurre sola al elegir el archivo: se avisa que está subiendo.
+    if (isset($elemento['upload_button'])) {
+      $elemento['upload_button']['#ajax']['progress'] = [
+        'type' => 'throbber',
+        'message' => t('Subiendo…'),
+      ];
+    }
+    // «Eliminar» sugiere borrar el programa: aquí solo se quita el archivo.
+    if (isset($elemento['remove_button'])) {
+      $elemento['remove_button']['#value'] = t('Quitar foto');
+    }
     if (isset($elemento['alt'])) {
       $elemento['alt']['#title'] = t('Descripción de la foto');
       $elemento['alt']['#description'] = t('Describe lo que se ve en la foto, por ejemplo: estudiantes en el laboratorio de electrónica.');

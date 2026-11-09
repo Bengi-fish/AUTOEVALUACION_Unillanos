@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\unillanos_autoeval\Kernel;
 
 use Drupal\Component\Serialization\Yaml;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\unillanos_autoeval\Hook\UnillanosAutoevalHooks;
 use PHPUnit\Framework\Attributes\Group;
@@ -109,6 +110,40 @@ class FotoProgramaTest extends EliminarKernelBase {
     $this->assertStringContainsString('estudiantes en el laboratorio de electrónica', (string) $elemento['alt']['#description']);
     // Sin campo de texto alternativo no se inventa uno.
     $this->assertSame([], UnillanosAutoevalHooks::procesarAyudaDeLaFoto([]));
+  }
+
+  /**
+   * La foto va en un solo paso: sube sola y un único botón la guarda.
+   */
+  public function testFotoEnUnSoloPaso(): void {
+    $elemento = UnillanosAutoevalHooks::procesarAyudaDeLaFoto([
+      'alt' => ['#type' => 'textfield'],
+      'upload_button' => ['#type' => 'submit', '#ajax' => ['callback' => 'x']],
+      'remove_button' => ['#type' => 'submit', '#value' => 'Remove'],
+    ]);
+    $this->assertSame('Subiendo…', (string) $elemento['upload_button']['#ajax']['progress']['message']);
+    $this->assertSame('throbber', $elemento['upload_button']['#ajax']['progress']['type']);
+    $this->assertSame('Quitar foto', (string) $elemento['remove_button']['#value']);
+    // El formulario de la foto tiene un único botón de guardar y la hoja que
+    // oculta «Subir al servidor» solo con JavaScript.
+    /** @var array<string, mixed> $form */
+    $form = [
+      'field_imagen' => ['widget' => [0 => ['#description' => '']]],
+      'actions' => ['submit' => ['#type' => 'submit', '#value' => 'Guardar']],
+    ];
+    $objeto = $this->container->get('entity_type.manager')
+      ->getFormObject('node', 'default')
+      ->setEntity($this->nodoDe('programa', (int) $this->acreditacion->id()));
+    $estado = new FormState();
+    $estado->setFormObject($objeto);
+    $this->container->get(UnillanosAutoevalHooks::class)->formAlter($form, $estado, 'node_programa_foto_form');
+    $this->assertSame('Guardar foto', (string) $form['actions']['submit']['#value']);
+    $this->assertContains('unillanos/panel_foto', $form['#attached']['library']);
+    $this->assertStringContainsString('arrástrala', (string) $form['field_imagen']['widget'][0]['#description']['#value']);
+    $css = (string) file_get_contents(DRUPAL_ROOT . '/themes/custom/unillanos/css/panel-foto.css');
+    $this->assertStringContainsString('html.js', $css);
+    $this->assertStringContainsString('[name$="_upload_button"]', $css);
+    $this->assertStringContainsString('prefers-reduced-motion', $css);
   }
 
 }
