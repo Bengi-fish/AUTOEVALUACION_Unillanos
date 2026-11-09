@@ -227,6 +227,7 @@ class UnillanosHooks {
       $variables['edicion_barra'] = [
         'logout_url' => $this->edicion->cerrarSesion(),
         'micrositio' => $this->edicion->micrositio(),
+        'avanzado' => $this->edicion->panelAvanzado(),
       ];
       $variables['edicion_pie'] = $this->edicion->micrositio();
       $cache->addCacheContexts(['url.path', 'url.query_args']);

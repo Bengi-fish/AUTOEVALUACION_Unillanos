@@ -241,6 +241,26 @@ class EnlacesEdicion {
   }
 
   /**
+   * Botón «Panel avanzado» de la barra del modo edición.
+   *
+   * Lleva al panel de Acreditación (`/admin/acreditacion`); es una página
+   * completa de Drupal, no el panel lateral, y no lleva `destination`.
+   *
+   * @return array{url: string, title: string}|null
+   *   El enlace, o NULL si la persona no tiene acceso al panel.
+   */
+  public function panelAvanzado(): ?array {
+    if (!$this->activo()) {
+      return NULL;
+    }
+    $url = Url::fromRoute('unillanos_autoeval.acreditacion');
+    if (!$url->access($this->usuario)) {
+      return NULL;
+    }
+    return ['url' => $url->toString(), 'title' => (string) $this->t('Panel avanzado')];
+  }
+
+  /**
    * Dirección de «Cerrar sesión» (la pantalla de confirmación de Drupal).
    *
    * @return string|null

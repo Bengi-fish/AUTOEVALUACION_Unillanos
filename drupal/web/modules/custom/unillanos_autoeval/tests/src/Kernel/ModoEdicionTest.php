@@ -567,4 +567,20 @@ class ModoEdicionTest extends UnillanosKernelTestBase {
     $this->assertStringContainsString('>Editar Meta 1 del plan de mejoramiento</span>', $con);
   }
 
+  /**
+   * «Panel avanzado» lleva al panel de Acreditación, solo con permiso.
+   */
+  public function testPanelAvanzadoSoloConPermiso(): void {
+    $this->setCurrentUser($this->usuarioAcreditacion());
+    $enlace = $this->edicion()->panelAvanzado();
+    $this->assertNotNull($enlace);
+    $this->assertSame('/admin/acreditacion', $enlace['url']);
+    $this->assertSame('Panel avanzado', $enlace['title']);
+    $this->assertStringNotContainsString('destination', $enlace['url']);
+    $this->setCurrentUser($this->usuario(['authenticated']));
+    $this->assertNull($this->edicion()->panelAvanzado());
+    $this->setCurrentUser(new AnonymousUserSession());
+    $this->assertNull($this->edicion()->panelAvanzado());
+  }
+
 }

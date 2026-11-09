@@ -13,7 +13,6 @@ dependencies:
     - node.type.valoracion
   module:
     - media
-    - navigation
     - node
     - system
     - unillanos_autoeval
@@ -25,7 +24,6 @@ permissions:
   - 'access acreditacion panel'
   - 'access content overview'
   - 'access media overview'
-  - 'access navigation'
   - 'change publication status on acreditacion content'
   - 'create documento media'
   - 'create hallazgo content'

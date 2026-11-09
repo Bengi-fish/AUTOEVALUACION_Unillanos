@@ -34,6 +34,13 @@
           {% if edicion.micrositio %}
             {% include 'unillanos:edit-link' with {url: edicion.micrositio.url, label: edicion.micrositio.title, show_label: true} only %}
           {% endif %}
+          {% if edicion.avanzado and edicion.avanzado.url and ((edicion.avanzado.url ~ '') matches seguro) %}
+            {# Página completa de Drupal, no el panel lateral: enlace normal con el aspecto de los lápices. #}
+            <a class="ua-edit ua-edit--lapiz ua-edit--texto" href="{{ edicion.avanzado.url }}">
+              {%- include 'unillanos:icon' with {name: 'layers', size: 'sm'} only -%}
+              <span>{{ edicion.avanzado.title }}</span>
+            </a>
+          {% endif %}
           <a class="ua-topbar__link" href="{{ edicion.logout_url }}">{{ 'Cerrar sesión'|t }}</a>
         </div>
       {% endif %}

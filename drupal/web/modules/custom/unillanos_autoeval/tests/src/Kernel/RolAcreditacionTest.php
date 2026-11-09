@@ -130,7 +130,6 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
       'access acreditacion panel',
       'access content overview',
       'access media overview',
-      'access navigation',
       self::PUBLICACION,
       'create documento media',
       'edit any documento media',
@@ -155,10 +154,10 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
   /**
    * Crea el rol en la base de la prueba y devuelve un usuario que lo tiene.
    *
-   * «access navigation» es del módulo navigation, que no está en la prueba.
+   * El rol ya no lleva «access navigation» (la barra lateral de Drupal).
    */
   protected function usuarioAcreditacion(): User {
-    $permisos = array_values(array_diff($this->archivoDelRol('modulo')['permissions'], ['access navigation']));
+    $permisos = $this->archivoDelRol('modulo')['permissions'];
     Role::create(['id' => 'acreditacion', 'label' => 'Acreditación', 'permissions' => $permisos])->save();
     return $this->usuario(['acreditacion']);
   }
@@ -198,7 +197,8 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     $sync = $this->archivoDelRol('sync');
     $this->assertSame($esperados, $modulo['permissions']);
     $this->assertSame($esperados, $sync['permissions']);
-    $this->assertCount(35, $esperados);
+    // 35 antes del paso 14 (commit 4): se quitó «access navigation».
+    $this->assertCount(34, $esperados);
     // El módulo y el sitio declaran el mismo rol.
     unset($sync['uuid']);
     $this->assertEquals($modulo, $sync);
@@ -225,9 +225,12 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     foreach (['access acreditacion panel', 'edit unillanos micrositio', self::PUBLICACION] as $propio) {
       $this->assertContains($propio, $modulo['permissions']);
     }
-    // Cada permiso del rol existe; navigation no está en esta prueba.
+    // Sin la barra lateral de Drupal (paso 14): ni el permiso ni su módulo.
+    $this->assertNotContains('access navigation', $modulo['permissions']);
+    $this->assertNotContains('navigation', $modulo['dependencies']['module']);
+    // Cada permiso del rol existe.
     $existentes = array_keys($this->container->get('user.permissions')->getPermissions());
-    foreach (array_diff($modulo['permissions'], ['access navigation']) as $permiso) {
+    foreach ($modulo['permissions'] as $permiso) {
       $this->assertContains($permiso, $existentes, $permiso);
     }
     // La lista de tipos del rol no incluye lineamiento ni otros medios.

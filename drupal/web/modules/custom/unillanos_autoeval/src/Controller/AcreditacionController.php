@@ -77,6 +77,7 @@ final class AcreditacionController extends ControllerBase {
     $construccion = [
       '#theme' => 'unillanos_acreditacion_panel',
       '#datos' => [
+        'volver' => Url::fromRoute('<front>')->toString(),
         'q' => $filtrado['valores']['q'] ?? '',
         'total' => count($filas),
         'total_general' => $filtrado['total'],

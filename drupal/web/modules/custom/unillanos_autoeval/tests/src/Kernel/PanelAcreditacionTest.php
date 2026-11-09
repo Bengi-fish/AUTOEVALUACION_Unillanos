@@ -521,4 +521,13 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
     $this->assertSame((string) $proceso->id(), (string) $medio->get('field_proceso')->target_id);
   }
 
+  /**
+   * El panel ofrece «Volver al sitio», un enlace a la portada.
+   */
+  public function testVolverAlSitio(): void {
+    [$html] = $this->panel($this->acreditacion());
+    $this->assertStringContainsString('Volver al sitio', $html);
+    $this->assertMatchesRegularExpression('~<a class="unillanos-acreditacion__volver" href="/[^"]*">Volver al sitio</a>~', $html);
+  }
+
 }

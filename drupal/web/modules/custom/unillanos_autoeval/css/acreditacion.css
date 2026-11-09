@@ -20,3 +20,11 @@
 .unillanos-acreditacion__tabla td {
   hyphens: manual;
 }
+
+/* «Volver al sitio»: enlace del principio del panel, con objetivo de 44 px. */
+.unillanos-acreditacion__volver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+}

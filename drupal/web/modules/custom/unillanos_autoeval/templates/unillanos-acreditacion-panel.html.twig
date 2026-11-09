@@ -15,6 +15,9 @@
  */
 #}
 <div class="unillanos-acreditacion">
+  {% if datos.volver %}
+    <p><a class="unillanos-acreditacion__volver" href="{{ datos.volver }}">{{ 'Volver al sitio'|t }}</a></p>
+  {% endif %}
   <p>{{ 'Programas publicados y accesos a las pantallas de edición. Para encontrar contenido sin publicar usa la lista de contenido.'|t }}</p>
 
   {% if datos.generales %}
