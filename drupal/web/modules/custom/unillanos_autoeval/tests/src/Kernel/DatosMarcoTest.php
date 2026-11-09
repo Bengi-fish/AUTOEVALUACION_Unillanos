@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\unillanos_autoeval\Kernel;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\unillanos_autoeval\Service\DatosMarco;
@@ -72,7 +73,7 @@ class DatosMarcoTest extends KernelTestBase {
   }
 
   /**
-   * Con la configuración por defecto solo hay lo que ya existía.
+   * La configuración por defecto trae el pie de Acreditación completo.
    */
   public function testPorDefecto(): void {
     $datos = $this->datos();
@@ -80,12 +81,101 @@ class DatosMarcoTest extends KernelTestBase {
     $this->assertSame('', $datos['web_principal']);
     $this->assertSame([], $datos['franja']);
     $this->assertNull($datos['accesibilidad']);
-    foreach (['entidades', 'sedes', 'contacto', 'redes', 'enlaces_legales'] as $lista) {
-      $this->assertSame([], $datos['pie'][$lista], $lista);
-    }
-    $this->assertSame('Universidad de los Llanos', $datos['pie']['institucion']);
-    $this->assertStringContainsString('inspección y vigilancia', $datos['pie']['legal']);
-    $this->assertNotSame('', $datos['pie']['descripcion']);
+    $pie = $datos['pie'];
+    $this->assertSame('Ubícanos', $pie['ubicanos']['titulo']);
+    $this->assertSame(
+      ['Campus Barcelona', 'Campus San Antonio', 'Campus Boquemonte'],
+      array_column($pie['ubicanos']['sedes'], 'title'),
+    );
+    $this->assertSame('Km. 12 Vía Puerto López', $pie['ubicanos']['sedes'][0]['text']);
+    $this->assertSame('Horario de atención: Lunes a Viernes', $pie['ubicanos']['horario']['title']);
+    $this->assertSame('7:30am a 11:30m y 2:00pm a 5:30pm', $pie['ubicanos']['horario']['text']);
+    $this->assertSame(
+      ['Notificaciones judiciales', 'Ventanilla única virtual', 'Correo electrónico', 'PQRS', 'Chat en línea'],
+      array_column($pie['contacto']['items'], 'title'),
+    );
+    $this->assertSame('mailto:quejasyreclamos@unillanos.edu', $pie['contacto']['items'][3]['url']);
+    $this->assertSame('https://www.unillanos.edu.co/livezilla/chat.php?a=30c6e', $pie['contacto']['items'][4]['url']);
+    $this->assertSame(
+      ['PBX', 'Línea anticorrupción', 'Línea nacional', 'WhatsApp'],
+      array_column($pie['lineas']['items'], 'title'),
+    );
+    $this->assertSame('tel:+576086611623', $pie['lineas']['items'][0]['url']);
+    $this->assertSame('https://wa.me/573222923194', $pie['lineas']['items'][3]['url']);
+    $this->assertSame('Redes', $pie['redes_titulo']);
+    $this->assertCount(4, $pie['politicas']['enlaces']);
+    $this->assertSame(['unillanos', 'mineducacion', 'colombia', 'govco'], array_column($pie['logos'], 'clave'));
+    $this->assertSame(
+      [
+        'https://www.unillanos.edu.co/',
+        'https://www.mineducacion.gov.co/',
+        'https://www.colombia.co/',
+        'https://www.gov.co/',
+      ],
+      array_column($pie['logos'], 'url'),
+    );
+    $this->assertSame('Nit: 892.000.757-3', $pie['derechos']['nit']);
+    $this->assertSame('Reservados todos los derechos', $pie['derechos']['texto']);
+  }
+
+  /**
+   * El año de la línea de derechos sale del sistema, no de la configuración.
+   */
+  public function testAnioDeLosDerechosEsDinamico(): void {
+    $ahora = mktime(12, 0, 0, 6, 15, 2031);
+    $reloj = $this->createMock(TimeInterface::class);
+    $reloj->method('getRequestTime')->willReturn($ahora);
+    $servicio = new DatosMarco($this->container->get('config.factory'), $reloj);
+    $cache = new CacheableMetadata();
+    $derechos = $servicio->datos($cache)['pie']['derechos'];
+    $this->assertSame('1974 - 2031', $derechos['anios']);
+    // La página caduca el 1 de enero siguiente, cuando cambia el año.
+    $this->assertSame(mktime(0, 0, 0, 1, 1, 2032) - $ahora, $cache->getCacheMaxAge());
+    // El año de la configuración no es el final: nunca está escrito a mano.
+    $this->assertStringNotContainsString('2026', (string) json_encode($this->config('unillanos_autoeval.micrositio')->get('pie.derechos')));
+    // Sin año de inicio, solo el actual; con inicio en el año actual, también.
+    $this->fijar('pie.derechos.desde', 0);
+    $this->assertSame('2031', $servicio->datos(new CacheableMetadata())['pie']['derechos']['anios']);
+    $this->fijar('pie.derechos.desde', 2031);
+    $this->assertSame('2031', $servicio->datos(new CacheableMetadata())['pie']['derechos']['anios']);
+    // Con el reloj real, el año final es el actual.
+    $this->fijar('pie.derechos.desde', 1974);
+    $this->assertSame('1974 - ' . date('Y'), $this->datos()['pie']['derechos']['anios']);
+  }
+
+  /**
+   * GOV.CO y las redes de la configuración por defecto, en su orden.
+   */
+  public function testGovcoMasRedesPorDefecto(): void {
+    $datos = $this->datos();
+    $this->assertSame('https://www.gov.co/', $datos['govco']['url']);
+    $this->assertSame(['facebook', 'x', 'instagram', 'youtube'], array_column($datos['redes'], 'red'));
+    $this->assertSame([
+      'Facebook de la Universidad de los Llanos',
+      'X de la Universidad de los Llanos',
+      'Instagram de la Universidad de los Llanos',
+      'YouTube de la Universidad de los Llanos',
+    ], array_column($datos['redes'], 'title'));
+  }
+
+  /**
+   * Una red sin URL o con una URL peligrosa no se entrega; sin GOV.CO, NULL.
+   */
+  public function testRedesSinUrlNiInsegurasSeOmiten(): void {
+    $this->fijar('redes_sociales', [
+      'facebook' => '',
+      'x' => 'javascript:alert(1)',
+      'instagram' => 'https://www.instagram.com/unillanos_/',
+      'youtube' => '//otro.sitio',
+    ]);
+    $this->fijar('url_govco', '');
+    $datos = $this->datos();
+    $this->assertSame(['instagram'], array_column($datos['redes'], 'red'));
+    $this->assertNull($datos['govco']);
+    $this->fijar('redes_sociales', ['facebook' => '', 'x' => '', 'instagram' => '', 'youtube' => '']);
+    $this->assertSame([], $this->datos()['redes']);
+    $this->fijar('url_govco', 'javascript:alert(1)');
+    $this->assertNull($this->datos()['govco']);
   }
 
   /**
@@ -171,29 +261,46 @@ class DatosMarcoTest extends KernelTestBase {
   }
 
   /**
-   * Los textos del pie se normalizan y los vacíos se descartan.
+   * Los textos del pie se normalizan y los vacíos o inseguros se descartan.
    */
-  public function testTextosDelPie(): void {
-    $this->fijar('pie.contacto', [['texto' => 'Teléfono']]);
+  public function testTextosDelPieSeLimpian(): void {
     $pie = $this->config('unillanos_autoeval.micrositio')->get('pie');
-    $pie['sedes'] = [
-      ['texto' => "  Sede   uno \n dos "],
-      ['texto' => ''],
-      ['texto' => '   '],
+    $pie['ubicanos']['sedes'] = [
+      ['titulo' => "  Sede   uno \n dos ", 'texto' => '  Calle   1 '],
+      ['titulo' => '', 'texto' => 'sin título'],
+      ['titulo' => '   '],
       ['otra' => 'clave'],
-      ['texto' => 'Sede tres'],
+      ['titulo' => 'Sede tres'],
+    ];
+    $pie['contacto']['items'] = [
+      ['titulo' => 'Solo valor', 'texto' => 'valor', 'url' => '', 'icono' => 'mail'],
+      ['titulo' => 'Solo enlace', 'texto' => '', 'url' => 'https://example.org/c', 'icono' => 'inventado'],
+      ['titulo' => 'Enlace peligroso', 'texto' => 'queda como texto', 'url' => 'javascript:alert(1)'],
+      ['titulo' => 'Peligroso sin texto', 'texto' => '', 'url' => 'javascript:alert(1)'],
+      ['titulo' => '', 'texto' => 'sin título', 'url' => '/x'],
     ];
     $this->fijarSinEsquema(['pie' => $pie]);
-    $this->assertSame(['Sede uno dos', 'Sede tres'], $this->datos()['pie']['sedes']);
-    $this->assertSame(['Teléfono'], $this->datos()['pie']['contacto']);
+    $datos = $this->datos()['pie'];
+    $this->assertSame(
+      [['title' => 'Sede uno dos', 'text' => 'Calle 1'], ['title' => 'Sede tres', 'text' => '']],
+      $datos['ubicanos']['sedes'],
+    );
+    $this->assertSame(
+      [
+        ['title' => 'Solo valor', 'text' => 'valor', 'url' => '', 'icono' => 'mail'],
+        ['title' => 'Solo enlace', 'text' => '', 'url' => 'https://example.org/c', 'icono' => ''],
+        ['title' => 'Enlace peligroso', 'text' => 'queda como texto', 'url' => '', 'icono' => ''],
+      ],
+      $datos['contacto']['items'],
+    );
   }
 
   /**
    * Un texto muy largo se corta.
    */
   public function testTextoLargoSeCorta(): void {
-    $this->fijar('pie.legal', str_repeat('a', 1000));
-    $this->assertSame(300, mb_strlen($this->datos()['pie']['legal']));
+    $this->fijar('pie.derechos.texto', str_repeat('a', 1000));
+    $this->assertSame(300, mb_strlen($this->datos()['pie']['derechos']['texto']));
   }
 
   /**
@@ -201,15 +308,25 @@ class DatosMarcoTest extends KernelTestBase {
    */
   public function testListasMalFormadas(): void {
     $pie = $this->config('unillanos_autoeval.micrositio')->get('pie');
-    $pie['entidades'] = 'no es una lista';
-    $pie['redes'] = [['titulo' => 'Red'], 'texto suelto', NULL];
+    $pie['ubicanos']['sedes'] = 'no es una lista';
+    $pie['contacto']['items'] = [['titulo' => 'Sin valor'], 'texto suelto', NULL];
+    $pie['politicas']['enlaces'] = [['titulo' => 'Red'], 'texto suelto', NULL];
+    $pie['logos'] = [
+      ['clave' => 'inventado', 'titulo' => 'Logo', 'url' => 'https://example.org'],
+      ['clave' => 'govco', 'titulo' => 'Sin url', 'url' => ''],
+      ['clave' => 'colombia', 'titulo' => '', 'url' => 'https://example.org'],
+      ['clave' => 'unillanos', 'titulo' => 'Peligroso', 'url' => 'javascript:alert(1)'],
+      'suelto',
+    ];
     $this->fijarSinEsquema([
       'pie' => $pie,
       'franja_superior' => [7, [], ['titulo' => 5, 'url' => 7]],
     ]);
     $datos = $this->datos();
-    $this->assertSame([], $datos['pie']['entidades']);
-    $this->assertSame([], $datos['pie']['redes']);
+    $this->assertSame([], $datos['pie']['ubicanos']['sedes']);
+    $this->assertSame([], $datos['pie']['contacto']['items']);
+    $this->assertSame([], $datos['pie']['politicas']['enlaces']);
+    $this->assertSame([], $datos['pie']['logos']);
     $this->assertSame([], $datos['franja']);
   }
 
@@ -217,12 +334,12 @@ class DatosMarcoTest extends KernelTestBase {
    * Los enlaces externos se marcan; los internos y los de correo no.
    */
   public function testEnlacesExternos(): void {
-    $this->fijar('pie.redes', [
+    $this->fijar('pie.politicas.enlaces', [
       ['titulo' => 'Web', 'url' => 'https://example.org'],
       ['titulo' => 'Interno', 'url' => '/programas'],
       ['titulo' => 'Correo', 'url' => 'mailto:a@example.org'],
     ]);
-    $this->assertSame([TRUE, FALSE, FALSE], array_column($this->datos()['pie']['redes'], 'externo'));
+    $this->assertSame([TRUE, FALSE, FALSE], array_column($this->datos()['pie']['politicas']['enlaces'], 'externo'));
   }
 
   /**
@@ -253,8 +370,14 @@ class DatosMarcoTest extends KernelTestBase {
     $this->assertSame('', $datos['nombre']['linea1']);
     $this->assertSame([], $datos['franja']);
     $this->assertNull($datos['accesibilidad']);
-    $this->assertSame([], $datos['pie']['entidades']);
-    $this->assertSame('', $datos['pie']['legal']);
+    $this->assertNull($datos['govco']);
+    $this->assertSame([], $datos['redes']);
+    $this->assertSame([], $datos['pie']['ubicanos']['sedes']);
+    $this->assertNull($datos['pie']['ubicanos']['horario']);
+    $this->assertSame([], $datos['pie']['contacto']['items']);
+    $this->assertSame([], $datos['pie']['lineas']['items']);
+    $this->assertSame([], $datos['pie']['logos']);
+    $this->assertSame([], $datos['pie']['derechos']);
   }
 
 }

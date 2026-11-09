@@ -22,6 +22,16 @@ unillanos_autoeval.programas:
   requirements:
     _permission: 'access content'
 
+# Entrada propia al inicio de sesión de Acreditación. No se enlaza desde el
+# sitio público; /user/login sigue como respaldo del administrador.
+unillanos_autoeval.acceso:
+  path: '/acceso-acreditacion'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\AccesoController::acceso'
+    _title: 'Acceso'
+  requirements:
+    _access: 'TRUE'
+
 unillanos_autoeval.micrositio:
   path: '/admin/config/unillanos/micrositio'
   defaults:

@@ -8,6 +8,17 @@ props:
   required:
     - programs
   properties:
+    edit_new:
+      type:
+        - object
+        - 'null'
+      title: Enlace «Añadir programa»
+      description: 'Modo edición: url y title del «+ Añadir programa» sobre la lista; se ve solo con el modo activo.'
+      properties:
+        url:
+          type: string
+        title:
+          type: string
     programs:
       type: array
       title: Programas
@@ -25,6 +36,16 @@ props:
             type: string
           faculty:
             type: string
+          edit:
+            type:
+              - object
+              - 'null'
+            description: 'Modo edición: lápiz de la tarjeta (url y title); se ve solo con el modo activo, fuera del enlace de la tarjeta.'
+            properties:
+              url:
+                type: string
+              title:
+                type: string
           level:
             type: string
           campus:

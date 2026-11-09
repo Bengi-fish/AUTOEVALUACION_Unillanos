@@ -7,6 +7,7 @@ namespace Drupal\unillanos_autoeval\Controller;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\unillanos_autoeval\Service\EnlacesEdicion;
 use Drupal\unillanos_autoeval\Service\ListadoProgramas;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,13 +41,17 @@ final class ProgramasController extends ControllerBase {
    */
   public function __construct(
     protected ListadoProgramas $listado,
+    protected EnlacesEdicion $edicion,
   ) {}
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
-    return new static($container->get('unillanos_autoeval.listado_programas'));
+    return new static(
+      $container->get('unillanos_autoeval.listado_programas'),
+      $container->get('unillanos_autoeval.enlaces_edicion'),
+    );
   }
 
   /**
@@ -79,6 +84,16 @@ final class ProgramasController extends ControllerBase {
     else {
       $cache->setCacheMaxAge(Cache::PERMANENT);
     }
+    // Modo edición: «+ Añadir programa» y el lápiz de cada tarjeta, solo con
+    // permiso y acceso real. Los enlaces llevan la URL actual de destino.
+    if ($this->edicion->activo()) {
+      foreach ($datos['programas'] as $indice => $programa) {
+        $datos['programas'][$indice]['edicion'] = $this->edicion->ficha((int) $programa['id'], (string) $programa['nombre']);
+      }
+      $datos['edicion'] = ['nuevo' => $this->edicion->programaNuevo()];
+      $cache->addCacheContexts(['url.path', 'url.query_args']);
+    }
+    $cache->addCacheContexts(['user.permissions']);
     $construccion = [
       '#theme' => 'unillanos_programas',
       '#datos' => $datos,

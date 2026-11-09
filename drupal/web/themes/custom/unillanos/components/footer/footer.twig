@@ -1,78 +1,131 @@
 {#
 /**
  * @file
- * Pie de página oscuro: fila de entidades, bloque de la institución y
- * columnas, y aviso legal. Todo lo vacío se omite.
+ * Pie de página oscuro con la estructura del sitio de Acreditación: cuatro
+ * columnas (Ubícanos, Contacto, Líneas de atención con Redes, Políticas), los
+ * enlaces del menú del pie, la fila de logos y la línea de derechos. Todo lo
+ * vacío se omite y los textos y enlaces los define quien lo usa.
  *
- * Mismo filtro de URL que unillanos:button: un destino no válido o ausente
- * se imprime sin enlace.
+ * Mismo filtro de URL que unillanos:button: un destino no válido o ausente se
+ * imprime sin enlace. Los logos son archivos del tema (images/logos/): cada
+ * uno es un enlace con nombre accesible; el de CO Colombia solo tiene 50 × 45
+ * px y se muestra a su tamaño natural, sin ampliarlo.
  */
 #}
 {% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
-{% set institucion = institution is defined ? institution : 'Universidad de los Llanos'|t %}
-{% set nota = institution_note is defined ? institution_note : 'Sedes Villavicencio y Granada · Meta, Colombia'|t %}
-{% set n_columnas = (columns|length) + (contact ? 1 : 0) %}
+{% set tema = componentMetadata.path|split('/components/')|first %}
+{% set archivos = {
+  unillanos: 'unillanos-blanco.png',
+  mineducacion: 'mineducacion-vigilada-blanco.png',
+  colombia: 'colombia-marca-pais.png',
+  govco: 'govco-blanco.svg',
+} %}
+{% set n_columnas = (ubicanos and (ubicanos.sedes or ubicanos.horario) ? 1 : 0) + (contacto and contacto.items ? 1 : 0) + ((lines and lines.items) or redes ? 1 : 0) + (politicas and politicas.links ? 1 : 0) %}
 <footer{{ attributes.addClass('ua-footer') }}>
   <div class="ua-footer__marco">
-    {% if entities %}
-      <ul class="ua-footer__entidades" role="list">
-        {% for entidad in entities %}
-          <li>
-            {%- if entidad.url and ((entidad.url ~ '') matches seguro) -%}
-              <a class="ua-footer__entidad" href="{{ entidad.url }}"{% if entidad.externo %} rel="noopener"{% endif %}>{{ entidad.title }}</a>
-            {%- else -%}
-              <span class="ua-footer__entidad">{{ entidad.title }}</span>
-            {%- endif -%}
+    {% if n_columnas %}
+      <div class="ua-footer__top">
+        {% if ubicanos and (ubicanos.sedes or ubicanos.horario) %}
+          <div class="ua-footer__col">
+            {% if ubicanos.title %}<h3>{{ ubicanos.title }}</h3>{% endif %}
+            <ul class="ua-footer__datos" role="list">
+              {% for sede in ubicanos.sedes %}
+                <li>
+                  {%- include 'unillanos:icon' with {name: 'building'} only -%}
+                  <span><strong>{{ sede.title }}</strong>{% if sede.text %}<span class="ua-footer__valor">{{ sede.text }}</span>{% endif %}</span>
+                </li>
+              {% endfor %}
+              {% if ubicanos.horario %}
+                <li>
+                  {%- include 'unillanos:icon' with {name: 'clock'} only -%}
+                  <span><strong>{{ ubicanos.horario.title }}</strong>{% if ubicanos.horario.text %}<span class="ua-footer__valor">{{ ubicanos.horario.text }}</span>{% endif %}</span>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        {% endif %}
+        {# Contacto (columna 2) y Líneas de atención con Redes (columna 3). #}
+        {% for grupo in [contacto, lines] %}
+          {% set es_lineas = loop.last %}
+          {% set redes_aqui = es_lineas ? redes|default([]) : [] %}
+          {% if (grupo and grupo.items) or redes_aqui %}
+            <div class="ua-footer__col">
+              {% if grupo and grupo.items %}
+                {% if grupo.title %}<h3>{{ grupo.title }}</h3>{% endif %}
+                <ul class="ua-footer__datos" role="list">
+                  {% for dato in grupo.items %}
+                    <li>
+                      {%- if dato.icon %}{% include 'unillanos:icon' with {name: dato.icon} only %}{% endif -%}
+                      <span>
+                        {%- if dato.text -%}
+                          <strong>{{ dato.title }}</strong>
+                          <span class="ua-footer__valor">{% if dato.url and ((dato.url ~ '') matches seguro) %}<a href="{{ dato.url }}"{% if dato.url starts with 'http' %} rel="noopener"{% endif %}>{{ dato.text }}</a>{% else %}{{ dato.text }}{% endif %}</span>
+                        {%- elseif dato.url and ((dato.url ~ '') matches seguro) -%}
+                          <a href="{{ dato.url }}"{% if dato.url starts with 'http' %} rel="noopener"{% endif %}>{{ dato.title }}</a>
+                        {%- else -%}
+                          <strong>{{ dato.title }}</strong>
+                        {%- endif -%}
+                      </span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+              {% if redes_aqui %}
+                {% if redes_title %}<h3 class="ua-footer__redes-titulo">{{ redes_title }}</h3>{% endif %}
+                {% include 'unillanos:redes' with {redes: redes_aqui} only %}
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        {% if politicas and politicas.links %}
+          <div class="ua-footer__col">
+            {% if politicas.title %}<h3>{{ politicas.title }}</h3>{% endif %}
+            <ul class="ua-footer__links" role="list">
+              {% for enlace in politicas.links %}
+                <li>{% if enlace.url and ((enlace.url ~ '') matches seguro) %}<a href="{{ enlace.url }}"{% if enlace.externo %} rel="noopener"{% endif %}>{{ enlace.title }}</a>{% else %}{{ enlace.title }}{% endif %}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% if explora %}
+      <nav class="ua-footer__explora" aria-label="{{ explora_title|default('Explora'|t) }}">
+        <span class="ua-footer__explora-titulo">{{ explora_title|default('Explora'|t) }}</span>
+        <ul role="list">
+          {% for enlace in explora %}
+            <li>{% if enlace.url and ((enlace.url ~ '') matches seguro) %}<a href="{{ enlace.url }}">{{ enlace.title }}</a>{% else %}{{ enlace.title }}{% endif %}</li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+    {% set logos_validos = [] %}
+    {% for logo in logos %}
+      {% if archivos[logo.clave] is defined and logo.title and logo.url and ((logo.url ~ '') matches seguro) %}
+        {% set logos_validos = logos_validos|merge([logo]) %}
+      {% endif %}
+    {% endfor %}
+    {% if logos_validos %}
+      <ul class="ua-footer__logos" role="list">
+        {% for logo in logos_validos %}
+          <li class="ua-footer__logo-item">
+            <a class="ua-footer__logo ua-footer__logo--{{ logo.clave }}" href="{{ logo.url }}" rel="noopener">
+              <img src="{{ file_url(tema ~ '/images/logos/' ~ archivos[logo.clave]) }}" alt="{{ logo.title }}">
+            </a>
           </li>
         {% endfor %}
       </ul>
     {% endif %}
-    <div class="ua-footer__top ua-footer__top--c{{ n_columnas }}">
-      <div class="ua-footer__brand">
-        <span class="ua-footer__logos">{% include 'unillanos:logos' with {large: true} only %}</span>
-        {% if title %}<p class="ua-footer__name">{{ title }}</p>{% endif %}
-        {% if description %}<p>{{ description }}</p>{% endif %}
-        {% if institucion or nota %}
-          <p class="ua-footer__inst">{% if institucion %}<strong>{{ institucion }}</strong>{% endif %}{% if nota %}<span>{{ nota }}</span>{% endif %}</p>
-        {% endif %}
+    {% if edicion and edicion.url and edicion.title %}
+      <div class="ua-footer__edicion">{% include 'unillanos:edit-link' with {url: edicion.url, label: edicion.title, show_label: true} only %}</div>
+    {% endif %}
+    {% if rights %}
+      <div class="ua-footer__bottom">
+        <p>©
+          {%- if rights.url and ((rights.url ~ '') matches seguro) %} <a href="{{ rights.url }}" rel="noopener">{{ rights.institucion }}</a>{% else %} {{ rights.institucion }}{% endif %}
+          {{ rights.anios }}{% if rights.texto %} {{ rights.texto }}{% endif %}</p>
+        {% if rights.nit %}<p>{{ rights.nit }}</p>{% endif %}
       </div>
-      {% for columna in columns %}
-        <div>
-          <h3>{{ columna.title }}</h3>
-          <ul class="ua-footer__links" role="list">
-            {% for enlace in columna.links %}
-              <li>{% if enlace.url and ((enlace.url ~ '') matches seguro) %}<a href="{{ enlace.url }}"{% if enlace.externo %} rel="noopener"{% endif %}>{{ enlace.title }}</a>{% else %}{{ enlace.title }}{% endif %}</li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% endfor %}
-      {% if contact %}
-        <div>
-          <h3>{{ contact_title|default('Contacto'|t) }}</h3>
-          <ul class="ua-footer__contact" role="list">
-            {% for dato in contact %}
-              <li>
-                {%- include 'unillanos:icon' with {name: dato.icon} only -%}
-                <span>{% for linea in dato.lines %}{{ linea }}{% if not loop.last %}<br>{% endif %}{% endfor %}</span>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% endif %}
-    </div>
-    <div class="ua-footer__bottom">
-      <span>{{ legal }}</span>
-      {% if legal_links %}
-        <span class="ua-footer__legal-links">
-          {%- for enlace in legal_links -%}
-            {%- if enlace.url and ((enlace.url ~ '') matches seguro) -%}
-              <a href="{{ enlace.url }}">{{ enlace.title }}</a>
-            {%- else -%}
-              <span>{{ enlace.title }}</span>
-            {%- endif -%}
-          {%- endfor -%}
-        </span>
-      {% endif %}
-    </div>
+    {% endif %}
   </div>
 </footer>

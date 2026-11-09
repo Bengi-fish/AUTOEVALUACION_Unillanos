@@ -19,7 +19,7 @@
 {% endif %}
 <header{{ attributes.addClass('ua-header') }}>
   {% if topbar %}
-    {% include 'unillanos:topbar' with {links: topbar.links, accessibility: topbar.accessibility} only %}
+    {% include 'unillanos:topbar' with {links: topbar.links, accessibility: topbar.accessibility, social: topbar.social|default([]), govco: topbar.govco|default(null), edicion: topbar.edicion|default(null)} only %}
   {% endif %}
   <div class="ua-header__bar">
     <a class="ua-brand" href="{{ inicio }}">

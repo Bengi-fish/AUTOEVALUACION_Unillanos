@@ -45,6 +45,7 @@
         level_key: programa.nivel_clave|default(''),
         campus_id: programa.sede_id|default(''),
         hidden: programa.oculto|default(false),
+        edit: programa.edicion|default(null),
       }]) %}
     {% endfor %}
     {% set filtros = {faculty: [], level: [], campus: []} %}
@@ -58,6 +59,7 @@
       {% set filtros = filtros|merge({campus: filtros.campus|merge([{value: opcion.valor, label: opcion.etiqueta}])}) %}
     {% endfor %}
     {% include 'unillanos:program-search' with {
+      edit_new: datos.edicion.nuevo|default(null),
       programs: programas,
       total: datos.total,
       filters: filtros,

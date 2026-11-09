@@ -58,19 +58,31 @@ class MicrositioFormTest extends KernelTestBase {
       'nombre_linea1' => 'Sistema de',
       'nombre_linea2' => 'Autoevaluación',
       'url_web_principal' => '',
+      'url_govco' => 'https://www.gov.co/',
+      'red_facebook' => 'https://www.facebook.com/UnillanosOficial/',
+      'red_x' => '',
+      'red_instagram' => '',
+      'red_youtube' => '',
       'franja_superior' => '',
       'accesibilidad_titulo' => 'Accesibilidad',
       'accesibilidad_url' => '',
-      'pie_titulo' => 'Pie',
-      'pie_descripcion' => 'Descripción',
-      'pie_institucion' => 'Universidad',
-      'pie_nota_institucion' => 'Nota',
-      'pie_entidades' => '',
-      'pie_sedes' => '',
-      'pie_contacto' => '',
-      'pie_redes' => '',
-      'pie_enlaces_legales' => '',
-      'pie_legal' => 'Aviso',
+      'pie_ubicanos_titulo' => 'Ubícanos',
+      'pie_ubicanos_sedes' => '',
+      'pie_horario_titulo' => '',
+      'pie_horario_texto' => '',
+      'pie_contacto_titulo' => 'Contacto',
+      'pie_contacto_items' => '',
+      'pie_lineas_titulo' => 'Líneas de atención',
+      'pie_lineas_items' => '',
+      'pie_redes_titulo' => 'Redes',
+      'pie_politicas_titulo' => 'Políticas',
+      'pie_politicas_enlaces' => '',
+      'pie_logos' => '',
+      'pie_derechos_institucion' => 'Universidad de los Llanos',
+      'pie_derechos_url' => 'https://www.unillanos.edu.co/',
+      'pie_derechos_desde' => 1974,
+      'pie_derechos_texto' => 'Reservados todos los derechos',
+      'pie_derechos_nit' => 'Nit: 892.000.757-3',
     ];
   }
 
@@ -82,8 +94,13 @@ class MicrositioFormTest extends KernelTestBase {
       'nombre_linea1' => '  Sistema de  ',
       'url_web_principal' => 'https://www.unillanos.edu.co',
       'franja_superior' => "Admisiones | https://www.unillanos.edu.co/admisiones\n\n  Correo | mailto:info@unillanos.edu.co  ",
-      'pie_sedes' => "Villavicencio\n\n  Granada  ",
-      'pie_redes' => 'Instagram | https://instagram.com/unillanos',
+      'pie_ubicanos_sedes' => "Villavicencio | Km 12\n\n  Granada  ",
+      'pie_horario_titulo' => 'Horario',
+      'pie_horario_texto' => '8 a 5',
+      'pie_contacto_items' => "Correo | info@unillanos.edu.co | mailto:info@unillanos.edu.co | mail\nChat | | https://example.org/chat |",
+      'pie_lineas_items' => 'PBX | (57) 608 6611623 | tel:+576086611623 | phone',
+      'pie_politicas_enlaces' => 'Términos | https://example.org/terminos',
+      'pie_logos' => "govco | GOV.CO | https://www.gov.co/\nunillanos | Universidad | https://www.unillanos.edu.co/",
     ] + $this->base());
     $this->assertSame([], $estado->getErrors());
 
@@ -93,13 +110,52 @@ class MicrositioFormTest extends KernelTestBase {
       ['titulo' => 'Admisiones', 'url' => 'https://www.unillanos.edu.co/admisiones'],
       ['titulo' => 'Correo', 'url' => 'mailto:info@unillanos.edu.co'],
     ], $config->get('franja_superior'));
-    $this->assertSame([['texto' => 'Villavicencio'], ['texto' => 'Granada']], $config->get('pie.sedes'));
+    $this->assertSame([
+      ['titulo' => 'Villavicencio', 'texto' => 'Km 12'],
+      ['titulo' => 'Granada', 'texto' => ''],
+    ], $config->get('pie.ubicanos.sedes'));
+    $this->assertSame(['titulo' => 'Horario', 'texto' => '8 a 5'], $config->get('pie.ubicanos.horario'));
+    $this->assertSame([
+      [
+        'titulo' => 'Correo',
+        'texto' => 'info@unillanos.edu.co',
+        'url' => 'mailto:info@unillanos.edu.co',
+        'icono' => 'mail',
+      ],
+      ['titulo' => 'Chat', 'texto' => '', 'url' => 'https://example.org/chat', 'icono' => ''],
+    ], $config->get('pie.contacto.items'));
+    $this->assertSame('tel:+576086611623', $config->get('pie.lineas.items.0.url'));
+    $this->assertSame(1974, $config->get('pie.derechos.desde'));
 
     $datos = $this->container->get('unillanos_autoeval.datos_marco')->datos(new CacheableMetadata());
     $this->assertSame('https://www.unillanos.edu.co', $datos['web_principal']);
     $this->assertSame(['Admisiones', 'Correo'], array_column($datos['franja'], 'title'));
-    $this->assertSame(['Villavicencio', 'Granada'], $datos['pie']['sedes']);
-    $this->assertSame('Instagram', $datos['pie']['redes'][0]['title']);
+    $this->assertSame(['Villavicencio', 'Granada'], array_column($datos['pie']['ubicanos']['sedes'], 'title'));
+    $this->assertSame(['Correo', 'Chat'], array_column($datos['pie']['contacto']['items'], 'title'));
+    $this->assertSame(['govco', 'unillanos'], array_column($datos['pie']['logos'], 'clave'));
+    $this->assertSame('Términos', $datos['pie']['politicas']['enlaces'][0]['title']);
+  }
+
+  /**
+   * GOV.CO y las redes se guardan, se leen y las vacías no se muestran.
+   */
+  public function testGuardaGovcoConRedes(): void {
+    $estado = $this->enviar([
+      'url_govco' => ' https://www.gov.co/ ',
+      'red_x' => 'https://twitter.com/unillanos_?lang=es',
+      'red_youtube' => 'https://www.youtube.com/channel/UCmhXbLrVeyotUiBsaPBcxcA',
+    ] + $this->base());
+    $this->assertSame([], $estado->getErrors());
+    $config = $this->config('unillanos_autoeval.micrositio');
+    $this->assertSame('https://www.gov.co/', $config->get('url_govco'));
+    $this->assertSame([
+      'facebook' => 'https://www.facebook.com/UnillanosOficial/',
+      'x' => 'https://twitter.com/unillanos_?lang=es',
+      'instagram' => '',
+      'youtube' => 'https://www.youtube.com/channel/UCmhXbLrVeyotUiBsaPBcxcA',
+    ], $config->get('redes_sociales'));
+    $datos = $this->container->get('unillanos_autoeval.datos_marco')->datos(new CacheableMetadata());
+    $this->assertSame(['facebook', 'x', 'youtube'], array_column($datos['redes'], 'red'));
   }
 
   /**
@@ -123,11 +179,22 @@ class MicrositioFormTest extends KernelTestBase {
     return [
       'javascript en la web' => ['url_web_principal', 'javascript:alert(1)'],
       'ruta sin barra' => ['url_web_principal', 'unillanos.edu.co'],
+      'govco con javascript' => ['url_govco', 'javascript:alert(1)'],
+      'red con datos' => ['red_instagram', 'data:text/html,hola'],
+      'red con doble barra' => ['red_x', '//otro.sitio'],
       'doble barra' => ['accesibilidad_url', '//otro.sitio'],
       'franja sin url' => ['franja_superior', 'Solo título'],
       'franja con javascript' => ['franja_superior', 'Malo | javascript:alert(1)'],
-      'entidad sin título' => ['pie_entidades', ' | https://ejemplo.co'],
-      'legal con espacio en la url' => ['pie_enlaces_legales', 'Aviso | https://ejemplo.co/a b'],
+      'sede sin título' => ['pie_ubicanos_sedes', ' | Calle 1'],
+      'contacto sin título' => ['pie_contacto_items', ' | valor | mailto:a@example.org'],
+      'contacto sin valor ni url' => ['pie_contacto_items', 'Solo título'],
+      'contacto con url peligrosa' => ['pie_lineas_items', 'PBX | 1 | javascript:alert(1)'],
+      'contacto con ícono inventado' => ['pie_lineas_items', 'PBX | 1 | tel:1 | inventado'],
+      'política con espacio en la url' => ['pie_politicas_enlaces', 'Aviso | https://ejemplo.co/a b'],
+      'logo desconocido' => ['pie_logos', 'inventado | Nombre | https://example.org'],
+      'logo sin nombre' => ['pie_logos', 'govco | | https://www.gov.co/'],
+      'logo con url peligrosa' => ['pie_logos', 'govco | GOV.CO | javascript:alert(1)'],
+      'derechos con url peligrosa' => ['pie_derechos_url', 'javascript:alert(1)'],
     ];
   }
 
@@ -140,6 +207,14 @@ class MicrositioFormTest extends KernelTestBase {
       ->save();
     $form = $this->container->get('form_builder')->getForm(MicrositioForm::class);
     $this->assertSame('Uno | /uno', $form['cabecera']['franja_superior']['#default_value']);
+    // El pie ofrece cada grupo con sus líneas.
+    $this->assertSame('Ubícanos', $form['pie_ubicanos']['pie_ubicanos_titulo']['#default_value']);
+    $this->assertSame('Campus Barcelona | Km. 12 Vía Puerto López', explode("\n", $form['pie_ubicanos']['pie_ubicanos_sedes']['#default_value'])[0]);
+    $this->assertSame(
+      'PQRS | quejasyreclamos@unillanos.edu | mailto:quejasyreclamos@unillanos.edu | mail',
+      explode("\n", $form['pie_contacto']['pie_contacto_items']['#default_value'])[3],
+    );
+    $this->assertSame('unillanos | Universidad de los Llanos | https://www.unillanos.edu.co/', explode("\n", $form['pie_otros']['pie_logos']['#default_value'])[0]);
     $ruta = $this->container->get('router.route_provider')->getRouteByName('unillanos_autoeval.micrositio');
     $this->assertSame('/admin/config/unillanos/micrositio', $ruta->getPath());
     // Cambio deliberado de la Fase 8.1: la ruta ya no exige «administer site

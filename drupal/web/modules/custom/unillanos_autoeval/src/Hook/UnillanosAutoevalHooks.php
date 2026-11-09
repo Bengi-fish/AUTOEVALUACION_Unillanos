@@ -3,8 +3,12 @@
 namespace Drupal\unillanos_autoeval\Hook;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\CloseDialogCommand;
+use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
@@ -24,6 +28,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\unillanos_autoeval\Service\CalculadorGrado;
+use Drupal\unillanos_autoeval\Service\EnlacesEdicion;
 use Drupal\unillanos_autoeval\Service\ModeloProceso;
 use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
 use Drupal\unillanos_autoeval\Service\SugerenciaDestino;
@@ -68,6 +73,7 @@ class UnillanosAutoevalHooks {
     protected ModeloProceso $modeloProceso,
     protected RequestStack $requestStack,
     protected EntityTypeManagerInterface $entityTypeManager,
+    protected AccountInterface $usuarioActual,
   ) {}
 
   /**
@@ -89,6 +95,21 @@ class UnillanosAutoevalHooks {
     ],
     'media' => [
       'documento' => ['field_proceso' => ['proceso', 'proceso']],
+    ],
+  ];
+
+  /**
+   * Relaciones con un término que se precargan en los formularios de creación.
+   *
+   * Por tipo de contenido: campo => [parámetro de la URL, vocabulario al que
+   * debe pertenecer el término]. Lo usa el modo edición para abrir «crear
+   * valoración» con el factor ya elegido.
+   *
+   * @var array<string, array<string, array<string, array{0: string, 1: string}>>>
+   */
+  const PRECARGA_TERMINOS = [
+    'node' => [
+      'valoracion' => ['field_elemento' => ['elemento', 'elemento_modelo']],
     ],
   ];
 
@@ -124,8 +145,9 @@ class UnillanosAutoevalHooks {
       return;
     }
     $reglas = self::PRECARGA[$entity->getEntityTypeId()][$entity->bundle()] ?? [];
+    $reglas_terminos = self::PRECARGA_TERMINOS[$entity->getEntityTypeId()][$entity->bundle()] ?? [];
     $peticion = $this->requestStack->getCurrentRequest();
-    if (!$reglas || !$peticion) {
+    if ((!$reglas && !$reglas_terminos) || !$peticion) {
       return;
     }
     // all(): un parámetro en forma de arreglo (?proceso[]=1) no debe lanzar una
@@ -141,6 +163,18 @@ class UnillanosAutoevalHooks {
         $entity->set($campo, $destino->id());
       }
     }
+    // Términos (el factor de una valoración): del vocabulario esperado y que
+    // la persona pueda ver.
+    foreach ($reglas_terminos as $campo => [$parametro, $vocabulario]) {
+      $valor = $consulta[$parametro] ?? NULL;
+      if (!is_string($valor) || !ctype_digit($valor) || !$entity->hasField($campo) || !$entity->get($campo)->isEmpty()) {
+        continue;
+      }
+      $termino = $this->entityTypeManager->getStorage('taxonomy_term')->load((int) $valor);
+      if ($termino && $termino->bundle() === $vocabulario && $termino->access('view')) {
+        $entity->set($campo, $termino->id());
+      }
+    }
   }
 
   /**
@@ -153,6 +187,11 @@ class UnillanosAutoevalHooks {
    */
   #[Hook('form_alter')]
   public function formAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    if ($form_id === 'user_login_form') {
+      $this->alPortadaTrasEntrar($form);
+      return;
+    }
+    $this->enPanelLateral($form);
     $ayudas = match ($form_id) {
       'node_programa_acreditacion_form' => $this->ayudasDeLaFicha(),
       'media_documento_acreditacion_form' => $this->ayudasDelDocumento(),
@@ -169,6 +208,110 @@ class UnillanosAutoevalHooks {
     if (isset($form['actions']['submit'])) {
       $form['actions']['submit']['#submit'][] = [self::class, 'volverAlPanel'];
     }
+  }
+
+  /**
+   * Hace que un formulario abierto en el panel lateral se guarde sin recargar.
+   *
+   * Los lápices del modo edición abren la pantalla de edición en el panel
+   * lateral (off-canvas). Para que guardar no saque a la persona del panel, el
+   * botón principal se envía por AJAX: con errores, se vuelve a mostrar el
+   * formulario con sus mensajes dentro del panel; sin errores, Drupal
+   * redirige a la página de origen (`?destination=`), que se recarga con el
+   * cambio. Solo actúa para quien tiene el permiso del modo edición y solo en
+   * una petición del panel lateral; fuera de él, ningún formulario cambia.
+   *
+   * @param array<mixed> $form
+   *   El formulario.
+   */
+  protected function enPanelLateral(array &$form): void {
+    $solicitud = $this->requestStack->getCurrentRequest();
+    if (!$solicitud || !$this->usuarioActual->hasPermission(EnlacesEdicion::PERMISO)) {
+      return;
+    }
+    // Al enviar el formulario, Drupal repite `_wrapper_format` en la URL (el
+    // del panel y el de AJAX) y PHP se queda con el último: se mira la URL
+    // completa de la petición.
+    if (!str_contains($solicitud->getRequestUri(), '_wrapper_format=drupal_dialog.off_canvas')) {
+      return;
+    }
+    if (!isset($form['actions']['submit']) || ($form['actions']['submit']['#type'] ?? '') !== 'submit') {
+      return;
+    }
+    $form['#prefix'] = '<div id="ua-panel-formulario">' . ($form['#prefix'] ?? '');
+    $form['#suffix'] = ($form['#suffix'] ?? '') . '</div>';
+    $form['actions']['submit']['#ajax'] = [
+      'callback' => self::class . '::devolverFormularioAlPanel',
+      'wrapper' => 'ua-panel-formulario',
+      'progress' => ['type' => 'throbber'],
+    ];
+  }
+
+  /**
+   * Cierra el panel y recarga la página, o devuelve el formulario con errores.
+   *
+   * Sin errores, el panel se cierra y se redirige a la página de origen
+   * (`?destination=`, solo rutas internas; si no hay, a la portada): como es
+   * la misma página, se recarga y muestra el cambio y el mensaje de Drupal.
+   * Con errores, se vuelve a pintar el formulario con sus mensajes dentro del
+   * panel.
+   *
+   * @param array<mixed> $form
+   *   Formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   *
+   * @return array<mixed>|\Drupal\Core\Ajax\AjaxResponse
+   *   Las órdenes de AJAX, o el formulario con los mensajes al principio.
+   */
+  public function devolverFormularioAlPanel(array &$form, FormStateInterface $form_state): array|AjaxResponse {
+    if ($form_state->hasAnyErrors()) {
+      $form['mensajes_del_panel'] = ['#type' => 'status_messages', '#weight' => -1000];
+      return $form;
+    }
+    $destino = $this->requestStack->getCurrentRequest()?->query->get('destination');
+    $url = Url::fromRoute('<front>');
+    if (is_string($destino) && str_starts_with($destino, '/') && !str_starts_with($destino, '//') && !UrlHelper::isExternal($destino)) {
+      try {
+        $url = Url::fromUserInput($destino);
+      }
+      catch (\InvalidArgumentException) {
+        // Un destino que Drupal no puede construir: se vuelve a la portada.
+      }
+    }
+    $respuesta = new AjaxResponse();
+    $respuesta->addCommand(new CloseDialogCommand('#drupal-off-canvas'));
+    $respuesta->addCommand(new RedirectCommand($url->toString()));
+    return $respuesta;
+  }
+
+  /**
+   * En /acceso-acreditacion, tras iniciar sesión se va a la portada.
+   *
+   * Drupal lleva a la página de la cuenta; solo en la ruta propia se añade un
+   * manejador que cambia el destino a la portada. Un `destination` explícito
+   * en la URL sigue mandando, y /user/login no cambia.
+   *
+   * @param array<mixed> $form
+   *   El formulario de inicio de sesión.
+   */
+  protected function alPortadaTrasEntrar(array &$form): void {
+    $solicitud = $this->requestStack->getCurrentRequest();
+    if ($solicitud?->attributes->get('_route') === 'unillanos_autoeval.acceso' && !$solicitud->query->has('destination')) {
+      $form['#submit'][] = [self::class, 'alPortada'];
+    }
+  }
+
+  /**
+   * Cambia el destino del formulario de inicio de sesión a la portada.
+   *
+   * @param array<mixed> $form
+   *   Formulario.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Estado del formulario.
+   */
+  public static function alPortada(array &$form, FormStateInterface $form_state): void {
+    $form_state->setRedirect('<front>');
   }
 
   /**
@@ -320,6 +463,11 @@ class UnillanosAutoevalHooks {
     ]);
     // Las consultas de los servicios respetan el acceso del visitante.
     $build['#cache']['contexts'][] = 'user.permissions';
+    // Los enlaces del modo edición llevan la URL actual como destino.
+    if ($this->usuarioActual->hasPermission(EnlacesEdicion::PERMISO)) {
+      $build['#cache']['contexts'][] = 'url.path';
+      $build['#cache']['contexts'][] = 'url.query_args';
+    }
     foreach (['field_facultad', 'field_sede'] as $campo) {
       $termino = $entity->get($campo)->entity;
       if ($termino) {

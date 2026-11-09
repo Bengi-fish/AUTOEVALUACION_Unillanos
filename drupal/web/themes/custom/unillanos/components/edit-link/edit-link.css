@@ -1,0 +1,90 @@
+/**
+ * Componente edit-link y barra del modo edición.
+ *
+ * Los lápices y los «+» están ocultos hasta que html[data-ua-edicion="on"]
+ * (lo pone js/edicion.js al activar el modo edición).
+ */
+
+.ua-edit {
+  display: none;
+}
+
+html[data-ua-edicion="on"] .ua .ua-edit {
+  display: inline-flex;
+}
+
+.ua .ua-edit {
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  min-width: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 2px solid var(--tinta-900);
+  border-radius: var(--radio-pill);
+  background: var(--Surface);
+  color: var(--tinta-900);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ua .ua-edit--texto {
+  padding: 0 var(--espacio-4);
+}
+
+.ua .ua-edit:hover {
+  background: var(--tinta-900);
+  color: var(--Surface);
+}
+
+/* Lápiz sobre una tarjeta: va en la esquina, fuera del enlace de la tarjeta. */
+.ua-edit--esquina {
+  position: absolute;
+  top: var(--espacio-2);
+  right: var(--espacio-2);
+}
+
+/* Tarjeta de programa: el lápiz se coloca sobre su esquina. */
+.ua-prog-list > li {
+  position: relative;
+}
+
+/* Con el lápiz en la esquina, el texto de la tarjeta deja ese espacio libre. */
+html[data-ua-edicion="on"] .ua-prog-list > li:has(> .ua-edit--esquina) .ua-prog__eyebrow,
+html[data-ua-edicion="on"] .ua-prog-list > li:has(> .ua-edit--esquina) .ua-prog__name {
+  padding-right: calc(44px + var(--espacio-2));
+}
+
+.ua-prog-nuevo {
+  display: none;
+}
+
+html[data-ua-edicion="on"] .ua-prog-nuevo {
+  display: block;
+  margin-bottom: var(--espacio-4);
+}
+
+/* Zonas del modo edición de la página del programa. */
+.ua-edicion-zona {
+  display: none;
+}
+
+html[data-ua-edicion="on"] .ua-edicion-zona {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4) 0;
+}
+
+.ua-panel__edicion {
+  display: none;
+}
+
+html[data-ua-edicion="on"] .ua-panel__edicion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-3);
+}

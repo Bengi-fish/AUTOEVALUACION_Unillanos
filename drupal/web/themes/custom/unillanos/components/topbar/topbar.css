@@ -41,9 +41,33 @@
   text-decoration: underline;
 }
 
-.ua-topbar__acceso {
+.ua-topbar__derecha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0 var(--espacio-4);
   margin-left: auto;
+  /* Aire para que el anillo de foco (4 px) de los íconos de 44 px quepa. */
+  padding: var(--espacio-1) 0;
+  --fondo-redes: var(--carbon);
+}
+
+.ua-topbar__acceso {
   flex: none;
+}
+
+/* Logo GOV.CO: archivo oficial sin modificar, solo escalado. */
+.ua .ua-topbar__govco {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.ua-topbar__govco img {
+  display: block;
+  height: 24px;
+  width: auto;
 }
 
 @media (max-width: 860px) {
@@ -61,4 +85,79 @@
     display: none;
   }
 
+  .ua-topbar__derecha {
+    gap: 0 var(--espacio-3);
+  }
+
+  .ua-topbar__govco img {
+    height: 20px;
+  }
+
+}
+
+/* La barra del modo edición va a la izquierda, antes de los enlaces. */
+.ua-topbar__inner > .ua-edicion-barra {
+  flex: none;
+  padding: var(--espacio-1) 0;
+}
+
+@media (max-width: 860px) {
+
+  .ua-topbar__inner {
+    flex-wrap: wrap;
+  }
+
+  /* El modo edición se ve también en móvil. */
+  .ua-topbar__inner > .ua-edicion-barra {
+    flex: 1 1 100%;
+  }
+
+}
+
+/* Barra del modo edición (franja superior). */
+.ua-edicion-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--espacio-4);
+  --fondo-redes: var(--carbon);
+}
+
+.ua .ua-edicion-barra__boton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: 44px;
+  padding: 0 var(--espacio-4);
+  border: 2px solid var(--Surface);
+  border-radius: var(--radio-pill);
+  background: transparent;
+  color: var(--Surface);
+  font-family: var(--font-base);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ua .ua-edicion-barra__boton[aria-pressed="true"] {
+  background: var(--Surface);
+  color: var(--carbon);
+}
+
+/* El enlace de edición del micrositio se ve solo con el modo activo. */
+.ua .ua-edicion-barra .ua-edit {
+  border-color: var(--Surface);
+  background: transparent;
+  color: var(--Surface);
+}
+
+.ua .ua-edicion-barra .ua-edit:hover {
+  background: var(--Surface);
+  color: var(--carbon);
+}
+
+/* «Cerrar sesión»: también un objetivo de 44 px. */
+.ua .ua-edicion-barra .ua-topbar__link {
+  min-height: 44px;
 }

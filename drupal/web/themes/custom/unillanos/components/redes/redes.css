@@ -1,0 +1,77 @@
+/**
+ * Componente redes: íconos de redes sociales en enlaces de 44 px. El dibujo
+ * (archivo autoalojado de images/redes/) se pinta como máscara con el color del
+ * texto del contenedor.
+ */
+
+.ua-redes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ua .ua-redes__enlace {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Círculo de contorno de 32 px dentro del objetivo de 44 px. */
+.ua-redes__icono {
+  display: block;
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  position: relative;
+}
+
+.ua-redes__icono::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  background: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.ua-redes__icono--facebook::after {
+  mask-image: url("../../images/redes/facebook.svg");
+  -webkit-mask-image: url("../../images/redes/facebook.svg");
+}
+
+.ua-redes__icono--x::after {
+  mask-image: url("../../images/redes/x.svg");
+  -webkit-mask-image: url("../../images/redes/x.svg");
+}
+
+.ua-redes__icono--instagram::after {
+  mask-image: url("../../images/redes/instagram.svg");
+  -webkit-mask-image: url("../../images/redes/instagram.svg");
+}
+
+.ua-redes__icono--youtube::after {
+  mask-image: url("../../images/redes/youtube.svg");
+  -webkit-mask-image: url("../../images/redes/youtube.svg");
+}
+
+.ua .ua-redes__enlace:hover .ua-redes__icono {
+  background: currentColor;
+}
+
+.ua .ua-redes__enlace:hover .ua-redes__icono::after {
+  background: var(--fondo-redes, var(--carbon));
+}

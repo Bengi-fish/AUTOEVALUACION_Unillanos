@@ -1,21 +1,119 @@
-# Datos de la cabecera, la franja superior y el pie del micrositio. Lo vacío no
-# se pinta. Los enlaces de la web principal, las entidades, las sedes, el
-# contacto y las redes se completan cuando la Universidad entregue los reales.
 nombre_linea1: 'Sistema de'
-nombre_linea2: 'Autoevaluación'
+nombre_linea2: Autoevaluación
 url_web_principal: ''
-franja_superior: []
+url_govco: 'https://www.gov.co/'
+redes_sociales:
+  facebook: 'https://www.facebook.com/UnillanosOficial/'
+  x: 'https://twitter.com/unillanos_?lang=es'
+  instagram: 'https://www.instagram.com/unillanos_/'
+  youtube: 'https://www.youtube.com/channel/UCmhXbLrVeyotUiBsaPBcxcA'
+franja_superior: {  }
 accesibilidad:
   titulo: Accesibilidad
   url: ''
 pie:
-  titulo: 'Sistema de Información de Autoevaluación Institucional'
-  descripcion: 'Un espacio para consultar, participar y hacer seguimiento a la mejora continua de la Universidad.'
-  institucion: 'Universidad de los Llanos'
-  nota_institucion: 'Sedes Villavicencio y Granada · Meta, Colombia'
-  entidades: []
-  sedes: []
-  contacto: []
-  redes: []
-  enlaces_legales: []
-  legal: 'Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional. © 2026 Universidad de los Llanos.'
+  ubicanos:
+    titulo: Ubícanos
+    sedes:
+      -
+        titulo: 'Campus Barcelona'
+        texto: 'Km. 12 Vía Puerto López'
+      -
+        titulo: 'Campus San Antonio'
+        texto: 'Calle 37 No. 41-02 Barzal'
+      -
+        titulo: 'Campus Boquemonte'
+        texto: 'KM 2 Vía San Juan de Arama - Granada, Meta'
+    horario:
+      titulo: 'Horario de atención: Lunes a Viernes'
+      texto: '7:30am a 11:30m y 2:00pm a 5:30pm'
+  contacto:
+    titulo: Contacto
+    items:
+      -
+        titulo: 'Notificaciones judiciales'
+        texto: notificacionesjudiciales@unillanos.edu.co
+        url: 'mailto:notificacionesjudiciales@unillanos.edu.co'
+        icono: mail
+      -
+        titulo: 'Ventanilla única virtual'
+        texto: contacto@unillanos.edu.co
+        url: 'mailto:contacto@unillanos.edu.co'
+        icono: mail
+      -
+        titulo: 'Correo electrónico'
+        texto: soytransparente@unillanos.edu.co
+        url: 'mailto:soytransparente@unillanos.edu.co'
+        icono: mail
+      -
+        titulo: PQRS
+        texto: quejasyreclamos@unillanos.edu
+        url: 'mailto:quejasyreclamos@unillanos.edu'
+        icono: mail
+      -
+        titulo: 'Chat en línea'
+        texto: ''
+        url: 'https://www.unillanos.edu.co/livezilla/chat.php?a=30c6e'
+        icono: message
+  lineas:
+    titulo: 'Líneas de atención'
+    items:
+      -
+        titulo: PBX
+        texto: '(57) 608 6611623'
+        url: 'tel:+576086611623'
+        icono: phone
+      -
+        titulo: 'Línea anticorrupción'
+        texto: '018000 918 641'
+        url: 'tel:018000918641'
+        icono: phone
+      -
+        titulo: 'Línea nacional'
+        texto: '018000 918 641'
+        url: 'tel:018000918641'
+        icono: phone
+      -
+        titulo: WhatsApp
+        texto: '+57 322 292 31 94'
+        url: 'https://wa.me/573222923194'
+        icono: message
+  redes_titulo: Redes
+  politicas:
+    titulo: 'Políticas de privacidad y términos de uso'
+    enlaces:
+      -
+        titulo: 'Términos y condiciones de uso'
+        url: 'https://unillanos.edu.co/index.php/politica-de-privacidad-y-condiciones-de-uso'
+      -
+        titulo: 'Política de tratamiento y protección de datos personales'
+        url: 'https://drive.google.com/file/d/0BwmLeW3ZlZXtR0QxeWRNanVNOG1GOER6SkRsaUFtM0NuYmVZ/view?resourcekey=0-KI2mtnlNcRK7boQVeZiJYQ'
+      -
+        titulo: 'Política de seguridad de la información'
+        url: 'https://sig.unillanos.edu.co/phocadownload/ACUERDO%20SUPERIOR%20002%20DE%202019.pdf'
+      -
+        titulo: 'Estatuto sobre propiedad intelectual de la Universidad de los Llanos'
+        url: 'https://drive.google.com/file/d/0BwmLeW3ZlZXteFFXX0ZEOUpaQkpXQnpmYm9uMlVYZEd0WFlz/view?resourcekey=0-U9NwKW-81SLRPCyRPRnDMw'
+  logos:
+    -
+      clave: unillanos
+      titulo: 'Universidad de los Llanos'
+      url: 'https://www.unillanos.edu.co/'
+    -
+      clave: mineducacion
+      titulo: 'Vigilada MinEducación, Ministerio de Educación Nacional'
+      url: 'https://www.mineducacion.gov.co/'
+    -
+      clave: colombia
+      titulo: 'CO Colombia, marca país'
+      url: 'https://www.colombia.co/'
+    -
+      clave: govco
+      titulo: 'GOV.CO, portal único del Estado colombiano'
+      url: 'https://www.gov.co/'
+  derechos:
+    institucion: 'Universidad de los Llanos'
+    url: 'https://www.unillanos.edu.co/'
+    desde: 1974
+    texto: 'Reservados todos los derechos'
+    nit: 'Nit: 892.000.757-3'

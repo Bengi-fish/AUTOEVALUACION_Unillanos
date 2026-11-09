@@ -57,6 +57,14 @@
             {% include 'unillanos:meter' with props_medidor only %}
           {% endif %}
         </div>
+        {% if item.edicion %}
+          {# Modo edición: lápiz o «+» hacia la valoración del factor. #}
+          <div class="ua-panel__edicion">
+            {% for enlace in item.edicion %}
+              {% include 'unillanos:edit-link' with {url: enlace.url, label: enlace.title, variant: enlace.tipo, show_label: true} only %}
+            {% endfor %}
+          </div>
+        {% endif %}
         {% if item.desc %}
           <p class="ua-panel__desc">
             {#- Solo se resaltan los pares completos *así* (como el prototipo); un asterisco suelto o «**» se imprimen tal cual. -#}

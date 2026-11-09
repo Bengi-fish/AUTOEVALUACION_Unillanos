@@ -72,8 +72,9 @@
 /* El buscador se reduce a su botón (el campo está en /programas). */
 @media (max-width: 1180px) {
 
+  /* 46 px con el borde: el botón queda de 44 px. */
   .ua-header .ua-header__search {
-    width: 44px;
+    width: 46px;
     padding: 0;
     justify-content: center;
   }

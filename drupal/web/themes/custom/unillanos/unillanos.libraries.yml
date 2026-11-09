@@ -17,6 +17,15 @@ programa:
   css:
     component:
       css/programa.css: {}
+edicion:
+  version: 1.0.0
+  js:
+    js/edicion.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.dialog.ajax
+    - core/drupal.dialog.off_canvas
 motion:
   version: 1.0.0
   js:

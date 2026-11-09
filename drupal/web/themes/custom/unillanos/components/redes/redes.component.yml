@@ -1,0 +1,29 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Redes sociales
+status: stable
+group: Página base
+description: 'Íconos de redes sociales (Facebook, X, Instagram y YouTube) como enlaces de 44 px. Cada ícono es un enlace con su nombre accesible; se abre en la misma pestaña. Sin redes con URL segura no imprime nada. Los íconos son archivos autoalojados (Simple Icons, CC0) pintados con el color del texto.'
+props:
+  type: object
+  properties:
+    redes:
+      type: array
+      title: Redes
+      description: 'Cada una con `red` (facebook, x, instagram o youtube; otro valor se omite), `title` (nombre accesible) y `url`. Una URL que no es segura se omite (mismo filtro que unillanos:button).'
+      items:
+        type: object
+        required:
+          - red
+          - title
+          - url
+        properties:
+          red:
+            type: string
+          title:
+            type: string
+          url:
+            type: string
+    label:
+      type: string
+      title: Nombre de la lista para lectores de pantalla
+      description: 'Por defecto «Redes sociales de la Universidad».'

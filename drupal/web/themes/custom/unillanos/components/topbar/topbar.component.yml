@@ -2,7 +2,7 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Franja superior
 status: stable
 group: Página base
-description: 'Franja oscura de 44 px sobre el encabezado: enlaces a la web principal y a servicios de la Universidad, y el enlace de accesibilidad a la derecha. Sin enlaces no imprime nada. Un destino que no es seguro se imprime sin href (mismo filtro que unillanos:button).'
+description: 'Franja oscura de 44 px sobre el encabezado: enlaces a la web principal y a servicios de la Universidad, y a la derecha el enlace de accesibilidad, los íconos de redes y el logo GOV.CO. Sin ninguno de ellos no imprime nada. Un destino que no es seguro se imprime sin href (mismo filtro que unillanos:button).'
 props:
   type: object
   properties:
@@ -32,6 +32,48 @@ props:
           type: string
         url:
           type: string
+    social:
+      type: array
+      title: Redes sociales
+      description: 'Íconos de redes a la derecha (ver unillanos:redes). Cada elemento con red, title y url; sin elementos no se imprimen.'
+      items:
+        type: object
+        properties:
+          red:
+            type: string
+          title:
+            type: string
+          url:
+            type: string
+    govco:
+      type:
+        - object
+        - 'null'
+      title: Logo GOV.CO
+      description: 'Enlace del logo GOV.CO (versión para fondo oscuro del tema) a la derecha de las redes; sin title o sin url seguro no se imprime. `title` es su nombre accesible.'
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+    edicion:
+      type:
+        - object
+        - 'null'
+      title: Barra del modo edición
+      description: 'Solo para quien tiene el permiso de edición: interruptor «Modo edición» (aria-pressed), enlace opcional al formulario del micrositio y «Cerrar sesión» (logout_url). Sin logout_url no se imprime.'
+      properties:
+        logout_url:
+          type: string
+        micrositio:
+          type:
+            - object
+            - 'null'
+          properties:
+            url:
+              type: string
+            title:
+              type: string
     label:
       type: string
       title: Nombre de la región para lectores de pantalla

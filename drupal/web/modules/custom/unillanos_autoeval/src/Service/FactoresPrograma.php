@@ -204,6 +204,9 @@ class FactoresPrograma {
         'name' => (string) $factor->label(),
         'label' => $dos_cifras !== '' ? (string) $this->t('Factor @numero', ['@numero' => $dos_cifras]) : '',
         'decimals' => 2,
+        // Identificadores para el modo edición (los componentes los ignoran).
+        'factor_id' => (int) $id,
+        'valoracion_id' => $valoracion ? (int) $valoracion->id() : 0,
       ];
       if ($valoracion) {
         $cache->addCacheableDependency($valoracion);

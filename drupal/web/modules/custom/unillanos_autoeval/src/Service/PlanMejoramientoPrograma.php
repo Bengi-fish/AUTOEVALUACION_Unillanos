@@ -201,6 +201,8 @@ class PlanMejoramientoPrograma {
           $codigo = (string) $meta->get('field_numero')->value;
         }
         $filas[] = [
+          // Para el modo edición (los componentes lo ignoran).
+          'meta_id' => (int) $meta->id(),
           'keys' => $claves,
           'tag' => implode(', ', array_filter(array_map(fn($clave) => $etiquetas[$clave] ?? '', $claves))),
           'cells' => [
@@ -285,6 +287,7 @@ class PlanMejoramientoPrograma {
         $partes[] = $this->plano($this->t('suscrito en @fecha', ['@fecha' => $suscrito]));
       }
       return [
+        'plan_id' => (int) $plan->id(),
         'lead' => implode(' · ', $partes),
         'opciones' => $opciones,
         'filas' => $filas,
