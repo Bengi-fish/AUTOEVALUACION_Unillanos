@@ -99,7 +99,7 @@ ddev drush cr
 # --- 7. Chequeo final -------------------------------------------------------
 paso "7/7 Chequeo final"
 contar() {
-  ddev drush sql:query "SELECT COUNT(*) FROM node_field_data WHERE type='$1' AND status=1" | tail -1
+  ddev drush sql:query "SELECT COUNT(*) FROM node_field_data WHERE type='$1' AND status=1" | grep -E '^[0-9]+$' | head -1
 }
 PROGRAMAS=$(contar programa)
 PROCESOS=$(contar proceso)

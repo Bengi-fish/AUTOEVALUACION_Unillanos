@@ -23,7 +23,7 @@ git --version && ddev --version && gh --version && docker ps
 ```
 
 ## 2. Entrar a GitHub
-Acepta la invitación que te llegó al correo (o en github.com → campana de notificaciones). Después:
+Usa tu propia cuenta de GitHub (la dueña del repositorio):
 
 ```bash
 gh auth login          # elige GitHub.com → HTTPS → «Login with a web browser»
