@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Ejemplo de ajustes locales de cada persona.
+ *
+ * Copia este archivo como settings.local.php (ese nombre no se versiona) solo
+ * si necesitas ajustes propios. En DDEV NO hace falta: la base de datos y la
+ * sal (hash_salt) las pone DDEV en settings.ddev.php, que se genera solo.
+ * Nunca escribas aquí claves que vayas a subir a git.
+ */
+
+// Mostrar errores completos durante el desarrollo.
+$config['system.logging']['error_level'] = 'verbose';
+
+// Sin agregación de CSS y JS mientras se edita el tema.
+$config['system.performance']['css']['preprocess'] = FALSE;
+$config['system.performance']['js']['preprocess'] = FALSE;

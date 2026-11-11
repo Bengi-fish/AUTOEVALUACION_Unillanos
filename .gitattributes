@@ -1,0 +1,7 @@
+# Fin de línea LF en lo que corre en Linux (WSL/DDEV), aunque se clone desde Windows.
+*.sh text eol=lf
+*.php text eol=lf
+*.yml text eol=lf
+*.twig text eol=lf
+# Los CSV se conservan tal cual (algunos están en CRLF).
+*.csv -text

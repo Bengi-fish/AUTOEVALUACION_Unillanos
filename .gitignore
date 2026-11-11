@@ -32,3 +32,6 @@ node_modules/
 
 # --- Serena: memoria local, no se versiona ---
 .serena/
+
+# --- Archivos opcionales que se pasan fuera de git (scripts/instalar.sh) ---
+/archivos-sitio/

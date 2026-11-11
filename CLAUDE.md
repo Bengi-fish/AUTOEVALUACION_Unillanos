@@ -98,3 +98,13 @@ Detalle en `docs/pendientes-acreditacion.md`.
 - Migraciones: `ddev drush migrate:import --group=unillanos` · `migrate:rollback` (preguntar antes si es de todo el grupo)
 - Alias tras migrar: `ddev drush pathauto:aliases-generate create canonical_entities:node`
 - Si faltan phpcs/phpstan/phpunit: `ddev composer require --dev drupal/core-dev`
+
+## 6. Trabajo en equipo (cada persona en su propio equipo)
+- **Una rama por tarea**, creada desde `main` actualizado (`git pull` primero). Nunca se trabaja en `main`.
+- **La identidad es la de cada persona**: Claude usa el `user.name` y `user.email` de git de quien lo ejecuta; no se cambian ni se firman commits en nombre de otra persona.
+- Claude no hace `push`, PR ni merge: la persona sube su rama y abre el PR. Tras un `git pull`: `ddev composer install`, `ddev drush updb -y`, `ddev drush cim -y`, `ddev drush cr`. Antes de cada commit con cambios de configuración: `ddev drush cex -y`.
+- **Las pruebas nunca bajan**: el número de pruebas y aserciones es igual o mayor que el de antes de la tarea; no se borran aserciones para que pasen.
+- PHPCS (`Drupal,DrupalPractice`) sin errores y PHPStan `--level=5` limpio en cada módulo tocado.
+- Sin `|raw` en Twig con texto de usuario. `plantilla/` y `docs/fuentes/` son de solo lectura. Respaldos de la base fuera del repositorio (`$HOME/respaldos/`).
+- Instalación desde cero y guía de uso: `scripts/instalar.sh` y `docs/GUIA-OTRO-PC.md`.
+- El agente `revisor-unillanos` (`.claude/agents/`) se creó para el rediseño y la Fase 8; sus reglas citan esas etapas. Úsalo antes de cada commit; sus criterios de huella y capturas aplican solo a cambios de tema.
