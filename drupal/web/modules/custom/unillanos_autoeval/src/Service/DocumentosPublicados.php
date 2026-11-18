@@ -159,47 +159,19 @@ class DocumentosPublicados {
         }
       }
       $cache->addCacheableDependency($medio);
-      if ($archivo instanceof FileInterface) {
-        $cache->addCacheableDependency($archivo);
-      }
       $lineamiento = $medio->get('field_lineamiento')->entity;
       // El título del lineamiento solo se usa si está publicado.
       $lineamiento = $lineamiento instanceof NodeInterface && $lineamiento->isPublished() ? $lineamiento : NULL;
       $descripcion = $lineamiento ? (string) $lineamiento->label() : ($proceso ? (string) $proceso->label() : '');
-      $fecha = $this->fechaMesAnio($medio->get('field_fecha_publicacion')->value);
-      if ($archivo instanceof FileInterface) {
-        // Sin extensión no se sabe el tipo: rótulo genérico (nunca «PDF»).
-        $tipo = strtoupper(pathinfo((string) $archivo->getFilename(), PATHINFO_EXTENSION)) ?: 'DOC';
-        $kind = $tipo;
-        $rotulo = $tipo;
-        $datos_archivo = [$tipo, $this->tamano((int) $archivo->getSize())];
-        $url = $archivo->createFileUrl();
-        $externo = FALSE;
-      }
-      else {
-        // Enlace externo: se rotula como carpeta de Drive o como enlace, sin
-        // tamaño.
-        $es_carpeta = $this->esCarpetaDeDrive($enlace);
-        $kind = $es_carpeta ? 'CARP' : 'ENL';
-        $rotulo = $es_carpeta ? (string) $this->t('Carpeta de Drive') : (string) $this->t('Enlace');
-        $datos_archivo = [$rotulo];
-        $url = $enlace;
-        $externo = TRUE;
+      $item = $this->item($medio, $cache, $descripcion);
+      if ($item === NULL) {
+        continue;
       }
       $categoria = (string) $medio->get('field_categoria')->value;
       $orden = array_search($categoria, self::CATEGORIAS_DOCUMENTO, TRUE);
       $orden_programa = array_search($categoria, self::CATEGORIAS_PROGRAMA, TRUE);
       $documentos[] = [
-        'item' => [
-          'title' => $this->sinCortesEnPeriodo(trim((string) $medio->label())),
-          'cat' => $this->etiquetaLista($medio->get('field_categoria')),
-          'desc' => $descripcion,
-          'meta' => implode(' · ', array_filter([...$datos_archivo, $fecha])),
-          'kind' => $kind,
-          'rotulo' => $rotulo,
-          'url' => $url,
-          'externo' => $externo,
-        ],
+        'item' => $item,
         'categoria' => $categoria,
         'fecha' => (string) $medio->get('field_fecha_publicacion')->value,
         'programa' => $programa,
@@ -213,6 +185,68 @@ class DocumentosPublicados {
         ?: $this->compararTextos($a['item']['title'], $b['item']['title']);
     });
     return $documentos;
+  }
+
+  /**
+   * Arma el elemento de lista de un documento (título, rótulo, enlace).
+   *
+   * Un archivo lleva su tipo y tamaño; un enlace externo https se rotula
+   * «Carpeta de Drive» o «Enlace», sin tamaño. No comprueba el acceso al
+   * medio: quien llama decide qué documentos mostrar.
+   *
+   * @param \Drupal\media\MediaInterface $medio
+   *   Medio `documento`.
+   * @param \Drupal\Core\Cache\CacheableMetadata $cache
+   *   Recibe los metadatos de caché de lo que se lee.
+   * @param string $descripcion
+   *   Línea de descripción opcional.
+   *
+   * @return array<string, mixed>|null
+   *   Con title, cat, categoria (clave), desc, meta, kind, rotulo, url y
+   *   externo; NULL si el
+   *   documento no tiene archivo ni enlace https.
+   */
+  public function item(MediaInterface $medio, CacheableMetadata $cache, string $descripcion = ''): ?array {
+    $archivo = $medio->get('field_media_file')->entity;
+    $enlace = $this->enlaceExterno($medio);
+    if (!$archivo instanceof FileInterface && $enlace === '') {
+      return NULL;
+    }
+    $cache->addCacheableDependency($medio);
+    if ($archivo instanceof FileInterface) {
+      $cache->addCacheableDependency($archivo);
+    }
+    $fecha = $this->fechaMesAnio($medio->get('field_fecha_publicacion')->value);
+    if ($archivo instanceof FileInterface) {
+      // Sin extensión no se sabe el tipo: rótulo genérico (nunca «PDF»).
+      $tipo = strtoupper(pathinfo((string) $archivo->getFilename(), PATHINFO_EXTENSION)) ?: 'DOC';
+      $kind = $tipo;
+      $rotulo = $tipo;
+      $datos_archivo = [$tipo, $this->tamano((int) $archivo->getSize())];
+      $url = $archivo->createFileUrl();
+      $externo = FALSE;
+    }
+    else {
+      // Enlace externo: se rotula como carpeta de Drive o como enlace, sin
+      // tamaño.
+      $es_carpeta = $this->esCarpetaDeDrive($enlace);
+      $kind = $es_carpeta ? 'CARP' : 'ENL';
+      $rotulo = $es_carpeta ? (string) $this->t('Carpeta de Drive') : (string) $this->t('Enlace');
+      $datos_archivo = [$rotulo];
+      $url = $enlace;
+      $externo = TRUE;
+    }
+    return [
+      'title' => $this->sinCortesEnPeriodo(trim((string) $medio->label())),
+      'cat' => $this->etiquetaLista($medio->get('field_categoria')),
+      'categoria' => (string) $medio->get('field_categoria')->value,
+      'desc' => $descripcion,
+      'meta' => implode(' · ', array_filter([...$datos_archivo, $fecha])),
+      'kind' => $kind,
+      'rotulo' => $rotulo,
+      'url' => $url,
+      'externo' => $externo,
+    ];
   }
 
   /**

@@ -551,4 +551,37 @@ class PanelAcreditacionTest extends UnillanosKernelTestBase {
     $this->assertStringContainsString('min-height: 44px', $css);
   }
 
+  /**
+   * La sección «Institucional» del panel (Fase 9, etapa 3).
+   *
+   * Trae los accesos de procesos, dependencias, directivos, normatividad y
+   * cifras que la persona puede usar, sin encabezados propios y solo con
+   * enlaces que existen.
+   */
+  public function testSeccionInstitucional(): void {
+    $this->programas(1);
+    [$html, $construccion] = $this->panel($this->acreditacion());
+    $titulos = array_map('strval', array_column($construccion['#datos']['institucional'], 'titulo'));
+    $this->assertSame(
+      ['Procesos institucionales', 'Dependencias', 'Directivos', 'Normatividad', 'Introducción y cifras'],
+      $titulos,
+    );
+    $this->assertStringContainsString('<nav class="unillanos-acreditacion__institucional" aria-label="Institucional">', $html);
+    $this->assertStringContainsString('Añadir una dependencia', $html);
+    $this->assertStringContainsString('Añadir una norma', $html);
+    $this->assertStringContainsString('href="/node/add/dependencia"', $html);
+    $this->assertStringContainsString('href="/node/add/norma"', $html);
+    $this->assertStringContainsString('Editar la introducción y los enlaces de cifras', $html);
+    // Sin permiso de crear normas, ese acceso no se ofrece.
+    $sin_normas = $this->usuarioConPermisos([
+      'access acreditacion panel',
+      'create dependencia content',
+      'access content overview',
+    ]);
+    [$html] = $this->panel($sin_normas);
+    $this->assertStringContainsString('Añadir una dependencia', $html);
+    $this->assertStringNotContainsString('Añadir una norma', $html);
+    $this->assertStringNotContainsString('Editar la introducción', $html);
+  }
+
 }

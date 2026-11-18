@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Dependencias (/institucional/dependencias).
+ *
+ * Variables:
+ * - datos: lo arma InstitucionalDependencias::datos(): dependencias (id,
+ *   titulo, descripcion, total, grupos por nivel y edicion), total, edicion y
+ *   vacio. Solo trae lo que existe: lo vacío se omite.
+ */
+#}
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Institucional'|t,
+  title: 'Formatos por'|t,
+  title_accent: 'dependencia'|t,
+  lead: 'Los formatos que llena cada dependencia con la información de cada programa.'|t,
+  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Institucional'|t, url: path('unillanos_autoeval.institucional')}, {title: 'Dependencias'|t}],
+} only %}
+
+{% embed 'unillanos:section' with {id: 'dependencias', datos: datos} only %}
+  {% block content %}
+    {% if datos.edicion.nueva %}
+      <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: datos.edicion.nueva.url, label: datos.edicion.nueva.title, variant: datos.edicion.nueva.tipo, show_label: true} only %}</div>
+    {% endif %}
+    {% if datos.vacio %}
+      <p class="ua-lead ua-docs-vacio">{{ 'Todavía no hay dependencias publicadas.'|t }}</p>
+    {% else %}
+      {% set entradas = [] %}
+      {% for dependencia in datos.dependencias %}
+        {% set grupos = [] %}
+        {% for grupo in dependencia.grupos %}
+          {% set grupos = grupos|merge([{title: grupo.titulo, items: grupo.items}]) %}
+        {% endfor %}
+        {% set entradas = entradas|merge([{id: dependencia.id, title: dependencia.titulo, description: dependencia.descripcion, count: dependencia.total, groups: grupos, edicion: dependencia.edicion}]) %}
+      {% endfor %}
+      {% include 'unillanos:accordion' with {id: 'dependencias-lista', heading: 'h2', searchable: true, search_label: 'Buscar por dependencia o programa'|t, items: entradas} only %}
+    {% endif %}
+  {% endblock %}
+{% endembed %}

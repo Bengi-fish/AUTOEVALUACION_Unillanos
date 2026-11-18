@@ -30,6 +30,22 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class UnillanosHooks {
 
   /**
+   * Rutas que pintan su propia cabecera (con su h1).
+   *
+   * @var string[]
+   */
+  const RUTAS_CON_CABECERA = [
+    'unillanos_autoeval.documentos',
+    'unillanos_autoeval.programas',
+    'unillanos_autoeval.institucional',
+    'unillanos_autoeval.institucional_procesos',
+    'unillanos_autoeval.institucional_dependencias',
+    'unillanos_autoeval.institucional_directivos',
+    'unillanos_autoeval.institucional_normatividad',
+    'unillanos_autoeval.institucional_cifras',
+  ];
+
+  /**
    * Constructor.
    */
   public function __construct(
@@ -176,7 +192,28 @@ class UnillanosHooks {
         'template' => 'unillanos-portada',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
-    ];
+    ] + $this->temasInstitucionales();
+  }
+
+  /**
+   * Plantillas de las páginas de «Institucional» (Fase 9, etapa 3).
+   *
+   * Una por página: portada, procesos, dependencias, directivos, normatividad
+   * y cifras. Sus datos los entrega el controlador de `unillanos_autoeval`.
+   *
+   * @return array<string, array<string, mixed>>
+   *   Definiciones de tema.
+   */
+  protected function temasInstitucionales(): array {
+    $temas = [];
+    foreach (['portada', 'procesos', 'dependencias', 'directivos', 'normatividad', 'cifras'] as $pagina) {
+      $temas['unillanos_institucional_' . $pagina] = [
+        'variables' => ['datos' => []],
+        'template' => 'unillanos-institucional-' . $pagina,
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ];
+    }
+    return $temas;
   }
 
   /**
@@ -207,10 +244,10 @@ class UnillanosHooks {
     $programa = $this->routeMatch->getRouteName() === 'entity.node.canonical'
       && $nodo instanceof NodeInterface
       && $nodo->bundle() === 'programa';
-    // La portada, la de documentos y la de programas también traen su propio
-    // h1.
+    // La portada, la de documentos, la de programas y las de «Institucional»
+    // también traen su propio h1.
     $variables['pagina_propia'] = $programa || !empty($variables['is_front'])
-      || in_array($this->routeMatch->getRouteName(), ['unillanos_autoeval.documentos', 'unillanos_autoeval.programas'], TRUE);
+      || in_array($this->routeMatch->getRouteName(), self::RUTAS_CON_CABECERA, TRUE);
     // Enlaces del pie desde el menú `footer` (sin enlaces, no hay columna). El
     // arreglo `pie_cache` no imprime nada: lleva a la página las etiquetas y
     // los contextos de caché del menú, del acceso y de las URL.

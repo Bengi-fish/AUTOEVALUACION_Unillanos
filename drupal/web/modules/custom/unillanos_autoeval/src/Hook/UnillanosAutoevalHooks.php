@@ -107,7 +107,11 @@ class UnillanosAutoevalHooks {
       'meta' => ['field_plan' => ['plan', 'plan_mejoramiento']],
     ],
     'media' => [
-      'documento' => ['field_proceso' => ['proceso', 'proceso']],
+      'documento' => [
+        'field_proceso' => ['proceso', 'proceso'],
+        'field_dependencia' => ['dependencia', 'dependencia'],
+        'field_programa' => ['programa', 'programa'],
+      ],
     ],
   ];
 
@@ -123,6 +127,9 @@ class UnillanosAutoevalHooks {
   const PRECARGA_TERMINOS = [
     'node' => [
       'valoracion' => ['field_elemento' => ['elemento', 'elemento_modelo']],
+    ],
+    'media' => [
+      'documento' => ['field_facultad' => ['facultad', 'facultad']],
     ],
   ];
 

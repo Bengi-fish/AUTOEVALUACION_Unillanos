@@ -1,0 +1,157 @@
+/**
+ * Componente accordion (Fase 9, etapa 3): entradas planas con borde, sin
+ * sombras. El botón mide al menos 44 px y ocupa toda la fila.
+ */
+
+.ua-acc {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.ua-acc__tools {
+  display: grid;
+  gap: var(--espacio-2);
+  padding: var(--espacio-4) var(--espacio-5);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua-acc__tools[hidden] {
+  display: none;
+}
+
+.ua-acc__label {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gris-texto);
+}
+
+.ua-acc__search {
+  width: 100%;
+  max-width: 28rem;
+  min-height: 44px;
+  padding: 0 var(--espacio-4);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
+  color: var(--carbon);
+  font-family: var(--font-base);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.ua-acc__item {
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua-acc__item[hidden] {
+  display: none;
+}
+
+.ua-acc__head {
+  margin: 0;
+}
+
+.ua-acc__btn {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--espacio-3) var(--espacio-5);
+  border: 0;
+  border-radius: var(--radio-md);
+  background: transparent;
+  color: var(--tinta-900);
+  font-family: var(--font-base);
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ua-acc__btn:hover {
+  background: var(--superficie-50);
+}
+
+.ua-acc__title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ua-acc__count {
+  min-width: 24px;
+  padding: 0 var(--espacio-2);
+  border-radius: var(--radio-pill);
+  background: var(--superficie-100);
+  color: var(--carbon);
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.ua-acc__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--verde-azulado-700);
+  transition: transform .15s ease;
+}
+
+.ua-acc__btn[aria-expanded="true"] .ua-acc__icon {
+  transform: rotate(180deg);
+}
+
+.ua-acc__panel {
+  padding: 0 var(--espacio-5) var(--espacio-5);
+}
+
+.ua-acc__panel[hidden] {
+  display: none;
+}
+
+.ua-acc__desc {
+  margin: 0 0 var(--espacio-4);
+  color: var(--tinta-700);
+}
+
+.ua-acc__group {
+  margin: var(--espacio-4) 0 var(--espacio-2);
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gris-texto);
+}
+
+.ua .ua-acc__btn:focus-visible {
+  border-radius: var(--radio-md);
+}
+
+@media (max-width: 560px) {
+
+  .ua-acc__btn {
+    padding: var(--espacio-3) var(--espacio-4);
+  }
+
+  .ua-acc__panel {
+    padding: 0 var(--espacio-4) var(--espacio-4);
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ua-acc__icon {
+    transition: none;
+  }
+
+}

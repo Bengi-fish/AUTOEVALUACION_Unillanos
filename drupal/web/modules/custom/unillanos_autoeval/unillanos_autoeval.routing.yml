@@ -96,3 +96,52 @@ unillanos_autoeval.acreditacion_documento_nuevo:
     _title: 'Subir un documento'
   requirements:
     _entity_create_access: 'media:documento'
+
+# «Institucional»: portada y sus cinco módulos (Fase 9, etapa 3).
+unillanos_autoeval.institucional:
+  path: '/institucional'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::portada'
+    _title: 'Institucional'
+  requirements:
+    _permission: 'access content'
+
+unillanos_autoeval.institucional_procesos:
+  path: '/institucional/procesos'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::procesos'
+    _title: 'Procesos institucionales'
+  requirements:
+    _permission: 'access content'
+
+unillanos_autoeval.institucional_dependencias:
+  path: '/institucional/dependencias'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::dependencias'
+    _title: 'Dependencias'
+  requirements:
+    _permission: 'access content'
+
+unillanos_autoeval.institucional_directivos:
+  path: '/institucional/directivos'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::directivos'
+    _title: 'Directivos'
+  requirements:
+    _permission: 'access content'
+
+unillanos_autoeval.institucional_normatividad:
+  path: '/institucional/normatividad'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::normatividad'
+    _title: 'Normatividad'
+  requirements:
+    _permission: 'access content'
+
+unillanos_autoeval.institucional_cifras:
+  path: '/institucional/cifras'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::cifras'
+    _title: 'Cifras'
+  requirements:
+    _permission: 'access content'

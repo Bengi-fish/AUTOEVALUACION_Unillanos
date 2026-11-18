@@ -1,0 +1,44 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Contenido externo bajo demanda
+status: stable
+group: Contenido
+description: 'Muestra un aviso de que el contenido es de otro sitio, un botón para cargarlo y un enlace para abrirlo aparte. El `iframe` NO está en el HTML inicial: el JavaScript lo crea al pulsar el botón (con título, carga diferida y sin enviar el sitio de origen). Sin JavaScript queda el enlace «Abrir».'
+props:
+  type: object
+  required:
+    - embed_url
+    - title
+  properties:
+    id:
+      type: string
+      description: 'Base de los ids; solo letras, números, guion y guion bajo.'
+    title:
+      type: string
+      title: Título accesible del contenido
+    embed_url:
+      type: string
+      title: Dirección que se carga en el iframe (solo https)
+    open_url:
+      type: string
+      title: Dirección del enlace «Abrir» (solo https)
+    host:
+      type: string
+      title: Sitio de origen (para el aviso)
+    button_label:
+      type: string
+      title: Rótulo del botón
+    open_label:
+      type: string
+      title: Rótulo del enlace
+    notice:
+      type: string
+      title: Aviso de sitio externo
+    height:
+      type: integer
+      minimum: 300
+      maximum: 1600
+      default: 800
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once

@@ -1,0 +1,178 @@
+/**
+ * Componente norm-table (Fase 9, etapa 3): tabla de siete columnas en
+ * escritorio; bajo 760 px, una tarjeta por norma con la etiqueta de cada dato
+ * visible. Sin sombras ni !important.
+ */
+
+.ua-norm__filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--espacio-4);
+  margin-bottom: var(--espacio-5);
+  padding: var(--espacio-4) var(--espacio-5);
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua-norm__filtros[hidden] {
+  display: none;
+}
+
+.ua-norm__campo {
+  display: grid;
+  gap: var(--espacio-2);
+  min-width: 12rem;
+}
+
+.ua-norm__campo--texto {
+  flex: 1 1 16rem;
+}
+
+.ua-norm__campo label {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gris-texto);
+}
+
+.ua-norm__campo select,
+.ua-norm__campo input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--espacio-3);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
+  color: var(--carbon);
+  font-family: var(--font-base);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.ua-norm__conteo {
+  flex: 1 0 100%;
+  margin: 0;
+  color: var(--tinta-700);
+  font-size: 15px;
+  line-height: 23px;
+}
+
+.ua-norm__caja {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+}
+
+.ua-norm table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 23px;
+}
+
+.ua-norm th {
+  text-align: left;
+  background: var(--verde-azulado-900);
+  color: var(--Surface);
+  font-family: var(--font-base);
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: var(--espacio-3) var(--espacio-4);
+}
+
+.ua-norm td {
+  padding: var(--espacio-4);
+  vertical-align: top;
+  border-top: 1px solid var(--borde);
+  color: var(--tinta-700);
+}
+
+.ua-norm tbody tr:nth-child(even) td {
+  background: var(--superficie-50);
+}
+
+.ua-norm tr[hidden] {
+  display: none;
+}
+
+.ua-norm td:nth-child(2) {
+  font-weight: 600;
+  color: var(--tinta-900);
+}
+
+.ua-norm__doc {
+  margin: var(--espacio-2) 0 0;
+}
+
+.ua-norm__edit {
+  display: inline-block;
+  margin-top: var(--espacio-2);
+}
+
+@media (max-width: 760px) {
+
+  .ua-norm__caja {
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .ua-norm table,
+  .ua-norm tbody {
+    display: block;
+  }
+
+  .ua-norm thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .ua-norm tr {
+    display: block;
+    margin-bottom: var(--espacio-4);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    background: var(--Surface);
+  }
+
+  .ua-norm tbody tr:nth-child(even) td {
+    background: transparent;
+  }
+
+  .ua-norm td {
+    display: grid;
+    gap: var(--espacio-1);
+    border-top: 0;
+    padding: var(--espacio-3) var(--espacio-4);
+    overflow-wrap: anywhere;
+  }
+
+  .ua-norm td + td {
+    border-top: 1px solid var(--borde);
+  }
+
+  .ua-norm td::before {
+    content: attr(data-label);
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--gris-texto);
+  }
+
+  .ua-norm td:empty {
+    display: none;
+  }
+
+}

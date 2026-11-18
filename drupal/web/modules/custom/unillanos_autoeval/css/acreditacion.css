@@ -125,3 +125,31 @@
 .form-item--tipo-carga .form-radio {
   margin-block: 0;
 }
+
+/* Sección «Institucional» del panel: accesos en una cuadrícula que baja a una
+   columna; cada enlace mide al menos 44 px de alto. */
+.unillanos-acreditacion__institucional dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.unillanos-acreditacion__institucional dt {
+  font-weight: 600;
+}
+
+.unillanos-acreditacion__institucional dd {
+  margin: 0;
+}
+
+.unillanos-acreditacion__institucional ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unillanos-acreditacion__institucional a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}

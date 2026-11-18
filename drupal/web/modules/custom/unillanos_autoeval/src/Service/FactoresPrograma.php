@@ -68,6 +68,23 @@ class FactoresPrograma {
   }
 
   /**
+   * Arma las tarjetas y las pestañas de un proceso dado (p. ej. institucional).
+   *
+   * @param \Drupal\node\NodeInterface $proceso
+   *   Nodo `proceso`.
+   * @param \Drupal\Core\Cache\CacheableMetadata $cache
+   *   Recibe los metadatos de caché de todo lo que se lee.
+   *
+   * @return array<string, mixed>
+   *   Lo mismo que ::delPrograma(); vacío si el proceso no tiene modelo,
+   *   factores o valoraciones que mostrar.
+   */
+  public function delProceso(NodeInterface $proceso, CacheableMetadata $cache): array {
+    $cache->addCacheTags(ProgramasYProcesos::ETIQUETAS_AUTOEVALUACION);
+    return $this->factoresDeProceso($proceso, $cache);
+  }
+
+  /**
    * Lee los factores de un modelo (lineamiento), ordenados por número.
    *
    * Un factor sin número va después de los numerados.

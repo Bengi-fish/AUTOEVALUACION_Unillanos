@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Normatividad (/institucional/normatividad): la matriz legal aplicable.
+ *
+ * Variables:
+ * - datos: lo arma InstitucionalNormas::datos(): filas, origenes y tipos (con
+ *   conteos), total, edicion y vacio. La plantilla solo cambia los nombres de
+ *   las claves a los props del componente.
+ */
+#}
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Institucional'|t,
+  title: 'Matriz legal'|t,
+  title_accent: 'aplicable'|t,
+  lead: 'Normas que aplican a los procesos de la Universidad de los Llanos.'|t,
+  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Institucional'|t, url: path('unillanos_autoeval.institucional')}, {title: 'Normatividad'|t}],
+} only %}
+
+{% embed 'unillanos:section' with {id: 'normas', datos: datos} only %}
+  {% block content %}
+    {% if datos.edicion.nueva %}
+      <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: datos.edicion.nueva.url, label: datos.edicion.nueva.title, variant: datos.edicion.nueva.tipo, show_label: true} only %}</div>
+    {% endif %}
+    {% if datos.vacio %}
+      <p class="ua-lead ua-docs-vacio">{{ 'Todavía no hay normas publicadas.'|t }}</p>
+    {% else %}
+      {% set filas = [] %}
+      {% for fila in datos.filas %}
+        {% set filas = filas|merge([{
+          origin: fila.origen,
+          origin_key: fila.origen_clave,
+          type: fila.tipo,
+          type_key: fila.tipo_clave,
+          number: fila.numero,
+          entity: fila.entidad,
+          epigraph: fila.epigrafe,
+          chapters: fila.capitulos,
+          application: fila.aplicacion,
+          link: fila.link|default({}),
+          search: fila.buscar,
+          edit: fila.edicion|default({}),
+        }]) %}
+      {% endfor %}
+      {% set origenes = [] %}
+      {% for o in datos.origenes %}{% set origenes = origenes|merge([{value: o.valor, label: o.etiqueta, count: o.conteo}]) %}{% endfor %}
+      {% set tipos = [] %}
+      {% for t in datos.tipos %}{% set tipos = tipos|merge([{value: t.valor, label: t.etiqueta, count: t.conteo}]) %}{% endfor %}
+      {% include 'unillanos:norm-table' with {id: 'matriz', total: datos.total, origins: origenes, types: tipos, rows: filas} only %}
+    {% endif %}
+  {% endblock %}
+{% endembed %}

@@ -87,3 +87,34 @@ services:
     class: Drupal\unillanos_autoeval\Twig\UnillanosTwigExtension
     tags:
       - { name: twig.extension }
+
+  # Páginas de «Institucional» (Fase 9, etapa 3).
+  unillanos_autoeval.institucional_portada:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalPortada
+    arguments: ['@config.factory', '@url_generator', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalPortada: '@unillanos_autoeval.institucional_portada'
+
+  unillanos_autoeval.institucional_procesos:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalProcesos
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion', '@unillanos_autoeval.factores_programa', '@unillanos_autoeval.plan_mejoramiento_programa']
+  Drupal\unillanos_autoeval\Service\InstitucionalProcesos: '@unillanos_autoeval.institucional_procesos'
+
+  unillanos_autoeval.institucional_dependencias:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalDependencias
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalDependencias: '@unillanos_autoeval.institucional_dependencias'
+
+  unillanos_autoeval.institucional_directivos:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalDirectivos
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalDirectivos: '@unillanos_autoeval.institucional_directivos'
+
+  unillanos_autoeval.institucional_normas:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalNormas
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalNormas: '@unillanos_autoeval.institucional_normas'
+
+  unillanos_autoeval.institucional_cifras:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalCifras
+    arguments: ['@config.factory', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalCifras: '@unillanos_autoeval.institucional_cifras'
