@@ -1,0 +1,38 @@
+id: archivos_diapositivas
+label: 'Imágenes del carrusel (de prueba)'
+migration_group: unillanos
+# Copia (no mueve) cada imagen de datos/ a public://carrusel/. La ruta es
+# relativa a la raíz del repositorio y RutaDeArchivo la valida.
+source:
+  plugin: csv
+  path: '%datos%/semillas/diapositivas.csv'
+  ids: [id]
+  constants:
+    destino: 'public://carrusel'
+process:
+  ruta:
+    plugin: unillanos_ruta_archivo
+    source: imagen
+    raiz: '%raiz%'
+    bases: [datos]
+    extensiones: [jpg, jpeg, png, webp]
+  filename:
+    plugin: callback
+    callable: basename
+    source: imagen
+  destino:
+    plugin: concat
+    source:
+      - constants/destino
+      - '@filename'
+    delimiter: /
+  uri:
+    plugin: file_copy
+    source:
+      - '@ruta'
+      - '@destino'
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:file'

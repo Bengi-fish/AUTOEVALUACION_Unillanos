@@ -1,0 +1,39 @@
+id: diapositivas
+label: 'Diapositivas del carrusel (de prueba)'
+migration_group: unillanos
+# Tres diapositivas de prueba hasta tener las imágenes reales. Para quitarlas:
+# `ddev drush migrate:rollback diapositivas` (ver docs/IMPLEMENTACION_DRUPAL.md).
+source:
+  plugin: csv
+  path: '%datos%/semillas/diapositivas.csv'
+  ids: [id]
+process:
+  title: titular
+  field_texto_corto:
+    plugin: skip_on_empty
+    method: process
+    source: texto
+  # Interno: «internal:/ruta»; externo: «https://…».
+  field_enlace/uri:
+    plugin: skip_on_empty
+    method: process
+    source: enlace
+  field_orden:
+    plugin: skip_on_empty
+    method: process
+    source: orden
+  field_imagen/target_id:
+    plugin: migration_lookup
+    migration: archivos_diapositivas
+    source: id
+    no_stub: true
+  field_imagen/alt: alt
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:node'
+  default_bundle: diapositiva
+migration_dependencies:
+  required:
+    - archivos_diapositivas

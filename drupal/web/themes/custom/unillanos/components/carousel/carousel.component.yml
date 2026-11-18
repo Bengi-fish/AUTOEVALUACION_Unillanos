@@ -1,0 +1,49 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Carrusel
+status: stable
+group: Contenido
+description: 'Carrusel de la portada: imágenes con titular y texto sobre una franja oscura. Pausa/Reproducir visible y primero en el orden de tabulación; avance automático cada 7 s solo si la persona no pidió menos movimiento; se detiene al pasar el ratón o al recibir foco; flechas y puntos son botones con nombre. Las diapositivas ocultas llevan hidden e inert. Sin JavaScript se ve la primera diapositiva y, debajo, la lista de titulares como enlaces. Con una sola diapositiva se ve como imagen fija, sin controles.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    id:
+      type: string
+      title: Identificador
+      description: 'Base de los ids; solo letras, números, guion y guion bajo. Por defecto «carrusel».'
+    label:
+      type: string
+      title: Nombre accesible del carrusel
+    interval:
+      type: integer
+      title: Milisegundos entre diapositivas
+      minimum: 3000
+      maximum: 20000
+      default: 7000
+    items:
+      type: array
+      title: Diapositivas
+      items:
+        type: object
+        required:
+          - title
+          - image
+        properties:
+          title:
+            type: string
+          text:
+            type: string
+          url:
+            type: string
+          external:
+            type: boolean
+          image:
+            type: object
+            description: 'src, srcset, type, width, height y alt de la imagen.'
+          edit:
+            type: object
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once

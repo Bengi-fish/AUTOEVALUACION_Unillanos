@@ -1,0 +1,72 @@
+uuid: f99b47f1-7aac-4556-aca5-a18577e6ed56
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.diapositiva.field_enlace
+    - field.field.node.diapositiva.field_imagen
+    - field.field.node.diapositiva.field_orden
+    - field.field.node.diapositiva.field_texto_corto
+    - image.style.thumbnail
+    - node.type.diapositiva
+  module:
+    - image
+    - link
+id: node.diapositiva.default
+targetEntityType: node
+bundle: diapositiva
+mode: default
+content:
+  field_enlace:
+    type: link_default
+    weight: 3
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_imagen:
+    type: image_image
+    weight: 0
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+  field_orden:
+    type: number
+    weight: 4
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_texto_corto:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 100
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  langcode: true
+  path: true
+  promote: true
+  sticky: true
+  uid: true

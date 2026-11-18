@@ -5,6 +5,7 @@ dependencies:
   config:
     - media.type.documento
     - node.type.dependencia
+    - node.type.diapositiva
     - node.type.hallazgo
     - node.type.meta
     - node.type.norma
@@ -28,6 +29,7 @@ permissions:
   - 'access media overview'
   - 'change publication status on acreditacion content'
   - 'create dependencia content'
+  - 'create diapositiva content'
   - 'create documento media'
   - 'create hallazgo content'
   - 'create meta content'
@@ -38,6 +40,7 @@ permissions:
   - 'create seguimiento content'
   - 'create valoracion content'
   - 'delete own dependencia content'
+  - 'delete own diapositiva content'
   - 'delete own documento media'
   - 'delete own hallazgo content'
   - 'delete own meta content'
@@ -48,6 +51,7 @@ permissions:
   - 'delete own seguimiento content'
   - 'delete own valoracion content'
   - 'edit any dependencia content'
+  - 'edit any diapositiva content'
   - 'edit any documento media'
   - 'edit any hallazgo content'
   - 'edit any meta content'

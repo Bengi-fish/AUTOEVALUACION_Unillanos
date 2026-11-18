@@ -64,6 +64,7 @@ abstract class UnillanosKernelTestBase extends KernelTestBase {
       'seguimiento',
       'dependencia',
       'norma',
+      'diapositiva',
     ];
     foreach ($tipos as $tipo) {
       NodeType::create(['type' => $tipo, 'name' => $tipo])->save();

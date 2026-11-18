@@ -4,6 +4,7 @@ namespace Drupal\unillanos_autoeval\Controller;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\unillanos_autoeval\Service\CarruselPortada;
 use Drupal\unillanos_autoeval\Service\DatosPortada;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -20,13 +21,17 @@ final class PortadaController extends ControllerBase {
    */
   public function __construct(
     protected DatosPortada $portada,
+    protected CarruselPortada $carrusel,
   ) {}
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
-    return new static($container->get('unillanos_autoeval.datos_portada'));
+    return new static(
+      $container->get('unillanos_autoeval.datos_portada'),
+      $container->get(CarruselPortada::class),
+    );
   }
 
   /**
@@ -39,7 +44,7 @@ final class PortadaController extends ControllerBase {
     $cache = new CacheableMetadata();
     $construccion = [
       '#theme' => 'unillanos_portada',
-      '#datos' => $this->portada->armar($cache),
+      '#datos' => $this->portada->armar($cache) + ['carrusel' => $this->carrusel->datos($cache)],
     ];
     $cache->applyTo($construccion);
     return $construccion;

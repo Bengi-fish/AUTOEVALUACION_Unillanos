@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "The image is too small. The minimum dimensions are %dimensions pixels and the image size is %widthx%height pixels."
-msgstr "La foto es muy pequeña: debe tener al menos 1280 píxeles de ancho y esta mide %widthx%height píxeles. Usa una foto más grande."
+msgstr "La imagen es muy pequeña: esta mide %widthx%height píxeles. Usa una imagen más grande (el ancho mínimo está indicado en la ayuda del campo)."
 
 msgid "The image exceeds the maximum allowed dimensions and has been resized to %dimensions pixels."
 msgstr "La foto superaba las dimensiones máximas y se redujo a %dimensions píxeles."

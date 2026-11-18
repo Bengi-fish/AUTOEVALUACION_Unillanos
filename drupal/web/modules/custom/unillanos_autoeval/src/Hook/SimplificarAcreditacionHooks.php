@@ -39,6 +39,7 @@ class SimplificarAcreditacionHooks {
       'seguimiento',
       'dependencia',
       'norma',
+      'diapositiva',
     ],
     'media' => ['documento'],
   ];

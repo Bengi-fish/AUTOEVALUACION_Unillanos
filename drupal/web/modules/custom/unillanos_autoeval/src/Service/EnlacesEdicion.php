@@ -179,6 +179,16 @@ class EnlacesEdicion {
   }
 
   /**
+   * Enlace «Añadir una diapositiva» (carrusel de la portada).
+   *
+   * @return array<string, string>|null
+   *   Datos del enlace o NULL sin permiso.
+   */
+  public function diapositivaNueva(): ?array {
+    return $this->enlace('node.add', ['node_type' => 'diapositiva'], (string) $this->t('Añadir una diapositiva'), 'mas');
+  }
+
+  /**
    * Enlace «Añadir una norma».
    *
    * @return array<string, string>|null

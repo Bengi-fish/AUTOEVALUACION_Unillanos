@@ -48,6 +48,7 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     'seguimiento',
     'dependencia',
     'norma',
+    'diapositiva',
   ];
 
   /**
@@ -201,8 +202,8 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     $this->assertSame($esperados, $sync['permissions']);
     // 35 antes del paso 14 (commit 4): se quitó «access navigation». En la
     // Fase 9 (etapa 2) suman 6 de dependencia y norma (crear, editar, borrar
-    // lo propio).
-    $this->assertCount(40, $esperados);
+    // lo propio) y, en la etapa 5, 3 de diapositiva.
+    $this->assertCount(43, $esperados);
     // El módulo y el sitio declaran el mismo rol.
     unset($sync['uuid']);
     $this->assertEquals($modulo, $sync);

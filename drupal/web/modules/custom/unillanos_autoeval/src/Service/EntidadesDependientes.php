@@ -30,6 +30,7 @@ class EntidadesDependientes {
     ],
     'node:dependencia' => [['media', 'documento', 'field_dependencia']],
     'node:norma' => [],
+    'node:diapositiva' => [],
     'node:proceso' => [
       ['node', 'valoracion', 'field_proceso'],
       ['node', 'hallazgo', 'field_proceso'],

@@ -68,6 +68,7 @@ class UnillanosAutoevalHooks {
       'lineamiento',
       'dependencia',
       'norma',
+      'diapositiva',
     ],
     'media' => ['documento'],
   ];
@@ -214,6 +215,18 @@ class UnillanosAutoevalHooks {
     $this->enPanelLateral($form, $form_state, $form_id);
     if ($form_id === 'node_programa_foto_form') {
       $this->ayudasDeLaFoto($form, $form_state);
+      return;
+    }
+    if (in_array($form_id, ['node_diapositiva_form', 'node_diapositiva_edit_form'], TRUE)) {
+      // Como «Cambiar foto»: la imagen se sube sola al elegirla (o soltarla) y
+      // un solo botón guarda. El panel lateral aplica el mismo estilo.
+      $this->ayudasDeLaFoto($form, $form_state);
+      $form['#attached']['library'][] = 'unillanos/panel_foto';
+      foreach ($this->ayudasDeLaDiapositiva() as $campo => $texto) {
+        if (isset($form[$campo])) {
+          $this->ponerAyuda($form[$campo], $texto);
+        }
+      }
       return;
     }
     $ayudas = match ($form_id) {
@@ -720,6 +733,22 @@ class UnillanosAutoevalHooks {
   }
 
   /**
+   * Ayudas de la diapositiva del carrusel (lenguaje sencillo).
+   *
+   * @return array<string, mixed>
+   *   Texto de ayuda por campo.
+   */
+  protected function ayudasDeLaDiapositiva(): array {
+    return [
+      'title' => $this->t('Titular que se ve sobre la imagen (hasta 90 caracteres).'),
+      'field_texto_corto' => $this->t('Frase breve bajo el titular (hasta 160 caracteres). Si no la necesita, déjela en blanco.'),
+      'field_enlace' => $this->t('A dónde lleva la diapositiva: una página del sitio (por ejemplo /programas) o una dirección que empiece por https://. Si no lleva a ninguna parte, déjelo en blanco.'),
+      'field_orden' => $this->t('Número para ordenar las diapositivas: la 1 sale primero. Se muestran hasta 5.'),
+      'status' => $this->t('Si quita la marca, la diapositiva deja de verse en el sitio público.'),
+    ];
+  }
+
+  /**
    * Ayudas del documento (lenguaje sencillo).
    *
    * @return array<string, mixed>
@@ -867,6 +896,7 @@ class UnillanosAutoevalHooks {
       $entity_types['node']->addConstraint('UnillanosProcesoSedeOPrograma');
       $entity_types['node']->addConstraint('UnillanosEstadoPorTipo');
       $entity_types['node']->addConstraint('UnillanosModeloDelProceso');
+      $entity_types['node']->addConstraint('UnillanosDiapositiva');
     }
     if (isset($entity_types['media'])) {
       $entity_types['media']->addConstraint('UnillanosArchivoOEnlace');

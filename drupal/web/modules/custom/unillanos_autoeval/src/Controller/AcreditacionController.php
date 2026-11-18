@@ -222,6 +222,8 @@ final class AcreditacionController extends ControllerBase {
       $this->enlace($this->t('Contenido sin publicar'), 'system.admin_content', [], ['status' => 2], $cache),
       $this->enlace($this->t('Subir un documento'), 'unillanos_autoeval.acreditacion_documento_nuevo', [], [], $cache),
       $this->enlace($this->t('Documentos'), 'entity.media.collection', [], ['type' => 'documento'], $cache),
+      $this->enlace($this->t('Añadir una diapositiva al carrusel'), 'node.add', ['node_type' => 'diapositiva'], [], $cache),
+      $this->enlace($this->t('Diapositivas del carrusel'), 'system.admin_content', [], ['type' => 'diapositiva'], $cache),
       $this->enlace($this->t('Cabecera y pie del micrositio'), 'unillanos_autoeval.micrositio', [], [], $cache),
     ]));
   }

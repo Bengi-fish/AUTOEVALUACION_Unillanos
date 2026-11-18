@@ -484,3 +484,10 @@ Datos tomados el 18 de noviembre de 2026 de las páginas públicas de https://ac
 - [ ] **Abreviaturas «CARP» y «ENL»** del ícono de los documentos con enlace: confirmar con el diseñador.
 - [ ] **Nombres de aspecto abreviados:** en `elementos_modelo.csv`, 25 aspectos y 2 características institucionales (C22 y C27) superan los 255 caracteres del nombre de un término: el nombre se corta con «…» y la descripción guarda el texto completo. Acreditación debe validarlo.
 - [ ] **Número y fecha de las normas** van en un solo campo de texto, como en la hoja; no se puede filtrar por fecha.
+
+## 29. Fase 9, etapa 5: carrusel de la portada
+
+- [ ] **Imágenes reales (con permiso de uso):** el carrusel lleva tres diapositivas de prueba («Diapositiva de prueba N», imagen abstracta propia). Reemplazarlas por las reales y quitar las de prueba (comando en `docs/IMPLEMENTACION_DRUPAL.md`, etapa 5).
+- [ ] **Textos y destino de cada diapositiva:** titular, texto corto y enlace los define Acreditación; las de prueba solo enlazan (la primera) a `/programas`.
+- [ ] **Licencia de las fotos** y el recorte: la imagen se muestra con proporción fija 16:6 en escritorio y 4:3 en celular (`object-fit: cover`), así que lo importante debe quedar centrado.
+

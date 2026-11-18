@@ -1,0 +1,249 @@
+/**
+ * Componente carousel (Fase 9, etapa 5): imagen con proporción fija (16:6 en
+ * escritorio, 4:3 en celular, object-fit: cover), titular y texto sobre una
+ * franja oscura con token (nada de texto dentro de la imagen), controles de 44
+ * px y sin sombras. Sin JavaScript: primera diapositiva y lista de titulares.
+ */
+
+.ua-carousel {
+  position: relative;
+  background: var(--verde-azulado-900);
+}
+
+.ua-carousel__slides {
+  position: relative;
+}
+
+/* Sin JavaScript solo se ve la primera diapositiva. */
+.ua-carousel__slide:not(:first-child) {
+  display: none;
+}
+
+.ua-carousel[data-ua-carousel-listo] .ua-carousel__slide:not(:first-child) {
+  display: block;
+}
+
+.ua-carousel[data-ua-carousel-listo] .ua-carousel__slide[hidden] {
+  display: none;
+}
+
+.ua-carousel__imagen {
+  aspect-ratio: 16 / 6;
+  overflow: hidden;
+  background: var(--verde-azulado-900);
+}
+
+.ua-carousel__imagen .ua-media,
+.ua-carousel__imagen .ua-media__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ua-carousel__imagen .ua-media__img {
+  object-fit: cover;
+}
+
+/* Franja oscura sobre el borde inferior de la imagen. */
+.ua-carousel__franja {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: var(--espacio-4) 0 var(--espacio-4);
+  background: var(--verde-azulado-900);
+  color: var(--Surface);
+}
+
+.ua-carousel__texto {
+  display: grid;
+  gap: var(--espacio-1);
+  padding-right: calc(var(--espacio-6) * 4);
+}
+
+.ua-carousel__titular {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+  color: var(--Surface);
+}
+
+.ua .ua-carousel__enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--Surface);
+  text-decoration: none;
+}
+
+.ua .ua-carousel__enlace:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.ua-carousel__resumen {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--Surface);
+}
+
+.ua-carousel__edicion {
+  justify-self: start;
+}
+
+/* Barra de pausa: primero en el orden de tabulación, arriba a la derecha. */
+.ua-carousel__barra {
+  position: absolute;
+  top: var(--espacio-3);
+  right: var(--espacio-4);
+  z-index: 3;
+}
+
+.ua-carousel__barra[hidden] {
+  display: none;
+}
+
+.ua-carousel__pausa {
+  min-height: 44px;
+  padding: 0 var(--espacio-4);
+  border: 2px solid var(--Surface);
+  border-radius: var(--radio-pill);
+  background: var(--verde-azulado-900);
+  color: var(--Surface);
+  font-family: var(--font-base);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ua-carousel__pausa:hover {
+  background: var(--verde-azulado-700);
+}
+
+/* Flechas y puntos sobre la franja, a la derecha. */
+.ua-carousel__controles {
+  position: absolute;
+  right: var(--espacio-4);
+  bottom: var(--espacio-3);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+}
+
+.ua-carousel__controles[hidden] {
+  display: none;
+}
+
+.ua-carousel__flecha,
+.ua-carousel__punto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--Surface);
+  cursor: pointer;
+}
+
+.ua-carousel__flecha {
+  border: 2px solid var(--Surface);
+  border-radius: 50%;
+}
+
+.ua-carousel__flecha:hover {
+  background: var(--verde-azulado-700);
+}
+
+.ua-carousel__puntos {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ua-carousel__punto-marca {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--Surface);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.ua-carousel__punto[aria-current="true"] .ua-carousel__punto-marca {
+  background: var(--Surface);
+}
+
+/* Lista de titulares: solo sin JavaScript. */
+.ua-carousel__lista {
+  padding: var(--espacio-4);
+  background: var(--Surface);
+  border-bottom: 1px solid var(--borde);
+}
+
+.ua-carousel__lista ul {
+  display: grid;
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ua-carousel__lista a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.ua-carousel[data-ua-carousel-listo] .ua-carousel__lista {
+  display: none;
+}
+
+@media (max-width: 760px) {
+
+  .ua-carousel__imagen {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* En celular la franja va debajo de la imagen. */
+  .ua-carousel__franja {
+    position: static;
+    padding-bottom: calc(var(--espacio-4) + 52px);
+  }
+
+  .ua-carousel__texto {
+    padding-right: 0;
+  }
+
+  .ua-carousel__titular {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .ua-carousel__controles {
+    right: var(--espacio-3);
+    left: var(--espacio-3);
+    justify-content: space-between;
+  }
+
+}
+
+@media (forced-colors: active) {
+
+  .ua-carousel__pausa,
+  .ua-carousel__flecha {
+    border: 2px solid ButtonText;
+  }
+
+  .ua-carousel__punto[aria-current="true"] .ua-carousel__punto-marca {
+    background: Highlight;
+  }
+
+}
