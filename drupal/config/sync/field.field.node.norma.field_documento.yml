@@ -1,0 +1,24 @@
+uuid: b9ac4e1a-c37e-41b6-9f4b-9c38dcc857d2
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_documento
+    - media.type.documento
+    - node.type.norma
+id: node.norma.field_documento
+field_name: field_documento
+entity_type: node
+bundle: norma
+label: Documento
+description: 'Archivo o enlace de la norma, si lo tiene.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      documento: documento
+field_type: entity_reference

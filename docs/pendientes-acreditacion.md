@@ -469,3 +469,18 @@ Decisiones tomadas por el equipo técnico que **Acreditación debe confirmar**.
 - [ ] **Excepción de 44 px:** la flecha pequeña del botón de lista con viñetas/numerada del editor de texto del panel mide 17 px de ancho (limitación del editor; el botón principal mide 44 px). Aceptar o pedir otro editor.
 - [ ] **Escritorio de `/admin/acreditacion`:** solo el celular se rehízo (tarjetas de 44 px); en la tabla de escritorio los enlaces miden 21 a 42 px de alto. Confirmar si se quiere 44 px también ahí.
 - [ ] **Lectores de pantalla en la subida de la foto:** el aviso «Subiendo…» es el indicador de Drupal y no tiene `aria-live`; no se anuncia al empezar ni al terminar. Probar con un lector real y decidir si se pide un aviso propio.
+
+## 28. Fase 9, etapas 1 y 2: documentos con enlace y datos institucionales
+
+Datos tomados el 18 de noviembre de 2026 de las páginas públicas de https://acreditacion.unillanos.edu.co (SIAAI) y del Acuerdo CESU 01 de 2025; cada fila de las semillas conserva su URL de origen.
+
+- [ ] **Modelo institucional 2020 no cargado:** el Acuerdo CESU 02 de 2020 (PDF) trae factores y características para instituciones (artículo 20), pero el texto del PDF sale con letras perdidas y no se pudo transcribir con certeza. Solo se cargó «Institucional 2025» (`CESU2025-INST`: 12 factores, 41 características y 68 aspectos, capítulo 3 del acuerdo de 2025). Acreditación debe confirmar si hace falta el de 2020 y entregar el texto.
+- [ ] **Sin modelo en los procesos institucionales:** los cuatro procesos cargados (informe 2015-2019 y condiciones institucionales de Villavicencio, Granada y El Retorno) no llevan modelo, porque el de 2025 no es el que se usó. `field_lineamiento` dejó de ser obligatorio.
+- [ ] **Tipo de proceso de «condiciones institucionales»:** se cargaron como `registro_calificado` (condiciones de calidad institucionales del MEN). Confirmar con Acreditación.
+- [ ] **«Esp. en Gestión de Proyectos»** aparece en 13 dependencias del SIAAI y no es uno de los 40 programas: las 13 filas quedan sin programa (nombre visible tal cual).
+- [ ] **Sedes:** se agregaron «Sede Villavicencio», «Sede Granada» y «Lugar de desarrollo El Retorno (Guaviare)» (nombres del SIAAI) sin renombrar las existentes (Barcelona, San Antonio, Emporio).
+- [ ] **«Documentación Condiciones de Programa MEN»** (9 carpetas de condición y 8 matrices 2016-2022) no se cargó: es documentación de apoyo de programas, no de lo institucional. Definir dónde va.
+- [ ] **Enlaces de Drive de acceso restringido:** casi todos los enlaces cargados abren carpetas de Google Drive que el SIAAI marca como restringidas. Confirmar con Acreditación qué puede ser público.
+- [ ] **Abreviaturas «CARP» y «ENL»** del ícono de los documentos con enlace: confirmar con el diseñador.
+- [ ] **Nombres de aspecto abreviados:** en `elementos_modelo.csv`, 25 aspectos y 2 características institucionales (C22 y C27) superan los 255 caracteres del nombre de un término: el nombre se corta con «…» y la descripción guarda el texto completo. Acreditación debe validarlo.
+- [ ] **Número y fecha de las normas** van en un solo campo de texto, como en la hoja; no se puede filtrar por fecha.

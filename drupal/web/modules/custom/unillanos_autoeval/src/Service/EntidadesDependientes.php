@@ -24,7 +24,12 @@ class EntidadesDependientes {
    * @var array<string, array<int, array{0: string, 1: string, 2: string}>>
    */
   const REGLAS = [
-    'node:programa' => [['node', 'proceso', 'field_programa']],
+    'node:programa' => [
+      ['node', 'proceso', 'field_programa'],
+      ['media', 'documento', 'field_programa'],
+    ],
+    'node:dependencia' => [['media', 'documento', 'field_dependencia']],
+    'node:norma' => [],
     'node:proceso' => [
       ['node', 'valoracion', 'field_proceso'],
       ['node', 'hallazgo', 'field_proceso'],

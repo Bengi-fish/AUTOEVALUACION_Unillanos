@@ -1,0 +1,19 @@
+uuid: d24ffc54-7f59-4948-8ec2-7622d0f43df3
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_tipo_norma
+    - node.type.norma
+id: node.norma.field_tipo_norma
+field_name: field_tipo_norma
+entity_type: node
+bundle: norma
+label: 'Tipo de norma'
+description: 'Por ejemplo: Ley, Decreto, Resolución, Acuerdo.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,51 @@
+uuid: 235855fd-8dc1-4ec2-8a70-c0216612b02a
+langcode: es
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.node.acreditacion
+    - field.field.node.dependencia.field_descripcion
+    - field.field.node.dependencia.field_orden
+    - node.type.dependencia
+id: node.dependencia.acreditacion
+targetEntityType: node
+bundle: dependencia
+mode: acreditacion
+content:
+  field_descripcion:
+    type: string_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+  field_orden:
+    type: number
+    weight: 2
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 100
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  langcode: true
+  path: true
+  promote: true
+  sticky: true
+  uid: true

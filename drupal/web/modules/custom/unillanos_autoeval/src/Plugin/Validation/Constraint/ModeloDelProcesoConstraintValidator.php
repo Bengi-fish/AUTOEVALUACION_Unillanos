@@ -75,6 +75,19 @@ final class ModeloDelProcesoConstraintValidator extends ConstraintValidator impl
         ->addViolation();
       return;
     }
+    // El ámbito del modelo debe corresponder al del proceso (un modelo sin
+    // ámbito guardado no se restringe).
+    $modelo = $this->entityTypeManager->getStorage('node')->load($lineamiento);
+    $ambito = $modelo && $modelo->hasField('field_ambito') ? (string) $modelo->get('field_ambito')->value : '';
+    $con_programa = $proceso->hasField('field_programa') && !$proceso->get('field_programa')->isEmpty();
+    $con_sede = $proceso->hasField('field_sede') && !$proceso->get('field_sede')->isEmpty();
+    if (($con_programa && $ambito === 'institucional') || (!$con_programa && $con_sede && $ambito === 'programa')) {
+      $this->context->buildViolation($constraint->mensajeAmbito)
+        ->setParameter('%modelo', $this->modeloProceso->nombre($lineamiento))
+        ->atPath('field_lineamiento')
+        ->addViolation();
+      return;
+    }
     if ($proceso->isNew()) {
       return;
     }

@@ -1,0 +1,27 @@
+id: documentos_directivos
+label: 'Documentos de los directivos por facultad (enlaces de Drive)'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/documentos_directivos.csv'
+  ids: [id]
+process:
+  name: nombre
+  field_categoria:
+    plugin: default_value
+    default_value: directivos
+  field_enlace/uri: enlace
+  field_facultad:
+    plugin: migration_lookup
+    migration: facultades
+    source: facultad_id
+    no_stub: true
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:media'
+  default_bundle: documento
+migration_dependencies:
+  required:
+    - facultades

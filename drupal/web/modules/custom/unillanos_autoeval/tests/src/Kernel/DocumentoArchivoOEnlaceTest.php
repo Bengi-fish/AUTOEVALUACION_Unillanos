@@ -10,6 +10,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
 use Drupal\media\Entity\MediaType;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\unillanos_autoeval\Hook\DocumentoArchivoOEnlaceHooks;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -70,6 +71,8 @@ class DocumentoArchivoOEnlaceTest extends UnillanosKernelTestBase {
     $this->crearCampo('media', 'documento', 'field_proceso', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('media', 'documento', 'field_lineamiento', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('media', 'documento', 'field_enlace', 'link');
+    $this->crearCampo('media', 'documento', 'field_dependencia', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_facultad', 'entity_reference', ['target_type' => 'taxonomy_term']);
     $campo_enlace = \Drupal::entityTypeManager()->getStorage('field_config')->load('media.documento.field_enlace');
     $campo_enlace->setSetting('link_type', 16)->setSetting('title', 0)->save();
   }
@@ -306,6 +309,32 @@ class DocumentoArchivoOEnlaceTest extends UnillanosKernelTestBase {
     DocumentoArchivoOEnlaceHooks::conservarLoElegido('media', $mixto2, $form, $estado);
     $this->assertTrue($mixto2->get('field_enlace')->isEmpty());
     $this->assertSame([], $this->infracciones($mixto2));
+  }
+
+  /**
+   * Los documentos institucionales no salen en /documentos.
+   *
+   * Son los de una dependencia, una facultad o un proceso por sede.
+   */
+  public function testDocumentosInstitucionalesNoSalenEnDocumentos(): void {
+    $dependencia = $this->crearNodo('dependencia', ['title' => 'Biblioteca']);
+    $facultad = Term::create(['vid' => 'sede', 'name' => 'Una facultad']);
+    $facultad->save();
+    $sede = Term::create(['vid' => 'sede', 'name' => 'Sede Granada']);
+    $sede->save();
+    $proceso_sede = $this->crearNodo('proceso', [
+      'title' => 'Condiciones Granada',
+      'field_sede' => $sede->id(),
+      'status' => 1,
+    ]);
+    $enlace = ['uri' => 'https://drive.google.com/drive/folders/abc'];
+    $this->medio(['name' => 'De dependencia', 'field_enlace' => $enlace, 'field_dependencia' => $dependencia->id()])->save();
+    $this->medio(['name' => 'De facultad', 'field_enlace' => $enlace, 'field_facultad' => $facultad->id()])->save();
+    $this->medio(['name' => 'De proceso por sede', 'field_enlace' => $enlace, 'field_proceso' => $proceso_sede->id()])->save();
+    $this->medio(['name' => 'General', 'field_enlace' => $enlace])->save();
+    $datos = $this->documentos()->publicados(new CacheableMetadata());
+    $this->assertSame(1, $datos['total']);
+    $this->assertSame(['General'], array_column($datos['generales'][0]['items'], 'title'));
   }
 
 }

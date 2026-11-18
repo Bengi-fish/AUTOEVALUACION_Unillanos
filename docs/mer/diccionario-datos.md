@@ -285,6 +285,35 @@ Documento descargable o enlace externo: lleva un archivo o un `enlace` `https://
 | `lineamiento_id` | `int` | FK |
 | `publico` | `bool` |  |
 
+### `DEPENDENCIA` · Dependencia (Fase 9)
+
+Dependencia que llena formatos del SIAAI.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `nombre` | `varchar(255)` |  |
+| `descripcion` | `text` |  |
+| `orden` | `int` |  |
+
+### `NORMA` · Norma (Fase 9)
+
+Fila de la matriz legal aplicable.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `origen` | `enum` (externo, interno) |  |
+| `tipo` | `varchar(255)` |  |
+| `numero_fecha` | `varchar(255)` |  |
+| `entidad` | `varchar(255)` |  |
+| `epigrafe` | `text` |  |
+| `capitulos` | `varchar(255)` |  |
+| `aplicacion` | `text` |  |
+| `documento_id` | `int` | FK |
+
+`DOCUMENTO` suma `dependencia_id` (FK, opcional), `programa_id` (FK, opcional) y `facultad_id` (FK, opcional).
+
 ### `RECOMENDACION` · Recomendación
 
 Recomendación enviada desde Participa.

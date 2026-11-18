@@ -1,0 +1,24 @@
+id: dependencias
+label: 'Dependencias de la Universidad'
+migration_group: unillanos
+# Las 25 dependencias del SIAAI de Acreditación, en su orden (columna `orden`).
+source:
+  plugin: csv
+  path: '%datos%/semillas/dependencias.csv'
+  ids: [id]
+process:
+  title: nombre
+  field_descripcion:
+    plugin: skip_on_empty
+    method: process
+    source: descripcion
+  field_orden:
+    plugin: skip_on_empty
+    method: process
+    source: orden
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:node'
+  default_bundle: dependencia

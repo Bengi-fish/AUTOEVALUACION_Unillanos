@@ -1,0 +1,24 @@
+uuid: 437f22ee-e1fc-4ab5-b60e-9165b15dfeb6
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_dependencia
+    - media.type.documento
+    - node.type.dependencia
+id: media.documento.field_dependencia
+field_name: field_dependencia
+entity_type: media
+bundle: documento
+label: Dependencia
+description: 'Solo para formatos de una dependencia.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      dependencia: dependencia
+field_type: entity_reference

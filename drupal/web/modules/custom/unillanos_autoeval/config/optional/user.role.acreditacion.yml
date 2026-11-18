@@ -3,8 +3,10 @@ status: true
 dependencies:
   config:
     - media.type.documento
+    - node.type.dependencia
     - node.type.hallazgo
     - node.type.meta
+    - node.type.norma
     - node.type.plan_mejoramiento
     - node.type.proceso
     - node.type.programa
@@ -24,25 +26,31 @@ permissions:
   - 'access content overview'
   - 'access media overview'
   - 'change publication status on acreditacion content'
+  - 'create dependencia content'
   - 'create documento media'
   - 'create hallazgo content'
   - 'create meta content'
+  - 'create norma content'
   - 'create plan_mejoramiento content'
   - 'create proceso content'
   - 'create programa content'
   - 'create seguimiento content'
   - 'create valoracion content'
+  - 'delete own dependencia content'
   - 'delete own documento media'
   - 'delete own hallazgo content'
   - 'delete own meta content'
+  - 'delete own norma content'
   - 'delete own plan_mejoramiento content'
   - 'delete own proceso content'
   - 'delete own programa content'
   - 'delete own seguimiento content'
   - 'delete own valoracion content'
+  - 'edit any dependencia content'
   - 'edit any documento media'
   - 'edit any hallazgo content'
   - 'edit any meta content'
+  - 'edit any norma content'
   - 'edit any plan_mejoramiento content'
   - 'edit any proceso content'
   - 'edit any programa content'

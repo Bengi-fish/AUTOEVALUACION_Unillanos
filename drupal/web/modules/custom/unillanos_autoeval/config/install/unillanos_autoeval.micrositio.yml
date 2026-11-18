@@ -121,3 +121,27 @@ pie:
     desde: 1974
     texto: 'Reservados todos los derechos'
     nit: 'Nit: 892.000.757-3'
+# Institucional: frase de /institucional y enlaces de «Cifras». Las direcciones
+# salen de https://acreditacion.unillanos.edu.co/index.php/informacion/siaai/cifras-sac
+# (consultadas el 18 de noviembre de 2026).
+institucional:
+  introduccion: 'Información de la Universidad para su autoevaluación: procesos institucionales, dependencias, directivos, normatividad y cifras.'
+  cifras:
+    enlaces:
+      -
+        titulo: 'Estudiantes en Colombia (SNIES)'
+        texto: 'Consulta poblacional del Ministerio de Educación Nacional sobre estudiantes de educación superior.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/content/poblacional/index.jsf'
+      -
+        titulo: 'Mapa de graduados'
+        texto: 'Graduados de educación superior en Colombia, por departamento.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapagraduados.html'
+      -
+        titulo: 'Caracterización de graduados del Meta'
+        texto: 'Detalle de los graduados del departamento del Meta.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapa_graduados_detalle?departamento=CO-MET&anio=2021&semestre=0&departamentoName=META'
+      -
+        titulo: 'Mapa de movilidad'
+        texto: 'Movilidad de estudiantes de educación superior en el país.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapamovilidad.html'
+    tablero_url: 'https://public.tableau.com/views/PIACACifras/Dashboard1'

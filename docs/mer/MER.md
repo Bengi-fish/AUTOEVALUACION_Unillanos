@@ -232,7 +232,7 @@ erDiagram
 - **Modelo de calidad** (4): `LINEAMIENTO`, `ELEMENTO_MODELO`, `GRADO_CUMPLIMIENTO`, `ESTAMENTO`. Lineamientos, elementos del modelo y catálogos.
 - **Autoevaluación** (4): `PROCESO`, `VALORACION`, `HALLAZGO`, `PARTICIPACION`. Procesos, valoraciones, hallazgos y participación.
 - **Plan de mejoramiento** (7): `RESPONSABLE`, `PROYECTO_INSTITUCIONAL`, `PLAN_MEJORAMIENTO`, `META`, `INDICADOR`, `PROGRAMACION_ANUAL`, `SEGUIMIENTO`. Metas, indicadores, programación anual y seguimiento.
-- **Documentos y participación** (2): `DOCUMENTO`, `RECOMENDACION`. Documentos y recomendaciones de la comunidad. Un `DOCUMENTO` lleva un archivo o un `enlace` externo `https://`, no ambos.
+- **Documentos y participación** (2): `DOCUMENTO`, `RECOMENDACION`. Documentos y recomendaciones de la comunidad. Un `DOCUMENTO` lleva un archivo o un `enlace` externo `https://`, no ambos; puede pertenecer a una `DEPENDENCIA`, un programa o una facultad (Fase 9). `DEPENDENCIA` y `NORMA` son tipos nuevos sin relaciones obligatorias (`NORMA` puede apuntar a un `DOCUMENTO`).
 
 ## Relaciones (cómo se leen)
 

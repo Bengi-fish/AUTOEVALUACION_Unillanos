@@ -1,0 +1,25 @@
+id: documentos_procesos_institucionales
+label: 'Documentos de los procesos institucionales (enlaces de Drive)'
+migration_group: unillanos
+source:
+  plugin: csv
+  path: '%datos%/semillas/documentos_procesos_institucionales.csv'
+  ids: [id]
+process:
+  name: nombre
+  field_categoria: categoria
+  field_enlace/uri: enlace
+  field_proceso:
+    plugin: migration_lookup
+    migration: procesos_institucionales
+    source: proceso_id
+    no_stub: true
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:media'
+  default_bundle: documento
+migration_dependencies:
+  required:
+    - procesos_institucionales

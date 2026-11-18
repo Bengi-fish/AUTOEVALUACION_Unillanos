@@ -120,6 +120,11 @@ class DocumentosPublicados {
       if (!$acceso_medio->isAllowed()) {
         continue;
       }
+      // Los formatos de una dependencia y los de los directivos se muestran
+      // solo en las páginas de «Institucional», no en /documentos.
+      if ($this->esInstitucional($medio)) {
+        continue;
+      }
       $archivo = $medio->get('field_media_file')->entity;
       $enlace = $this->enlaceExterno($medio);
       // Sin archivo ni enlace seguro no hay nada que abrir.
@@ -134,6 +139,11 @@ class DocumentosPublicados {
           continue;
         }
         $id_programa = $proceso->get('field_programa')->target_id;
+        // Los documentos de un proceso institucional por sede se muestran en
+        // «Institucional», no en /documentos.
+        if (!$id_programa && $proceso->hasField('field_sede') && !$proceso->get('field_sede')->isEmpty()) {
+          continue;
+        }
         if ($id_programa) {
           $candidato = $programas[(int) $id_programa] ?? NULL;
           if (!$candidato instanceof NodeInterface || !$candidato->isPublished()) {
@@ -203,6 +213,24 @@ class DocumentosPublicados {
         ?: $this->compararTextos($a['item']['title'], $b['item']['title']);
     });
     return $documentos;
+  }
+
+  /**
+   * Indica si el documento es de una dependencia o de los directivos.
+   *
+   * @param \Drupal\media\MediaInterface $medio
+   *   Medio `documento`.
+   *
+   * @return bool
+   *   TRUE si apunta a una dependencia o a una facultad.
+   */
+  protected function esInstitucional(MediaInterface $medio): bool {
+    foreach (['field_dependencia', 'field_facultad'] as $campo) {
+      if ($medio->hasField($campo) && !$medio->get($campo)->isEmpty()) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
   /**

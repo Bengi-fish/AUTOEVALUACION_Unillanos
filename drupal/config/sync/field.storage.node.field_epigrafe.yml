@@ -1,0 +1,19 @@
+uuid: 66e5cf43-cf13-44a9-ab76-63517b61b120
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_epigrafe
+field_name: field_epigrafe
+entity_type: node
+type: string_long
+settings:
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

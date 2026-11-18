@@ -1,0 +1,39 @@
+id: normas
+label: 'Normatividad (matriz legal)'
+migration_group: unillanos
+# Normograma «Matriz legal aplicable» del SIAAI de Acreditación. El título se
+# arma con el tipo y el número y fecha (por ejemplo «Ley 30 de 1992»).
+source:
+  plugin: csv
+  path: '%datos%/semillas/normas.csv'
+  ids: [id]
+process:
+  title:
+    plugin: concat
+    source:
+      - tipo
+      - numero_fecha
+    delimiter: ' '
+  field_origen_norma: origen
+  field_tipo_norma: tipo
+  field_numero_fecha:
+    plugin: skip_on_empty
+    method: process
+    source: numero_fecha
+  field_entidad:
+    plugin: skip_on_empty
+    method: process
+    source: entidad
+  field_epigrafe: epigrafe
+  field_capitulos:
+    plugin: skip_on_empty
+    method: process
+    source: capitulos
+  field_aplicacion:
+    plugin: skip_on_empty
+    method: process
+    source: aplicacion
+  status: publicado
+destination:
+  plugin: 'entity:node'
+  default_bundle: norma

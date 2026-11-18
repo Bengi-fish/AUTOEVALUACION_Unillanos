@@ -67,7 +67,10 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     'field_fecha_publicacion',
     'field_version',
     'field_proceso',
+    'field_programa',
     'field_lineamiento',
+    'field_dependencia',
+    'field_facultad',
     'status',
   ];
 
@@ -164,6 +167,9 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     $this->crearCampo('media', 'documento', 'field_proceso', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('media', 'documento', 'field_lineamiento', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('media', 'documento', 'field_enlace', 'link');
+    $this->crearCampo('media', 'documento', 'field_programa', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_dependencia', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_facultad', 'entity_reference', ['target_type' => 'taxonomy_term']);
     // Los modos y las pantallas de formulario simples: los de la configuración.
     // El módulo instala solo el modo de la ficha (config/optional); el del
     // medio se crea aquí desde el mismo archivo si el módulo no lo instaló.

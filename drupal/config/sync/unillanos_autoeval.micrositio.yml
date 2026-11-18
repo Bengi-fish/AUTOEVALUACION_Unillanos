@@ -11,6 +11,27 @@ franja_superior: {  }
 accesibilidad:
   titulo: Accesibilidad
   url: ''
+institucional:
+  introduccion: 'Información de la Universidad para su autoevaluación: procesos institucionales, dependencias, directivos, normatividad y cifras.'
+  cifras:
+    enlaces:
+      -
+        titulo: 'Estudiantes en Colombia (SNIES)'
+        texto: 'Consulta poblacional del Ministerio de Educación Nacional sobre estudiantes de educación superior.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/content/poblacional/index.jsf'
+      -
+        titulo: 'Mapa de graduados'
+        texto: 'Graduados de educación superior en Colombia, por departamento.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapagraduados.html'
+      -
+        titulo: 'Caracterización de graduados del Meta'
+        texto: 'Detalle de los graduados del departamento del Meta.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapa_graduados_detalle?departamento=CO-MET&anio=2021&semestre=0&departamentoName=META'
+      -
+        titulo: 'Mapa de movilidad'
+        texto: 'Movilidad de estudiantes de educación superior en el país.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapamovilidad.html'
+    tablero_url: 'https://public.tableau.com/views/PIACACifras/Dashboard1'
 pie:
   ubicanos:
     titulo: Ubícanos

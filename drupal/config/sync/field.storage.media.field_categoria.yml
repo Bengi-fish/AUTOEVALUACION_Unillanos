@@ -26,6 +26,12 @@ settings:
     -
       value: soporte
       label: Soporte
+    -
+      value: directivos
+      label: Directivos
+    -
+      value: dependencia
+      label: Dependencia
   allowed_values_function: ''
 module: options
 locked: false

@@ -264,6 +264,34 @@ final class MicrositioForm extends ConfigFormBase {
       '#default_value' => $derechos['nit'] ?? '',
       '#maxlength' => 100,
     ];
+    $institucional = (array) ($config->get('institucional') ?? []);
+    $cifras = (array) ($institucional['cifras'] ?? []);
+    $form['institucional'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Institucional: introducción y cifras'),
+      '#open' => TRUE,
+    ];
+    $form['institucional']['institucional_introduccion'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Frase de introducción de la página «Institucional»'),
+      '#default_value' => $institucional['introduccion'] ?? '',
+      '#rows' => 2,
+      '#maxlength' => 300,
+    ];
+    $form['institucional']['cifras_enlaces'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Cifras: enlaces'),
+      '#description' => $this->t('Uno por línea, con el formato «Título | Descripción corta | URL». La URL debe empezar por https://.'),
+      '#default_value' => $this->cifrasComoLineas($cifras['enlaces'] ?? NULL),
+      '#rows' => 5,
+    ];
+    $form['institucional']['cifras_tablero_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Cifras: URL del tablero institucional'),
+      '#description' => $this->t('Tablero externo (por ejemplo, de Tableau Public). Debe empezar por https://. Sin URL, no se muestra.'),
+      '#default_value' => $cifras['tablero_url'] ?? '',
+      '#maxlength' => 255,
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -292,6 +320,11 @@ final class MicrositioForm extends ConfigFormBase {
       if ($valor !== '' && $this->datosMarco->urlSegura($valor) === '') {
         $form_state->setErrorByName($campo, $this->t('@campo: la URL no es válida. Use una ruta que empiece por «/», «#», «https://», «mailto:» o «tel:».', ['@campo' => $titulo]));
       }
+    }
+    $this->lineasComoCifras((string) $form_state->getValue('cifras_enlaces'), 'cifras_enlaces', $form_state);
+    $tablero = trim((string) $form_state->getValue('cifras_tablero_url'));
+    if ($tablero !== '' && !preg_match('~^https://[^\s/]+~i', $tablero)) {
+      $form_state->setErrorByName('cifras_tablero_url', $this->t('Cifras: la URL del tablero debe empezar por https://.'));
     }
     foreach (['franja_superior', 'pie_politicas_enlaces'] as $campo) {
       $this->lineasComoEnlaces((string) $form_state->getValue($campo), $campo, $form_state);
@@ -322,6 +355,13 @@ final class MicrositioForm extends ConfigFormBase {
         fn(string $red): string => trim((string) $form_state->getValue('red_' . $red)),
         DatosMarco::REDES,
       )))
+      ->set('institucional', [
+        'introduccion' => trim((string) $form_state->getValue('institucional_introduccion')),
+        'cifras' => [
+          'enlaces' => $this->lineasComoCifras((string) $form_state->getValue('cifras_enlaces')),
+          'tablero_url' => trim((string) $form_state->getValue('cifras_tablero_url')),
+        ],
+      ])
       ->set('franja_superior', $enlaces('franja_superior'))
       ->set('accesibilidad', [
         'titulo' => trim((string) $form_state->getValue('accesibilidad_titulo')),
@@ -360,6 +400,63 @@ final class MicrositioForm extends ConfigFormBase {
       ])
       ->save();
     parent::submitForm($form, $form_state);
+  }
+
+  /**
+   * Convierte los enlaces de cifras guardados en líneas.
+   *
+   * Formato de cada línea: «Título | Descripción corta | URL».
+   *
+   * @param mixed $lista
+   *   Valor de la configuración.
+   *
+   * @return string
+   *   Una línea por enlace.
+   */
+  protected function cifrasComoLineas(mixed $lista): string {
+    $lineas = [];
+    foreach (is_array($lista) ? $lista : [] as $dato) {
+      if (is_array($dato)) {
+        $lineas[] = implode(' | ', [
+          trim((string) ($dato['titulo'] ?? '')),
+          trim((string) ($dato['texto'] ?? '')),
+          trim((string) ($dato['url'] ?? '')),
+        ]);
+      }
+    }
+    return implode("\n", $lineas);
+  }
+
+  /**
+   * Convierte líneas «Título | Descripción corta | URL» en enlaces de cifras.
+   *
+   * @param string $texto
+   *   Contenido del campo.
+   * @param string|null $campo
+   *   Campo donde marcar los errores (si se indica con $form_state).
+   * @param \Drupal\Core\Form\FormStateInterface|null $form_state
+   *   Estado del formulario donde marcar los errores.
+   *
+   * @return array<int, array{titulo: string, texto: string, url: string}>
+   *   Los enlaces válidos.
+   */
+  protected function lineasComoCifras(string $texto, ?string $campo = NULL, ?FormStateInterface $form_state = NULL): array {
+    $enlaces = [];
+    foreach (preg_split('/\R/u', $texto) ?: [] as $numero => $linea) {
+      $linea = trim($linea);
+      if ($linea === '') {
+        continue;
+      }
+      [$titulo, $descripcion, $url] = array_pad(array_map('trim', explode('|', $linea, 3)), 3, '');
+      if ($titulo === '' || !preg_match('~^https://[^\s/]+~i', $url)) {
+        if ($campo !== NULL && $form_state !== NULL) {
+          $form_state->setErrorByName($campo, $this->t('Línea @numero: use «Título | Descripción corta | URL» con título y una URL que empiece por https://.', ['@numero' => $numero + 1]));
+        }
+        continue;
+      }
+      $enlaces[] = ['titulo' => $titulo, 'texto' => $descripcion, 'url' => $url];
+    }
+    return $enlaces;
   }
 
   /**

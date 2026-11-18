@@ -4,11 +4,14 @@ status: true
 dependencies:
   config:
     - field.field.media.documento.field_categoria
+    - field.field.media.documento.field_dependencia
     - field.field.media.documento.field_enlace
+    - field.field.media.documento.field_facultad
     - field.field.media.documento.field_fecha_publicacion
     - field.field.media.documento.field_lineamiento
     - field.field.media.documento.field_media_file
     - field.field.media.documento.field_proceso
+    - field.field.media.documento.field_programa
     - field.field.media.documento.field_version
     - image.style.thumbnail
     - media.type.documento
@@ -123,5 +126,8 @@ content:
     weight: 0
     region: content
 hidden:
+  field_dependencia: true
+  field_facultad: true
+  field_programa: true
   langcode: true
   name: true

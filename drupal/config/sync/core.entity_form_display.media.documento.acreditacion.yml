@@ -3,12 +3,16 @@ langcode: es
 status: true
 dependencies:
   config:
+    - core.entity_form_mode.media.acreditacion
     - field.field.media.documento.field_categoria
+    - field.field.media.documento.field_dependencia
     - field.field.media.documento.field_enlace
+    - field.field.media.documento.field_facultad
     - field.field.media.documento.field_fecha_publicacion
     - field.field.media.documento.field_lineamiento
     - field.field.media.documento.field_media_file
     - field.field.media.documento.field_proceso
+    - field.field.media.documento.field_programa
     - field.field.media.documento.field_version
     - media.type.documento
   module:
@@ -26,6 +30,16 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_dependencia:
+    type: entity_reference_autocomplete
+    weight: 13
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_enlace:
     type: link_default
     weight: 3
@@ -33,6 +47,12 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
+    third_party_settings: {  }
+  field_facultad:
+    type: options_select
+    weight: 14
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_fecha_publicacion:
     type: datetime_default
@@ -56,6 +76,16 @@ content:
   field_proceso:
     type: entity_reference_autocomplete
     weight: 10
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_programa:
+    type: entity_reference_autocomplete
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS

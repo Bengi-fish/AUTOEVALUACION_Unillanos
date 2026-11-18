@@ -1,0 +1,23 @@
+uuid: 92155062-f428-4556-9ca8-244458cbb8c3
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_orden
+    - node.type.dependencia
+id: node.dependencia.field_orden
+field_name: field_orden
+entity_type: node
+bundle: dependencia
+label: Orden
+description: 'Número para ordenar las dependencias en la lista (la 1 sale primero).'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 1
+  max: 999
+  prefix: ''
+  suffix: ''
+field_type: integer

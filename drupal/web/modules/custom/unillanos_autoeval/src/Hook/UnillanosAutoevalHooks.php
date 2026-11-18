@@ -66,6 +66,8 @@ class UnillanosAutoevalHooks {
       'meta',
       'seguimiento',
       'lineamiento',
+      'dependencia',
+      'norma',
     ],
     'media' => ['documento'],
   ];
@@ -726,6 +728,9 @@ class UnillanosAutoevalHooks {
       'field_version' => $this->t('Versión del documento, si la tiene.'),
       'field_proceso' => $this->t('Proceso de autoevaluación al que pertenece. Escriba parte del nombre y elíjalo de la lista. Déjelo en blanco si es un documento general.'),
       'field_lineamiento' => $this->t('Solo para normas: el modelo de evaluación al que corresponde. Si no aplica, déjelo en blanco.'),
+      'field_programa' => $this->t('Solo para formatos de una dependencia: el programa al que corresponde. Escriba parte del nombre y elíjalo de la lista. Si no aplica, déjelo en blanco.'),
+      'field_dependencia' => $this->t('Solo para formatos de una dependencia (Biblioteca, Admisiones…): elija a cuál pertenece. Si no aplica, déjelo en blanco.'),
+      'field_facultad' => $this->t('Solo para los documentos de los directivos: elija la facultad. Si no aplica, déjelo en blanco.'),
       'status' => $this->t('Si quita la marca, el documento deja de verse en el sitio público.'),
     ];
   }

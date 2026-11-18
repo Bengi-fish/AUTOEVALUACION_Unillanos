@@ -1,0 +1,27 @@
+uuid: 1735b0de-c7ac-4b37-a1e1-a70f5668c30b
+langcode: es
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_origen_norma
+field_name: field_origen_norma
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: externo
+      label: Externo
+    -
+      value: interno
+      label: Interno
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

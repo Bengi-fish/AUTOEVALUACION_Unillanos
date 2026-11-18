@@ -28,6 +28,8 @@ La lógica que Drupal no trae se programa en el módulo propio **`unillanos_auto
 | GRADO_CUMPLIMIENTO | Taxonomía | `grado_cumplimiento` |
 | ESTAMENTO | Taxonomía | `estamento` |
 | PROCESO | Nodo | `proceso` |
+| DEPENDENCIA | Nodo | `dependencia` |
+| NORMA | Nodo | `norma` |
 | VALORACION | Nodo | `valoracion` |
 | HALLAZGO | Nodo | `hallazgo` |
 | PARTICIPACION | Paragraph (dentro de `proceso`) | `participacion` |
@@ -80,7 +82,13 @@ La lógica que Drupal no trae se programa en el módulo propio **`unillanos_auto
 
 ### `proceso`
 `field_tipo_proceso` (lista: `registro_calificado`, `acreditacion`, `renovacion_acreditacion`, `acreditacion_internacional`) · `field_ambito` (lista como en lineamiento) · `field_sede` (→ `sede`, procesos institucionales) · `field_programa` (→ `programa`) · `field_lineamiento` (→ `lineamiento`, obligatorio; es el **modelo** con el que se hizo el proceso, solo `Acuerdo CESU 02 de 2020` o `Acuerdo CESU 01 de 2025`) · `field_periodo_evaluado` (texto, ej. `2018–2022`) · `field_fase_actual` (entero 1–n) · `field_estado` (lista: `planeado`, `en_curso`, `finalizado`) · `field_resultado` (texto) · `field_participaciones` (Paragraphs → `participacion`).
-Regla: exactamente uno de `field_sede` o `field_programa` (validación en `unillanos_autoeval`).
+Regla: exactamente uno de `field_sede` o `field_programa` (validación en `unillanos_autoeval`). Los procesos institucionales (con sede, `field_ambito = institucional`) pueden quedar **sin modelo**: `field_lineamiento` ya no es obligatorio (Fase 9). Si lleva modelo, su ámbito debe corresponder: un proceso de programa usa un modelo de programa y uno por sede, uno institucional (un modelo sin ámbito guardado no se restringe).
+
+### `dependencia` (Fase 9, etapa 2)
+Dependencia de la Universidad que llena formatos del SIAAI (Admisiones, Biblioteca…). Título = nombre. `field_descripcion` (texto largo plano, opcional) · `field_orden` (entero, opcional; orden de la lista, las 25 salen en el orden del sitio de Acreditación). Crea revisión.
+
+### `norma` (Fase 9, etapa 2)
+Fila de la «Matriz legal aplicable» (normatividad). Título = «tipo número y fecha» (por ejemplo «Ley 30 de 1992»). `field_origen_norma` (lista: `externo`, `interno`; obligatorio) · `field_tipo_norma` (texto corto; obligatorio) · `field_numero_fecha` (texto corto) · `field_entidad` (texto corto) · `field_epigrafe` (texto largo plano; obligatorio) · `field_capitulos` (texto corto) · `field_aplicacion` (texto largo plano) · `field_documento` (→ media `documento`, archivo o enlace; opcional). Crea revisión.
 
 ### `valoracion`
 Título automático con `auto_entitylabel`: `[proceso] · [elemento]`.
@@ -112,7 +120,7 @@ Título automático: `[meta] · [periodo]`.
 | `programacion_anual` | `field_anio` (entero) · `field_programado` (decimal 12,4) · `field_logrado` (decimal 12,4) |
 
 ## Media `documento`
-Fuente: archivo. Un documento lleva **un archivo (`field_media_file`) o un enlace externo (`field_enlace`, solo `https://`), no ambos ni ninguno**: ambos campos son opcionales y la restricción `UnillanosArchivoOEnlace` (en `unillanos_autoeval`) lo valida. En las listas, un enlace se rotula «Enlace» o «Carpeta de Drive» (si es `/drive/folders/`), se abre en pestaña nueva y no muestra tamaño. `field_categoria` (lista: `normatividad`, `documento_base`, `informe`, `acto_administrativo`, `soporte`) · `field_version` (texto) · `field_fecha_publicacion` (fecha) · `field_proceso` (→ `proceso`) · `field_lineamiento` (→ `lineamiento`) · `field_enlace` (enlace, para documentos externos). Publicado = `publico`.
+Fuente: archivo. Un documento lleva **un archivo (`field_media_file`) o un enlace externo (`field_enlace`, solo `https://`), no ambos ni ninguno**: ambos campos son opcionales y la restricción `UnillanosArchivoOEnlace` (en `unillanos_autoeval`) lo valida. En las listas, un enlace se rotula «Enlace» o «Carpeta de Drive» (si es `/drive/folders/`), se abre en pestaña nueva y no muestra tamaño. `field_categoria` (lista: `normatividad`, `documento_base`, `informe`, `acto_administrativo`, `soporte`) · `field_version` (texto) · `field_fecha_publicacion` (fecha) · `field_proceso` (→ `proceso`) · `field_lineamiento` (→ `lineamiento`) · `field_enlace` (enlace, para documentos externos). Publicado = `publico`. Fase 9, etapa 2: `field_dependencia` (→ `dependencia`), `field_programa` (→ `programa`, para formatos de una dependencia que no pasan por un proceso) y `field_facultad` (→ término `facultad`, documentos de directivos); `field_categoria` suma `directivos` y `dependencia`. Los documentos con dependencia o facultad, y los de un proceso con sede y sin programa, no salen en `/documentos`: son de «Institucional».
 
 ## Webform `participa`
 Elementos: `proceso` (entidad → nodo `proceso`) · `elemento` (término `elemento_modelo`, opcional) · `estamento` (término `estamento`) · `nombre` (texto, opcional) · `texto` (área de texto, máx. 1000) · `consentimiento` (casilla obligatoria). Solo administradores: `estado_gestion` (`recibida`, `en_revision`, `respondida`, `descartada`) y `respuesta`. `fecha_envio` = fecha de envío del webform.
