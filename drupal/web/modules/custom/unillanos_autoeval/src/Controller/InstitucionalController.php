@@ -6,125 +6,42 @@ namespace Drupal\unillanos_autoeval\Controller;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\unillanos_autoeval\Service\InstitucionalCifras;
-use Drupal\unillanos_autoeval\Service\InstitucionalDependencias;
-use Drupal\unillanos_autoeval\Service\InstitucionalDirectivos;
-use Drupal\unillanos_autoeval\Service\InstitucionalNormas;
-use Drupal\unillanos_autoeval\Service\InstitucionalPortada;
-use Drupal\unillanos_autoeval\Service\InstitucionalProcesos;
+use Drupal\unillanos_autoeval\Service\InstitucionalPagina;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Páginas de «Institucional»: portada y sus cinco módulos.
+ * Página de «Institucional»: la Universidad con la interfaz de un programa.
  *
- * Entrega los datos de los servicios; el tema los pinta con las plantillas
- * `unillanos_institucional_*`.
+ * Entrega los datos de `InstitucionalPagina`; el tema los pinta con la
+ * plantilla del gancho `unillanos_institucional`. Las cinco rutas de la
+ * etapa 3 (`/institucional/procesos`, etc.) redirigen a su sección.
  */
 final class InstitucionalController extends ControllerBase {
 
   /**
    * Constructor.
    */
-  public function __construct(
-    protected InstitucionalPortada $portada,
-    protected InstitucionalProcesos $procesos,
-    protected InstitucionalDependencias $dependencias,
-    protected InstitucionalDirectivos $directivos,
-    protected InstitucionalNormas $normas,
-    protected InstitucionalCifras $cifras,
-  ) {}
+  public function __construct(protected InstitucionalPagina $pagina) {}
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
-    return new static(
-      $container->get(InstitucionalPortada::class),
-      $container->get(InstitucionalProcesos::class),
-      $container->get(InstitucionalDependencias::class),
-      $container->get(InstitucionalDirectivos::class),
-      $container->get(InstitucionalNormas::class),
-      $container->get(InstitucionalCifras::class),
-    );
+    return new static($container->get(InstitucionalPagina::class));
   }
 
   /**
-   * Portada de «Institucional» (/institucional).
+   * Página de «Institucional» (/institucional).
    *
    * @return array<string, mixed>
    *   Arreglo de render.
    */
   public function portada(): array {
-    return $this->construir('portada', fn(CacheableMetadata $c): array => $this->portada->datos($c));
-  }
-
-  /**
-   * Procesos institucionales (/institucional/procesos).
-   *
-   * @return array<string, mixed>
-   *   Arreglo de render.
-   */
-  public function procesos(): array {
-    return $this->construir('procesos', fn(CacheableMetadata $c): array => $this->procesos->datos($c));
-  }
-
-  /**
-   * Dependencias (/institucional/dependencias).
-   *
-   * @return array<string, mixed>
-   *   Arreglo de render.
-   */
-  public function dependencias(): array {
-    return $this->construir('dependencias', fn(CacheableMetadata $c): array => $this->dependencias->datos($c));
-  }
-
-  /**
-   * Directivos (/institucional/directivos).
-   *
-   * @return array<string, mixed>
-   *   Arreglo de render.
-   */
-  public function directivos(): array {
-    return $this->construir('directivos', fn(CacheableMetadata $c): array => $this->directivos->datos($c));
-  }
-
-  /**
-   * Normatividad (/institucional/normatividad).
-   *
-   * @return array<string, mixed>
-   *   Arreglo de render.
-   */
-  public function normatividad(): array {
-    return $this->construir('normatividad', fn(CacheableMetadata $c): array => $this->normas->datos($c));
-  }
-
-  /**
-   * Cifras (/institucional/cifras).
-   *
-   * @return array<string, mixed>
-   *   Arreglo de render.
-   */
-  public function cifras(): array {
-    return $this->construir('cifras', fn(CacheableMetadata $c): array => $this->cifras->datos($c));
-  }
-
-  /**
-   * Arma el arreglo de render de una página.
-   *
-   * @param string $pagina
-   *   Sufijo de la plantilla (`unillanos_institucional_{pagina}`).
-   * @param callable $datos
-   *   Recibe los metadatos de caché y devuelve los datos de la página.
-   *
-   * @return array<string, mixed>
-   *   Arreglo de render con la caché aplicada.
-   */
-  protected function construir(string $pagina, callable $datos): array {
     $cache = new CacheableMetadata();
     $cache->addCacheContexts(['user.permissions']);
     $construccion = [
-      '#theme' => 'unillanos_institucional_' . $pagina,
-      '#datos' => $datos($cache),
+      '#theme' => 'unillanos_institucional',
+      '#datos' => $this->pagina->datos($cache),
     ];
     $cache->applyTo($construccion);
     return $construccion;

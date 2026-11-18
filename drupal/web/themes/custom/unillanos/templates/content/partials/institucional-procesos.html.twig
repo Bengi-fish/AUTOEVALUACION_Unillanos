@@ -1,0 +1,29 @@
+{#
+/**
+ * @file
+ * Sección «Procesos institucionales» de /institucional: las condiciones
+ * institucionales por sede (un acordeón con los documentos de cada sede).
+ *
+ * Variables (se pasan con `only`):
+ * - condiciones: las arma InstitucionalProcesos::datos() (una por sede).
+ * - alterna: TRUE para la banda gris.
+ */
+#}
+{% embed 'unillanos:section' with {id: 'procesos', variant: alterna ? 'alt' : '', condiciones: condiciones} only %}
+  {% block content %}
+    {% include 'unillanos:section-head' with {eyebrow: 'Condiciones institucionales'|t, title: 'Condiciones institucionales por sede'|t, lead: 'Los documentos de las condiciones de calidad de cada sede.'|t} only %}
+    {% set entradas = [] %}
+    {% for sede in condiciones %}
+      {% set grupos = [] %}
+      {% set cuenta = 0 %}
+      {% set acciones = {} %}
+      {% for proceso in sede.procesos %}
+        {% set cuenta = cuenta + proceso.items|length %}
+        {% set grupos = grupos|merge([{title: proceso.titulo, items: proceso.items}]) %}
+        {% if proceso.edicion %}{% set acciones = acciones|merge({('d' ~ loop.index): proceso.edicion}) %}{% endif %}
+      {% endfor %}
+      {% set entradas = entradas|merge([{id: sede.id, title: sede.titulo, count: cuenta, groups: grupos, edicion: acciones}]) %}
+    {% endfor %}
+    {% include 'unillanos:accordion' with {id: 'sedes', heading: 'h3', items: entradas} only %}
+  {% endblock %}
+{% endembed %}

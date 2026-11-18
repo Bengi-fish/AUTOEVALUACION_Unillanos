@@ -1,0 +1,115 @@
+{#
+/**
+ * @file
+ * Institucional (/institucional): la Universidad con la interfaz de un
+ * programa. Mismo encabezado, mismas secciones de factores, plan y documentos
+ * (parcial compartido con la página del programa) y, debajo, las secciones
+ * propias de la Universidad: condiciones por sede, dependencias, directivos,
+ * normatividad y cifras, con una navegación interna por anclas.
+ *
+ * Variables:
+ * - datos: lo arma InstitucionalPagina::datos(): intro, proceso (título del
+ *   proceso institucional, antetítulo de la cabecera), etiquetas, ficha,
+ *   procesos (principal y condiciones), dependencias, directivos, normas,
+ *   cifras, secciones (title y url de las que tienen contenido), hay,
+ *   edicion y vacio. Solo trae lo que existe: lo vacío se omite.
+ *
+ * El h1 es el título de la cabecera; cada sección lleva un h2.
+ */
+#}
+{{ attach_library('unillanos/programa') }}
+{% set principal = datos.procesos.principal %}
+{% embed 'unillanos:pagehead' with {
+  eyebrow: datos.proceso|default('Autoevaluación institucional'|t),
+  title: 'Universidad de los'|t,
+  title_accent: 'Llanos'|t,
+  lead: datos.intro,
+  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Información'|t}, {title: 'SIAAI'|t, url: path('unillanos_autoeval.portada')}, {title: 'Institucional'|t}],
+  etiquetas: datos.etiquetas,
+  variant: 'hero',
+} only %}
+  {% block meta %}
+    {% for etiqueta in etiquetas %}
+      {% include 'unillanos:tag' with {label: etiqueta, variant: loop.first ? 'acento' : ''} only %}
+    {% endfor %}
+  {% endblock %}
+{% endembed %}
+
+{# Modo edición: la introducción y el proceso institucional. #}
+{% set enlaces_edicion = [datos.edicion.micrositio|default(null)] %}
+{% if principal.edicion %}
+  {% for enlace in principal.edicion %}{% set enlaces_edicion = enlaces_edicion|merge([enlace]) %}{% endfor %}
+{% endif %}
+{% set enlaces_edicion = enlaces_edicion|filter(enlace => enlace) %}
+{% if enlaces_edicion %}
+  <div class="ua-container">
+    <div class="ua-edicion-zona">
+      {% for enlace in enlaces_edicion %}
+        {% include 'unillanos:edit-link' with {url: enlace.url, label: enlace.title, variant: enlace.tipo, show_label: true} only %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{# Navegación interna por secciones (solo las que tienen contenido). #}
+{% if datos.secciones|length > 1 %}
+  {% include 'unillanos:subnav' with {label: 'Secciones de Institucional'|t, items: datos.secciones} only %}
+{% endif %}
+
+{% if datos.vacio %}
+  {% embed 'unillanos:section' with {id: 'institucional'} only %}
+    {% block content %}
+      <p class="ua-lead ua-docs-vacio">{{ 'Todavía no hay información institucional publicada.'|t }}</p>
+    {% endblock %}
+  {% endembed %}
+{% endif %}
+
+{# Factores, plan y documentos del proceso institucional: el mismo parcial que
+   la página del programa. La ficha lateral va si tiene más de un dato. #}
+{% set hay_ficha = datos.ficha|length > 1 %}
+{% set ficha_aside %}
+  {%- if hay_ficha -%}
+    {% include 'unillanos:ficha' with {variant: 'aside', eyebrow: 'Autoevaluación institucional'|t, title: 'Ficha del proceso'|t, items: datos.ficha, attributes: create_attribute({id: 'ficha'})} only %}
+  {%- endif -%}
+{% endset %}
+{% if datos.hay.autoevaluacion or datos.hay.plan or datos.hay.documentos %}
+  {% include '@unillanos/templates/content/partials/autoevaluacion.html.twig' with {
+    factores: principal.factores,
+    plan: principal.plan,
+    documentos: {items: principal.documentos},
+    hay_ficha: hay_ficha,
+    ficha_aside: ficha_aside,
+    textos: {
+      autoevaluacion: 'Autoevaluación institucional'|t,
+      factores: 'Factores y valoración'|t,
+      etiqueta_factores: 'Factores de la autoevaluación institucional'|t,
+      acciones: 'Acciones institucionales'|t,
+      documentos: 'Documentos institucionales'|t,
+      documentos_lead: 'Informes, planes y otros documentos descargables del proceso institucional.'|t,
+      aviso_avance: 'El avance es el reportado por la Universidad en cada periodo; no está verificado.'|t,
+    },
+  } only %}
+{% endif %}
+
+{# Secciones propias de la Universidad; la banda gris alterna. #}
+{% set n = datos.hay.documentos ? 1 : 0 %}
+{% if datos.hay.condiciones %}
+  {% set n = n + 1 %}
+  {% include '@unillanos/templates/content/partials/institucional-procesos.html.twig' with {condiciones: datos.procesos.condiciones, alterna: n is even} only %}
+{% endif %}
+{% if datos.hay.dependencias %}
+  {% set n = n + 1 %}
+  {% include '@unillanos/templates/content/partials/institucional-dependencias.html.twig' with {datos: datos.dependencias, alterna: n is even} only %}
+{% endif %}
+{% if datos.hay.directivos %}
+  {% set n = n + 1 %}
+  {% include '@unillanos/templates/content/partials/institucional-directivos.html.twig' with {datos: datos.directivos, alterna: n is even} only %}
+{% endif %}
+{% if datos.hay.normatividad %}
+  {% set n = n + 1 %}
+  {% include '@unillanos/templates/content/partials/institucional-normatividad.html.twig' with {datos: datos.normas, alterna: n is even} only %}
+{% endif %}
+{% if datos.hay.cifras %}
+  {% set n = n + 1 %}
+  {% include '@unillanos/templates/content/partials/institucional-cifras.html.twig' with {datos: datos.cifras, alterna: n is even} only %}
+{% endif %}

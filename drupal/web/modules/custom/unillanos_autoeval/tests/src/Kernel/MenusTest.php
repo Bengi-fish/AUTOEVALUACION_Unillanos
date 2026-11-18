@@ -52,6 +52,7 @@ class MenusTest extends UnillanosKernelTestBase {
     'taxonomy',
     'file',
     'image',
+    'link',
     'media',
     'entity_reference_revisions',
     'paragraphs',
@@ -110,6 +111,25 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->crearCampo('media', 'documento', 'field_fecha_publicacion', 'string');
     $this->crearCampo('media', 'documento', 'field_proceso', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('media', 'documento', 'field_lineamiento', 'entity_reference', ['target_type' => 'node']);
+    // La página de «Institucional» reúne todas sus secciones: necesita los
+    // campos de dependencias, normas, procesos y documentos institucionales.
+    $this->crearCampo('media', 'documento', 'field_enlace', 'link');
+    $this->crearCampo('media', 'documento', 'field_programa', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_dependencia', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_facultad', 'entity_reference', ['target_type' => 'taxonomy_term']);
+    $this->crearCampo('node', 'dependencia', 'field_descripcion', 'string_long');
+    $this->crearCampo('node', 'dependencia', 'field_orden', 'integer');
+    $this->crearCampo('node', 'norma', 'field_origen_norma', 'list_string', [
+      'allowed_values' => ['externo' => 'Externo', 'interno' => 'Interno'],
+    ]);
+    foreach (['tipo_norma', 'numero_fecha', 'entidad', 'capitulos'] as $nombre) {
+      $this->crearCampo('node', 'norma', 'field_' . $nombre, 'string');
+    }
+    $this->crearCampo('node', 'norma', 'field_epigrafe', 'string_long');
+    $this->crearCampo('node', 'norma', 'field_aplicacion', 'string_long');
+    $this->crearCampo('node', 'norma', 'field_documento', 'entity_reference', ['target_type' => 'media']);
+    $this->crearCampo('node', 'proceso', 'field_tipo_proceso', 'string');
+    $this->crearCampo('taxonomy_term', 'facultad', 'field_sigla', 'string');
     $this->container->get('theme_installer')->install(['unillanos']);
     $this->config('system.theme')->set('default', 'unillanos')->save();
     $this->container->get('theme.manager')->setActiveTheme(
@@ -230,10 +250,10 @@ class MenusTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * El rastro del menú en una sección del SIAAI pone «SIAAI» en el recorrido.
+   * El rastro del menú en «Institucional» pone «SIAAI» en el recorrido.
    */
   public function testRastroEnUnModuloInstitucional(): void {
-    $this->enRuta('unillanos_autoeval.institucional_dependencias');
+    $this->enRuta('unillanos_autoeval.institucional');
     $rastro = $this->container->get('menu.active_trail')->getActiveTrailIds('main');
     $this->assertArrayHasKey('unillanos_autoeval.menu.siaai', $rastro);
     $this->assertArrayNotHasKey('unillanos_autoeval.menu.programas', $rastro);
@@ -486,7 +506,7 @@ class MenusTest extends UnillanosKernelTestBase {
    */
   public function testLaBarraDelSiaaiSoloEstaEnElSiaai(): void {
     $this->installConfig(['unillanos_autoeval']);
-    foreach (['/siaai', '/programas', '/documentos', '/institucional', '/institucional/cifras'] as $ruta) {
+    foreach (['/siaai', '/programas', '/documentos', '/institucional'] as $ruta) {
       $this->assertStringContainsString('ua-subnav', $this->pagina($ruta), $ruta);
     }
     $programa = $this->crearNodo('programa', ['title' => 'Enfermería', 'field_clave' => 'enfermeria']);

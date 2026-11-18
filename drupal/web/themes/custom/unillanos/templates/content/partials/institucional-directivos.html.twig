@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Sección «Directivos» de /institucional: una tarjeta por facultad y, debajo,
+ * la lista de documentos de las facultades con varios.
+ *
+ * Variables (se pasan con `only`):
+ * - datos: InstitucionalDirectivos::datos() (tarjetas, listas, vacio).
+ * - alterna: TRUE para la banda gris.
+ */
+#}
+{% embed 'unillanos:section' with {id: 'directivos', variant: alterna ? 'alt' : '', datos: datos} only %}
+  {% block content %}
+    {% include 'unillanos:section-head' with {eyebrow: 'Institucional'|t, title: 'Directivos por facultad'|t, lead: 'La información de procesos de los programas de cada facultad.'|t} only %}
+    {% if not datos.vacio %}
+      {% include 'unillanos:card' with {heading: 'h3', items: datos.tarjetas} only %}
+      {% set hay_edicion = false %}
+      {% for tarjeta in datos.tarjetas %}{% if tarjeta.edicion %}{% set hay_edicion = true %}{% endif %}{% endfor %}
+      {% if hay_edicion %}
+        <div class="ua-edicion-zona">
+          {% for tarjeta in datos.tarjetas %}
+            {% if tarjeta.edicion %}{% include 'unillanos:edit-link' with {url: tarjeta.edicion.url, label: tarjeta.edicion.title, variant: tarjeta.edicion.tipo, show_label: true} only %}{% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% for lista in datos.listas %}
+        <div class="ua-subsection" id="{{ lista.id }}">
+          {% include 'unillanos:section-head' with {heading: 'h3', eyebrow: 'Facultad'|t, title: lista.titulo} only %}
+          {% include 'unillanos:doc-list' with {heading: 'h4', items: lista.items} only %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endblock %}
+{% endembed %}

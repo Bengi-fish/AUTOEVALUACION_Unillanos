@@ -17,7 +17,8 @@ unillanos_autoeval.portada:
   requirements:
     _permission: 'access content'
 
-# La dirección anterior de la portada del sistema sigue funcionando.
+# Direcciones anteriores que siguen funcionando: redirigen (301) a la página o
+# a la sección que hoy las contiene.
 unillanos_autoeval.inicio_anterior:
   path: '/inicio'
   defaults:
@@ -129,39 +130,44 @@ unillanos_autoeval.institucional:
 unillanos_autoeval.institucional_procesos:
   path: '/institucional/procesos'
   defaults:
-    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::procesos'
-    _title: 'Procesos institucionales'
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'procesos'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
 
 unillanos_autoeval.institucional_dependencias:
   path: '/institucional/dependencias'
   defaults:
-    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::dependencias'
-    _title: 'Dependencias'
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'dependencias'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
 
 unillanos_autoeval.institucional_directivos:
   path: '/institucional/directivos'
   defaults:
-    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::directivos'
-    _title: 'Directivos'
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'directivos'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
 
 unillanos_autoeval.institucional_normatividad:
   path: '/institucional/normatividad'
   defaults:
-    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::normatividad'
-    _title: 'Normatividad'
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'normatividad'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
 
 unillanos_autoeval.institucional_cifras:
   path: '/institucional/cifras'
   defaults:
-    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::cifras'
-    _title: 'Cifras'
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'cifras'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'

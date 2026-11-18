@@ -46,7 +46,7 @@ Módulos de terceros que usa el proyecto: `paragraphs`, `webform`, `pathauto`, `
 2. El controlador pide los datos a un servicio (`src/Service/`), que consulta con Entity Query, comprueba el acceso y devuelve un arreglo con la caché (etiquetas y contextos).
 3. El controlador responde con `#theme` y los datos; el tema los pinta con componentes.
 
-Ejemplo: `/institucional/normatividad` → `InstitucionalController::normatividad()` → `InstitucionalNormas::datos()` → plantilla `unillanos-institucional-normatividad.html.twig` → componente `norm-table`.
+Ejemplo: `/institucional` → `InstitucionalController::portada()` → `InstitucionalPagina::datos()` (que reúne `InstitucionalNormas::datos()` y los demás servicios de la página) → plantilla `unillanos-institucional.html.twig` → parcial `partials/institucional-normatividad.html.twig` → componente `norm-table`. Las rutas antiguas `/institucional/normatividad` y sus hermanas redirigen (301) a su sección de `/institucional`.
 
 ## 2. Modelo de datos
 

@@ -88,10 +88,10 @@ services:
     tags:
       - { name: twig.extension }
 
-  # Páginas de «Institucional» (Fase 9, etapa 3).
+  # Página de «Institucional» (Fase 9, etapa 3; reunida en el cambio de rumbo).
   unillanos_autoeval.institucional_portada:
     class: Drupal\unillanos_autoeval\Service\InstitucionalPortada
-    arguments: ['@config.factory', '@url_generator', '@unillanos_autoeval.enlaces_edicion']
+    arguments: ['@config.factory', '@unillanos_autoeval.enlaces_edicion']
   Drupal\unillanos_autoeval\Service\InstitucionalPortada: '@unillanos_autoeval.institucional_portada'
 
   unillanos_autoeval.institucional_procesos:
@@ -128,3 +128,14 @@ services:
     class: Drupal\unillanos_autoeval\Service\PortalInicio
     arguments: ['@config.factory', '@unillanos_autoeval.enlaces_edicion']
   Drupal\unillanos_autoeval\Service\PortalInicio: '@unillanos_autoeval.portal_inicio'
+
+  unillanos_autoeval.institucional_pagina:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalPagina
+    arguments:
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalPortada'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalProcesos'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalDependencias'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalDirectivos'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalNormas'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalCifras'
+  Drupal\unillanos_autoeval\Service\InstitucionalPagina: '@unillanos_autoeval.institucional_pagina'

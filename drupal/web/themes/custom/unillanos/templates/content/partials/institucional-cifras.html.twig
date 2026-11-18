@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Sección «Cifras» de /institucional: enlaces externos y el tablero
+ * institucional, que no se carga solo sino al pulsar el botón.
+ *
+ * Variables (se pasan con `only`):
+ * - datos: InstitucionalCifras::datos() (enlaces, tablero, edicion, vacio).
+ * - alterna: TRUE para la banda gris.
+ */
+#}
+{% embed 'unillanos:section' with {id: 'cifras', variant: alterna ? 'alt' : '', datos: datos} only %}
+  {% block content %}
+    {% include 'unillanos:section-head' with {eyebrow: 'Institucional'|t, title: 'Cifras y estadísticas'|t, lead: 'Cifras nacionales de estudiantes y egresados, y cifras de la Universidad.'|t} only %}
+    {% if datos.edicion.micrositio %}
+      <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: datos.edicion.micrositio.url, label: datos.edicion.micrositio.title, variant: datos.edicion.micrositio.tipo, show_label: true} only %}</div>
+    {% endif %}
+    {% if datos.enlaces %}
+      {% include 'unillanos:section-head' with {heading: 'h3', eyebrow: 'Cifras nacionales'|t, title: 'Estudiantes y graduados en Colombia'|t, lead: 'Consultas del Ministerio de Educación Nacional. Se abren en otro sitio.'|t} only %}
+      {% include 'unillanos:card' with {heading: 'h4', items: datos.enlaces} only %}
+    {% endif %}
+    {% if datos.tablero %}
+      <div class="ua-subsection">
+        {% include 'unillanos:section-head' with {heading: 'h3', eyebrow: 'Cifras institucionales'|t, title: 'Tablero institucional'|t, lead: 'Cantidad de programas por facultad y otras cifras de la Universidad.'|t} only %}
+        {% include 'unillanos:embed-diferido' with {
+          id: 'tablero-institucional',
+          title: 'Tablero de cifras institucionales'|t,
+          embed_url: datos.tablero.embed_url,
+          open_url: datos.tablero.url,
+          host: datos.tablero.host,
+          button_label: 'Cargar el tablero'|t,
+          open_label: 'Abrir en Tableau Public'|t,
+          notice: 'El tablero es de otro sitio (Tableau Public): solo se carga si usted lo pide.'|t,
+          height: 1000,
+        } only %}
+      </div>
+    {% endif %}
+  {% endblock %}
+{% endembed %}

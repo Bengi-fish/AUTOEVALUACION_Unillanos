@@ -865,3 +865,17 @@ El sitio pasa a tener dos niveles. El **portal** de Autoevaluación y Acreditaci
 - **Barra secundaria:** componente `subnav` (Inicio del SIAAI · Programas · Documentos · Institucional; página exacta con `aria-current="page"`, sección que la contiene con `aria-current="true"`). La arma `UnillanosHooks::barraSiaai()` solo en las rutas de `RastroActivoSiaai::RUTAS` y en la página de un programa; `page.html.twig` la pinta debajo del menú principal.
 - **Migas del SIAAI:** «Inicio › Información › SIAAI › …» (Información es texto hasta que exista su página).
 - **Pendiente del cambio de rumbo:** `/institucional` como página de programa, migración del contenido del sitio de Acreditación, widget de accesibilidad y mover el carrusel al portal (hoy sigue en `/siaai`).
+
+## Fase 9, cambio de rumbo, etapa 9: «Institucional» con la interfaz de un programa
+
+`/institucional` deja de ser una portada de cinco tarjetas y pasa a ser **una sola página con la misma interfaz que la de un programa**, aplicada a la Universidad de los Llanos. No se creó ningún programa falso: no sale en `/programas`, ni en los conteos ni en los filtros.
+
+- **Cabecera:** el mismo componente `pagehead` en variante `hero`; antetítulo = título del proceso institucional más reciente (o «Autoevaluación institucional»), título «Universidad de los **Llanos**», bajada = frase de introducción de la configuración del micrositio, etiquetas = periodo y estado del proceso. Solo valores guardados.
+- **Parcial compartido:** `templates/content/partials/autoevaluacion.html.twig` contiene las secciones de factores con su valoración, plan de mejoramiento y documentos. Lo usan la página del programa (con sus textos «del programa»; su marcado no cambió) y `/institucional` (con textos «institucionales»). Se incluye con `@unillanos/templates/content/partials/…`.
+- **Secciones propias** (un parcial cada una, `partials/institucional-*.html.twig`, cada una con su `h2` y su ancla): `#procesos` (condiciones institucionales por sede, acordeón), `#dependencias` (acordeón con buscador), `#directivos` (tarjetas por facultad), `#normatividad` (matriz con filtros) y `#cifras` (enlaces y tablero con botón «Cargar el tablero»; el `iframe` no está en el HTML inicial). Una sección sin contenido (y sin acceso de edición) no aparece ni en la página ni en la navegación.
+- **Navegación interna:** el componente `subnav` con anclas («Secciones de Institucional»), solo si hay más de una sección. Funciona con teclado, sin JavaScript y en celular (se reparte en filas).
+- **Si el proceso institucional no tiene valoraciones**, no hay factores ni plan; se ven la cabecera y las secciones que tengan contenido. Sin nada, un único aviso «Todavía no hay información institucional publicada.».
+- **Servicio:** `InstitucionalPagina` reúne lo que arman `InstitucionalPortada` (frase y edición), `InstitucionalProcesos`, `InstitucionalDependencias`, `InstitucionalDirectivos`, `InstitucionalNormas` e `InstitucionalCifras`; entrega `secciones`, `hay`, `ficha`, `etiquetas` y `vacio`. `InstitucionalController::portada()` es el único método; el gancho de tema es `unillanos_institucional`.
+- **Redirecciones permanentes (301):** `/institucional/procesos`, `/dependencias`, `/directivos`, `/normatividad` y `/cifras` → `/institucional#<sección>` (mismas rutas con nombre; `RedireccionController`).
+- **Modo edición:** los lápices y «+» de cada sección siguen igual, con las mismas reglas de acceso.
+- **Retirado:** las seis plantillas de la etapa 3 y sus seis ganchos de tema; las tarjetas de `InstitucionalPortada`.

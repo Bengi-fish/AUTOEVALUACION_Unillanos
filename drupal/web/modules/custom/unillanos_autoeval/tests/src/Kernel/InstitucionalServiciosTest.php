@@ -10,6 +10,7 @@ use Drupal\unillanos_autoeval\Service\InstitucionalCifras;
 use Drupal\unillanos_autoeval\Service\InstitucionalDependencias;
 use Drupal\unillanos_autoeval\Service\InstitucionalDirectivos;
 use Drupal\unillanos_autoeval\Service\InstitucionalNormas;
+use Drupal\unillanos_autoeval\Service\InstitucionalPagina;
 use Drupal\unillanos_autoeval\Service\InstitucionalPortada;
 use Drupal\unillanos_autoeval\Service\InstitucionalProcesos;
 use PHPUnit\Framework\Attributes\Group;
@@ -33,26 +34,45 @@ class InstitucionalServiciosTest extends InstitucionalBaseKernel {
   }
 
   /**
-   * La portada trae cinco tarjetas con ruta propia y la frase configurada.
+   * La cabecera trae la frase configurada.
    */
   public function testPortada(): void {
     $this->config('unillanos_autoeval.micrositio')->set('institucional', ['introduccion' => 'Frase de prueba.'])->save();
     $datos = $this->container->get(InstitucionalPortada::class)->datos($this->cache());
     $this->assertSame('Frase de prueba.', $datos['intro']);
-    $this->assertSame(
-      ['Procesos institucionales', 'Dependencias', 'Directivos', 'Normatividad', 'Cifras'],
-      array_column($datos['tarjetas'], 'title'),
-    );
-    $this->assertSame(
-      [
-        '/institucional/procesos',
-        '/institucional/dependencias',
-        '/institucional/directivos',
-        '/institucional/normatividad',
-        '/institucional/cifras',
-      ],
-      array_column($datos['tarjetas'], 'url'),
-    );
+    $this->assertArrayNotHasKey('tarjetas', $datos);
+  }
+
+  /**
+   * La página reúne solo las secciones con contenido, en orden y con ancla.
+   */
+  public function testPaginaReuneLasSeccionesConContenido(): void {
+    $pagina = $this->container->get(InstitucionalPagina::class);
+    $vacia = $pagina->datos($this->cache());
+    $this->assertTrue($vacia['vacio']);
+    $this->assertSame([], $vacia['secciones']);
+    $this->assertSame([], $vacia['ficha']);
+
+    $dep = $this->crearNodo('dependencia', ['title' => 'Biblioteca', 'field_orden' => 1]);
+    $this->enlace('Formato', ['field_dependencia' => $dep->id()]);
+    $this->crearNodo('norma', [
+      'title' => 'Ley 30 de 1992',
+      'field_origen_norma' => 'externo',
+      'field_tipo_norma' => 'Ley',
+      'field_epigrafe' => 'x',
+    ]);
+    $this->config('unillanos_autoeval.micrositio')->set('institucional', [
+      'cifras' => ['enlaces' => [['titulo' => 'SNIES', 'texto' => 'Consulta', 'url' => 'https://example.org/a']]],
+    ])->save();
+    $datos = $pagina->datos($this->cache());
+    $this->assertFalse($datos['vacio']);
+    $this->assertSame(['Dependencias', 'Normatividad', 'Cifras'], array_column($datos['secciones'], 'title'));
+    $this->assertSame(['#dependencias', '#normatividad', '#cifras'], array_column($datos['secciones'], 'url'));
+    $this->assertTrue($datos['hay']['dependencias']);
+    $this->assertFalse($datos['hay']['directivos']);
+    $this->assertFalse($datos['hay']['autoevaluacion']);
+    $this->assertSame('dependencias', $pagina->ancla('dependencias'));
+    $this->assertSame('procesos', $pagina->ancla('condiciones'));
   }
 
   /**

@@ -42,11 +42,6 @@ class UnillanosHooks {
     'unillanos_autoeval.documentos',
     'unillanos_autoeval.programas',
     'unillanos_autoeval.institucional',
-    'unillanos_autoeval.institucional_procesos',
-    'unillanos_autoeval.institucional_dependencias',
-    'unillanos_autoeval.institucional_directivos',
-    'unillanos_autoeval.institucional_normatividad',
-    'unillanos_autoeval.institucional_cifras',
   ];
 
   /**
@@ -196,33 +191,17 @@ class UnillanosHooks {
         'template' => 'unillanos-portal',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
+      'unillanos_institucional' => [
+        'variables' => ['datos' => []],
+        'template' => 'unillanos-institucional',
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ],
       'unillanos_portada' => [
         'variables' => ['datos' => []],
         'template' => 'unillanos-portada',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
-    ] + $this->temasInstitucionales();
-  }
-
-  /**
-   * Plantillas de las páginas de «Institucional» (Fase 9, etapa 3).
-   *
-   * Una por página: portada, procesos, dependencias, directivos, normatividad
-   * y cifras. Sus datos los entrega el controlador de `unillanos_autoeval`.
-   *
-   * @return array<string, array<string, mixed>>
-   *   Definiciones de tema.
-   */
-  protected function temasInstitucionales(): array {
-    $temas = [];
-    foreach (['portada', 'procesos', 'dependencias', 'directivos', 'normatividad', 'cifras'] as $pagina) {
-      $temas['unillanos_institucional_' . $pagina] = [
-        'variables' => ['datos' => []],
-        'template' => 'unillanos-institucional-' . $pagina,
-        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
-      ];
-    }
-    return $temas;
+    ];
   }
 
   /**
@@ -303,19 +282,15 @@ class UnillanosHooks {
     if (!$programa && !in_array($ruta, RastroActivoSiaai::RUTAS, TRUE)) {
       return [];
     }
-    $institucional = [
-      'unillanos_autoeval.institucional',
-      'unillanos_autoeval.institucional_procesos',
-      'unillanos_autoeval.institucional_dependencias',
-      'unillanos_autoeval.institucional_directivos',
-      'unillanos_autoeval.institucional_normatividad',
-      'unillanos_autoeval.institucional_cifras',
-    ];
     $secciones = [
       ['unillanos_autoeval.portada', new TranslatableMarkup('Inicio del SIAAI'), ['unillanos_autoeval.portada']],
       ['unillanos_autoeval.programas', new TranslatableMarkup('Programas'), ['unillanos_autoeval.programas']],
       ['unillanos_autoeval.documentos', new TranslatableMarkup('Documentos'), ['unillanos_autoeval.documentos']],
-      ['unillanos_autoeval.institucional', new TranslatableMarkup('Institucional'), $institucional],
+      [
+        'unillanos_autoeval.institucional',
+        new TranslatableMarkup('Institucional'),
+        ['unillanos_autoeval.institucional'],
+      ],
     ];
     $items = [];
     foreach ($secciones as [$destino, $titulo, $rutas]) {

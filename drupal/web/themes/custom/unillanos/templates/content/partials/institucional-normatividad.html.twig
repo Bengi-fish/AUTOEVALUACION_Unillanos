@@ -1,30 +1,21 @@
 {#
 /**
  * @file
- * Normatividad (/institucional/normatividad): la matriz legal aplicable.
+ * Sección «Normatividad» de /institucional: la matriz legal con filtros.
  *
- * Variables:
- * - datos: lo arma InstitucionalNormas::datos(): filas, origenes y tipos (con
- *   conteos), total, edicion y vacio. La plantilla solo cambia los nombres de
- *   las claves a los props del componente.
+ * Variables (se pasan con `only`):
+ * - datos: InstitucionalNormas::datos() (filas, origenes, tipos, total,
+ *   edicion, vacio); se traducen las claves a los props del componente.
+ * - alterna: TRUE para la banda gris.
  */
 #}
-{% include 'unillanos:pagehead' with {
-  eyebrow: 'Institucional'|t,
-  title: 'Matriz legal'|t,
-  title_accent: 'aplicable'|t,
-  lead: 'Normas que aplican a los procesos de la Universidad de los Llanos.'|t,
-  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Información'|t}, {title: 'SIAAI'|t, url: path('unillanos_autoeval.portada')}, {title: 'Institucional'|t, url: path('unillanos_autoeval.institucional')}, {title: 'Normatividad'|t}],
-} only %}
-
-{% embed 'unillanos:section' with {id: 'normas', datos: datos} only %}
+{% embed 'unillanos:section' with {id: 'normatividad', variant: alterna ? 'alt' : '', datos: datos} only %}
   {% block content %}
+    {% include 'unillanos:section-head' with {eyebrow: 'Institucional'|t, title: 'Matriz legal aplicable'|t, lead: 'Normas que aplican a los procesos de la Universidad de los Llanos.'|t} only %}
     {% if datos.edicion.nueva %}
       <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: datos.edicion.nueva.url, label: datos.edicion.nueva.title, variant: datos.edicion.nueva.tipo, show_label: true} only %}</div>
     {% endif %}
-    {% if datos.vacio %}
-      <p class="ua-lead ua-docs-vacio">{{ 'Todavía no hay normas publicadas.'|t }}</p>
-    {% else %}
+    {% if not datos.vacio %}
       {% set filas = [] %}
       {% for fila in datos.filas %}
         {% set filas = filas|merge([{

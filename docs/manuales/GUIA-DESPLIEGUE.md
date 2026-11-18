@@ -167,7 +167,7 @@ Drupal y sus módulos publican avisos de seguridad. Cada mes, o cuando haya un a
 ## 7. Verificación después de desplegar
 
 1. Abra el sitio por HTTPS y compruebe que `http://` redirige a `https://`.
-2. Páginas que deben responder bien: la portada, `/programas`, la página de Ingeniería Electrónica, `/documentos`, `/institucional` y sus cinco páginas (`/institucional/procesos`, `/institucional/dependencias`, `/institucional/directivos`, `/institucional/normatividad` y `/institucional/cifras`).
+2. Páginas que deben responder bien: la portada (`/`), `/siaai`, `/programas`, la página de Ingeniería Electrónica, `/documentos` e `/institucional`. Las direcciones `/inicio` y `/institucional/procesos`, `/institucional/dependencias`, `/institucional/directivos`, `/institucional/normatividad` y `/institucional/cifras` deben redirigir (301) a `/siaai` y a la sección correspondiente de `/institucional`.
 3. Como administrador, abra **Informes › Estado del sitio** (`/admin/reports/status`): no debe haber errores. Revise también **Informes › Mensajes recientes**.
 4. Entre con una cuenta de Acreditación por `/acceso-acreditacion` y compruebe que aparece la barra negra y que no se ven opciones de administración.
 5. Corra `vendor/bin/drush config:status`. Debe diferir `core.extension` (es esperado: `desplegar.sh` desinstala `unillanos_guia`, que la configuración versionada lista como activo). Si aparece también `unillanos_autoeval.micrositio` y la única diferencia es la línea `langcode: es`, tampoco es un problema. Cualquier otra diferencia sí lo es.

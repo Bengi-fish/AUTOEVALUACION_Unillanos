@@ -40,11 +40,6 @@ class RastroActivoSiaai extends MenuActiveTrail {
     'unillanos_autoeval.programas',
     'unillanos_autoeval.documentos',
     'unillanos_autoeval.institucional',
-    'unillanos_autoeval.institucional_procesos',
-    'unillanos_autoeval.institucional_dependencias',
-    'unillanos_autoeval.institucional_directivos',
-    'unillanos_autoeval.institucional_normatividad',
-    'unillanos_autoeval.institucional_cifras',
   ];
 
   /**
