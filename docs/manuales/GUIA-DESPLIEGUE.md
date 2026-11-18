@@ -76,6 +76,8 @@ GRANT ALL PRIVILEGES ON autoeval.* TO 'autoeval'@'localhost';
    cp deploy/settings.production.php.example drupal/web/sites/default/settings.php
    ```
 
+   El repositorio trae su propio `settings.php` (el de desarrollo): al reemplazarlo, `git status` lo mostrará como modificado. Es lo esperado; no suba ese cambio.
+
 2. El ejemplo no lleva ningún secreto: la sal (`hash_salt`), los datos de la base y el dominio vienen de variables de entorno. Los nombres están en `deploy/env.example`. Defínalas donde corresponda a su servidor (el grupo de PHP-FPM, el servicio, o el archivo de entorno que use) y también en la consola desde la que corre `drush`. Genere la sal con `openssl rand -hex 32`.
 3. Cree la carpeta de archivos privados **fuera** de la raíz web (por ejemplo `/var/www/autoeval-privado`) y póngala en la variable correspondiente.
 4. Compruebe que `trusted_host_patterns` coincide con su dominio (el ejemplo lo arma desde la variable del dominio).
@@ -111,7 +113,7 @@ tar -xzf archivos-sitio.tar.gz -C drupal/web/sites/default/
 bash deploy/desplegar.sh
 ```
 
-El script pone el sitio en modo mantenimiento, instala las dependencias sin las de desarrollo, corre `drush deploy` (actualizaciones de base, importación de configuración y limpieza de caché) y quita el modo mantenimiento. Es seguro repetirlo y se detiene ante el primer error.
+El script instala las dependencias sin las de desarrollo, pone el sitio en modo mantenimiento, corre `drush deploy` (actualizaciones de base, importación de configuración y limpieza de caché), desinstala el módulo de desarrollo `unillanos_guia` y quita el modo mantenimiento. Es seguro repetirlo y se detiene ante el primer error.
 
 ### 3.9. El primer administrador
 
@@ -168,7 +170,7 @@ Drupal y sus módulos publican avisos de seguridad. Cada mes, o cuando haya un a
 2. Páginas que deben responder bien: la portada, `/programas`, la página de Ingeniería Electrónica, `/documentos`, `/institucional` y sus cinco páginas (`/institucional/procesos`, `/institucional/dependencias`, `/institucional/directivos`, `/institucional/normatividad` y `/institucional/cifras`).
 3. Como administrador, abra **Informes › Estado del sitio** (`/admin/reports/status`): no debe haber errores. Revise también **Informes › Mensajes recientes**.
 4. Entre con una cuenta de Acreditación por `/acceso-acreditacion` y compruebe que aparece la barra negra y que no se ven opciones de administración.
-5. Compruebe que `drush config:status` no muestra diferencias.
+5. Corra `vendor/bin/drush config:status`. Debe diferir `core.extension` (es esperado: `desplegar.sh` desinstala `unillanos_guia`, que la configuración versionada lista como activo). Si aparece también `unillanos_autoeval.micrositio` y la única diferencia es la línea `langcode: es`, tampoco es un problema. Cualquier otra diferencia sí lo es.
 6. Compruebe que `settings.php` es de solo lectura y que `sites/default/files` no ejecuta PHP.
 
 ## 8. Lista de pendientes antes de publicar
@@ -177,7 +179,7 @@ La lista completa y marcable está en `deploy/CHECKLIST.md`. En resumen:
 
 - Servidor, dominio y HTTPS definidos y con certificado válido.
 - Correo (SMTP) pendiente de definir: sin él no salen correos de recuperación de clave ni avisos.
-- Módulos de desarrollo fuera de producción, incluido `unillanos_guia` (la guía de estilos): `drush pm:uninstall unillanos_guia`.
+- Módulos de desarrollo fuera de producción: `bash deploy/desplegar.sh` desinstala `unillanos_guia` (la guía de estilos) en cada despliegue.
 - Retirar el starterkit (plantillas sobrantes dentro del tema `unillanos`) y decidir qué hacer con el tema Olivero; el detalle está en `docs/pendientes-acreditacion.md`.
 - Cuentas reales creadas y cuentas de prueba eliminadas.
 - Restringir en el tipo de medio «Documento» las extensiones `zip` y `txt`.

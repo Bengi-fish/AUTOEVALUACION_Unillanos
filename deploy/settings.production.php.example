@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * @file
+ * Configuración de producción de ejemplo (Fase 9, etapa 7).
+ *
+ * Se copia como drupal/web/sites/default/settings.php. No lleva secretos: la
+ * sal, la base de datos y el dominio vienen de variables de entorno (véase
+ * deploy/env.example).
+ */
+
+/**
+ * Lee una variable de entorno obligatoria o detiene el arranque.
+ */
+function autoeval_entorno(string $nombre): string {
+  $valor = getenv($nombre);
+  if ($valor === FALSE || $valor === '') {
+    throw new \RuntimeException("Falta la variable de entorno $nombre.");
+  }
+  return $valor;
+}
+
+$databases['default']['default'] = [
+  'database' => autoeval_entorno('AUTOEVAL_DB_NAME'),
+  'username' => autoeval_entorno('AUTOEVAL_DB_USER'),
+  'password' => autoeval_entorno('AUTOEVAL_DB_PASSWORD'),
+  'host' => getenv('AUTOEVAL_DB_HOST') ?: 'localhost',
+  'port' => getenv('AUTOEVAL_DB_PORT') ?: '3306',
+  'driver' => 'mysql',
+  'prefix' => '',
+  'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
+  'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
+];
+
+$settings['hash_salt'] = autoeval_entorno('AUTOEVAL_HASH_SALT');
+
+// Solo el dominio propio (con y sin «www.»).
+$dominio = preg_quote(autoeval_entorno('AUTOEVAL_DOMINIO'), '/');
+$settings['trusted_host_patterns'] = [
+  '^' . $dominio . '$',
+  '^www\.' . $dominio . '$',
+];
+
+// Configuración versionada y archivos fuera de la raíz web.
+$settings['config_sync_directory'] = '../config/sync';
+$settings['file_private_path'] = autoeval_entorno('AUTOEVAL_PRIVADO');
+$settings['file_public_path'] = 'sites/default/files';
+
+// Errores ocultos al público (quedan en el registro del servidor y en Drupal).
+$config['system.logging']['error_level'] = 'hide';
+
+// Sin acceso libre a update.php ni operaciones de autorización desde la web.
+$settings['update_free_access'] = FALSE;
+$settings['allow_authorize_operations'] = FALSE;
+
+// Agregación de CSS y JS activa (explícita, aunque sea el valor por defecto).
+$config['system.performance']['css']['preprocess'] = TRUE;
+$config['system.performance']['js']['preprocess'] = TRUE;

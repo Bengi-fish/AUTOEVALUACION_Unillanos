@@ -1,0 +1,8 @@
+# Tarea periódica de Drupal: una vez por hora. Se agrega con «crontab -e» del
+# usuario que administra el sitio. Ajuste la ruta a su instalación.
+0 * * * * cd /var/www/autoeval/drupal && vendor/bin/drush cron >/dev/null 2>&1
+
+# Respaldo nocturno (ver deploy/respaldar.sh). Las variables de entorno deben
+# estar disponibles para cron. El registro permite ver si falla. Los respaldos
+# no se rotan solos: borre los antiguos con la política que defina Sistemas.
+30 2 * * * cd /var/www/autoeval && bash deploy/respaldar.sh >>/var/log/autoeval-respaldo.log 2>&1
