@@ -6,7 +6,7 @@ namespace Drupal\unillanos_autoeval;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
-use Drupal\unillanos_autoeval\Menu\RastroActivoProgramas;
+use Drupal\unillanos_autoeval\Menu\RastroActivoSiaai;
 
 /**
  * Cambia la clase del rastro activo del menú para marcar «Programas».
@@ -22,7 +22,7 @@ class UnillanosAutoevalServiceProvider extends ServiceProviderBase {
       // de ser perezoso (`lazy`): un servicio perezoso necesita una clase proxy
       // generada para la subclase y su construcción es barata.
       $container->getDefinition('menu.active_trail')
-        ->setClass(RastroActivoProgramas::class)
+        ->setClass(RastroActivoSiaai::class)
         ->setLazy(FALSE);
     }
   }

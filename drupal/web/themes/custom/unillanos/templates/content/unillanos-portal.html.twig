@@ -1,0 +1,76 @@
+{#
+/**
+ * @file
+ * Portada del portal de Autoevaluación y Acreditación (página de inicio, `/`).
+ *
+ * Variables:
+ * - datos: lo arma PortalInicio::datos(): titulo, parrafos, accesos (title,
+ *   text, url, principal y external), sitios (title y url) y edicion.
+ *   Solo trae lo que existe: lo vacío se omite.
+ *
+ * El h1 es el título de la portada (la página base omite el bloque de título).
+ * El acceso principal (el primero) es el del SIAAI.
+ */
+#}
+{{ attach_library('unillanos/portal') }}
+{% set titulo = datos.titulo|default('Autoevaluación y Acreditación'|t) %}
+{% set parrafos = datos.parrafos %}
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Universidad de los Llanos'|t,
+  title: titulo,
+  lead: parrafos ? parrafos|first : '',
+} only %}
+
+{% embed 'unillanos:section' with {id: 'portal', datos: datos} only %}
+  {% block content %}
+    <div class="ua-portal__bloques">
+    {% if datos.edicion.micrositio %}
+      <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: datos.edicion.micrositio.url, label: datos.edicion.micrositio.title, variant: datos.edicion.micrositio.tipo, show_label: true} only %}</div>
+    {% endif %}
+    {% for parrafo in datos.parrafos|slice(1) %}
+      <p class="ua-lead">{{ parrafo }}</p>
+    {% endfor %}
+    {% set principal = datos.accesos|first %}
+    {% if principal %}
+      {% include 'unillanos:cta-row' with {
+        heading: 'h2',
+        title: principal.title,
+        text: principal.text,
+        button_label: 'Entrar'|t,
+        button_url: principal.url,
+      } only %}
+    {% endif %}
+    {% set otros = datos.accesos|slice(1) %}
+    {% if otros %}
+      {% set tarjetas = [] %}
+      {% for acceso in otros %}
+        {% set tarjetas = tarjetas|merge([{
+          title: acceso.title,
+          text: acceso.text,
+          url: acceso.url,
+          external: acceso.external,
+          cta: 'Ir'|t,
+        }]) %}
+      {% endfor %}
+      {% include 'unillanos:card' with {heading: 'h2', items: tarjetas} only %}
+    {% endif %}
+    </div>
+  {% endblock %}
+{% endembed %}
+
+{% if datos.sitios %}
+  {% embed 'unillanos:section' with {id: 'sitios-de-interes', variant: 'alt', sitios: datos.sitios} only %}
+    {% block content %}
+      {% include 'unillanos:section-head' with {
+        eyebrow: 'Enlaces'|t,
+        title: 'Sitios de interés'|t,
+        lead: 'Se abren en otro sitio.'|t,
+      } only %}
+      {% set tarjetas = [] %}
+      {% for sitio in sitios %}
+        {% set tarjetas = tarjetas|merge([{title: sitio.title, url: sitio.url, external: true, cta: 'Abrir'|t}]) %}
+      {% endfor %}
+      {% include 'unillanos:card' with {heading: 'h3', items: tarjetas} only %}
+    {% endblock %}
+  {% endembed %}
+{% endif %}

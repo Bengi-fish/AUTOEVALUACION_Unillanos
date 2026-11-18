@@ -38,6 +38,26 @@ unillanos_autoeval.micrositio:
     accesibilidad:
       type: unillanos_autoeval.enlace
       label: 'Enlace de accesibilidad'
+    portal:
+      type: mapping
+      label: 'Portal: texto de bienvenida, accesos y sitios de interés'
+      mapping:
+        titulo:
+          type: label
+          label: 'Título de la portada del portal'
+        texto:
+          type: text
+          label: 'Texto de bienvenida (párrafos separados por una línea en blanco)'
+        accesos:
+          type: sequence
+          label: 'Accesos (el primero es el principal)'
+          sequence:
+            type: unillanos_autoeval.enlace_texto_url
+        sitios:
+          type: sequence
+          label: 'Sitios de interés'
+          sequence:
+            type: unillanos_autoeval.enlace_texto_url
     institucional:
       type: mapping
       label: 'Institucional: introducción y cifras'

@@ -1,10 +1,30 @@
+# Portal de Autoevaluación y Acreditación: es la página de inicio del sitio
+# (system.site:page.front). Su ruta interna es /portal; se entra por «/».
+unillanos_autoeval.portal:
+  path: '/portal'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\PortalController::portal'
+    _title: 'Autoevaluación y Acreditación'
+  requirements:
+    _permission: 'access content'
+
+# SIAAI: la portada del sistema de información de autoevaluación (antes /inicio).
 unillanos_autoeval.portada:
-  path: '/inicio'
+  path: '/siaai'
   defaults:
     _controller: '\Drupal\unillanos_autoeval\Controller\PortadaController::portada'
     _title: 'Sistema de Información de Autoevaluación Institucional'
   requirements:
     _permission: 'access content'
+
+# La dirección anterior de la portada del sistema sigue funcionando.
+unillanos_autoeval.inicio_anterior:
+  path: '/inicio'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.portada'
+  requirements:
+    _access: 'TRUE'
 
 unillanos_autoeval.documentos:
   path: '/documentos'

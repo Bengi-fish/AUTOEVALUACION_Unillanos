@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Barra secundaria del SIAAI.
+ *
+ * Mismo filtro de URL que unillanos:button. La página exacta lleva
+ * aria-current="page"; una sección que la contiene, aria-current="true".
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://)~i' %}
+<nav{{ attributes.addClass('ua-subnav').setAttribute('aria-label', label|default('SIAAI'|t)) }}>
+  <ul class="ua-subnav__lista">
+    {%- for item in items -%}
+      {%- if item.url and ((item.url ~ '') matches seguro) -%}
+        <li class="ua-subnav__item">
+          <a class="ua-subnav__enlace{{ item.active or item.trail ? ' is-current' : '' }}" href="{{ item.url }}"
+            {%- if item.active %} aria-current="page"{% elseif item.trail %} aria-current="true"{% endif %}>{{ item.title }}</a>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+</nav>

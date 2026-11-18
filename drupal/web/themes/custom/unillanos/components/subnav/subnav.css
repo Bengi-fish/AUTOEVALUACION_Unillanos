@@ -1,0 +1,49 @@
+/**
+ * Componente subnav: barra secundaria del SIAAI.
+ */
+
+.ua-subnav {
+  background: var(--superficie-100);
+  border-bottom: 1px solid var(--borde);
+}
+
+.ua-subnav__lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-1) var(--espacio-4);
+  align-items: center;
+  max-width: var(--contenedor-max);
+  margin: 0 auto;
+  padding: 0 var(--espacio-5);
+  list-style: none;
+}
+
+.ua .ua-subnav__enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--espacio-2);
+  color: var(--tinta-700);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.ua .ua-subnav__enlace:hover {
+  color: var(--rojo-700);
+}
+
+.ua .ua-subnav__enlace.is-current {
+  color: var(--tinta-900);
+  border-bottom-color: var(--rojo-700);
+}
+
+@media (max-width: 860px) {
+
+  .ua-subnav__lista {
+    padding: 0 var(--espacio-4);
+    gap: 0 var(--espacio-2);
+  }
+
+}

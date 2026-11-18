@@ -159,6 +159,40 @@ class MicrositioFormTest extends KernelTestBase {
   }
 
   /**
+   * El portal guarda su texto, accesos (internos o https) y sitios (https).
+   */
+  public function testGuardaElPortalConSusAccesos(): void {
+    $estado = $this->enviar([
+      'portal_titulo' => ' Portal de prueba ',
+      'portal_texto' => "Primero.\n\nSegundo.",
+      'portal_accesos' => "SIAAI | El sistema | /siaai\nExterno | Otro sitio | https://example.org/a\n",
+      'portal_sitios' => 'SNIES | https://snies.example.org/',
+    ] + $this->base());
+    $this->assertSame([], $estado->getErrors());
+    $config = $this->config('unillanos_autoeval.micrositio');
+    $this->assertSame('Portal de prueba', $config->get('portal.titulo'));
+    $this->assertSame([
+      ['titulo' => 'SIAAI', 'texto' => 'El sistema', 'url' => '/siaai'],
+      ['titulo' => 'Externo', 'texto' => 'Otro sitio', 'url' => 'https://example.org/a'],
+    ], $config->get('portal.accesos'));
+    $this->assertSame([
+      ['titulo' => 'SNIES', 'texto' => '', 'url' => 'https://snies.example.org/'],
+    ], $config->get('portal.sitios'));
+    $datos = $this->container->get('unillanos_autoeval.portal_inicio')->datos(new CacheableMetadata());
+    $this->assertSame('Portal de prueba', $datos['titulo']);
+    $this->assertSame(['Primero.', 'Segundo.'], $datos['parrafos']);
+    $this->assertSame(['SIAAI', 'Externo'], array_column($datos['accesos'], 'title'));
+    $this->assertTrue($datos['accesos'][0]['principal']);
+    $this->assertFalse($datos['accesos'][1]['principal']);
+    $this->assertTrue($datos['accesos'][1]['external']);
+    $this->assertSame(['SNIES'], array_column($datos['sitios'], 'title'));
+    // El formulario devuelve lo guardado en líneas.
+    $form = $this->container->get('form_builder')->getForm(MicrositioForm::class);
+    $this->assertSame("SIAAI | El sistema | /siaai\nExterno | Otro sitio | https://example.org/a", $form['portal']['portal_accesos']['#default_value']);
+    $this->assertSame('SNIES | https://snies.example.org/', $form['portal']['portal_sitios']['#default_value']);
+  }
+
+  /**
    * Una URL no segura o una línea mal formada impiden guardar.
    */
   #[DataProvider('urlsInvalidas')]
@@ -195,6 +229,13 @@ class MicrositioFormTest extends KernelTestBase {
       'logo sin nombre' => ['pie_logos', 'govco | | https://www.gov.co/'],
       'logo con url peligrosa' => ['pie_logos', 'govco | GOV.CO | javascript:alert(1)'],
       'derechos con url peligrosa' => ['pie_derechos_url', 'javascript:alert(1)'],
+      'acceso con url peligrosa' => ['portal_accesos', 'Malo | texto | javascript:alert(1)'],
+      'acceso sin url' => ['portal_accesos', 'Solo título'],
+      'acceso con doble barra' => ['portal_accesos', 'Malo | texto | //otro.sitio'],
+      'acceso con http' => ['portal_accesos', 'Malo | texto | http://example.org'],
+      'sitio con http' => ['portal_sitios', 'Sitio | http://example.org'],
+      'sitio interno' => ['portal_sitios', 'Sitio | /programas'],
+      'sitio sin url' => ['portal_sitios', 'Solo nombre'],
     ];
   }
 

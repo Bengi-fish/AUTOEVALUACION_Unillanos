@@ -1,0 +1,14 @@
+/**
+ * Portada del portal (unillanos-portal.html.twig).
+ */
+
+/* Bloques apilados con aire entre ellos: texto, acceso principal y tarjetas. */
+.ua-portal__bloques {
+  display: grid;
+  gap: var(--espacio-7);
+}
+
+.ua-portal__bloques > .ua-lead {
+  margin: 0;
+  max-width: 72ch;
+}

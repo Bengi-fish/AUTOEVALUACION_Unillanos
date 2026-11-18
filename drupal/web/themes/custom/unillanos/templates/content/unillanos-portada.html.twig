@@ -18,6 +18,13 @@
 #}
 {{ attach_library('unillanos/programa') }}
 
+{# ------------------------------------------------------------- migas #}
+<div class="ua-page__migas">
+  <div class="ua-container">
+    {% include 'unillanos:breadcrumb' with {items: [{title: 'Inicio'|t, url: '/'}, {title: 'Información'|t}, {title: 'SIAAI'|t}]} only %}
+  </div>
+</div>
+
 {# ------------------------------------------------------------ carrusel #}
 {# Arriba, justo debajo de la cabecera. Sin diapositivas no aparece; en modo
    edición se ofrece «+ Añadir una diapositiva» aunque no haya ninguna. #}

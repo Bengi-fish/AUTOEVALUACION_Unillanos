@@ -17,6 +17,11 @@ programa:
   css:
     component:
       css/programa.css: {}
+portal:
+  version: 1.0.0
+  css:
+    component:
+      css/portal.css: {}
 edicion:
   version: 1.0.0
   js:

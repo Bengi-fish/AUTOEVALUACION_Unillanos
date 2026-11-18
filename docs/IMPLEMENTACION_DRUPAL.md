@@ -854,3 +854,14 @@ Rutas públicas (permiso `access content`), con migas «Inicio › Institucional
 - **Modo edición:** «+ Añadir una diapositiva» sobre el carrusel y un lápiz en cada diapositiva; el orden se cambia con el campo «Orden». El panel `/admin/acreditacion` suma «Añadir una diapositiva al carrusel» y la lista.
 - **Traducción:** el mensaje de imagen muy pequeña ya no fija 1280 px (valía solo para las fotos de programa): remite a la ayuda del campo.
 
+
+## Fase 9, cambio de rumbo, etapa 8: portal en `/` y SIAAI en `/siaai`
+
+El sitio pasa a tener dos niveles. El **portal** de Autoevaluación y Acreditación es la entrada (`/`) y el **SIAAI** es todo lo construido hasta ahora. No se borró nada: las rutas `/programas`, `/documentos`, `/institucional` y las de cada programa siguen iguales.
+
+- **Rutas** (`unillanos_autoeval.routing.yml`): `/portal` es la ruta interna del portal y la página de inicio (`system.site:page.front`, en `config/sync`); `/siaai` es la portada del sistema (antes `/inicio`; conserva el nombre de ruta `unillanos_autoeval.portada`); `/inicio` redirige con 301 a `/siaai` (`RedireccionController`, que toma el destino de los valores por defecto de la ruta, nunca de la petición).
+- **Portal:** `PortalController` y `PortalInicio` entregan, desde el grupo `portal` de `unillanos_autoeval.micrositio`, el título, el texto de bienvenida (párrafos separados por una línea en blanco), los accesos (título, descripción y destino interno `/…` o `https://`; el primero es el principal, el del SIAAI) y los «sitios de interés» (solo `https://`). Lo vacío o inseguro se omite. Se edita en el formulario «Cabecera y pie del micrositio», grupo «Portal de inicio». Plantilla `unillanos-portal.html.twig` y estilos `css/portal.css`.
+- **Menú principal:** «Inicio» (del perfil standard) y «SIAAI» (`unillanos_autoeval.menu.siaai`). Programas, Documentos e «Institucional» salieron del menú principal y viven en la **barra secundaria del SIAAI**; el menú del pie conserva Programas y Documentos. `RastroActivoSiaai` (antes `RastroActivoProgramas`) pone «SIAAI» en el rastro activo de todas las páginas del SIAAI, incluida la de cada programa. El componente `nav` conserva el desplegable accesible para los ítems con hijos.
+- **Barra secundaria:** componente `subnav` (Inicio del SIAAI · Programas · Documentos · Institucional; página exacta con `aria-current="page"`, sección que la contiene con `aria-current="true"`). La arma `UnillanosHooks::barraSiaai()` solo en las rutas de `RastroActivoSiaai::RUTAS` y en la página de un programa; `page.html.twig` la pinta debajo del menú principal.
+- **Migas del SIAAI:** «Inicio › Información › SIAAI › …» (Información es texto hasta que exista su página).
+- **Pendiente del cambio de rumbo:** `/institucional` como página de programa, migración del contenido del sitio de Acreditación, widget de accesibilidad y mover el carrusel al portal (hoy sigue en `/siaai`).

@@ -13,6 +13,7 @@
  * - page: regiones (primary_menu, breadcrumb, page_title, highlighted,
  *   help, content).
  * - is_front, logged_in.
+ * - barra_siaai: enlaces de la barra secundaria del SIAAI (vacía fuera de él).
  * - pagina_propia: la plantilla del nodo pinta su cabecera, migas y título
  *   (programa); se omiten el bloque de migas y el del título.
  */
@@ -31,6 +32,10 @@
 } only %}
   {% block nav %}{{ menu }}{% endblock %}
 {% endembed %}
+
+{% if barra_siaai %}
+  {% include 'unillanos:subnav' with {label: 'SIAAI'|t, items: barra_siaai} only %}
+{% endif %}
 
 {% if page.breadcrumb and not pagina_propia %}
   <div class="ua-page__migas">

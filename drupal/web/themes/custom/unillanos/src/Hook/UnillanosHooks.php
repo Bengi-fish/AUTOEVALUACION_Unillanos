@@ -13,7 +13,10 @@ use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Menu\MenuActiveTrailInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Drupal\unillanos_autoeval\Menu\RastroActivoSiaai;
 use Drupal\unillanos_autoeval\Service\DatosMarco;
 use Drupal\unillanos_autoeval\Service\DocumentosPublicados;
 use Drupal\unillanos_autoeval\Service\EnlacesDelPie;
@@ -35,6 +38,7 @@ class UnillanosHooks {
    * @var string[]
    */
   const RUTAS_CON_CABECERA = [
+    'unillanos_autoeval.portada',
     'unillanos_autoeval.documentos',
     'unillanos_autoeval.programas',
     'unillanos_autoeval.institucional',
@@ -187,6 +191,11 @@ class UnillanosHooks {
         'template' => 'unillanos-programas',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
+      'unillanos_portal' => [
+        'variables' => ['datos' => []],
+        'template' => 'unillanos-portal',
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ],
       'unillanos_portada' => [
         'variables' => ['datos' => []],
         'template' => 'unillanos-portada',
@@ -248,6 +257,8 @@ class UnillanosHooks {
     // también traen su propio h1.
     $variables['pagina_propia'] = $programa || !empty($variables['is_front'])
       || in_array($this->routeMatch->getRouteName(), self::RUTAS_CON_CABECERA, TRUE);
+    // Barra secundaria: solo dentro del SIAAI.
+    $variables['barra_siaai'] = $this->barraSiaai($programa);
     // Enlaces del pie desde el menú `footer` (sin enlaces, no hay columna). El
     // arreglo `pie_cache` no imprime nada: lleva a la página las etiquetas y
     // los contextos de caché del menú, del acceso y de las URL.
@@ -272,6 +283,52 @@ class UnillanosHooks {
     }
     $variables['pie_cache'] = [];
     $cache->applyTo($variables['pie_cache']);
+  }
+
+  /**
+   * Arma la barra secundaria del SIAAI.
+   *
+   * Solo existe dentro del SIAAI: su portada, los programas, los documentos y
+   * «Institucional». La página exacta va con aria-current="page"; «Programas»
+   * en la página de un programa es parte del recorrido.
+   *
+   * @param bool $programa
+   *   TRUE si la página es la de un programa.
+   *
+   * @return array<int, array<string, mixed>>
+   *   Los enlaces (title, url, active, trail); vacío fuera del SIAAI.
+   */
+  protected function barraSiaai(bool $programa): array {
+    $ruta = (string) $this->routeMatch->getRouteName();
+    if (!$programa && !in_array($ruta, RastroActivoSiaai::RUTAS, TRUE)) {
+      return [];
+    }
+    $institucional = [
+      'unillanos_autoeval.institucional',
+      'unillanos_autoeval.institucional_procesos',
+      'unillanos_autoeval.institucional_dependencias',
+      'unillanos_autoeval.institucional_directivos',
+      'unillanos_autoeval.institucional_normatividad',
+      'unillanos_autoeval.institucional_cifras',
+    ];
+    $secciones = [
+      ['unillanos_autoeval.portada', new TranslatableMarkup('Inicio del SIAAI'), ['unillanos_autoeval.portada']],
+      ['unillanos_autoeval.programas', new TranslatableMarkup('Programas'), ['unillanos_autoeval.programas']],
+      ['unillanos_autoeval.documentos', new TranslatableMarkup('Documentos'), ['unillanos_autoeval.documentos']],
+      ['unillanos_autoeval.institucional', new TranslatableMarkup('Institucional'), $institucional],
+    ];
+    $items = [];
+    foreach ($secciones as [$destino, $titulo, $rutas]) {
+      $en_recorrido = ($ruta !== $destino && in_array($ruta, $rutas, TRUE))
+        || ($programa && $destino === 'unillanos_autoeval.programas');
+      $items[] = [
+        'title' => (string) $titulo,
+        'url' => Url::fromRoute($destino)->toString(),
+        'active' => $ruta === $destino,
+        'trail' => $en_recorrido,
+      ];
+    }
+    return $items;
   }
 
   /**

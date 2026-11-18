@@ -264,6 +264,39 @@ final class MicrositioForm extends ConfigFormBase {
       '#default_value' => $derechos['nit'] ?? '',
       '#maxlength' => 100,
     ];
+    $portal = (array) ($config->get('portal') ?? []);
+    $form['portal'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Portal de inicio: texto, accesos y sitios de interés'),
+      '#open' => TRUE,
+    ];
+    $form['portal']['portal_titulo'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Título de la portada'),
+      '#default_value' => $portal['titulo'] ?? '',
+      '#maxlength' => 120,
+    ];
+    $form['portal']['portal_texto'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Texto de bienvenida'),
+      '#description' => $this->t('Separe los párrafos con una línea en blanco.'),
+      '#default_value' => $portal['texto'] ?? '',
+      '#rows' => 6,
+    ];
+    $form['portal']['portal_accesos'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Accesos'),
+      '#description' => $this->t('Uno por línea, con el formato «Título | Descripción corta | URL». La URL es una ruta del sitio (empieza por «/») o una dirección https://. El primero es el acceso principal (el del SIAAI).'),
+      '#default_value' => $this->cifrasComoLineas($portal['accesos'] ?? NULL),
+      '#rows' => 6,
+    ];
+    $form['portal']['portal_sitios'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Sitios de interés'),
+      '#description' => $this->t('Uno por línea, con el formato «Nombre | URL». La URL debe empezar por https://.'),
+      '#default_value' => $this->enlacesComoLineas($portal['sitios'] ?? NULL),
+      '#rows' => 6,
+    ];
     $institucional = (array) ($config->get('institucional') ?? []);
     $cifras = (array) ($institucional['cifras'] ?? []);
     $form['institucional'] = [
@@ -321,6 +354,8 @@ final class MicrositioForm extends ConfigFormBase {
         $form_state->setErrorByName($campo, $this->t('@campo: la URL no es válida. Use una ruta que empiece por «/», «#», «https://», «mailto:» o «tel:».', ['@campo' => $titulo]));
       }
     }
+    $this->lineasComoCifras((string) $form_state->getValue('portal_accesos'), 'portal_accesos', $form_state, TRUE);
+    $this->lineasComoSitios((string) $form_state->getValue('portal_sitios'), 'portal_sitios', $form_state);
     $this->lineasComoCifras((string) $form_state->getValue('cifras_enlaces'), 'cifras_enlaces', $form_state);
     $tablero = trim((string) $form_state->getValue('cifras_tablero_url'));
     if ($tablero !== '' && !preg_match('~^https://[^\s/]+~i', $tablero)) {
@@ -355,6 +390,12 @@ final class MicrositioForm extends ConfigFormBase {
         fn(string $red): string => trim((string) $form_state->getValue('red_' . $red)),
         DatosMarco::REDES,
       )))
+      ->set('portal', [
+        'titulo' => trim((string) $form_state->getValue('portal_titulo')),
+        'texto' => trim((string) $form_state->getValue('portal_texto')),
+        'accesos' => $this->lineasComoCifras((string) $form_state->getValue('portal_accesos'), NULL, NULL, TRUE),
+        'sitios' => $this->lineasComoSitios((string) $form_state->getValue('portal_sitios')),
+      ])
       ->set('institucional', [
         'introduccion' => trim((string) $form_state->getValue('institucional_introduccion')),
         'cifras' => [
@@ -436,11 +477,13 @@ final class MicrositioForm extends ConfigFormBase {
    *   Campo donde marcar los errores (si se indica con $form_state).
    * @param \Drupal\Core\Form\FormStateInterface|null $form_state
    *   Estado del formulario donde marcar los errores.
+   * @param bool $internas
+   *   TRUE para aceptar también rutas del sitio (que empiezan por «/»).
    *
    * @return array<int, array{titulo: string, texto: string, url: string}>
    *   Los enlaces válidos.
    */
-  protected function lineasComoCifras(string $texto, ?string $campo = NULL, ?FormStateInterface $form_state = NULL): array {
+  protected function lineasComoCifras(string $texto, ?string $campo = NULL, ?FormStateInterface $form_state = NULL, bool $internas = FALSE): array {
     $enlaces = [];
     foreach (preg_split('/\R/u', $texto) ?: [] as $numero => $linea) {
       $linea = trim($linea);
@@ -448,9 +491,12 @@ final class MicrositioForm extends ConfigFormBase {
         continue;
       }
       [$titulo, $descripcion, $url] = array_pad(array_map('trim', explode('|', $linea, 3)), 3, '');
-      if ($titulo === '' || !preg_match('~^https://[^\s/]+~i', $url)) {
+      $patron = $internas ? '~^(?:/(?![/\\\\\s])|https://[^\s/]+)~i' : '~^https://[^\s/]+~i';
+      if ($titulo === '' || !preg_match($patron, $url)) {
         if ($campo !== NULL && $form_state !== NULL) {
-          $form_state->setErrorByName($campo, $this->t('Línea @numero: use «Título | Descripción corta | URL» con título y una URL que empiece por https://.', ['@numero' => $numero + 1]));
+          $form_state->setErrorByName($campo, $internas
+            ? $this->t('Línea @numero: use «Título | Descripción corta | URL» con título y una URL que empiece por «/» o por https://.', ['@numero' => $numero + 1])
+            : $this->t('Línea @numero: use «Título | Descripción corta | URL» con título y una URL que empiece por https://.', ['@numero' => $numero + 1]));
         }
         continue;
       }
@@ -680,6 +726,38 @@ final class MicrositioForm extends ConfigFormBase {
       $enlaces[] = ['titulo' => $titulo, 'url' => $url];
     }
     return $enlaces;
+  }
+
+  /**
+   * Convierte líneas «Nombre | URL» en sitios de interés (solo https).
+   *
+   * @param string $texto
+   *   Contenido del campo.
+   * @param string|null $campo
+   *   Campo donde marcar los errores (si se indica con $form_state).
+   * @param \Drupal\Core\Form\FormStateInterface|null $form_state
+   *   Estado del formulario donde marcar los errores.
+   *
+   * @return array<int, array{titulo: string, texto: string, url: string}>
+   *   Los sitios válidos.
+   */
+  protected function lineasComoSitios(string $texto, ?string $campo = NULL, ?FormStateInterface $form_state = NULL): array {
+    $sitios = [];
+    foreach (preg_split('/\R/u', $texto) ?: [] as $numero => $linea) {
+      $linea = trim($linea);
+      if ($linea === '') {
+        continue;
+      }
+      [$titulo, $url] = array_pad(array_map('trim', explode('|', $linea, 2)), 2, '');
+      if ($titulo === '' || !preg_match('~^https://[^\s/]+~i', $url)) {
+        if ($campo !== NULL && $form_state !== NULL) {
+          $form_state->setErrorByName($campo, $this->t('Línea @numero: use «Nombre | URL» con una URL que empiece por https://.', ['@numero' => $numero + 1]));
+        }
+        continue;
+      }
+      $sitios[] = ['titulo' => $titulo, 'texto' => '', 'url' => $url];
+    }
+    return $sitios;
   }
 
   /**

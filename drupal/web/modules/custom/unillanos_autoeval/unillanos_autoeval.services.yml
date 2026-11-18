@@ -123,3 +123,8 @@ services:
     class: Drupal\unillanos_autoeval\Service\CarruselPortada
     arguments: ['@entity_type.manager', '@file_url_generator', '@current_user', '@unillanos_autoeval.enlaces_edicion']
   Drupal\unillanos_autoeval\Service\CarruselPortada: '@unillanos_autoeval.carrusel_portada'
+
+  unillanos_autoeval.portal_inicio:
+    class: Drupal\unillanos_autoeval\Service\PortalInicio
+    arguments: ['@config.factory', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\PortalInicio: '@unillanos_autoeval.portal_inicio'

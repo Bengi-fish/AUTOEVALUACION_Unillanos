@@ -121,6 +121,32 @@ pie:
     desde: 1974
     texto: 'Reservados todos los derechos'
     nit: 'Nit: 892.000.757-3'
+# Portal de inicio: título, texto de bienvenida, accesos (el primero es el
+# principal, el del SIAAI) y sitios de interés (solo https://).
+portal:
+  titulo: 'Autoevaluación y Acreditación'
+  texto: |-
+    Portal de la autoevaluación y la acreditación de la Universidad de los Llanos. Aquí encuentra información sobre el sistema de aseguramiento de la calidad y sobre el Sistema de Información de Autoevaluación Institucional (SIAAI), donde se publican los procesos de autoevaluación por programa y a nivel institucional.
+
+    Entre al SIAAI para consultar los programas, los documentos y la información institucional.
+  accesos:
+    -
+      titulo: 'SIAAI'
+      texto: 'Sistema de Información de Autoevaluación Institucional: programas, procesos, factores, hallazgos y planes de mejoramiento.'
+      url: /siaai
+    -
+      titulo: 'Programas académicos'
+      texto: 'Autoevaluación de cada programa, por factores y características.'
+      url: /programas
+    -
+      titulo: 'Institucional'
+      texto: 'Autoevaluación de la Universidad, dependencias, directivos, normatividad y cifras.'
+      url: /institucional
+    -
+      titulo: 'Documentos'
+      texto: 'Informes, resoluciones y demás documentos de los procesos.'
+      url: /documentos
+  sitios: {  }
 # Institucional: frase de /institucional y enlaces de «Cifras». Las direcciones
 # salen de https://acreditacion.unillanos.edu.co/index.php/informacion/siaai/cifras-sac
 # (consultadas el 18 de noviembre de 2026).
