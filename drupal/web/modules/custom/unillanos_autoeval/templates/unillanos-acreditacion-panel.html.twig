@@ -40,14 +40,16 @@
       <p class="unillanos-acreditacion__titulo"><strong>{{ 'Institucional'|t }}</strong></p>
       <dl>
         {% for grupo in datos.institucional %}
-          <dt>{{ grupo.titulo }}</dt>
-          <dd>
-            <ul>
-              {% for enlace in grupo.enlaces %}
-                <li><a href="{{ enlace.url }}">{{ enlace.texto }}</a></li>
-              {% endfor %}
-            </ul>
-          </dd>
+          <div class="unillanos-acreditacion__grupo">
+            <dt>{{ grupo.titulo }}</dt>
+            <dd>
+              <ul>
+                {% for enlace in grupo.enlaces %}
+                  <li><a href="{{ enlace.url }}">{{ enlace.texto }}</a></li>
+                {% endfor %}
+              </ul>
+            </dd>
+          </div>
         {% endfor %}
       </dl>
     </nav>

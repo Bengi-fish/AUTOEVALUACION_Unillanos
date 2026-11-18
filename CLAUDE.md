@@ -13,6 +13,7 @@ Sistema de Información de Autoevaluación de la **Universidad de los Llanos (UN
 | Datos | `datos/semillas/`, `datos/importacion/<programa>/` |
 | Prototipo visual | `plantilla/` |
 | Documentación | `docs/` (empieza por `docs/IMPLEMENTACION_DRUPAL.md`) |
+| Manuales | `docs/manuales/`: `MANUAL-ACREDITACION.md` (para Acreditación), `GUIA-DESPLIEGUE.md` (para Sistemas) y `MANUAL-TECNICO.md`; capturas en `docs/manuales/img/`. Los PDF no se versionan: `bash scripts/manuales-pdf.sh [carpeta]` |
 
 Arranque: `ddev start`. Todo comando va con prefijo `ddev` desde la raíz del repositorio (`ddev drush cr`, `ddev drush cex -y`, `ddev composer …`). Tras cualquier cambio de configuración: `ddev drush cex -y` y commit de `drupal/config/sync`.
 
@@ -107,4 +108,5 @@ Detalle en `docs/pendientes-acreditacion.md`.
 - PHPCS (`Drupal,DrupalPractice`) sin errores y PHPStan `--level=5` limpio en cada módulo tocado.
 - Sin `|raw` en Twig con texto de usuario. `plantilla/` y `docs/fuentes/` son de solo lectura. Respaldos de la base fuera del repositorio (`$HOME/respaldos/`).
 - Instalación desde cero y guía de uso: `scripts/instalar.sh` y `docs/GUIA-OTRO-PC.md`.
+- El agente `humanizador-docs` (`.claude/agents/`) reescribe la prosa de los manuales para que suene escrita por una persona, sin cambiar datos, comandos, rutas, nombres de botones ni cifras. Úsalo **al final**, cuando un manual de `docs/manuales/` ya está completo y revisado contra el código; después regenera los PDF. Sus controles (código, URL, textos entre «», cifras y pasos idénticos) deben quedar en verde.
 - El agente `revisor-unillanos` (`.claude/agents/`) se creó para el rediseño y la Fase 8; sus reglas citan esas etapas. Úsalo antes de cada commit; sus criterios de huella y capturas aplican solo a cambios de tema.

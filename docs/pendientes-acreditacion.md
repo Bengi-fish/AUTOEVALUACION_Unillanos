@@ -491,3 +491,7 @@ Datos tomados el 18 de noviembre de 2026 de las páginas públicas de https://ac
 - [ ] **Textos y destino de cada diapositiva:** titular, texto corto y enlace los define Acreditación; las de prueba solo enlazan (la primera) a `/programas`.
 - [ ] **Licencia de las fotos** y el recorte: la imagen se muestra con proporción fija 16:6 en escritorio y 4:3 en celular (`object-fit: cover`), así que lo importante debe quedar centrado.
 
+## 30. Fase 9, etapa 6: qué se ve en la página propia de una valoración
+
+- [ ] **Campos de la valoración en `/node/<número>`:** la vista pública de una valoración publicada muestra, además del proceso, el elemento, la valoración y el grado, el porcentaje (y la ponderación, el juicio, la síntesis y el estado de la condición cuando tienen valor). La página del programa no los muestra. El manual de Acreditación lo dice así. Decidir con Acreditación si esos campos deben verse o si se ocultan en la vista de la valoración (cambio de configuración).
+
