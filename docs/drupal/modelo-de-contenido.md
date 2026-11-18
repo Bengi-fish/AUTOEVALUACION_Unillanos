@@ -112,7 +112,7 @@ Título automático: `[meta] · [periodo]`.
 | `programacion_anual` | `field_anio` (entero) · `field_programado` (decimal 12,4) · `field_logrado` (decimal 12,4) |
 
 ## Media `documento`
-Fuente: archivo. `field_categoria` (lista: `normatividad`, `documento_base`, `informe`, `acto_administrativo`, `soporte`) · `field_version` (texto) · `field_fecha_publicacion` (fecha) · `field_proceso` (→ `proceso`) · `field_lineamiento` (→ `lineamiento`) · `field_enlace` (enlace, para documentos externos). Publicado = `publico`.
+Fuente: archivo. Un documento lleva **un archivo (`field_media_file`) o un enlace externo (`field_enlace`, solo `https://`), no ambos ni ninguno**: ambos campos son opcionales y la restricción `UnillanosArchivoOEnlace` (en `unillanos_autoeval`) lo valida. En las listas, un enlace se rotula «Enlace» o «Carpeta de Drive» (si es `/drive/folders/`), se abre en pestaña nueva y no muestra tamaño. `field_categoria` (lista: `normatividad`, `documento_base`, `informe`, `acto_administrativo`, `soporte`) · `field_version` (texto) · `field_fecha_publicacion` (fecha) · `field_proceso` (→ `proceso`) · `field_lineamiento` (→ `lineamiento`) · `field_enlace` (enlace, para documentos externos). Publicado = `publico`.
 
 ## Webform `participa`
 Elementos: `proceso` (entidad → nodo `proceso`) · `elemento` (término `elemento_modelo`, opcional) · `estamento` (término `estamento`) · `nombre` (texto, opcional) · `texto` (área de texto, máx. 1000) · `consentimiento` (casilla obligatoria). Solo administradores: `estado_gestion` (`recibida`, `en_revision`, `respondida`, `descartada`) y `respuesta`. `fecha_envio` = fecha de envío del webform.

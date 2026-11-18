@@ -271,7 +271,7 @@ Reporte semestral de una meta.
 
 ### `DOCUMENTO` · Documento
 
-Documento descargable.
+Documento descargable o enlace externo: lleva un archivo o un `enlace` `https://` (por ejemplo, una carpeta de Drive), no ambos ni ninguno.
 
 | Campo | Tipo | Llave |
 |---|---|---|

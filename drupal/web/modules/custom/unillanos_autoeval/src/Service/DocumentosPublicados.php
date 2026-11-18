@@ -8,6 +8,7 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\FileInterface;
+use Drupal\media\MediaInterface;
 use Drupal\node\NodeInterface;
 use Drupal\unillanos_autoeval\Traits\EtiquetasYOrdenTrait;
 use Drupal\unillanos_autoeval\Traits\FormatoTextoTrait;
@@ -120,7 +121,9 @@ class DocumentosPublicados {
         continue;
       }
       $archivo = $medio->get('field_media_file')->entity;
-      if (!$archivo instanceof FileInterface) {
+      $enlace = $this->enlaceExterno($medio);
+      // Sin archivo ni enlace seguro no hay nada que abrir.
+      if (!$archivo instanceof FileInterface && $enlace === '') {
         continue;
       }
       $proceso = $procesos[(int) $medio->get('field_proceso')->target_id] ?? NULL;
@@ -146,15 +149,33 @@ class DocumentosPublicados {
         }
       }
       $cache->addCacheableDependency($medio);
-      $cache->addCacheableDependency($archivo);
+      if ($archivo instanceof FileInterface) {
+        $cache->addCacheableDependency($archivo);
+      }
       $lineamiento = $medio->get('field_lineamiento')->entity;
       // El título del lineamiento solo se usa si está publicado.
       $lineamiento = $lineamiento instanceof NodeInterface && $lineamiento->isPublished() ? $lineamiento : NULL;
       $descripcion = $lineamiento ? (string) $lineamiento->label() : ($proceso ? (string) $proceso->label() : '');
-      $nombre_archivo = (string) $archivo->getFilename();
-      // Sin extensión no se sabe el tipo: rótulo genérico (nunca «PDF»).
-      $tipo = strtoupper(pathinfo($nombre_archivo, PATHINFO_EXTENSION)) ?: 'DOC';
       $fecha = $this->fechaMesAnio($medio->get('field_fecha_publicacion')->value);
+      if ($archivo instanceof FileInterface) {
+        // Sin extensión no se sabe el tipo: rótulo genérico (nunca «PDF»).
+        $tipo = strtoupper(pathinfo((string) $archivo->getFilename(), PATHINFO_EXTENSION)) ?: 'DOC';
+        $kind = $tipo;
+        $rotulo = $tipo;
+        $datos_archivo = [$tipo, $this->tamano((int) $archivo->getSize())];
+        $url = $archivo->createFileUrl();
+        $externo = FALSE;
+      }
+      else {
+        // Enlace externo: se rotula como carpeta de Drive o como enlace, sin
+        // tamaño.
+        $es_carpeta = $this->esCarpetaDeDrive($enlace);
+        $kind = $es_carpeta ? 'CARP' : 'ENL';
+        $rotulo = $es_carpeta ? (string) $this->t('Carpeta de Drive') : (string) $this->t('Enlace');
+        $datos_archivo = [$rotulo];
+        $url = $enlace;
+        $externo = TRUE;
+      }
       $categoria = (string) $medio->get('field_categoria')->value;
       $orden = array_search($categoria, self::CATEGORIAS_DOCUMENTO, TRUE);
       $orden_programa = array_search($categoria, self::CATEGORIAS_PROGRAMA, TRUE);
@@ -163,9 +184,11 @@ class DocumentosPublicados {
           'title' => $this->sinCortesEnPeriodo(trim((string) $medio->label())),
           'cat' => $this->etiquetaLista($medio->get('field_categoria')),
           'desc' => $descripcion,
-          'meta' => implode(' · ', array_filter([$tipo, $this->tamano((int) $archivo->getSize()), $fecha])),
-          'kind' => $tipo,
-          'url' => $archivo->createFileUrl(),
+          'meta' => implode(' · ', array_filter([...$datos_archivo, $fecha])),
+          'kind' => $kind,
+          'rotulo' => $rotulo,
+          'url' => $url,
+          'externo' => $externo,
         ],
         'categoria' => $categoria,
         'fecha' => (string) $medio->get('field_fecha_publicacion')->value,
@@ -180,6 +203,39 @@ class DocumentosPublicados {
         ?: $this->compararTextos($a['item']['title'], $b['item']['title']);
     });
     return $documentos;
+  }
+
+  /**
+   * Lee el enlace externo de un documento.
+   *
+   * @param \Drupal\media\MediaInterface $medio
+   *   Medio `documento`.
+   *
+   * @return string
+   *   La dirección https, o vacío si no hay o no es https.
+   */
+  protected function enlaceExterno(MediaInterface $medio): string {
+    if (!$medio->hasField('field_enlace')) {
+      return '';
+    }
+    $uri = trim((string) $medio->get('field_enlace')->uri);
+    return preg_match('~^https://[^\s/]+~i', $uri) ? $uri : '';
+  }
+
+  /**
+   * Indica si un enlace es una carpeta de Google Drive.
+   *
+   * @param string $url
+   *   Dirección https.
+   *
+   * @return bool
+   *   TRUE si apunta a /drive/folders/ en un dominio de Drive.
+   */
+  protected function esCarpetaDeDrive(string $url): bool {
+    $partes = parse_url($url);
+    $host = strtolower((string) ($partes['host'] ?? ''));
+    return in_array($host, ['drive.google.com', 'docs.google.com'], TRUE)
+      && str_contains((string) ($partes['path'] ?? ''), '/drive/folders/');
   }
 
   /**

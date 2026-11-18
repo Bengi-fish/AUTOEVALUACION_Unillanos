@@ -103,3 +103,25 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* «¿Qué va a cargar?» del documento: cada opción (círculo y texto) mide al
+   menos 44 px de alto para que sea fácil de tocar. */
+.form-item--tipo-carga {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+  min-height: 44px;
+}
+
+.form-item--tipo-carga .form-item__label {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding-block: 0;
+  line-height: 1.5;
+}
+
+.form-item--tipo-carga .form-radio {
+  margin-block: 0;
+}

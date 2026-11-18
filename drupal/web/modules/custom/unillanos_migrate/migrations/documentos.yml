@@ -17,6 +17,13 @@ process:
     migration: 'archivos:%programa%'
     source: id
     no_stub: true
+  # Columna opcional: enlace externo https (carpeta de Drive u otra) en lugar
+  # de un archivo. Sin la columna o con la celda vacía, el documento es un
+  # archivo, como siempre.
+  field_enlace/uri:
+    plugin: skip_on_empty
+    method: process
+    source: enlace
   field_categoria: categoria
   field_version:
     plugin: skip_on_empty

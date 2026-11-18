@@ -83,7 +83,11 @@
               {% if hay_plan or informe %}
                 <div class="ua-section__acciones">
                   {% if informe %}
-                    {% include 'unillanos:button' with {label: ('Ver'|t) ~ ' ' ~ informe.title ~ ' (' ~ informe.kind ~ ')', variant: 'secundario', url: informe.url, icon: 'download', icon_size: 'sm'} only %}
+                    {% if informe.externo %}
+                      {% include 'unillanos:button' with {label: ('Abrir'|t) ~ ' ' ~ informe.title ~ ' (' ~ informe.rotulo|default(informe.kind) ~ '; ' ~ ('se abre en una pestaña nueva'|t) ~ ')', variant: 'secundario', url: informe.url, icon: 'external', icon_size: 'sm', attributes: create_attribute({target: '_blank', rel: 'noopener noreferrer'})} only %}
+                    {% else %}
+                      {% include 'unillanos:button' with {label: ('Ver'|t) ~ ' ' ~ informe.title ~ ' (' ~ informe.kind ~ ')', variant: 'secundario', url: informe.url, icon: 'download', icon_size: 'sm'} only %}
+                    {% endif %}
                   {% endif %}
                   {% if hay_plan %}
                     {% include 'unillanos:button' with {label: 'Ir al plan de mejoramiento'|t, variant: 'secundario', url: '#plan', icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
@@ -137,7 +141,11 @@
             {% if hay_factores or plan_documento %}
               <div class="ua-section__acciones">
                 {% if plan_documento %}
-                  {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ plan_documento.title ~ ' (' ~ plan_documento.kind ~ ')', variant: 'secundario', url: plan_documento.url, icon: 'download', icon_size: 'sm'} only %}
+                  {% if plan_documento.externo %}
+                    {% include 'unillanos:button' with {label: ('Abrir'|t) ~ ' ' ~ plan_documento.title ~ ' (' ~ plan_documento.rotulo|default(plan_documento.kind) ~ '; ' ~ ('se abre en una pestaña nueva'|t) ~ ')', variant: 'secundario', url: plan_documento.url, icon: 'external', icon_size: 'sm', attributes: create_attribute({target: '_blank', rel: 'noopener noreferrer'})} only %}
+                  {% else %}
+                    {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ plan_documento.title ~ ' (' ~ plan_documento.kind ~ ')', variant: 'secundario', url: plan_documento.url, icon: 'download', icon_size: 'sm'} only %}
+                  {% endif %}
                 {% endif %}
                 {% if hay_factores %}
                   {% include 'unillanos:button' with {label: 'Volver a los factores'|t, variant: 'secundario', url: '#autoevaluacion', icon: 'chevron-left', icon_size: 'sm'} only %}

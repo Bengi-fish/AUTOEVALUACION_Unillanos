@@ -62,6 +62,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
   const CAMPOS_DOCUMENTO = [
     'name',
     'field_media_file',
+    'field_enlace',
     'field_categoria',
     'field_fecha_publicacion',
     'field_version',
@@ -85,6 +86,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     'file',
     'image',
     'datetime',
+    'link',
     'media',
     'unillanos_autoeval',
   ];
@@ -161,7 +163,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     $this->crearCampo('media', 'documento', 'field_version', 'string');
     $this->crearCampo('media', 'documento', 'field_proceso', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('media', 'documento', 'field_lineamiento', 'entity_reference', ['target_type' => 'node']);
-    $this->crearCampo('media', 'documento', 'field_enlace', 'string');
+    $this->crearCampo('media', 'documento', 'field_enlace', 'link');
     // Los modos y las pantallas de formulario simples: los de la configuración.
     // El módulo instala solo el modo de la ficha (config/optional); el del
     // medio se crea aquí desde el mismo archivo si el módulo no lo instaló.
@@ -268,6 +270,8 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
       'status' => 1,
       'field_version' => '1',
       'field_proceso' => $proceso ?: NULL,
+      // Un documento lleva archivo o enlace (Fase 9, etapa 1).
+      'field_enlace' => ['uri' => 'https://example.org/informe-de-prueba'],
     ]);
     $medio->save();
     return $medio;
@@ -388,9 +392,11 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     foreach (['field_clave', 'uid', 'created', 'path', 'langcode', 'promote', 'sticky'] as $campo) {
       $this->assertArrayNotHasKey($campo, $ficha['content'], $campo);
     }
-    foreach (['uid', 'created', 'path', 'langcode', 'field_enlace'] as $campo) {
+    foreach (['uid', 'created', 'path', 'langcode'] as $campo) {
       $this->assertArrayNotHasKey($campo, $documento['content'], $campo);
     }
+    // El enlace externo sí está (Fase 9, etapa 1): archivo o enlace.
+    $this->assertArrayHasKey('field_enlace', $documento['content']);
     // Las pantallas completas no se tocaron: siguen con sus campos
     // administrativos.
     $completa = $this->configuracion('core.entity_form_display.node.programa.default');
@@ -545,9 +551,11 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     foreach (self::CAMPOS_DOCUMENTO as $campo) {
       $this->assertArrayHasKey($campo, $formulario, $campo);
     }
-    foreach (['uid', 'created', 'path', 'langcode', 'field_enlace'] as $campo) {
+    foreach (['uid', 'created', 'path', 'langcode'] as $campo) {
       $this->assertOculto($formulario, $campo);
     }
+    // El enlace externo y el selector «¿Qué va a cargar?» sí se ven.
+    $this->assertNotFalse($formulario['field_enlace']['#access'] ?? TRUE);
     $estado = $this->enviar($medio, [
       'name' => [['value' => 'Informe de prueba 2']],
       'field_version' => [['value' => '2']],

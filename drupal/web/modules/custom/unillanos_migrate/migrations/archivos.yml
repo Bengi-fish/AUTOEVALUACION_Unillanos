@@ -11,11 +11,18 @@ source:
   constants:
     destino: 'public://documentos/%programa%'
 process:
+  # Un documento con enlace externo (columna `enlace`) no tiene archivo: la
+  # fila se omite aquí y el medio se crea solo con el enlace.
   ruta:
-    plugin: unillanos_ruta_archivo
-    source: archivo
-    raiz: '%raiz%'
-    bases: [docs, datos]
+    -
+      plugin: skip_on_empty
+      method: row
+      source: archivo
+    -
+      plugin: unillanos_ruta_archivo
+      source: archivo
+      raiz: '%raiz%'
+      bases: [docs, datos]
   filename:
     plugin: callback
     callable: basename

@@ -671,6 +671,7 @@ class UnillanosAutoevalHooks {
       ['widget', 'value'],
       ['widget', 0, 'value'],
       ['widget', 0, 'target_id'],
+      ['widget', 0, 'uri'],
       ['widget', 0],
     ];
     foreach ($rutas as $ruta) {
@@ -719,6 +720,7 @@ class UnillanosAutoevalHooks {
     return [
       'name' => $this->t('Nombre del documento, tal como debe verse en la lista.'),
       'field_media_file' => $this->t('Suba aquí el archivo del documento.'),
+      'field_enlace' => $this->t('Escriba la dirección completa, que empiece por https://, por ejemplo la de una carpeta de Google Drive.'),
       'field_categoria' => $this->t('Elija qué tipo de documento es, por ejemplo un informe o una norma.'),
       'field_fecha_publicacion' => $this->t('Fecha en que se publicó el documento.'),
       'field_version' => $this->t('Versión del documento, si la tiene.'),
@@ -853,6 +855,9 @@ class UnillanosAutoevalHooks {
       $entity_types['node']->addConstraint('UnillanosProcesoSedeOPrograma');
       $entity_types['node']->addConstraint('UnillanosEstadoPorTipo');
       $entity_types['node']->addConstraint('UnillanosModeloDelProceso');
+    }
+    if (isset($entity_types['media'])) {
+      $entity_types['media']->addConstraint('UnillanosArchivoOEnlace');
     }
   }
 
