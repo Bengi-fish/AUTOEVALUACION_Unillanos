@@ -1,18 +1,54 @@
 # Menús de la demostración: solo páginas que existen. «Inicio» lo aporta el
 # perfil standard (standard.front_page). Los enlaces apuntan a la ruta y no a
 # una URL escrita, así que solo existen si la ruta existe.
-# «Institucional» y «Participa» se añaden cuando existan sus rutas (Participa,
-# Fase 8): no se deja ningún enlace a una página que no existe.
+# «Participa» se añade cuando exista su ruta (Fase 8): no se deja ningún
+# enlace a una página que no existe. «Institucional» (Fase 9) lleva sus cinco
+# módulos como hijos; el menú los pinta como un desplegable accesible.
 unillanos_autoeval.menu.programas:
   title: 'Programas'
   route_name: unillanos_autoeval.programas
   menu_name: main
   weight: 1
+unillanos_autoeval.menu.institucional:
+  title: 'Institucional'
+  route_name: unillanos_autoeval.institucional
+  menu_name: main
+  weight: 2
+unillanos_autoeval.menu.institucional_procesos:
+  title: 'Procesos institucionales'
+  route_name: unillanos_autoeval.institucional_procesos
+  menu_name: main
+  parent: unillanos_autoeval.menu.institucional
+  weight: 1
+unillanos_autoeval.menu.institucional_dependencias:
+  title: 'Dependencias'
+  route_name: unillanos_autoeval.institucional_dependencias
+  menu_name: main
+  parent: unillanos_autoeval.menu.institucional
+  weight: 2
+unillanos_autoeval.menu.institucional_directivos:
+  title: 'Directivos'
+  route_name: unillanos_autoeval.institucional_directivos
+  menu_name: main
+  parent: unillanos_autoeval.menu.institucional
+  weight: 3
+unillanos_autoeval.menu.institucional_normatividad:
+  title: 'Normatividad'
+  route_name: unillanos_autoeval.institucional_normatividad
+  menu_name: main
+  parent: unillanos_autoeval.menu.institucional
+  weight: 4
+unillanos_autoeval.menu.institucional_cifras:
+  title: 'Cifras'
+  route_name: unillanos_autoeval.institucional_cifras
+  menu_name: main
+  parent: unillanos_autoeval.menu.institucional
+  weight: 5
 unillanos_autoeval.menu.documentos:
   title: 'Documentos'
   route_name: unillanos_autoeval.documentos
   menu_name: main
-  weight: 2
+  weight: 3
 
 # Menú del pie: la columna «Explora» (se omite si no hay enlaces).
 unillanos_autoeval.pie.programas:

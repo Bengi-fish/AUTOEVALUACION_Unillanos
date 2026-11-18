@@ -3,8 +3,9 @@
  * @file
  * Menú principal plano: lo pinta el componente unillanos:nav.
  *
- * El menú es plano a propósito (sin submenús): solo se imprimen los
- * elementos del primer nivel. El menú público no lleva «Ingresar» ni «Mi
+ * Se imprimen los elementos del primer nivel y, de cada uno, sus hijos
+ * directos (un solo nivel de submenú, como «Institucional»); el componente nav
+ * pinta el desplegable accesible. El menú público no lleva «Ingresar» ni «Mi
  * cuenta»: el acceso de la gente de Acreditación es una ruta propia que no se
  * enlaza desde el sitio.
  *
@@ -18,11 +19,21 @@
   {# La página exacta (aria-current="page") y, aparte, el recorrido: un enlace
      que contiene la página actual sin serlo (aria-current="true"). #}
   {% set exacto = (enlace_activo and item.original_link.pluginId == enlace_activo) or (item.url.toString == path('<current>')) %}
+  {% set hijos = [] %}
+  {% for hijo in item.below %}
+    {% set hijo_exacto = (enlace_activo and hijo.original_link.pluginId == enlace_activo) or (hijo.url.toString == path('<current>')) %}
+    {% set hijos = hijos|merge([{
+      title: hijo.title,
+      url: hijo.url.toString,
+      active: hijo_exacto,
+    }]) %}
+  {% endfor %}
   {% set enlaces = enlaces|merge([{
     title: item.title,
     url: item.url.toString,
     active: exacto,
     trail: item.in_active_trail and not exacto,
+    children: hijos,
   }]) %}
 {% endfor %}
 {% include 'unillanos:nav' with {items: enlaces, id: 'ua-menu'} only %}

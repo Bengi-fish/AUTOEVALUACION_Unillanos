@@ -838,3 +838,10 @@ Rutas públicas (permiso `access content`), con migas «Inicio › Institucional
 - **Modo edición:** «Añadir una dependencia», «Añadir una norma», «Añadir un formato a …» (dependencia), «Añadir un documento a …» (facultad y proceso), lápices en dependencias, normas y procesos, y el enlace a las cifras; con las mismas reglas de acceso (`EnlacesEdicion`). El formulario simple del documento precarga `?dependencia=`, `?programa=` y `?facultad=`.
 - **Panel `/admin/acreditacion`:** sección «Institucional» con los accesos (procesos, dependencias, directivos, normatividad e introducción y cifras), solo los que la persona puede usar.
 
+## Fase 9, etapa 4: menú principal con desplegable
+
+- **Menú:** Inicio · Programas · Institucional ▾ · Documentos, declarado en `unillanos_autoeval.links.menu.yml` (menú `main`; viaja con el repositorio). «Institucional» lleva como hijos sus cinco módulos (Procesos institucionales, Dependencias, Directivos, Normatividad y Cifras). Un administrador puede reordenarlos o desactivarlos desde Drupal. El bloque del menú principal pasa a profundidad 2 (`block.block.unillanos_main_menu`).
+- **Componente `nav`:** un elemento con `children` lleva su enlace a la sección y, a su lado, un botón con `aria-expanded`, `aria-controls` y el nombre «Mostrar el submenú de Institucional» (patrón disclosure). `nav.js` lo muestra y lo gestiona: abre y cierra con clic, abre al pasar el ratón en escritorio (con demora de 250 ms al cerrar), Escape cierra solo el submenú y devuelve el foco al botón, un clic fuera o sacar el foco también lo cierra. Sin JavaScript el botón queda oculto y el submenú cerrado: el enlace lleva a `/institucional`, que lista los cinco módulos.
+- **Estilo:** panel blanco con borde, sin sombra, opciones de 44 px, ítem activo con la franja roja del menú. En celular, dentro del menú hamburguesa, «Institucional» se despliega como acordeón (botón de 48 px).
+- **Ítem activo y migas:** el padre queda en el recorrido (`aria-current="true"`) y el hijo de la página actual lleva `aria-current="page"`; las migas «Inicio › Institucional › …» las pintan las plantillas de las seis páginas.
+

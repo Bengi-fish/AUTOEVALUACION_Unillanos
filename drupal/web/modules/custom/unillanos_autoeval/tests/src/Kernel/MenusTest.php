@@ -124,7 +124,7 @@ class MenusTest extends UnillanosKernelTestBase {
         'label_display' => '0',
         'provider' => 'system',
         'level' => 1,
-        'depth' => 1,
+        'depth' => 2,
         'expand_all_items' => FALSE,
       ],
     ])->save();
@@ -152,13 +152,86 @@ class MenusTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * El menú principal lleva solo Programas y Documentos, por ruta.
+   * El menú principal lleva Programas, Institucional y Documentos, por ruta.
    */
   public function testMenuPrincipal(): void {
     $this->assertSame([
       ['Programas', 'unillanos_autoeval.programas'],
+      ['Institucional', 'unillanos_autoeval.institucional'],
       ['Documentos', 'unillanos_autoeval.documentos'],
     ], $this->enlaces('main'));
+  }
+
+  /**
+   * «Institucional» lleva sus cinco módulos como hijos, en orden y por ruta.
+   */
+  public function testInstitucionalConSusCincoModulos(): void {
+    $arbol = $this->container->get('menu.link_tree');
+    $parametros = new MenuTreeParameters();
+    $parametros->setMaxDepth(2)->onlyEnabledLinks();
+    $elementos = $arbol->transform($arbol->load('main', $parametros), [
+      ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+    ]);
+    $hijos = [];
+    foreach ($elementos as $elemento) {
+      if ($elemento->link->getRouteName() === 'unillanos_autoeval.institucional') {
+        foreach ($elemento->subtree as $hijo) {
+          $hijos[] = [(string) $hijo->link->getTitle(), $hijo->link->getRouteName()];
+        }
+      }
+    }
+    $this->assertSame([
+      ['Procesos institucionales', 'unillanos_autoeval.institucional_procesos'],
+      ['Dependencias', 'unillanos_autoeval.institucional_dependencias'],
+      ['Directivos', 'unillanos_autoeval.institucional_directivos'],
+      ['Normatividad', 'unillanos_autoeval.institucional_normatividad'],
+      ['Cifras', 'unillanos_autoeval.institucional_cifras'],
+    ], $hijos);
+  }
+
+  /**
+   * El desplegable de «Institucional»: botón con ARIA, submenú y ruta activa.
+   */
+  public function testHtmlDelDesplegable(): void {
+    $html = $this->pagina('/institucional/cifras');
+    $menu = $this->menu($html);
+    $this->assertSame(1, substr_count($menu, 'data-ua-nav-sub'));
+    // El enlace de la sección sigue siendo un enlace; el botón va al lado.
+    $this->assertMatchesRegularExpression('~<a class="ua-nav__link is-current" href="/institucional" aria-current="true">Institucional</a>~', $menu);
+    $this->assertMatchesRegularExpression('~<button type="button" class="ua-nav__toggle" aria-expanded="false" aria-controls="ua-menu-sub-(\d+)" data-ua-nav-toggle hidden>~', $menu);
+    $this->assertStringContainsString('Mostrar el submenú de Institucional', $menu);
+    // El botón controla el submenú que existe.
+    preg_match('~aria-controls="(ua-menu-sub-\d+)"~', $menu, $controles);
+    $this->assertStringContainsString('<ul class="ua-nav__sub" id="' . $controles[1] . '"', $menu);
+    foreach (['procesos', 'dependencias', 'directivos', 'normatividad', 'cifras'] as $modulo) {
+      $this->assertStringContainsString('href="/institucional/' . $modulo . '"', $menu);
+    }
+    // En el menú solo el hijo «Cifras» es la página actual.
+    $this->assertSame(1, substr_count($menu, 'aria-current="page"'));
+    $this->assertMatchesRegularExpression('~<a class="ua-nav__sublink" href="/institucional/cifras" aria-current="page">Cifras</a>~', $menu);
+    // Los demás elementos no llevan submenú.
+    $this->assertSame(1, substr_count($menu, 'ua-nav__toggle"'));
+  }
+
+  /**
+   * El rastro del menú en una página del submenú pone el padre en el recorrido.
+   */
+  public function testRastroEnUnModuloInstitucional(): void {
+    $this->enRuta('unillanos_autoeval.institucional_dependencias');
+    $rastro = $this->container->get('menu.active_trail')->getActiveTrailIds('main');
+    $this->assertArrayHasKey('unillanos_autoeval.menu.institucional_dependencias', $rastro);
+    $this->assertArrayHasKey('unillanos_autoeval.menu.institucional', $rastro);
+    $this->assertArrayNotHasKey('unillanos_autoeval.menu.programas', $rastro);
+    $this->assertArrayNotHasKey('unillanos_autoeval.menu.documentos', $rastro);
+  }
+
+  /**
+   * En /institucional el padre es la página actual y no hay hijo activo.
+   */
+  public function testHtmlDeLaPortadaInstitucional(): void {
+    $menu = $this->menu($this->pagina('/institucional'));
+    $this->assertMatchesRegularExpression('~<a class="ua-nav__link" href="/institucional" aria-current="page">Institucional</a>~', $menu);
+    $this->assertSame(1, substr_count($menu, 'aria-current="page"'));
   }
 
   /**
@@ -182,9 +255,9 @@ class MenusTest extends UnillanosKernelTestBase {
         $this->assertNotEmpty($proveedor->getRoutesByNames([$ruta]), "«{$titulo}» de {$menu} apunta a {$ruta}.");
       }
     }
-    // Institucional y Participa no están hasta que existan sus rutas.
+    // Participa no está hasta que exista su ruta (Institucional ya existe).
     $titulos = array_merge(array_column($this->enlaces('main'), 0), array_column($this->enlaces('footer'), 0));
-    $this->assertNotContains('Institucional', $titulos);
+    $this->assertContains('Institucional', $titulos);
     $this->assertNotContains('Participa', $titulos);
   }
 
@@ -389,9 +462,10 @@ class MenusTest extends UnillanosKernelTestBase {
     $html = $this->pagina('/programas');
     $this->assertSame(1, preg_match('~<header .*?</header>~s', $html, $encabezado));
     $this->assertStringContainsString('class="ua-nav"', $encabezado[0]);
-    // Programas y Documentos: ya no hay «Ingresar» en el menú (expectativa
-    // cambiada a propósito, la cabecera lleva GOV.CO y redes en su lugar).
-    $this->assertSame(2, substr_count($this->menu($html), 'class="ua-nav__link'));
+    // Programas, Institucional y Documentos: ya no hay «Ingresar» en el menú
+    // (la cabecera lleva GOV.CO y redes en su lugar); en la Fase 9 se sumó
+    // «Institucional», de modo que son tres enlaces de primer nivel.
+    $this->assertSame(3, substr_count($this->menu($html), 'class="ua-nav__link'));
     $this->assertStringNotContainsString('Ingresar', $encabezado[0]);
     $this->assertStringContainsString('aria-controls="ua-menu"', $html);
     $this->assertSame(1, substr_count($html, 'id="ua-menu"'));
