@@ -1,0 +1,23 @@
+uuid: 8d435784-425c-488c-b6b0-b9607e187baf
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_orden
+    - node.type.miembro_equipo
+id: node.miembro_equipo.field_orden
+field_name: field_orden
+entity_type: node
+bundle: miembro_equipo
+label: Orden
+description: 'Número: el menor sale primero.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

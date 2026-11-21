@@ -69,7 +69,8 @@ class DatosMarco {
    *   Claves: `nombre` (dos líneas), `web_principal`, `govco` (enlace del
    *   logo GOV.CO o NULL), `redes` (solo las que tienen URL segura: `red`,
    *   `title`, `url`), `franja` (enlaces),
-   *   `accesibilidad` (enlace o NULL) y `pie` (`titulo`, `descripcion`,
+   *   `accesibilidad` (enlace, con `url` vacía si no hay destino, o NULL) y
+   *   `pie` (`titulo`, `descripcion`,
    *   `institucion`, `nota_institucion`, `entidades`, `sedes`, `contacto`,
    *   `redes`, `enlaces_legales` y `legal`; las listas vacías, como arreglos
    *   vacíos).
@@ -87,7 +88,7 @@ class DatosMarco {
       'govco' => $this->govco($config->get('url_govco')),
       'redes' => $this->redes($config->get('redes_sociales')),
       'franja' => $this->enlaces($config->get('franja_superior')),
-      'accesibilidad' => $this->enlace((array) ($config->get('accesibilidad') ?? [])),
+      'accesibilidad' => $this->accesibilidad((array) ($config->get('accesibilidad') ?? [])),
       'pie' => $this->pie($pie, $cache),
     ];
   }
@@ -354,6 +355,26 @@ class DatosMarco {
       }
     }
     return $enlaces;
+  }
+
+  /**
+   * Convierte el dato de accesibilidad: la URL es opcional.
+   *
+   * Las opciones de accesibilidad funcionan sin página de destino; si la URL
+   * se escribió y no es segura, se descarta todo.
+   *
+   * @param array<string, mixed> $datos
+   *   Arreglo con `titulo` y `url`.
+   *
+   * @return array{title: string, url: string, externo: bool}|null
+   *   El dato, o NULL si falta el título o la URL escrita no es segura.
+   */
+  protected function accesibilidad(array $datos): ?array {
+    if (trim((string) ($datos['url'] ?? '')) !== '') {
+      return $this->enlace($datos);
+    }
+    $titulo = $this->texto($datos['titulo'] ?? NULL);
+    return $titulo === '' ? NULL : ['title' => $titulo, 'url' => '', 'externo' => FALSE];
   }
 
   /**

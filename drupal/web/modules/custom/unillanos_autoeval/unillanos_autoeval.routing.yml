@@ -171,3 +171,22 @@ unillanos_autoeval.institucional_cifras:
     _ancla: 'cifras'
   requirements:
     _access: 'TRUE'
+
+# Sitio de Acreditación (Fase 9): noticias y equipo. Las páginas SAC, Esquema
+# organizacional, Boletines y Capacitaciones son nodos «pagina_informativa» con
+# su propio alias (/informacion/…, /noticias/boletines y /noticias/capacitaciones).
+unillanos_autoeval.noticias:
+  path: '/noticias'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\SitioAcreditacionController::noticias'
+    _title: 'Noticias'
+  requirements:
+    _permission: 'access content'
+
+unillanos_autoeval.equipo:
+  path: '/nuestro-equipo'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\SitioAcreditacionController::equipo'
+    _title: 'Nuestro equipo'
+  requirements:
+    _permission: 'access content'

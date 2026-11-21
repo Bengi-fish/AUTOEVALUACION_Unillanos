@@ -5,8 +5,7 @@
  *
  * Variables:
  * - datos: lo arma DatosPortada::armar(): eyebrow,
- *   cifras, unico, programas, ver_todos, factores, hay_grado y documentos; y
- *   carrusel (CarruselPortada::datos(): diapositivas y edicion).
+ *   cifras, unico, programas, ver_todos, factores, hay_grado y documentos.
  *   Solo trae lo que existe: lo vacío se omite (sin etiquetas de pendiente).
  *
  * El h1 es el título del hero (la página omite el bloque de título).
@@ -24,30 +23,6 @@
     {% include 'unillanos:breadcrumb' with {items: [{title: 'Inicio'|t, url: '/'}, {title: 'Información'|t}, {title: 'SIAAI'|t}]} only %}
   </div>
 </div>
-
-{# ------------------------------------------------------------ carrusel #}
-{# Arriba, justo debajo de la cabecera. Sin diapositivas no aparece; en modo
-   edición se ofrece «+ Añadir una diapositiva» aunque no haya ninguna. #}
-{% set carrusel = datos.carrusel|default({}) %}
-{% if carrusel.edicion.nueva %}
-  <div class="ua-container">
-    <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: carrusel.edicion.nueva.url, label: carrusel.edicion.nueva.title, variant: carrusel.edicion.nueva.tipo, show_label: true} only %}</div>
-  </div>
-{% endif %}
-{% if carrusel.diapositivas %}
-  {% set diapositivas = [] %}
-  {% for d in carrusel.diapositivas %}
-    {% set diapositivas = diapositivas|merge([{
-      title: d.title,
-      text: d.text,
-      url: d.url,
-      external: d.externo,
-      image: d.imagen,
-      edit: d.edicion|default({}),
-    }]) %}
-  {% endfor %}
-  {% include 'unillanos:carousel' with {id: 'carrusel-portada', label: 'Noticias destacadas'|t, items: diapositivas} only %}
-{% endif %}
 
 {# ---------------------------------------------------------------- hero #}
 {% embed 'unillanos:hero' with {

@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Opciones de accesibilidad (franja superior).
+ *
+ * Sin JavaScript solo se ve el enlace [data-ua-a11y-enlace] (si hay destino). Con JavaScript,
+ * a11y.js lo oculta y muestra el botón y su panel (disclosure). El destino
+ * ya viene validado por unillanos:topbar.
+ */
+#}
+<div class="ua-a11y" data-ua-a11y>
+  {% if url %}
+    <a class="ua-topbar__link ua-topbar__acceso" href="{{ url }}" data-ua-a11y-enlace>
+      {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
+      <span>{{ title }}</span>
+    </a>
+  {% endif %}
+  <button class="ua-topbar__link ua-a11y__boton" type="button" hidden aria-expanded="false" aria-controls="ua-a11y-panel" data-ua-a11y-boton>
+    {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
+    <span>{{ title }}</span>
+  </button>
+  <div class="ua-a11y__panel" id="ua-a11y-panel" role="group" aria-labelledby="ua-a11y-titulo" hidden data-ua-a11y-panel>
+    <h2 class="ua-a11y__titulo" id="ua-a11y-titulo">{{ 'Opciones de accesibilidad'|t }}</h2>
+    <div class="ua-a11y__fila" role="group" aria-labelledby="ua-a11y-texto-t">
+      <span class="ua-a11y__etiqueta" id="ua-a11y-texto-t">{{ 'Tamaño del texto'|t }}</span>
+      <div class="ua-a11y__tamano">
+        <button class="ua-a11y__paso" type="button" data-ua-a11y-texto="menos" aria-label="{{ 'Reducir el texto'|t }}">A−</button>
+        <output class="ua-a11y__valor" data-ua-a11y-valor aria-live="polite">100 %</output>
+        <button class="ua-a11y__paso" type="button" data-ua-a11y-texto="mas" aria-label="{{ 'Aumentar el texto'|t }}">A+</button>
+      </div>
+    </div>
+    <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="contraste">{{ 'Alto contraste'|t }}</button>
+    <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="subrayado">{{ 'Subrayar los enlaces'|t }}</button>
+    <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="espaciado">{{ 'Más espacio entre líneas y letras'|t }}</button>
+    <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="movimiento">{{ 'Menos movimiento'|t }}</button>
+    <button class="ua-a11y__restablecer" type="button" data-ua-a11y-restablecer>{{ 'Restablecer'|t }}</button>
+    {% if url %}<a class="ua-a11y__mas" href="{{ url }}">{{ 'Más sobre accesibilidad'|t }}</a>{% endif %}
+  </div>
+</div>

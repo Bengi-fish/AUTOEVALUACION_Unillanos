@@ -1,0 +1,19 @@
+uuid: ddc2d1c0-7aa8-467b-8d09-60b92f138811
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_telefono
+    - node.type.miembro_equipo
+id: node.miembro_equipo.field_telefono
+field_name: field_telefono
+entity_type: node
+bundle: miembro_equipo
+label: Teléfono
+description: 'Por ejemplo: «PBX: 6616800 Ext. 102».'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

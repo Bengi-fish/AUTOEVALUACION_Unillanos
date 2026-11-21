@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Vista completa de «noticia»: cabecera, imagen (solo noticias) y texto.
+ *
+ * Variables: node y content (el texto va en content.body; la imagen, en
+ * content.field_imagen si existe). El h1 es el título de la cabecera.
+ */
+#}
+{{ attach_library('unillanos/sitio') }}
+<article{{ attributes.addClass('ua-sitio-articulo') }}>
+  {% include 'unillanos:pagehead' with {
+    eyebrow: 'Noticias'|t,
+    title: node.label,
+    breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Noticias'|t, url: path('unillanos_autoeval.noticias')}, {title: node.label}],
+  } only %}
+  {% embed 'unillanos:section' with {id: 'texto', content: content} only %}
+    {% block content %}
+      <div class="ua-prose">
+        {% if content.field_imagen %}<div class="ua-prose__imagen">{{ content.field_imagen }}</div>{% endif %}
+        {{ content.body }}
+      </div>
+    {% endblock %}
+  {% endembed %}
+</article>

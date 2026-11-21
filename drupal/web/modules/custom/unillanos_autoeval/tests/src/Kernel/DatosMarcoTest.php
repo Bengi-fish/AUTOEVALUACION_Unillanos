@@ -80,7 +80,8 @@ class DatosMarcoTest extends KernelTestBase {
     $this->assertSame(['linea1' => 'Sistema de', 'linea2' => 'Autoevaluación'], $datos['nombre']);
     $this->assertSame('', $datos['web_principal']);
     $this->assertSame([], $datos['franja']);
-    $this->assertNull($datos['accesibilidad']);
+    // Las opciones de accesibilidad no necesitan página de destino.
+    $this->assertSame(['title' => 'Accesibilidad', 'url' => '', 'externo' => FALSE], $datos['accesibilidad']);
     $pie = $datos['pie'];
     $this->assertSame('Ubícanos', $pie['ubicanos']['titulo']);
     $this->assertSame(
@@ -258,6 +259,10 @@ class DatosMarcoTest extends KernelTestBase {
     $this->fijar('accesibilidad.url', '/documentos');
     $this->fijar('accesibilidad.titulo', '');
     $this->assertNull($this->datos()['accesibilidad']);
+    $this->fijar('accesibilidad.url', '');
+    $this->assertNull($this->datos()['accesibilidad']);
+    $this->fijar('accesibilidad.titulo', 'Accesibilidad');
+    $this->assertSame(['title' => 'Accesibilidad', 'url' => '', 'externo' => FALSE], $this->datos()['accesibilidad']);
   }
 
   /**

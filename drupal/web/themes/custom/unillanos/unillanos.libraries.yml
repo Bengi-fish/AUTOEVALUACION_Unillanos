@@ -17,6 +17,11 @@ programa:
   css:
     component:
       css/programa.css: {}
+sitio:
+  version: 1.0.0
+  css:
+    component:
+      css/sitio.css: {}
 portal:
   version: 1.0.0
   css:

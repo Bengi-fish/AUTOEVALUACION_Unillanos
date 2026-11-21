@@ -134,6 +134,7 @@ final class MicrositioForm extends ConfigFormBase {
     $form['cabecera']['accesibilidad_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Enlace de accesibilidad: URL'),
+      '#description' => $this->t('Opcional. Si la deja vacía, el botón de accesibilidad abre igual sus opciones (tamaño del texto, contraste y más), sin enlace a otra página.'),
       '#default_value' => $accesibilidad['url'] ?? '',
       '#maxlength' => 255,
     ];

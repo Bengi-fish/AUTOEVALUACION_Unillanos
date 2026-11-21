@@ -30,6 +30,9 @@ La lógica que Drupal no trae se programa en el módulo propio **`unillanos_auto
 | PROCESO | Nodo | `proceso` |
 | DEPENDENCIA | Nodo | `dependencia` |
 | NORMA | Nodo | `norma` |
+| NOTICIA | Nodo | `noticia` |
+| PAGINA_INFORMATIVA | Nodo | `pagina_informativa` |
+| MIEMBRO_EQUIPO | Nodo | `miembro_equipo` |
 | VALORACION | Nodo | `valoracion` |
 | HALLAZGO | Nodo | `hallazgo` |
 | PARTICIPACION | Paragraph (dentro de `proceso`) | `participacion` |
@@ -86,6 +89,15 @@ Regla: exactamente uno de `field_sede` o `field_programa` (validación en `unill
 
 ### `dependencia` (Fase 9, etapa 2)
 Dependencia de la Universidad que llena formatos del SIAAI (Admisiones, Biblioteca…). Título = nombre. `field_descripcion` (texto largo plano, opcional) · `field_orden` (entero, opcional; orden de la lista, las 25 salen en el orden del sitio de Acreditación). Crea revisión.
+
+### `noticia` (Fase 9, sitio de Acreditación)
+Noticia del sitio de Acreditación (cinco, las del slider). Título = titular. `body` (texto con resumen, formato `basic_html`; obligatorio) · `field_imagen` (imagen opcional, JPG, PNG o WebP de hasta 5 MB, texto alternativo obligatorio; carpeta `noticias`) · `field_enlace` (enlace de origen `https://`, opcional). Sin fecha: el sitio de origen no la publica y no se inventa. Alias `/noticias/[título]` (patrón Pathauto `noticia`). Crea revisión. Se listan en `/noticias` y las tres primeras en el portal.
+
+### `pagina_informativa` (Fase 9, sitio de Acreditación)
+Página de texto: SAC, Modelo de Autoevaluación, Boletines (28 enlaces a los PDF del sitio de origen, por año) y Capacitaciones (histórico). Título = nombre de la página. `body` (formato `basic_html`; obligatorio) · `field_enlace` (enlace de origen, opcional). El alias lo fija la migración (`/informacion/sac`, `/informacion/esquema-organizacional`, `/noticias/boletines`, `/noticias/capacitaciones`) y Pathauto no lo toca. Crea revisión.
+
+### `miembro_equipo` (Fase 9, sitio de Acreditación)
+Persona del comité o del equipo de trabajo de Acreditación (18). Título = nombre. `field_cargo` (dependencia o cargo; obligatorio) · `field_grupo` (texto: «Comité Autoevaluación y Acreditación Institucional» o «Equipo de trabajo Secretaría Técnica de Acreditación») · `field_telefono` (texto) · `field_correo` (correo institucional) · `field_orden` (entero; orden de la lista). Se lista en `/nuestro-equipo`, agrupada por `field_grupo`. Crea revisión.
 
 ### `norma` (Fase 9, etapa 2)
 Fila de la «Matriz legal aplicable» (normatividad). Título = «tipo número y fecha» (por ejemplo «Ley 30 de 1992»). `field_origen_norma` (lista: `externo`, `interno`; obligatorio) · `field_tipo_norma` (texto corto; obligatorio) · `field_numero_fecha` (texto corto) · `field_entidad` (texto corto) · `field_epigrafe` (texto largo plano; obligatorio) · `field_capitulos` (texto corto) · `field_aplicacion` (texto largo plano) · `field_documento` (→ media `documento`, archivo o enlace; opcional). Crea revisión.

@@ -1,0 +1,38 @@
+id: archivos_noticias
+label: 'Imágenes de las noticias del sitio de Acreditación'
+migration_group: unillanos
+# Copia (no mueve) cada imagen de datos/ a public://noticias/. La ruta es
+# relativa a la raíz del repositorio y RutaDeArchivo la valida.
+source:
+  plugin: csv
+  path: '%datos%/semillas/noticias.csv'
+  ids: [id]
+  constants:
+    destino: 'public://noticias'
+process:
+  ruta:
+    plugin: unillanos_ruta_archivo
+    source: imagen
+    raiz: '%raiz%'
+    bases: [datos]
+    extensiones: [jpg, jpeg, png, webp]
+  filename:
+    plugin: callback
+    callable: basename
+    source: imagen
+  destino:
+    plugin: concat
+    source:
+      - constants/destino
+      - '@filename'
+    delimiter: /
+  uri:
+    plugin: file_copy
+    source:
+      - '@ruta'
+      - '@destino'
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:file'

@@ -246,3 +246,27 @@
   }
 
 }
+
+/* Padre sin destino: el rótulo es un botón con el aspecto de un enlace. */
+.ua .ua-nav__link--boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ua-nav__link--boton svg {
+  transition: transform .15s ease;
+}
+
+.ua-nav__link--boton[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+/* Sin JavaScript no hay quien abra el submenú: se muestra abierto. */
+html:not(.js) .ua-nav__item--sin-destino .ua-nav__sub {
+  display: block;
+}

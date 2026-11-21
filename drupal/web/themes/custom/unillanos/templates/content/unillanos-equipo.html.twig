@@ -1,0 +1,43 @@
+{#
+/**
+ * @file
+ * «Nuestro equipo»: el comité y el equipo de trabajo de Acreditación.
+ *
+ * Variables:
+ * - grupos: SitioAcreditacion::equipo(): title y personas (nombre, cargo,
+ *   telefono y correo; los vacíos no vienen).
+ *
+ * El h1 es el título de la cabecera (la página omite el bloque de título).
+ */
+#}
+{{ attach_library('unillanos/sitio') }}
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Información'|t,
+  title: 'Nuestro'|t,
+  title_accent: 'equipo'|t,
+  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Información'|t}, {title: 'Nuestro equipo'|t}],
+} only %}
+
+{% for grupo in grupos %}
+  {% embed 'unillanos:section' with {id: 'grupo-' ~ loop.index, variant: loop.index is even ? 'alt' : '', grupo: grupo} only %}
+    {% block content %}
+      {% if grupo.title %}<h2 class="ua-equipo__grupo">{{ grupo.title }}</h2>{% endif %}
+      <ul class="ua-equipo" role="list">
+        {% for persona in grupo.personas %}
+          <li class="ua-persona">
+            <h3 class="ua-persona__nombre">{{ persona.nombre }}</h3>
+            {% if persona.cargo %}<p class="ua-persona__cargo">{{ persona.cargo }}</p>{% endif %}
+            {% if persona.telefono %}<p class="ua-persona__dato">{{ persona.telefono }}</p>{% endif %}
+            {% if persona.correo %}<p class="ua-persona__dato"><a href="mailto:{{ persona.correo }}">{{ persona.correo }}</a></p>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endblock %}
+  {% endembed %}
+{% else %}
+  {% embed 'unillanos:section' with {id: 'equipo'} only %}
+    {% block content %}
+      <p class="ua-lead">{{ 'Todavía no hay personas publicadas.'|t }}</p>
+    {% endblock %}
+  {% endembed %}
+{% endfor %}

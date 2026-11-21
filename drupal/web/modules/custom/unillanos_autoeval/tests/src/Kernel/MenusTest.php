@@ -177,8 +177,12 @@ class MenusTest extends UnillanosKernelTestBase {
    * El menú principal lleva «SIAAI» (la portada del sistema), por ruta.
    */
   public function testMenuPrincipal(): void {
+    // «Información» y «Noticias» son padres sin destino (etapa 10): agrupan
+    // las páginas informativas y las noticias del sitio de Acreditación.
     $this->assertSame([
       ['SIAAI', 'unillanos_autoeval.portada'],
+      ['Información', '<nolink>'],
+      ['Noticias', '<nolink>'],
     ], $this->enlaces('main'));
   }
 
@@ -194,9 +198,12 @@ class MenusTest extends UnillanosKernelTestBase {
     $elementos = $arbol->transform($arbol->load('main', $parametros), [
       ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
     ]);
-    $this->assertCount(1, $elementos);
+    // SIAAI, Información y Noticias; «SIAAI» no lleva submenú.
+    $this->assertCount(3, $elementos);
     foreach ($elementos as $elemento) {
-      $this->assertCount(0, $elemento->subtree);
+      if ($elemento->link->getTitle() == 'SIAAI') {
+        $this->assertCount(0, $elemento->subtree);
+      }
     }
     $rutas = array_column($this->enlaces('main'), 1);
     foreach (['programas', 'documentos', 'institucional'] as $seccion) {
@@ -622,9 +629,10 @@ class MenusTest extends UnillanosKernelTestBase {
     $html = $this->pagina('/programas');
     $this->assertSame(1, preg_match('~<header .*?</header>~s', $html, $encabezado));
     $this->assertStringContainsString('class="ua-nav"', $encabezado[0]);
-    // Solo «SIAAI» (aquí «Inicio» no existe: lo aporta el perfil standard). No
-    // hay «Ingresar» en el menú: la cabecera lleva GOV.CO y redes.
-    $this->assertSame(1, substr_count($this->menu($html), 'class="ua-nav__link'));
+    // «SIAAI», «Información» y «Noticias» (aquí «Inicio» no existe: lo aporta
+    // el perfil standard). Los dos últimos son botones sin destino. No hay
+    // «Ingresar» en el menú: la cabecera lleva GOV.CO y redes.
+    $this->assertSame(3, substr_count($this->menu($html), 'class="ua-nav__link'));
     $this->assertStringNotContainsString('Ingresar', $encabezado[0]);
     $this->assertStringContainsString('aria-controls="ua-menu"', $html);
     $this->assertSame(1, substr_count($html, 'id="ua-menu"'));
@@ -688,8 +696,10 @@ class MenusTest extends UnillanosKernelTestBase {
     }
     $this->assertStringContainsString('<h3 class="ua-footer__redes-titulo">Redes</h3>', $con_marca);
     $this->assertStringContainsString('Nit: 892.000.757-3', $con_marca);
-    // Sin GOV.CO ni redes tampoco hay franja; sin grupos, el pie no los pinta.
+    // Sin GOV.CO, redes ni título de accesibilidad tampoco hay franja; sin
+    // grupos, el pie no los pinta.
     $this->config('unillanos_autoeval.micrositio')
+      ->set('accesibilidad.titulo', '')
       ->set('url_govco', '')
       ->set('redes_sociales', ['facebook' => '', 'x' => '', 'instagram' => '', 'youtube' => ''])
       ->set('pie', [
@@ -735,7 +745,8 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->assertStringContainsString('<div data-component-id="unillanos:topbar" class="ua-topbar">', $html);
     $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="https://example.org/b" rel="noopener">~', $html);
     $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="/documentos">~', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/programas">~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/programas" data-ua-a11y-enlace>~', $html);
+    $this->assertStringContainsString('data-ua-a11y-boton', $html);
     $this->assertStringContainsString('<strong>Sede de prueba</strong><span class="ua-footer__valor">Calle de prueba 1</span>', $html);
     $this->assertStringNotContainsString('Campus Barcelona', $html);
     // Sin líneas de atención la columna sigue con las redes; sin el grupo no
@@ -760,6 +771,7 @@ class MenusTest extends UnillanosKernelTestBase {
         ['titulo' => 'Dato peligroso', 'texto' => '', 'url' => 'javascript:alert(5)', 'icono' => ''],
       ])
       ->set('pie.logos', [['clave' => 'govco', 'titulo' => 'Logo peligroso', 'url' => 'data:text/html,hola']])
+      ->set('accesibilidad.titulo', '')
       ->set('url_govco', 'javascript:alert(3)')
       ->set('redes_sociales', [
         'facebook' => 'javascript:alert(4)',

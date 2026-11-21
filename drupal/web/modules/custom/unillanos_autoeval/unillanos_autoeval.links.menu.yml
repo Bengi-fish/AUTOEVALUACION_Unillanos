@@ -8,6 +8,55 @@ unillanos_autoeval.menu.siaai:
   menu_name: main
   weight: 2
 
+# Información y Noticias del sitio de Acreditación (Fase 9): dos menús
+# desplegables sin página propia (<nolink>), con las páginas como hijos.
+unillanos_autoeval.menu.informacion:
+  title: 'Información'
+  route_name: '<nolink>'
+  menu_name: main
+  weight: 3
+unillanos_autoeval.menu.informacion.sac:
+  title: 'Sistema de Aseguramiento de la Calidad (SAC)'
+  url: 'internal:/informacion/sac'
+  menu_name: main
+  parent: unillanos_autoeval.menu.informacion
+  weight: 1
+unillanos_autoeval.menu.informacion.modelo:
+  title: 'Modelo de Autoevaluación'
+  url: 'internal:/informacion/esquema-organizacional'
+  menu_name: main
+  parent: unillanos_autoeval.menu.informacion
+  weight: 2
+unillanos_autoeval.menu.informacion.equipo:
+  title: 'Nuestro equipo'
+  route_name: unillanos_autoeval.equipo
+  menu_name: main
+  parent: unillanos_autoeval.menu.informacion
+  weight: 3
+unillanos_autoeval.menu.noticias:
+  title: 'Noticias'
+  route_name: '<nolink>'
+  menu_name: main
+  weight: 4
+unillanos_autoeval.menu.noticias.lista:
+  title: 'Noticias'
+  route_name: unillanos_autoeval.noticias
+  menu_name: main
+  parent: unillanos_autoeval.menu.noticias
+  weight: 1
+unillanos_autoeval.menu.noticias.boletines:
+  title: 'Boletines'
+  url: 'internal:/noticias/boletines'
+  menu_name: main
+  parent: unillanos_autoeval.menu.noticias
+  weight: 2
+unillanos_autoeval.menu.noticias.capacitaciones:
+  title: 'Capacitaciones (histórico)'
+  url: 'internal:/noticias/capacitaciones'
+  menu_name: main
+  parent: unillanos_autoeval.menu.noticias
+  weight: 3
+
 # Menú del pie: la columna «Explora» (se omite si no hay enlaces).
 unillanos_autoeval.pie.programas:
   title: 'Programas'

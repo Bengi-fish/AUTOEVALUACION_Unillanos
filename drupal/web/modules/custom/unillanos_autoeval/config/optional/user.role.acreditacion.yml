@@ -7,7 +7,10 @@ dependencies:
     - node.type.diapositiva
     - node.type.hallazgo
     - node.type.meta
+    - node.type.miembro_equipo
     - node.type.norma
+    - node.type.noticia
+    - node.type.pagina_informativa
     - node.type.plan_mejoramiento
     - node.type.proceso
     - node.type.programa
@@ -32,7 +35,10 @@ permissions:
   - 'create documento media'
   - 'create hallazgo content'
   - 'create meta content'
+  - 'create miembro_equipo content'
   - 'create norma content'
+  - 'create noticia content'
+  - 'create pagina_informativa content'
   - 'create plan_mejoramiento content'
   - 'create proceso content'
   - 'create programa content'
@@ -43,7 +49,10 @@ permissions:
   - 'delete own documento media'
   - 'delete own hallazgo content'
   - 'delete own meta content'
+  - 'delete own miembro_equipo content'
   - 'delete own norma content'
+  - 'delete own noticia content'
+  - 'delete own pagina_informativa content'
   - 'delete own plan_mejoramiento content'
   - 'delete own proceso content'
   - 'delete own programa content'
@@ -54,7 +63,10 @@ permissions:
   - 'edit any documento media'
   - 'edit any hallazgo content'
   - 'edit any meta content'
+  - 'edit any miembro_equipo content'
   - 'edit any norma content'
+  - 'edit any noticia content'
+  - 'edit any pagina_informativa content'
   - 'edit any plan_mejoramiento content'
   - 'edit any proceso content'
   - 'edit any programa content'

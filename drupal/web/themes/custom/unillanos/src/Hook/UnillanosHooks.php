@@ -42,6 +42,8 @@ class UnillanosHooks {
     'unillanos_autoeval.documentos',
     'unillanos_autoeval.programas',
     'unillanos_autoeval.institucional',
+    'unillanos_autoeval.noticias',
+    'unillanos_autoeval.equipo',
   ];
 
   /**
@@ -186,6 +188,16 @@ class UnillanosHooks {
         'template' => 'unillanos-programas',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
+      'unillanos_noticias' => [
+        'variables' => ['noticias' => []],
+        'template' => 'unillanos-noticias',
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ],
+      'unillanos_equipo' => [
+        'variables' => ['grupos' => []],
+        'template' => 'unillanos-equipo',
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ],
       'unillanos_portal' => [
         'variables' => ['datos' => []],
         'template' => 'unillanos-portal',
@@ -234,7 +246,10 @@ class UnillanosHooks {
       && $nodo->bundle() === 'programa';
     // La portada, la de documentos, la de programas y las de «Institucional»
     // también traen su propio h1.
-    $variables['pagina_propia'] = $programa || !empty($variables['is_front'])
+    $texto_propio = $this->routeMatch->getRouteName() === 'entity.node.canonical'
+      && $nodo instanceof NodeInterface
+      && in_array($nodo->bundle(), ['noticia', 'pagina_informativa'], TRUE);
+    $variables['pagina_propia'] = $programa || $texto_propio || !empty($variables['is_front'])
       || in_array($this->routeMatch->getRouteName(), self::RUTAS_CON_CABECERA, TRUE);
     // Barra secundaria: solo dentro del SIAAI.
     $variables['barra_siaai'] = $this->barraSiaai($programa);

@@ -1,0 +1,293 @@
+/**
+ * Opciones de accesibilidad: botón de la franja y panel desplegable.
+ * Las preferencias (atributos data-ua-a11y-* de html) se aplican abajo.
+ */
+
+.ua-a11y {
+  position: relative;
+  flex: none;
+}
+
+.ua .ua-topbar__link.ua-a11y__boton {
+  /* 44 px: objetivo táctil completo; la franja mide lo mismo. */
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ua .ua-a11y__boton[hidden],
+.ua .ua-a11y__panel[hidden],
+.ua .ua-a11y__enlace[hidden],
+.ua [data-ua-a11y-enlace][hidden] {
+  display: none;
+}
+
+.ua-a11y__panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  box-sizing: border-box;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  padding: var(--espacio-4);
+  border: 1px solid var(--borde-calido);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
+  color: var(--carbon);
+  --foco-interior: var(--Surface);
+  --foco-exterior: var(--carbon);
+}
+
+.ua-a11y__titulo {
+  margin: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.ua-a11y__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.ua-a11y__etiqueta {
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.ua-a11y__tamano {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.ua-a11y__valor {
+  min-width: 48px;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ua-a11y__paso,
+.ua-a11y__opcion,
+.ua-a11y__restablecer {
+  min-height: 44px;
+  padding: 0 var(--espacio-4);
+  border: 1px solid var(--borde-calido);
+  border-radius: var(--radio-sm);
+  background: var(--Surface);
+  color: var(--carbon);
+  font: inherit;
+  font-size: 15px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.ua-a11y__paso {
+  min-width: 44px;
+  padding: 0;
+  font-weight: 600;
+}
+
+.ua-a11y__paso:disabled {
+  color: var(--gris-suave);
+  cursor: not-allowed;
+}
+
+.ua-a11y__opcion {
+  text-align: left;
+}
+
+.ua-a11y__opcion[aria-pressed="true"] {
+  border-color: var(--verde-azulado-700);
+  background: var(--verde-azulado-700);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ua-a11y__opcion[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+
+.ua-a11y__restablecer {
+  border-color: var(--rojo-texto);
+  color: var(--rojo-texto);
+}
+
+.ua .ua-a11y__mas {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--rojo-texto);
+  font-size: 15px;
+}
+
+/* ---------------------------------------------------------------------
+   Preferencias aplicadas a toda la página.
+   --------------------------------------------------------------------- */
+
+/* Tamaño del texto: amplía la página (el diseño usa píxeles). */
+@supports (zoom: 1) {
+  html[data-ua-a11y-texto="1"] body { zoom: 1.15; }
+  html[data-ua-a11y-texto="2"] body { zoom: 1.3; }
+  html[data-ua-a11y-texto="3"] body { zoom: 1.5; }
+}
+
+/* Alto contraste: fondo negro, texto blanco, enlaces amarillos. */
+html[data-ua-a11y-contraste] {
+  --Surface: #000;
+  --carbon: #fff;
+  --gris-texto: #fff;
+  --gris-suave: #e6e6e6;
+  --borde-calido: #fff;
+  --superficie-calida: #000;
+  --superficie-100: #000;
+  --rojo-texto: #ffe066;
+  --rojo-oscuro: #ffe066;
+  --rojo-marca: #ffe066;
+  --rojo-tinte: #000;
+  --rojo-claro: #000;
+  --azul-grisaceo-100: #000;
+  --azul-grisaceo-50: #000;
+  --verde-azulado-900: #000;
+  --verde-azulado-700: #000;
+  --verde-azulado-600: #000;
+  --foco-interior: #000;
+  --foco-exterior: #ffe066;
+}
+
+html[data-ua-a11y-contraste] body {
+  background: #000;
+  color: #fff;
+}
+
+html[data-ua-a11y-contraste] .ua a {
+  color: #ffe066;
+  text-decoration: underline;
+}
+
+/* Franja superior y pie conservan su fondo oscuro (logos blancos). */
+html[data-ua-a11y-contraste] .ua-topbar,
+html[data-ua-a11y-contraste] .ua-footer {
+  background: #000;
+  color: #fff;
+  --Surface: #fff;
+  --carbon: #000;
+  --fondo-redes: #000;
+}
+
+html[data-ua-a11y-contraste] .ua-topbar {
+  border-bottom: 1px solid #fff;
+}
+
+html[data-ua-a11y-contraste] .ua-footer {
+  border-top: 1px solid #fff;
+}
+
+html[data-ua-a11y-contraste] .ua .ua-topbar__link,
+html[data-ua-a11y-contraste] .ua .ua-footer a {
+  color: #fff;
+}
+
+/* Superficies que usan --Surface como «texto claro sobre fondo oscuro». */
+html[data-ua-a11y-contraste] .ua-carousel,
+html[data-ua-a11y-contraste] .ua-hero,
+html[data-ua-a11y-contraste] .ua-stats,
+html[data-ua-a11y-contraste] .ua-pagehead--hero,
+html[data-ua-a11y-contraste] .ua-norm th,
+html[data-ua-a11y-contraste] .ua-docfilter__opt[aria-pressed="true"] {
+  --Surface: #fff;
+}
+
+html[data-ua-a11y-contraste] .ua-pagehead--hero {
+  background: #000;
+}
+
+html[data-ua-a11y-contraste] .ua-pagehead--hero .ua-pagehead__migas {
+  --Surface: #000;
+  background: #000;
+}
+
+/* Las etiquetas con fondo amarillo llevan texto negro. */
+html[data-ua-a11y-contraste] .ua .ua-hero .ua-eyebrow,
+html[data-ua-a11y-contraste] .ua .ua-pagehead--hero .ua-eyebrow {
+  color: #000;
+}
+
+html[data-ua-a11y-contraste] .ua-stat__label,
+html[data-ua-a11y-contraste] .ua .ua-tab__num,
+html[data-ua-a11y-contraste] .ua .ua-ph__num,
+html[data-ua-a11y-contraste] .ua th {
+  color: #fff;
+}
+
+html[data-ua-a11y-contraste] .ua-doc__icon {
+  border: 1px solid #fff;
+  color: #fff;
+}
+
+html[data-ua-a11y-contraste] .ua .ua-btn--primario {
+  color: #000;
+}
+
+html[data-ua-a11y-contraste] .ua-a11y__panel {
+  --Surface: #000;
+  --carbon: #fff;
+}
+
+html[data-ua-a11y-contraste] .ua img {
+  filter: grayscale(1) contrast(1.1);
+}
+
+html[data-ua-a11y-contraste] .ua-a11y__opcion[aria-pressed="true"] {
+  border-color: #ffe066;
+  color: #ffe066;
+}
+
+/* Subrayar los enlaces. */
+html[data-ua-a11y-subrayado] .ua a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Espaciado del texto (WCAG 1.4.12). */
+html[data-ua-a11y-espaciado] body {
+  line-height: 1.5;
+  letter-spacing: .12em;
+  word-spacing: .16em;
+}
+
+html[data-ua-a11y-espaciado] .ua p {
+  margin-bottom: 2em;
+}
+
+/* Menos movimiento: sin animaciones ni transiciones. */
+html[data-ua-a11y-movimiento] *,
+html[data-ua-a11y-movimiento] *::before,
+html[data-ua-a11y-movimiento] *::after {
+  animation-duration: .001ms;
+  animation-iteration-count: 1;
+  scroll-behavior: auto;
+  transition-duration: .001ms;
+}
+
+@media (max-width: 560px) {
+  .ua-a11y__panel {
+    position: fixed;
+    top: 52px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-width: none;
+  }
+}

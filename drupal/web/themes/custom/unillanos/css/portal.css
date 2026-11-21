@@ -12,3 +12,15 @@
   margin: 0;
   max-width: 72ch;
 }
+
+.ua-portal__mas {
+  margin: var(--espacio-5) 0 0;
+}
+
+.ua .ua-portal__mas a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--rojo-texto);
+  font-weight: 600;
+}

@@ -1,0 +1,25 @@
+uuid: 62371982-2970-41fe-8515-5fa239716fcf
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.pagina_informativa
+  module:
+    - text
+id: node.pagina_informativa.body
+field_name: body
+entity_type: node
+bundle: pagina_informativa
+label: Texto
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+  required_summary: false
+  allowed_formats:
+    - basic_html
+field_type: text_with_summary

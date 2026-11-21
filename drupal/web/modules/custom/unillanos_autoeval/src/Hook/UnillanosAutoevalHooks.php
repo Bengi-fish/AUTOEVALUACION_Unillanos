@@ -69,6 +69,9 @@ class UnillanosAutoevalHooks {
       'dependencia',
       'norma',
       'diapositiva',
+      'noticia',
+      'pagina_informativa',
+      'miembro_equipo',
     ],
     'media' => ['documento'],
   ];

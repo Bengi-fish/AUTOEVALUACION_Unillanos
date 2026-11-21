@@ -1,0 +1,11 @@
+uuid: c3abff9b-8b19-4c12-873d-740d2b217dbc
+langcode: es
+status: true
+dependencies: {  }
+name: 'Página informativa'
+type: pagina_informativa
+description: 'Página de texto: SAC, esquema organizacional, boletines y similares.'
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: false

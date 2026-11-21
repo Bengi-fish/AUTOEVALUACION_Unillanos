@@ -495,3 +495,15 @@ Datos tomados el 18 de noviembre de 2026 de las páginas públicas de https://ac
 
 - [ ] **Campos de la valoración en `/node/<número>`:** la vista pública de una valoración publicada muestra, además del proceso, el elemento, la valoración y el grado, el porcentaje (y la ponderación, el juicio, la síntesis y el estado de la condición cuando tienen valor). La página del programa no los muestra. El manual de Acreditación lo dice así. Decidir con Acreditación si esos campos deben verse o si se ocultan en la vista de la valoración (cambio de configuración).
 
+## 31. Fase 9, etapa 10: contenido del sitio de Acreditación, accesibilidad y carrusel
+
+Datos tomados el 20 de noviembre de 2026 de https://acreditacion.unillanos.edu.co.
+
+- [ ] **Fecha de las noticias:** el sitio de origen no la publica; las cinco noticias quedan sin fecha y se listan en el orden del slider. Acreditación debe entregarla si quiere ordenarlas por fecha.
+- [ ] **Boletines y capacitaciones:** los enlaces a los PDF apuntan al sitio de origen (`/phocadownload/…`); si ese sitio se retira, los enlaces se rompen. Decidir si se descargan los archivos y se cargan como documentos. «Capacitaciones (histórico)» conserva el texto y los enlaces de la página original sin reorganizar.
+- [ ] **Nombres y correos del equipo:** se copiaron tal cual los publica el sitio de origen (18 personas; correos institucionales). Confirmar con Acreditación que siguen vigentes y que pueden publicarse. «Karol Vanessa Baquero» aparece en los dos grupos, como en el original.
+- [ ] **Texto del SAC y del Modelo de Autoevaluación:** se migró el texto sin tablas ni imágenes (el formato `basic_html` no las admite). Revisar con Acreditación si falta algo.
+- [ ] **Menús «Información» y «Noticias»:** nombres y orden tomados del sitio de origen. Confirmar con Acreditación o el diseñador.
+- [ ] **Texto de la página de accesibilidad:** el botón no necesita una página de destino; si Acreditación publica una declaración de accesibilidad, se escribe su dirección en el formulario del micrositio y el panel enlaza a ella.
+- [ ] **Widget de accesibilidad:** el tamaño del texto usa `zoom` (admitido en Edge, Chrome, Safari y Firefox 126 o posterior). Confirmar si basta o si se quiere otro mecanismo. El alto contraste usa amarillo `#ffe066` para enlaces y acentos: confirmar con el diseñador.
+- [ ] **Carrusel:** sigue con las tres diapositivas de prueba (sección 29). Las imágenes del slider del sitio de origen miden 1170 px de ancho y el carrusel exige 1600 px, por eso las noticias no alimentan el carrusel; si se quieren ahí, hay que pedir las imágenes en mayor tamaño.

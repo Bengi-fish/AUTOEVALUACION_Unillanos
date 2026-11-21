@@ -314,6 +314,44 @@ Fila de la matriz legal aplicable.
 
 `DOCUMENTO` suma `dependencia_id` (FK, opcional), `programa_id` (FK, opcional) y `facultad_id` (FK, opcional).
 
+### `NOTICIA` · Noticia (Fase 9)
+
+Noticia del sitio de Acreditación.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `titulo` | `varchar(255)` |  |
+| `texto` | `text` |  |
+| `imagen` | `file` |  |
+| `texto_alternativo` | `varchar(512)` |  |
+| `enlace_origen` | `varchar(2048)` |  |
+
+### `PAGINA_INFORMATIVA` · Página informativa (Fase 9)
+
+Página de texto (SAC, Modelo de Autoevaluación, Boletines, Capacitaciones).
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `titulo` | `varchar(255)` |  |
+| `texto` | `text` |  |
+| `enlace_origen` | `varchar(2048)` |  |
+
+### `MIEMBRO_EQUIPO` · Miembro del equipo (Fase 9)
+
+Persona del comité o del equipo de trabajo de Acreditación.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `nombre` | `varchar(255)` |  |
+| `cargo` | `varchar(255)` |  |
+| `grupo` | `varchar(255)` |  |
+| `telefono` | `varchar(100)` |  |
+| `correo` | `varchar(254)` |  |
+| `orden` | `int` |  |
+
 ### `RECOMENDACION` · Recomendación
 
 Recomendación enviada desde Participa.

@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Lista de noticias del sitio de Acreditación.
+ *
+ * Variables:
+ * - noticias: SitioAcreditacion::noticias(): title, url, extracto e imagen
+ *   (src, alt, width y height, o NULL). Solo trae lo que existe.
+ *
+ * El h1 es el título de la cabecera (la página omite el bloque de título).
+ */
+#}
+{{ attach_library('unillanos/sitio') }}
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Noticias'|t,
+  title: 'Noticias de'|t,
+  title_accent: 'Acreditación'|t,
+  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Noticias'|t}],
+} only %}
+
+{% embed 'unillanos:section' with {id: 'noticias', noticias: noticias} only %}
+  {% block content %}
+    {% if noticias %}
+      <ul class="ua-noticias" role="list">
+        {% for noticia in noticias %}
+          <li class="ua-noticia">
+            {% if noticia.imagen %}
+              <img class="ua-noticia__img" src="{{ noticia.imagen.src }}" alt="{{ noticia.imagen.alt }}" width="{{ noticia.imagen.width }}" height="{{ noticia.imagen.height }}" loading="lazy" decoding="async">
+            {% endif %}
+            <h2 class="ua-noticia__titulo"><a href="{{ noticia.url }}">{{ noticia.title }}</a></h2>
+            {% if noticia.extracto %}<p class="ua-noticia__extracto">{{ noticia.extracto }}</p>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="ua-lead">{{ 'Todavía no hay noticias publicadas.'|t }}</p>
+    {% endif %}
+  {% endblock %}
+{% endembed %}

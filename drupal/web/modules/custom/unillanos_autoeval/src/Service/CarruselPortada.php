@@ -62,7 +62,8 @@ class CarruselPortada {
    */
   public function datos(CacheableMetadata $cache): array {
     $cache->addCacheTags(['node_list:diapositiva']);
-    $cache->addCacheContexts(['user.permissions']);
+    // Las URL de los estilos de imagen son absolutas: dependen del host.
+    $cache->addCacheContexts(['user.permissions', 'url.site']);
     $almacen = $this->entityTypeManager->getStorage('node');
     $ids = $almacen->getQuery()
       ->accessCheck(TRUE)

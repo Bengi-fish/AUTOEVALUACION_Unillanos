@@ -26,9 +26,16 @@
       return;
     }
     let temporizador = null;
+    // El rótulo de un padre sin destino es el propio botón: si lo abrió el
+    // puntero, el primer clic lo deja abierto (no lo cierra al instante).
+    const esRotulo = boton.classList.contains('ua-nav__link');
+    let abiertoPorPuntero = false;
 
     const abierto = () => boton.getAttribute('aria-expanded') === 'true';
     const mostrar = (abrir) => {
+      if (!abrir) {
+        abiertoPorPuntero = false;
+      }
       boton.setAttribute('aria-expanded', abrir ? 'true' : 'false');
       item.classList.toggle('is-open', abrir);
     };
@@ -42,6 +49,10 @@
     boton.hidden = false;
     boton.addEventListener('click', () => {
       cancelar();
+      if (esRotulo && abiertoPorPuntero && abierto()) {
+        abiertoPorPuntero = false;
+        return;
+      }
       mostrar(!abierto());
     });
 
@@ -49,6 +60,7 @@
     item.addEventListener('mouseenter', () => {
       if (window.matchMedia(ESCRITORIO).matches) {
         cancelar();
+        abiertoPorPuntero = !abierto();
         mostrar(true);
       }
     });

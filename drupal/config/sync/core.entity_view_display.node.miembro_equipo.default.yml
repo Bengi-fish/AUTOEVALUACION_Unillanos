@@ -1,0 +1,24 @@
+uuid: 4cbfaecf-a120-4c26-81ef-3d648e7da84a
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.miembro_equipo.field_cargo
+    - field.field.node.miembro_equipo.field_correo
+    - field.field.node.miembro_equipo.field_grupo
+    - field.field.node.miembro_equipo.field_orden
+    - field.field.node.miembro_equipo.field_telefono
+    - node.type.miembro_equipo
+id: node.miembro_equipo.default
+targetEntityType: node
+bundle: miembro_equipo
+mode: default
+content: {  }
+hidden:
+  field_cargo: true
+  field_correo: true
+  field_grupo: true
+  field_orden: true
+  field_telefono: true
+  langcode: true
+  links: true

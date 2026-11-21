@@ -57,11 +57,20 @@ class MarcoComponentesTest extends KernelTestBase {
   public function testFranjaVaciaNoImprimeNada(): void {
     $this->assertSame('', trim($this->renderizar('unillanos:topbar', [])));
     $this->assertSame('', trim($this->renderizar('unillanos:topbar', ['links' => [], 'accessibility' => NULL])));
-    // Accesibilidad sin URL o con una URL peligrosa tampoco cuenta.
+    // Con título la franja lleva el widget de accesibilidad aunque la URL falte
+    // o sea peligrosa (expectativa cambiada a propósito: la URL es opcional,
+    // el botón abre el panel); en ese caso no hay enlace de respaldo.
     foreach (['', 'javascript:alert(1)'] as $url) {
       $props = ['accessibility' => ['title' => 'Accesibilidad', 'url' => $url]];
-      $this->assertSame('', trim($this->renderizar('unillanos:topbar', $props)));
+      $html = $this->renderizar('unillanos:topbar', $props);
+      $this->assertStringContainsString('data-ua-a11y-boton', $html);
+      $this->assertStringNotContainsString('data-ua-a11y-enlace', $html);
+      $this->assertStringNotContainsString('javascript', $html);
+      $this->assertStringNotContainsString('ua-topbar__list', $html);
     }
+    // Sin título tampoco hay widget.
+    $props = ['accessibility' => ['title' => '', 'url' => '/documentos']];
+    $this->assertSame('', trim($this->renderizar('unillanos:topbar', $props)));
   }
 
   /**
@@ -122,7 +131,8 @@ class MarcoComponentesTest extends KernelTestBase {
     $this->assertSame(2, substr_count($html, 'class="ua-topbar__item"'));
     $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="https://example.org/b" rel="noopener">~', $html);
     $this->assertStringContainsString('(enlace externo)', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/documentos">~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/documentos" data-ua-a11y-enlace>~', $html);
+    $this->assertStringContainsString('data-ua-a11y-boton', $html);
   }
 
   /**

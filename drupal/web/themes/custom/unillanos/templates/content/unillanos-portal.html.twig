@@ -5,7 +5,9 @@
  *
  * Variables:
  * - datos: lo arma PortalInicio::datos(): titulo, parrafos, accesos (title,
- *   text, url, principal y external), sitios (title y url) y edicion.
+ *   text, url, principal y external), sitios (title y url), edicion y
+ *   carrusel (CarruselPortada::datos(): diapositivas y edicion) y noticias
+ *   (las tres primeras: title, url, extracto e imagen).
  *   Solo trae lo que existe: lo vacío se omite.
  *
  * El h1 es el título de la portada (la página base omite el bloque de título).
@@ -20,6 +22,30 @@
   title: titulo,
   lead: parrafos ? parrafos|first : '',
 } only %}
+
+{# ------------------------------------------------------------ carrusel #}
+{# Justo debajo de la cabecera del portal. Sin diapositivas no aparece; en modo
+   edición se ofrece «+ Añadir una diapositiva» aunque no haya ninguna. #}
+{% set carrusel = datos.carrusel|default({}) %}
+{% if carrusel.edicion.nueva %}
+  <div class="ua-container">
+    <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: carrusel.edicion.nueva.url, label: carrusel.edicion.nueva.title, variant: carrusel.edicion.nueva.tipo, show_label: true} only %}</div>
+  </div>
+{% endif %}
+{% if carrusel.diapositivas %}
+  {% set diapositivas = [] %}
+  {% for d in carrusel.diapositivas %}
+    {% set diapositivas = diapositivas|merge([{
+      title: d.title,
+      text: d.text,
+      url: d.url,
+      external: d.externo,
+      image: d.imagen,
+      edit: d.edicion|default({}),
+    }]) %}
+  {% endfor %}
+  {% include 'unillanos:carousel' with {id: 'carrusel-portada', label: 'Noticias destacadas'|t, items: diapositivas} only %}
+{% endif %}
 
 {% embed 'unillanos:section' with {id: 'portal', datos: datos} only %}
   {% block content %}
@@ -57,6 +83,25 @@
     </div>
   {% endblock %}
 {% endembed %}
+
+{% if datos.noticias %}
+  {% embed 'unillanos:section' with {id: 'noticias', noticias: datos.noticias} only %}
+    {% block content %}
+      {{ attach_library('unillanos/sitio') }}
+      {% include 'unillanos:section-head' with {
+        eyebrow: 'Noticias'|t,
+        title: 'Lo más reciente'|t,
+        lead: '',
+      } only %}
+      {% set tarjetas = [] %}
+      {% for noticia in noticias %}
+        {% set tarjetas = tarjetas|merge([{title: noticia.title, text: noticia.extracto, url: noticia.url, cta: 'Leer'|t}]) %}
+      {% endfor %}
+      {% include 'unillanos:card' with {heading: 'h3', items: tarjetas} only %}
+      <p class="ua-portal__mas"><a href="{{ path('unillanos_autoeval.noticias') }}">{{ 'Ver todas las noticias'|t }}</a></p>
+    {% endblock %}
+  {% endembed %}
+{% endif %}
 
 {% if datos.sitios %}
   {% embed 'unillanos:section' with {id: 'sitios-de-interes', variant: 'alt', sitios: datos.sitios} only %}

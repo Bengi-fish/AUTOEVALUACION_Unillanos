@@ -7,7 +7,8 @@
  * espacios detrás), ancla, consulta, http(s), mailto o tel se imprime sin
  * href (mismo filtro que unillanos:button).
  *
- * A la derecha van, en este orden, el enlace de accesibilidad, los íconos de
+ * A la derecha van, en este orden, las opciones de accesibilidad (unillanos:a11y;
+ * sin JavaScript, el enlace), los íconos de
  * redes (unillanos:redes) y el logo GOV.CO enlazado (versión para fondo
  * oscuro, sin modificar). Cada parte se imprime solo si tiene datos.
  *
@@ -16,7 +17,8 @@
  */
 #}
 {% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
-{% set acceso = accessibility and accessibility.title and accessibility.url and ((accessibility.url ~ '') matches seguro) %}
+{% set acceso = accessibility and accessibility.title %}
+{% set acceso_url = accessibility and accessibility.url and ((accessibility.url ~ '') matches seguro) ? accessibility.url : '' %}
 {% set hay_govco = govco and govco.title and govco.url and ((govco.url ~ '') matches seguro) %}
 {% set tema = componentMetadata.path|split('/components/')|first %}
 {% set redes_validas = (social|default([]))|filter(red => (red.red in ['facebook', 'x', 'instagram', 'youtube']) and red.title and red.url and ((red.url ~ '') matches seguro)) %}
@@ -63,10 +65,7 @@
       {% if acceso or redes_validas or hay_govco %}
         <div class="ua-topbar__derecha">
           {% if acceso %}
-            <a class="ua-topbar__link ua-topbar__acceso" href="{{ accessibility.url }}">
-              {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
-              <span>{{ accessibility.title }}</span>
-            </a>
+            {% include 'unillanos:a11y' with {title: accessibility.title, url: acceso_url} only %}
           {% endif %}
           {% if redes_validas %}{% include 'unillanos:redes' with {redes: redes_validas} only %}{% endif %}
           {% if hay_govco %}
