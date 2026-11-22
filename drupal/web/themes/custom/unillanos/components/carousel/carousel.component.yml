@@ -2,7 +2,7 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Carrusel
 status: stable
 group: Contenido
-description: 'Carrusel de la portada: imágenes con titular y texto sobre una franja oscura. Pausa/Reproducir visible y primero en el orden de tabulación; avance automático cada 7 s solo si la persona no pidió menos movimiento; se detiene al pasar el ratón o al recibir foco; flechas y puntos son botones con nombre. Las diapositivas ocultas llevan hidden e inert. Sin JavaScript se ve la primera diapositiva y, debajo, la lista de titulares como enlaces. Con una sola diapositiva se ve como imagen fija, sin controles.'
+description: 'Carrusel de la portada: imágenes con titular y texto sobre una franja oscura. Pausa/Reproducir visible y primero en el orden de tabulación; avance automático cada 5,5 s en bucle, con transición animada de fundido y deslizamiento, solo si la persona no pidió menos movimiento; se detiene al pasar el ratón o al recibir foco; flechas y puntos son botones con nombre. Las diapositivas inactivas llevan inert y aria-hidden (la activa, data-ua-activa). Sin JavaScript se ve la primera diapositiva y, debajo, la lista de titulares como enlaces. Con una sola diapositiva se ve como imagen fija, sin controles.'
 props:
   type: object
   required:
@@ -20,7 +20,7 @@ props:
       title: Milisegundos entre diapositivas
       minimum: 3000
       maximum: 20000
-      default: 7000
+      default: 5500
     items:
       type: array
       title: Diapositivas

@@ -8,13 +8,17 @@
  * diapositiva es una imagen fija sin controles ni lista. El titular y el texto
  * van en una franja oscura, nunca dentro de la imagen. La primera imagen carga
  * sin diferir; las demás, diferidas (componente media).
+ *
+ * Con JavaScript las diapositivas se apilan y el cambio es un fundido con un
+ * leve deslizamiento (carousel.css); la activa lleva data-ua-activa. Sin
+ * JavaScript solo se ve la primera. Avanza sola cada 5,5 s por defecto.
  */
 #}
 {% set base = ((id ~ '') matches '~^[A-Za-z0-9_-]+$~') ? id : 'carrusel' %}
 {% set total = items|length %}
 {% set seguro = '~^(?:/(?![/\\\\\\s])|https?://)~i' %}
 {% if total > 0 %}
-<section{{ attributes.addClass('ua-carousel').setAttribute('id', base).setAttribute('role', 'region').setAttribute('aria-roledescription', 'carrusel'|t).setAttribute('aria-label', label|default('Noticias destacadas'|t)).setAttribute('data-ua-carousel', true).setAttribute('data-interval', interval|default(7000)) }}>
+<section{{ attributes.addClass('ua-carousel').setAttribute('id', base).setAttribute('role', 'region').setAttribute('aria-roledescription', 'carrusel'|t).setAttribute('aria-label', label|default('Noticias destacadas'|t)).setAttribute('data-ua-carousel', true).setAttribute('data-interval', interval|default(5500)) }}>
   {% if total > 1 %}
     {# Primer control en el orden de tabulación. #}
     <div class="ua-carousel__barra" data-ua-carousel-barra hidden>
@@ -26,7 +30,7 @@
   <div class="ua-carousel__slides" id="{{ base }}-slides" aria-live="off" data-ua-carousel-slides>
     {% for diapositiva in items %}
       {% set con_enlace = diapositiva.url and ((diapositiva.url ~ '') matches seguro) %}
-      <div class="ua-carousel__slide" id="{{ base }}-d{{ loop.index }}" role="group" aria-roledescription="{{ 'diapositiva'|t }}" aria-label="{{ 'Diapositiva @n de @total'|t({'@n': loop.index, '@total': total}) }}" data-ua-carousel-slide>
+      <div class="ua-carousel__slide"{% if loop.first %} data-ua-activa{% endif %} id="{{ base }}-d{{ loop.index }}" role="group" aria-roledescription="{{ 'diapositiva'|t }}" aria-label="{{ 'Diapositiva @n de @total'|t({'@n': loop.index, '@total': total}) }}" data-ua-carousel-slide>
         <div class="ua-carousel__imagen">
           {% include 'unillanos:media' with {src: diapositiva.image.src, srcset: diapositiva.image.srcset, type: diapositiva.image.type, width: diapositiva.image.width, height: diapositiva.image.height, alt: diapositiva.image.alt, sizes: '100vw', priority: loop.first ? 'high' : ''} only %}
         </div>

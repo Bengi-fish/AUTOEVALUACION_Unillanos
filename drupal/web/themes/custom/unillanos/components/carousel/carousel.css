@@ -19,12 +19,50 @@
   display: none;
 }
 
-.ua-carousel[data-ua-carousel-listo] .ua-carousel__slide:not(:first-child) {
-  display: block;
+/*
+ * Con JavaScript las diapositivas se apilan en la misma celda: la altura es la
+ * de la más alta (sin saltos de diseño) y el cambio es un fundido con un leve
+ * deslizamiento. La inactiva queda invisible, sin puntero y con visibility
+ * retrasada para que la salida se vea.
+ */
+.ua-carousel[data-ua-carousel-listo] .ua-carousel__slides {
+  display: grid;
+  overflow: hidden;
 }
 
-.ua-carousel[data-ua-carousel-listo] .ua-carousel__slide[hidden] {
-  display: none;
+.ua-carousel[data-ua-carousel-listo] .ua-carousel__slide {
+  display: block;
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(var(--ua-desplazamiento, 0));
+  transition:
+    opacity 600ms ease,
+    transform 600ms ease,
+    visibility 0s linear 600ms;
+}
+
+.ua-carousel[data-ua-carousel-listo] .ua-carousel__slide[data-ua-activa] {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition:
+    opacity 600ms ease,
+    transform 600ms ease,
+    visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ua-carousel[data-ua-carousel-listo] .ua-carousel__slide,
+  .ua-carousel[data-ua-carousel-listo] .ua-carousel__slide[data-ua-activa] {
+    transform: none;
+    transition: none;
+  }
+
 }
 
 .ua-carousel__imagen {
