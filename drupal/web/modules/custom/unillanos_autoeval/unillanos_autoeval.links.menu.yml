@@ -68,6 +68,11 @@ unillanos_autoeval.pie.documentos:
   route_name: unillanos_autoeval.documentos
   menu_name: footer
   weight: 2
+unillanos_autoeval.pie.participa:
+  title: 'Participa'
+  route_name: unillanos_autoeval.participa
+  menu_name: footer
+  weight: 3
 
 # Administración: configuración del micrositio (cabecera, franja superior y pie).
 unillanos_autoeval.admin.micrositio:

@@ -44,6 +44,7 @@ class UnillanosHooks {
     'unillanos_autoeval.institucional',
     'unillanos_autoeval.noticias',
     'unillanos_autoeval.equipo',
+    'unillanos_autoeval.participa',
   ];
 
   /**
@@ -193,6 +194,11 @@ class UnillanosHooks {
         'template' => 'unillanos-noticias',
         'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
       ],
+      'unillanos_participa' => [
+        'variables' => ['formulario' => []],
+        'template' => 'unillanos-participa',
+        'path' => $this->pathResolver->getPath('theme', 'unillanos') . '/templates/content',
+      ],
       'unillanos_equipo' => [
         'variables' => ['grupos' => []],
         'template' => 'unillanos-equipo',
@@ -251,6 +257,8 @@ class UnillanosHooks {
       && in_array($nodo->bundle(), ['noticia', 'pagina_informativa'], TRUE);
     $variables['pagina_propia'] = $programa || $texto_propio || !empty($variables['is_front'])
       || in_array($this->routeMatch->getRouteName(), self::RUTAS_CON_CABECERA, TRUE);
+    // El botón flotante de recomendaciones no va en la propia página Participa.
+    $variables['mostrar_fab'] = $this->routeMatch->getRouteName() !== 'unillanos_autoeval.participa';
     // Barra secundaria: solo dentro del SIAAI.
     $variables['barra_siaai'] = $this->barraSiaai($programa);
     // Enlaces del pie desde el menú `footer` (sin enlaces, no hay columna). El

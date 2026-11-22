@@ -285,6 +285,7 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->assertSame([
       ['Programas', 'unillanos_autoeval.programas'],
       ['Documentos', 'unillanos_autoeval.documentos'],
+      ['Participa', 'unillanos_autoeval.participa'],
     ], $this->enlaces('footer'));
   }
 
@@ -299,10 +300,10 @@ class MenusTest extends UnillanosKernelTestBase {
         $this->assertNotEmpty($proveedor->getRoutesByNames([$ruta]), "«{$titulo}» de {$menu} apunta a {$ruta}.");
       }
     }
-    // Participa no está hasta que exista su ruta (el SIAAI ya existe).
+    // «Participa» (pie) y el SIAAI (principal) ya existen.
     $titulos = array_merge(array_column($this->enlaces('main'), 0), array_column($this->enlaces('footer'), 0));
     $this->assertContains('SIAAI', $titulos);
-    $this->assertNotContains('Participa', $titulos);
+    $this->assertContains('Participa', $titulos);
   }
 
   /**
@@ -551,15 +552,17 @@ class MenusTest extends UnillanosKernelTestBase {
     $nucleo = $this->container->get('http_kernel');
     $html = (string) $nucleo->handle(Request::create('/programas'))->getContent();
     $this->assertStringContainsString('Explora', $html);
-    $this->assertSame(2, preg_match_all('~<li><a href="/(programas|documentos)">(Programas|Documentos)</a></li>~', $html));
+    $this->assertSame(3, preg_match_all('~<li><a href="/(programas|documentos|participa)">(Programas|Documentos|Participa)</a></li>~', $html));
 
     $gestor = $this->container->get('plugin.manager.menu.link');
     // Con uno.
     $gestor->updateDefinition('unillanos_autoeval.pie.documentos', ['enabled' => 0]);
+    $gestor->updateDefinition('unillanos_autoeval.pie.participa', ['enabled' => 0]);
     $html = (string) $nucleo->handle(Request::create('/programas'))->getContent();
     $this->assertStringContainsString('Explora', $html);
     $this->assertSame(1, preg_match_all('~<li><a href="/programas">Programas</a></li>~', $html));
     $this->assertStringNotContainsString('<li><a href="/documentos">Documentos</a></li>', $html);
+    $this->assertStringNotContainsString('<li><a href="/participa">Participa</a></li>', $html);
 
     // Con ninguno: ni la columna ni su título.
     $gestor->updateDefinition('unillanos_autoeval.pie.programas', ['enabled' => 0]);

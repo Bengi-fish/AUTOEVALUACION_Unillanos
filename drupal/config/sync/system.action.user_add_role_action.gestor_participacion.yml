@@ -1,0 +1,14 @@
+uuid: 975421f5-746f-41ef-911f-d63a0cb98ba9
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.gestor_participacion
+  module:
+    - user
+id: user_add_role_action.gestor_participacion
+label: 'Añade el rol Gestor de participación al(los) usuario(s) seleccionado(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: gestor_participacion

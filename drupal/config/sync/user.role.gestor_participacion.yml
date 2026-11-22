@@ -1,0 +1,12 @@
+uuid: 82213671-1519-4801-a8b5-f78987874111
+langcode: es
+status: true
+dependencies:
+  module:
+    - system
+id: gestor_participacion
+label: 'Gestor de participación'
+weight: 6
+is_admin: false
+permissions:
+  - 'view the administration theme'

@@ -507,3 +507,14 @@ Datos tomados el 20 de noviembre de 2026 de https://acreditacion.unillanos.edu.c
 - [ ] **Texto de la página de accesibilidad:** el botón no necesita una página de destino; si Acreditación publica una declaración de accesibilidad, se escribe su dirección en el formulario del micrositio y el panel enlaza a ella.
 - [ ] **Widget de accesibilidad:** el tamaño del texto usa `zoom` (admitido en Edge, Chrome, Safari y Firefox 126 o posterior). Confirmar si basta o si se quiere otro mecanismo. El alto contraste usa amarillo `#ffe066` para enlaces y acentos: confirmar con el diseñador.
 - [ ] **Carrusel:** sigue con las tres diapositivas de prueba (sección 29). Las imágenes del slider del sitio de origen miden 1170 px de ancho y el carrusel exige 1600 px, por eso las noticias no alimentan el carrusel; si se quieren ahí, hay que pedir las imágenes en mayor tamaño.
+
+## 32. Fase 8, parte 4: Participa y roles
+
+- [ ] **Proceso opcional:** el formulario no obliga a elegir el proceso (el prototipo no lo pedía); si el visitante no lo elige, la recomendación queda sin proceso. Confirmar si debe ser obligatorio o si se asigna al clasificarla.
+- [ ] **Estado de gestión vacío:** al enviar, `estado_gestion` queda vacío (el formulario público no lo muestra); se entiende como «recibida». Confirmar si se quiere que se guarde `recibida` al enviar.
+- [ ] **Política de datos:** el texto del consentimiento no enlaza a la política (el webform admite solo texto simple); la política está en el pie. Confirmar el texto legal.
+- [ ] **Límite de envíos y correo basura:** 5 por hora y por visitante; para un anónimo se cuenta por sesión, así que borrar las cookies lo evita. No hay captcha ni honeypot. Decidir si se instala `honeypot` o `captcha`, o si se acepta el riesgo.
+- [ ] **Dirección IP:** el formulario no la guarda (`form_disable_remote_addr`). Si Acreditación la quiere para auditar abusos, hay que activarla y nombrarla en la política de datos.
+- [ ] **Alcance del gestor:** `gestor_participacion` puede editar todos los campos de un envío, no solo el estado y la respuesta. Decidir si el texto del ciudadano debe quedar de solo lectura.
+- [ ] **Quién gestiona las recomendaciones:** la persona con el rol `gestor_participacion` entra por la dirección de resultados del formulario (sin menú propio). Confirmar quién será y si se quiere un acceso en el panel de Acreditación.
+- [ ] **Filtro por modelo:** el campo «Factor o característica» lista los elementos de todos los modelos (ya anotado en la sección de Fase 8); no se filtra por el modelo del proceso elegido.

@@ -22,6 +22,11 @@ sitio:
   css:
     component:
       css/sitio.css: {}
+participa:
+  version: 1.0.0
+  css:
+    component:
+      css/participa.css: {}
 portal:
   version: 1.0.0
   css:

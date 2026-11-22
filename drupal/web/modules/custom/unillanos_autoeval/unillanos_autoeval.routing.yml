@@ -190,3 +190,13 @@ unillanos_autoeval.equipo:
     _title: 'Nuestro equipo'
   requirements:
     _permission: 'access content'
+
+# Participa (Fase 8): página pública con el webform `participa`. El webform
+# decide quién puede enviar (anónimos y autenticados).
+unillanos_autoeval.participa:
+  path: '/participa'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\ParticipaController::participa'
+    _title: 'Participa'
+  requirements:
+    _permission: 'access content'

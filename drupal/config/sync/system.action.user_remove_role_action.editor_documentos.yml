@@ -1,0 +1,14 @@
+uuid: 42ccb035-d822-4128-bca6-c4dd1276caa1
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.editor_documentos
+  module:
+    - user
+id: user_remove_role_action.editor_documentos
+label: 'Elimina el rol Editor de documentos al(los) usuario(s) seleccionado(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: editor_documentos

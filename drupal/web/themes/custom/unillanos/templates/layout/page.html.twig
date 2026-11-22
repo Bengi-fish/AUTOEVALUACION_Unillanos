@@ -2,8 +2,8 @@
 /**
  * @file
  * Página base: encabezado con el menú principal, migas, contenido y pie.
- * El botón flotante de recomendaciones (unillanos:fab) vuelve en la Fase 8,
- * cuando exista la página «Participa».
+ * El botón flotante de recomendaciones (unillanos:fab) lleva a «Participa» y
+ * se oculta en esa misma página (mostrar_fab).
  *
  * El título (h1), los mensajes y la ayuda van dentro de un contenedor; el
  * contenido de la portada va a todo el ancho para que sus secciones se
@@ -76,3 +76,14 @@
   rights: pie.derechos,
   edicion: edicion_pie|default(null),
 } only %}
+
+{% if mostrar_fab %}
+  {# Dentro de un landmark: el contenido fuera de ellos lo marcan los lectores de pantalla. #}
+  <aside aria-label="{{ 'Participa'|t }}">
+    {% include 'unillanos:fab' with {
+      url: path('unillanos_autoeval.participa') ~ '#recomendacion',
+      label: 'Recomendaciones'|t,
+      icon: 'message',
+    } only %}
+  </aside>
+{% endif %}
