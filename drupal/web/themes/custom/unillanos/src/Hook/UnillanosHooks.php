@@ -22,6 +22,7 @@ use Drupal\unillanos_autoeval\Service\DocumentosPublicados;
 use Drupal\unillanos_autoeval\Service\EnlacesDelPie;
 use Drupal\unillanos_autoeval\Service\EnlacesEdicion;
 use Drupal\unillanos_autoeval\Service\FactoresPrograma;
+use Drupal\unillanos_autoeval\Service\GaleriaImagenes;
 use Drupal\unillanos_autoeval\Service\PaginaPrograma;
 use Drupal\unillanos_autoeval\Service\PlanMejoramientoPrograma;
 use Drupal\unillanos_autoeval\Service\ProgramasYProcesos;
@@ -65,6 +66,7 @@ class UnillanosHooks {
     protected MenuActiveTrailInterface $rastroActivo,
     protected DatosMarco $datosMarco,
     protected EnlacesEdicion $edicion,
+    protected GaleriaImagenes $galeria,
   ) {}
 
   /**
@@ -353,6 +355,9 @@ class UnillanosHooks {
       $resultado = $this->plan->delPrograma($nodo, $factores, $cache);
       $variables['factores'] = $resultado['factores'];
       $variables['plan'] = $resultado['plan'];
+      // Imágenes propias del programa (field_galeria): el carrusel de su
+      // página. Vacío si no tiene; nunca las diapositivas de la portada.
+      $variables['galeria'] = $this->galeria->delNodo($nodo, $cache);
       // Modo edición: lápices y «+» (solo con permiso y acceso real).
       $enriquecido = $this->edicion->paraPrograma(
         (int) $nodo->id(),

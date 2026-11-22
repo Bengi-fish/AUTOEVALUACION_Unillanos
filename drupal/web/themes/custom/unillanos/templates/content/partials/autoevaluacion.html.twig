@@ -10,8 +10,12 @@
  *   PlanMejoramientoPrograma y DocumentosPublicados (pueden faltar o estar
  *   vacíos; lo vacío se omite).
  * - hay_ficha y ficha_aside: la ficha lateral ya pintada, si la hay.
+ * - galeria: imágenes propias de la página (GaleriaImagenes::delNodo()); si
+ *   hay, el carrusel va entre el bloque superior (texto y ficha) y las tarjetas
+ *   de factores. Vacía: no se imprime nada.
  * - textos: autoevaluacion, factores, etiqueta_factores, acciones, documentos,
- *   documentos_lead y aviso_avance (ya traducidos).
+ *   documentos_lead, aviso_avance y galeria (el nombre accesible del carrusel;
+ *   ya traducidos).
  */
 #}
   {# Factores del proceso (modelo y cantidad según cada programa). #}
@@ -19,7 +23,7 @@
   {% if factores.pestanas %}
     {# Banda alterna salvo que la cabecera gris quede pegada a ella (sin ficha). #}
     {% set variante = hay_ficha ? 'alt' : '' %}
-    {% embed 'unillanos:section' with {id: 'autoevaluacion', textos: textos, variant: variante, factores: factores, hay_plan: hay_plan, informe: documentos.informe|default(null), hay_ficha: hay_ficha, ficha_aside: ficha_aside} only %}
+    {% embed 'unillanos:section' with {id: 'autoevaluacion', textos: textos, variant: variante, factores: factores, hay_plan: hay_plan, informe: documentos.informe|default(null), hay_ficha: hay_ficha, ficha_aside: ficha_aside, galeria: galeria|default([])} only %}
       {% block content %}
         {% set partes = [] %}
         {% if factores.proceso %}{% set partes = partes|merge([factores.proceso]) %}{% endif %}
@@ -53,6 +57,12 @@
           </div>
           {% if hay_ficha %}{{ ficha_aside }}{% endif %}
         </div>
+        {# Galería propia de la página: entre el bloque superior y las tarjetas. #}
+        {% if galeria %}
+          <div class="ua-programa__galeria">
+            {% include 'unillanos:carousel' with {id: 'carrusel-galeria', label: textos.galeria|default('Imágenes'|t), contenida: true, items: galeria} only %}
+          </div>
+        {% endif %}
         {% set hay_grado = false %}
         {% for tarjeta in factores.tarjetas %}
           {% if tarjeta.grade %}{% set hay_grado = true %}{% endif %}

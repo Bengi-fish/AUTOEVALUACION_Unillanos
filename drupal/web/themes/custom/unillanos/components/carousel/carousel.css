@@ -285,3 +285,38 @@
   }
 
 }
+
+/*
+ * Variante contenida (galerías de programa e institucional): dentro del
+ * contenedor de la página, con esquinas redondeadas y sin sombras. El texto no
+ * lleva contenedor propio, así que se sangra con el espaciado del tema.
+ */
+.ua-carousel--contenida {
+  overflow: hidden;
+  border-radius: var(--radio-md);
+}
+
+.ua-carousel--contenida .ua-carousel__texto {
+  padding-left: var(--espacio-5);
+}
+
+/*
+ * Los controles llevan fondo propio (el mismo oscuro de la franja, así que
+ * sobre una diapositiva con leyenda no se nota): en una diapositiva sin franja
+ * quedan sobre la foto y, en una galería mixta, cada una conserva su contraste
+ * sin importar la imagen.
+ */
+.ua-carousel--contenida .ua-carousel__controles {
+  padding: var(--espacio-1) var(--espacio-2);
+  border-radius: var(--radio-pill);
+  background: var(--verde-azulado-900);
+}
+
+@media (max-width: 760px) {
+
+  .ua-carousel--contenida .ua-carousel__texto {
+    padding-left: var(--espacio-4);
+    padding-right: var(--espacio-4);
+  }
+
+}

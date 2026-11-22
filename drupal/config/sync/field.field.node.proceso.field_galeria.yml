@@ -1,0 +1,38 @@
+uuid: 618e3d7e-95e5-400e-979a-3e7fc0c04737
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_galeria
+    - node.type.proceso
+  module:
+    - image
+id: node.proceso.field_galeria
+field_name: field_galeria
+entity_type: node
+bundle: proceso
+label: 'Galería de imágenes'
+description: 'Imágenes del carrusel de esta página (hasta 10). Se ordenan arrastrando. JPG, PNG o WebP de hasta 5 MB y al menos 1280 píxeles de ancho; se muestran con proporción 16:6 (se recorta al centro). Escriba siempre el texto alternativo; la leyenda es opcional. Sin imágenes, no se muestra el carrusel. Solo se usa en el proceso institucional (el que no tiene programa): sus imágenes forman el carrusel de la página «Institucional». En los procesos de un programa no se usa; las del programa van en la ficha del programa.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: galeria/proceso
+  file_extensions: 'png jpg jpeg webp'
+  max_filesize: '5 MB'
+  max_resolution: ''
+  min_resolution: 1280x1
+  alt_field: true
+  alt_field_required: true
+  title_field: true
+  title_field_required: false
+  default_image:
+    uuid: null
+    alt: ''
+    title: ''
+    width: null
+    height: null
+field_type: image

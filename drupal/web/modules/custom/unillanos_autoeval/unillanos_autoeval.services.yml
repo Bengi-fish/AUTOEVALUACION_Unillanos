@@ -96,7 +96,7 @@ services:
 
   unillanos_autoeval.institucional_procesos:
     class: Drupal\unillanos_autoeval\Service\InstitucionalProcesos
-    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion', '@unillanos_autoeval.factores_programa', '@unillanos_autoeval.plan_mejoramiento_programa']
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion', '@unillanos_autoeval.factores_programa', '@unillanos_autoeval.plan_mejoramiento_programa', '@unillanos_autoeval.galeria_imagenes']
   Drupal\unillanos_autoeval\Service\InstitucionalProcesos: '@unillanos_autoeval.institucional_procesos'
 
   unillanos_autoeval.institucional_dependencias:
@@ -123,6 +123,11 @@ services:
     class: Drupal\unillanos_autoeval\Service\CarruselPortada
     arguments: ['@entity_type.manager', '@file_url_generator', '@current_user', '@unillanos_autoeval.enlaces_edicion']
   Drupal\unillanos_autoeval\Service\CarruselPortada: '@unillanos_autoeval.carrusel_portada'
+
+  unillanos_autoeval.galeria_imagenes:
+    class: Drupal\unillanos_autoeval\Service\GaleriaImagenes
+    arguments: ['@entity_type.manager', '@file_url_generator', '@current_user']
+  Drupal\unillanos_autoeval\Service\GaleriaImagenes: '@unillanos_autoeval.galeria_imagenes'
 
   unillanos_autoeval.sitio_acreditacion:
     class: Drupal\unillanos_autoeval\Service\SitioAcreditacion

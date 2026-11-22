@@ -172,6 +172,19 @@ Los documentos con una dependencia o una facultad, y los de un proceso instituci
 
 La foto debe ser JPG, PNG o WebP, de hasta 5 MB y de al menos 1280 píxeles de ancho. Use solo fotos de la Universidad o con permiso de uso.
 
+### El carrusel de imágenes de un programa
+
+Cada programa puede tener su propio carrusel, que se ve entre el texto con la ficha y las tarjetas de factores. Las imágenes son solo de ese programa: no son las de la portada ni las de otro programa.
+
+1. Abra la edición del programa (en **Modo edición**, el lápiz de la ficha, o desde el **Panel avanzado**).
+2. Busque **Galería de imágenes** y pulse **Añadir una imagen** (hasta 10). Se sube sola.
+3. Escriba el **Texto alternativo** de cada imagen: es obligatorio y lo leen los lectores de pantalla.
+4. Si quiere, escriba el **Título** de la imagen: aparece como leyenda sobre una franja oscura. Sin título, solo se ve la imagen.
+5. Para cambiar el orden, arrastre las imágenes por la cruz de la izquierda.
+6. Guarde.
+
+Con una sola imagen se ve fija, sin flechas ni puntos. Sin imágenes, el programa no muestra carrusel. Cada imagen debe ser JPG, PNG o WebP, de hasta 5 MB y de al menos 1280 píxeles de ancho; se muestra con proporción 16:6, recortada al centro.
+
 ### El carrusel de la portada
 
 El carrusel va arriba de la portada y muestra hasta cinco diapositivas publicadas, por orden. Sin diapositivas no aparece.
@@ -204,6 +217,8 @@ Para una dependencia, el documento lleva la **Dependencia** y, si corresponde, e
 ![Página de dependencias](img/08-dependencias-1440.png)
 
 ![Portada de Institucional](img/11-institucional-1440.png)
+
+**El carrusel de imágenes de Institucional.** Las imágenes de la página **Institucional** se suben en la **Galería de imágenes** del proceso institucional (el más reciente, el que no es de un programa ni de condiciones por sede): abra ese proceso con su lápiz y use el mismo campo que en un programa. Si más adelante se crea un proceso institucional más nuevo, la página usa el de ese proceso y habrá que subir de nuevo las imágenes.
 
 ### La cabecera y el pie
 

@@ -868,6 +868,14 @@ class UnillanosAutoevalHooks {
       }
       $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], ['config:image_style_list']);
     }
+    // Las imágenes de la galería (carrusel propio del programa).
+    if ($entity->hasField('field_galeria') && !$entity->get('field_galeria')->isEmpty()) {
+      foreach ($entity->get('field_galeria')->referencedEntities() as $archivo) {
+        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $archivo->getCacheTags());
+      }
+      $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], ['config:image_style_list']);
+      $build['#cache']['contexts'][] = 'url.site';
+    }
   }
 
   /**

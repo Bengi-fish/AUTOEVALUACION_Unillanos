@@ -2,7 +2,7 @@
 
 Modelo entidad-relación ajustado al formato **FO-GCL-20** (plan de mejoramiento), al informe de autoevaluación de Ingeniería Electrónica 2018–2022 (modelo CNA, Acuerdo CESU 02 de 2020) y al Acuerdo CESU 01 de 2025.
 
-**20 entidades · 28 relaciones · 5 dominios.** La versión gráfica está en `MER-v2.png` / `MER-v2.pdf` (exportada de Canva). Este archivo es la versión en texto: GitHub lo dibuja solo y Claude Code lo puede leer.
+**21 entidades · 30 relaciones · 5 dominios.** La versión gráfica está en `MER-v2.png` / `MER-v2.pdf` (exportada de Canva). Este archivo es la versión en texto: GitHub lo dibuja solo y Claude Code lo puede leer.
 
 Notación: pata de gallo. `||` exactamente uno · `|o` cero o uno · `|{` uno o muchos · `o{` cero o muchos.
 
@@ -21,6 +21,8 @@ erDiagram
     PROCESO ||--o{ HALLAZGO : "identifica"
     ELEMENTO_MODELO |o--o{ HALLAZGO : "precisa"
     PROCESO ||--o{ PARTICIPACION : "aplica"
+    PROGRAMA ||--o{ GALERIA_IMAGEN : "ilustra"
+    PROCESO ||--o{ GALERIA_IMAGEN : "ilustra"
     ESTAMENTO ||--o{ PARTICIPACION : "responde"
     PROCESO ||--o{ PLAN_MEJORAMIENTO : "formula"
     PLAN_MEJORAMIENTO ||--|{ META : "incluye"
@@ -140,6 +142,15 @@ erDiagram
         int participantes
         date fecha_aplicacion
     }
+    GALERIA_IMAGEN {
+        int id PK
+        int programa_id FK
+        int proceso_id FK
+        file imagen
+        varchar(512) texto_alternativo
+        varchar(255) leyenda
+        int orden
+    }
     RESPONSABLE {
         int id PK
         varchar(150) nombre UK
@@ -228,7 +239,7 @@ erDiagram
 
 ## Dominios
 
-- **Institución** (3): `SEDE`, `FACULTAD`, `PROGRAMA`. Sedes, facultades y programas.
+- **Institución** (4): `SEDE`, `FACULTAD`, `PROGRAMA`, `GALERIA_IMAGEN`. Sedes, facultades y programas, y las imágenes del carrusel propio de cada programa y de la página institucional.
 - **Modelo de calidad** (4): `LINEAMIENTO`, `ELEMENTO_MODELO`, `GRADO_CUMPLIMIENTO`, `ESTAMENTO`. Lineamientos, elementos del modelo y catálogos.
 - **Autoevaluación** (4): `PROCESO`, `VALORACION`, `HALLAZGO`, `PARTICIPACION`. Procesos, valoraciones, hallazgos y participación.
 - **Plan de mejoramiento** (7): `RESPONSABLE`, `PROYECTO_INSTITUCIONAL`, `PLAN_MEJORAMIENTO`, `META`, `INDICADOR`, `PROGRAMACION_ANUAL`, `SEGUIMIENTO`. Metas, indicadores, programación anual y seguimiento.
@@ -266,6 +277,8 @@ erDiagram
 | 26 | `PROCESO` | `\|o--o{` | `RECOMENDACION` | recibe | `PROCESO` recibe *cero o muchos* `RECOMENDACION`; cada `RECOMENDACION` tiene *cero o uno* `PROCESO`. |
 | 27 | `ELEMENTO_MODELO` | `\|o--o{` | `RECOMENDACION` | sobre | `ELEMENTO_MODELO` sobre *cero o muchos* `RECOMENDACION`; cada `RECOMENDACION` tiene *cero o uno* `ELEMENTO_MODELO`. |
 | 28 | `ESTAMENTO` | `\|\|--o{` | `RECOMENDACION` | envía | `ESTAMENTO` envía *cero o muchos* `RECOMENDACION`; cada `RECOMENDACION` tiene *exactamente uno* `ESTAMENTO`. |
+| 29 | `PROGRAMA` | `\|\|--o{` | `GALERIA_IMAGEN` | ilustra | `PROGRAMA` ilustra su página con *cero o muchas* `GALERIA_IMAGEN`; cada imagen de galería pertenece a *exactamente un* `PROGRAMA` **o** a *exactamente un* `PROCESO` (nunca a ambos). |
+| 30 | `PROCESO` | `\|\|--o{` | `GALERIA_IMAGEN` | ilustra | `PROCESO` (el institucional, sin programa) ilustra la página «Institucional» con *cero o muchas* `GALERIA_IMAGEN`. |
 
 ## Decisiones clave del modelo
 
@@ -275,3 +288,4 @@ erDiagram
 4. **Plan de mejoramiento = estructura del Excel FO-GCL-20**: `PLAN_MEJORAMIENTO` (encabezado) → `META` (fila con peso, tipo de meta, actividades, recursos) → `INDICADOR` (una meta puede tener varios) → `PROGRAMACION_ANUAL` (año 1..7, programado y logrado). `SEGUIMIENTO` es cada hoja semestral (2024-2 … 2030-2). Una meta atiende uno o varios hallazgos (N:M) y la ejecutan uno o varios responsables (N:M).
 5. **No hay entidades de plataforma** (usuarios, roles, archivos): eso lo pone Drupal.
 6. **Contenido del sitio de Acreditación (Fase 9).** `NOTICIA`, `PAGINA_INFORMATIVA` y `MIEMBRO_EQUIPO` son entidades independientes, sin relaciones con el modelo de autoevaluación: publican el texto, las noticias y el equipo del sitio de Acreditación en el portal. Los datos entran por migración desde `datos/semillas/` (generados con `scripts/extraer-sitio-acreditacion.py`).
+7. **Galerías de imágenes (mejoras de interfaz).** `GALERIA_IMAGEN` es el carrusel propio de una página: cada `PROGRAMA` guarda las suyas y la página «Institucional» usa las de su proceso institucional (el `PROCESO` sin programa que muestra). Son independientes: no se reutilizan las diapositivas de la portada ni las de otro programa. En Drupal no es una tabla aparte sino el campo de imagen de valor múltiple `field_galeria` (hasta 10, con texto alternativo obligatorio, leyenda opcional y orden por arrastre).

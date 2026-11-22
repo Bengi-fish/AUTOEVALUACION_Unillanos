@@ -13,6 +13,8 @@
  *   procesos (principal y condiciones), dependencias, directivos, normas,
  *   cifras, secciones (title y url de las que tienen contenido), hay,
  *   edicion y vacio. Solo trae lo que existe: lo vacío se omite.
+ *   `procesos.principal.galeria` son las imágenes propias del proceso
+ *   institucional (nunca las de la portada) para el carrusel de la página.
  *
  * El h1 es el título de la cabecera; cada sección lleva un h2.
  */
@@ -72,8 +74,19 @@
     {% include 'unillanos:ficha' with {variant: 'aside', eyebrow: 'Autoevaluación institucional'|t, title: 'Ficha del proceso'|t, items: datos.ficha, attributes: create_attribute({id: 'ficha'})} only %}
   {%- endif -%}
 {% endset %}
+{% set galeria = principal.galeria|default([]) %}
+{# Sin factores no hay sección donde ponerlo: el carrusel va en la suya. Con
+   factores lo pinta el parcial, entre el bloque superior y las tarjetas. #}
+{% if galeria and not principal.factores.pestanas %}
+  {% embed 'unillanos:section' with {id: 'galeria', galeria: galeria} only %}
+    {% block content %}
+      {% include 'unillanos:carousel' with {id: 'carrusel-galeria', label: 'Imágenes de la Universidad'|t, contenida: true, items: galeria} only %}
+    {% endblock %}
+  {% endembed %}
+{% endif %}
 {% if datos.hay.autoevaluacion or datos.hay.plan or datos.hay.documentos %}
   {% include '@unillanos/templates/content/partials/autoevaluacion.html.twig' with {
+    galeria: galeria,
     factores: principal.factores,
     plan: principal.plan,
     documentos: {items: principal.documentos},
@@ -87,6 +100,7 @@
       documentos: 'Documentos institucionales'|t,
       documentos_lead: 'Informes, planes y otros documentos descargables del proceso institucional.'|t,
       aviso_avance: 'El avance es el reportado por la Universidad en cada periodo; no está verificado.'|t,
+      galeria: 'Imágenes de la Universidad'|t,
     },
   } only %}
 {% endif %}

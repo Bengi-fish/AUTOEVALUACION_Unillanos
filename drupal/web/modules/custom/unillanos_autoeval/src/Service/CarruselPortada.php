@@ -10,8 +10,8 @@ use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
-use Drupal\file\FileInterface;
 use Drupal\node\NodeInterface;
+use Drupal\unillanos_autoeval\Traits\ImagenesDeCarruselTrait;
 
 /**
  * Diapositivas del carrusel de la portada.
@@ -24,6 +24,7 @@ use Drupal\node\NodeInterface;
 class CarruselPortada {
 
   use StringTranslationTrait;
+  use ImagenesDeCarruselTrait;
 
   /**
    * Máximo de diapositivas que se muestran.
@@ -33,11 +34,7 @@ class CarruselPortada {
   /**
    * Estilos de imagen del carrusel (WebP) y su ancho.
    */
-  const ESTILOS = [
-    'unillanos_carrusel_800' => 800,
-    'unillanos_carrusel_1280' => 1280,
-    'unillanos_carrusel_1920' => 1920,
-  ];
+  const ESTILOS = self::ESTILOS_CARRUSEL;
 
   /**
    * Constructor.
@@ -125,31 +122,7 @@ class CarruselPortada {
       return NULL;
     }
     $elemento = $nodo->get('field_imagen')->first();
-    $archivo = $elemento->entity ?? NULL;
-    if (!$archivo instanceof FileInterface || !$archivo->access('view', $this->usuario)) {
-      return NULL;
-    }
-    $cache->addCacheableDependency($archivo);
-    $cache->addCacheTags(['config:image_style_list']);
-    $uri = (string) $archivo->getFileUri();
-    if ($uri === '') {
-      return NULL;
-    }
-    $partes = [];
-    $estilos = $this->entityTypeManager->getStorage('image_style')->loadMultiple(array_keys(self::ESTILOS));
-    foreach (self::ESTILOS as $nombre => $ancho) {
-      if (isset($estilos[$nombre])) {
-        $partes[] = $estilos[$nombre]->buildUrl($uri) . ' ' . $ancho . 'w';
-      }
-    }
-    return [
-      'src' => $this->generadorUrlArchivo->generateString($uri),
-      'srcset' => implode(', ', $partes),
-      'type' => 'image/webp',
-      'width' => (int) $elemento->get('width')->getValue(),
-      'height' => (int) $elemento->get('height')->getValue(),
-      'alt' => trim((string) $elemento->get('alt')->getValue()),
-    ];
+    return $elemento === NULL ? NULL : $this->imagenDeCarrusel($elemento, $cache);
   }
 
   /**

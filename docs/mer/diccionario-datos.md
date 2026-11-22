@@ -48,6 +48,22 @@ Oferta con registro calificado.
 | `acreditacion_hasta` | `date` |  |
 | `activo` | `bool` |  |
 
+### `GALERIA_IMAGEN` · Imagen de galería (carrusel propio)
+
+Imagen del carrusel de la página de un programa o de la página «Institucional». En Drupal es el campo `field_galeria` (imagen, hasta 10 valores) del tipo `programa` y del tipo `proceso`; el orden es el del campo. Cada imagen es de **un** programa **o** de **un** proceso (el institucional), nunca de ambos ni de la portada.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `programa_id` | `int` | FK |
+| `proceso_id` | `int` | FK |
+| `imagen` | `file` |  |
+| `texto_alternativo` | `varchar(512)` |  |
+| `leyenda` | `varchar(255)` |  |
+| `orden` | `int` |  |
+
+Reglas: `texto_alternativo` obligatorio; `leyenda` opcional (sin leyenda, la imagen se muestra sin franja de texto); JPG, PNG o WebP de hasta 5 MB y al menos 1280 px de ancho; sin imágenes no se imprime el carrusel y con una sola se ve fija, sin flechas, puntos ni avance.
+
 ## Modelo de calidad
 
 ### `LINEAMIENTO` · Lineamiento

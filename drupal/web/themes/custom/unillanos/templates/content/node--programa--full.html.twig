@@ -6,6 +6,9 @@
  * Variables:
  * - factores: tarjetas y pestañas de factores del proceso del programa (pueden
  *   faltar o estar vacías).
+ * - galeria: imágenes propias del programa (field_galeria) para su carrusel;
+ *   vacía si no tiene (entonces no se imprime). Nunca son las diapositivas de
+ *   la portada.
  * - plan: lead, opciones del filtro, filas y aviso del plan de mejoramiento
  *   (vacío si el programa no tiene un plan con metas).
  * - documentos: items, informe y plan del programa (vacío si no tiene
@@ -60,8 +63,20 @@
     {%- endif -%}
   {% endset %}
 
+  {# Sin factores no hay sección donde ponerlo: el carrusel va en la suya,
+     debajo de la cabecera. Con factores lo pinta el parcial, entre el bloque
+     superior y las tarjetas. #}
+  {% if galeria and not factores.pestanas %}
+    {% embed 'unillanos:section' with {id: 'galeria', galeria: galeria} only %}
+      {% block content %}
+        {% include 'unillanos:carousel' with {id: 'carrusel-galeria', label: 'Imágenes del programa'|t, contenida: true, items: galeria} only %}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+
   {# Factores, plan y documentos: el mismo parcial que usa «Institucional». #}
   {% include '@unillanos/templates/content/partials/autoevaluacion.html.twig' with {
+    galeria: galeria|default([]),
     factores: factores,
     plan: plan,
     documentos: documentos,
@@ -74,6 +89,7 @@
       acciones: 'Acciones del programa'|t,
       documentos: 'Documentos del programa'|t,
       documentos_lead: 'Informes, planes y otros documentos descargables de este programa.'|t,
+      galeria: 'Imágenes del programa'|t,
       aviso_avance: 'El avance es el reportado por el programa en cada periodo; no está verificado.'|t,
     },
   } only %}

@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.programa.field_director
     - field.field.node.programa.field_duracion
     - field.field.node.programa.field_facultad
+    - field.field.node.programa.field_galeria
     - field.field.node.programa.field_imagen
     - field.field.node.programa.field_modalidad
     - field.field.node.programa.field_nivel
@@ -75,6 +76,14 @@ content:
     weight: 5
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_galeria:
+    type: image_image
+    weight: 14
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
     third_party_settings: {  }
   field_imagen:
     type: image_image

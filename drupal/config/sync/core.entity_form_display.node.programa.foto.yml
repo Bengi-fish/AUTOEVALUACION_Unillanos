@@ -4,7 +4,21 @@ status: true
 dependencies:
   config:
     - core.entity_form_mode.node.foto
+    - field.field.node.programa.field_acreditacion_hasta
+    - field.field.node.programa.field_clave
+    - field.field.node.programa.field_codigo_snies
+    - field.field.node.programa.field_director
+    - field.field.node.programa.field_duracion
+    - field.field.node.programa.field_facultad
+    - field.field.node.programa.field_galeria
     - field.field.node.programa.field_imagen
+    - field.field.node.programa.field_modalidad
+    - field.field.node.programa.field_nivel
+    - field.field.node.programa.field_registro_hasta
+    - field.field.node.programa.field_resolucion_acreditacion
+    - field.field.node.programa.field_resolucion_registro
+    - field.field.node.programa.field_sede
+    - image.style.thumbnail
     - node.type.programa
   module:
     - image
@@ -29,6 +43,7 @@ hidden:
   field_director: true
   field_duracion: true
   field_facultad: true
+  field_galeria: true
   field_modalidad: true
   field_nivel: true
   field_registro_hasta: true

@@ -33,6 +33,7 @@ class InstitucionalProcesos extends InstitucionalBase {
     EnlacesEdicion $edicion,
     protected FactoresPrograma $factores,
     protected PlanMejoramientoPrograma $plan,
+    protected GaleriaImagenes $galeria,
   ) {
     parent::__construct($entityTypeManager, $documentos, $edicion);
   }
@@ -45,9 +46,9 @@ class InstitucionalProcesos extends InstitucionalBase {
    *
    * @return array<string, mixed>
    *   Con: principal (NULL o el proceso con titulo, periodo, estado, sede,
-   *   resultado, factores, plan, documentos y edicion), condiciones (una por
-   *   sede: id, titulo y procesos con titulo, periodo y items), edicion y
-   *   vacio (TRUE si no hay nada que mostrar).
+   *   resultado, factores, plan, documentos, galeria y edicion), condiciones
+   *   (una por sede: id, titulo y procesos con titulo, periodo y items),
+   *   edicion y vacio (TRUE si no hay nada que mostrar).
    */
   public function datos(CacheableMetadata $cache): array {
     $cache->addCacheTags(['node_list:proceso', 'node_list:programa', 'taxonomy_term_list:sede']);
@@ -117,6 +118,9 @@ class InstitucionalProcesos extends InstitucionalBase {
       'factores' => $con_plan['factores'],
       'plan' => $con_plan['plan'],
       'documentos' => $items,
+      // Imágenes propias del proceso institucional (field_galeria): el
+      // carrusel de la página «Institucional». Nunca las de la portada.
+      'galeria' => $this->galeria->delNodo($proceso, $cache),
       'edicion' => $edicion,
     ];
   }
