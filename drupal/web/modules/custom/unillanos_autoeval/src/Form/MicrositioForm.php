@@ -12,7 +12,7 @@ use Drupal\unillanos_autoeval\Service\DatosMarco;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Formulario de administración de la cabecera, la franja y el pie.
+ * Formulario de administración de la cabecera, la accesibilidad y el pie.
  *
  * Edita `unillanos_autoeval.micrositio`. Las listas se escriben una por línea
  * con partes separadas por «|» («Título | URL», «Título | Valor | URL | Ícono»,
@@ -76,7 +76,7 @@ final class MicrositioForm extends ConfigFormBase {
 
     $form['cabecera'] = [
       '#type' => 'details',
-      '#title' => $this->t('Cabecera y franja superior'),
+      '#title' => $this->t('Cabecera, redes y accesibilidad'),
       '#open' => TRUE,
     ];
     $form['cabecera']['nombre_linea1'] = [
@@ -97,12 +97,6 @@ final class MicrositioForm extends ConfigFormBase {
       '#default_value' => $config->get('url_web_principal'),
       '#maxlength' => 255,
     ];
-    $form['cabecera']['url_govco'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('URL del logo GOV.CO'),
-      '#default_value' => $config->get('url_govco'),
-      '#maxlength' => 255,
-    ];
     $redes = (array) ($config->get('redes_sociales') ?? []);
     foreach ([
       'facebook' => $this->t('URL de Facebook'),
@@ -113,27 +107,20 @@ final class MicrositioForm extends ConfigFormBase {
       $form['cabecera']['red_' . $red] = [
         '#type' => 'textfield',
         '#title' => $titulo,
-        '#description' => $this->t('Sin URL, el ícono no se muestra (cabecera y pie).'),
+        '#description' => $this->t('Sin URL, el ícono no se muestra (pie).'),
         '#default_value' => $redes[$red] ?? '',
         '#maxlength' => 255,
       ];
     }
-    $form['cabecera']['franja_superior'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Enlaces de la franja superior'),
-      '#description' => $ayuda_enlaces,
-      '#default_value' => $this->enlacesComoLineas($config->get('franja_superior')),
-      '#rows' => 4,
-    ];
     $form['cabecera']['accesibilidad_titulo'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Enlace de accesibilidad: título'),
+      '#title' => $this->t('Botón de accesibilidad: título'),
       '#default_value' => $accesibilidad['titulo'] ?? '',
       '#maxlength' => 100,
     ];
     $form['cabecera']['accesibilidad_url'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Enlace de accesibilidad: URL'),
+      '#title' => $this->t('Botón de accesibilidad: URL'),
       '#description' => $this->t('Opcional. Si la deja vacía, el botón de accesibilidad abre igual sus opciones (tamaño del texto, contraste y más), sin enlace a otra página.'),
       '#default_value' => $accesibilidad['url'] ?? '',
       '#maxlength' => 255,
@@ -341,8 +328,7 @@ final class MicrositioForm extends ConfigFormBase {
     parent::validateForm($form, $form_state);
     $campos_url = [
       'url_web_principal' => $this->t('URL de la web principal de la Universidad'),
-      'accesibilidad_url' => $this->t('Enlace de accesibilidad: URL'),
-      'url_govco' => $this->t('URL del logo GOV.CO'),
+      'accesibilidad_url' => $this->t('Botón de accesibilidad: URL'),
       'pie_derechos_url' => $this->t('Derechos: URL de la institución'),
       'red_facebook' => $this->t('URL de Facebook'),
       'red_x' => $this->t('URL de X'),
@@ -362,9 +348,7 @@ final class MicrositioForm extends ConfigFormBase {
     if ($tablero !== '' && !preg_match('~^https://[^\s/]+~i', $tablero)) {
       $form_state->setErrorByName('cifras_tablero_url', $this->t('Cifras: la URL del tablero debe empezar por https://.'));
     }
-    foreach (['franja_superior', 'pie_politicas_enlaces'] as $campo) {
-      $this->lineasComoEnlaces((string) $form_state->getValue($campo), $campo, $form_state);
-    }
+    $this->lineasComoEnlaces((string) $form_state->getValue('pie_politicas_enlaces'), 'pie_politicas_enlaces', $form_state);
     foreach (['pie_contacto_items', 'pie_lineas_items'] as $campo) {
       $this->lineasComoDatos((string) $form_state->getValue($campo), $campo, $form_state);
     }
@@ -386,7 +370,6 @@ final class MicrositioForm extends ConfigFormBase {
       ->set('nombre_linea1', trim((string) $form_state->getValue('nombre_linea1')))
       ->set('nombre_linea2', trim((string) $form_state->getValue('nombre_linea2')))
       ->set('url_web_principal', trim((string) $form_state->getValue('url_web_principal')))
-      ->set('url_govco', trim((string) $form_state->getValue('url_govco')))
       ->set('redes_sociales', array_combine(DatosMarco::REDES, array_map(
         fn(string $red): string => trim((string) $form_state->getValue('red_' . $red)),
         DatosMarco::REDES,
@@ -404,7 +387,6 @@ final class MicrositioForm extends ConfigFormBase {
           'tablero_url' => trim((string) $form_state->getValue('cifras_tablero_url')),
         ],
       ])
-      ->set('franja_superior', $enlaces('franja_superior'))
       ->set('accesibilidad', [
         'titulo' => trim((string) $form_state->getValue('accesibilidad_titulo')),
         'url' => trim((string) $form_state->getValue('accesibilidad_url')),

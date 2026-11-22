@@ -1,12 +1,14 @@
 /**
  * @file
- * Opciones de accesibilidad: panel de la franja superior.
+ * Opciones de accesibilidad: botón flotante y panel desplegable.
  *
  * Cada preferencia es un atributo data-ua-a11y-* del elemento html; el CSS
  * del componente (y el de motion) reaccionan a ellos. Se guardan en
  * localStorage (si el navegador lo permite) y se aplican al cargar cada
- * página. Escape cierra el panel y devuelve el foco al botón. No usa
- * innerHTML.
+ * página. El panel se abre y se cierra con una transición (atributo
+ * data-abierto del widget; sin JavaScript queda con hidden). Escape, el botón
+ * «Cerrar» y un clic fuera lo cierran, y Escape y «Cerrar» devuelven el foco al
+ * botón. No usa innerHTML.
  */
 
 /* phpcs:disable Generic.PHP.UpperCaseConstant.Found */
@@ -78,8 +80,10 @@
           });
         };
 
+        const estaAbierto = () => widget.hasAttribute('data-abierto');
+
         const abrir = (abierto) => {
-          panel.hidden = !abierto;
+          widget.toggleAttribute('data-abierto', abierto);
           boton.setAttribute('aria-expanded', abierto ? 'true' : 'false');
         };
 
@@ -88,13 +92,21 @@
           enlace.hidden = true;
         }
         boton.hidden = false;
+        // La visibilidad del panel la lleva data-abierto (CSS), no hidden, para
+        // poder animar la apertura y el cierre.
+        panel.hidden = false;
         pintar();
 
-        boton.addEventListener('click', () => abrir(panel.hidden));
+        boton.addEventListener('click', () => abrir(!estaAbierto()));
 
         widget.addEventListener('click', (evento) => {
           const objetivo = evento.target.closest('button');
           if (!objetivo || !panel.contains(objetivo)) {
+            return;
+          }
+          if (objetivo.hasAttribute('data-ua-a11y-cerrar')) {
+            abrir(false);
+            boton.focus();
             return;
           }
           if (objetivo.dataset.uaA11yTexto) {
@@ -115,7 +127,7 @@
         });
 
         widget.addEventListener('keydown', (evento) => {
-          if (evento.key === 'Escape' && !panel.hidden) {
+          if (evento.key === 'Escape' && estaAbierto()) {
             abrir(false);
             boton.focus();
           }
@@ -123,12 +135,12 @@
 
         // Un clic fuera, o sacar el foco del widget, cierra el panel.
         document.addEventListener('click', (evento) => {
-          if (!panel.hidden && !widget.contains(evento.target)) {
+          if (estaAbierto() && !widget.contains(evento.target)) {
             abrir(false);
           }
         });
         widget.addEventListener('focusout', (evento) => {
-          if (!panel.hidden && evento.relatedTarget && !widget.contains(evento.relatedTarget)) {
+          if (estaAbierto() && evento.relatedTarget && !widget.contains(evento.relatedTarget)) {
             abrir(false);
           }
         });

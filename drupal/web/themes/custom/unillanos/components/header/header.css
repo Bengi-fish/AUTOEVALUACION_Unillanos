@@ -1,7 +1,7 @@
 /**
  * Componente header: 80 px blancos con el logo, el nombre del sistema, el menú
- * principal en línea y las herramientas. La franja superior es otro componente
- * (topbar).
+ * principal en línea y las herramientas. La barra del modo edición (solo para
+ * quien edita) es otro componente (edicion-barra).
  */
 
 .ua-header {

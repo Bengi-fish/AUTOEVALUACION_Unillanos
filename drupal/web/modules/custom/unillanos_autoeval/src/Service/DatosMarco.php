@@ -10,7 +10,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
- * Entrega a la cabecera, la franja superior y el pie lo que se muestra.
+ * Entrega a la cabecera, al botón de accesibilidad y al pie lo que se muestra.
  *
  * Lee `unillanos_autoeval.micrositio` y devuelve solo lo que tiene valor: un
  * enlace sin título, o con una URL que no es segura, se descarta; una lista
@@ -66,10 +66,10 @@ class DatosMarco {
    *   Recibe las etiquetas de caché de la configuración.
    *
    * @return array<string, mixed>
-   *   Claves: `nombre` (dos líneas), `web_principal`, `govco` (enlace del
-   *   logo GOV.CO o NULL), `redes` (solo las que tienen URL segura: `red`,
-   *   `title`, `url`), `franja` (enlaces),
-   *   `accesibilidad` (enlace, con `url` vacía si no hay destino, o NULL) y
+   *   Claves: `nombre` (dos líneas), `web_principal`, `redes` (solo las que
+   *   tienen URL segura: `red`, `title`, `url`),
+   *   `accesibilidad` (botón flotante, con `url` vacía si no hay destino, o
+   *   NULL) y
    *   `pie` (`titulo`, `descripcion`,
    *   `institucion`, `nota_institucion`, `entidades`, `sedes`, `contacto`,
    *   `redes`, `enlaces_legales` y `legal`; las listas vacías, como arreglos
@@ -85,9 +85,7 @@ class DatosMarco {
         'linea2' => $this->texto($config->get('nombre_linea2')),
       ],
       'web_principal' => $this->urlSegura($config->get('url_web_principal')),
-      'govco' => $this->govco($config->get('url_govco')),
       'redes' => $this->redes($config->get('redes_sociales')),
-      'franja' => $this->enlaces($config->get('franja_superior')),
       'accesibilidad' => $this->accesibilidad((array) ($config->get('accesibilidad') ?? [])),
       'pie' => $this->pie($pie, $cache),
     ];
@@ -274,23 +272,6 @@ class DatosMarco {
       'texto' => $this->texto($datos['texto'] ?? NULL),
       'nit' => $this->texto($datos['nit'] ?? NULL),
     ];
-  }
-
-  /**
-   * Arma el enlace del logo GOV.CO.
-   *
-   * @param mixed $url
-   *   Valor de la configuración.
-   *
-   * @return array{title: string, url: string}|null
-   *   El enlace, o NULL si no hay URL segura.
-   */
-  protected function govco(mixed $url): ?array {
-    $url = $this->urlSegura($url);
-    if ($url === '') {
-      return NULL;
-    }
-    return ['title' => (string) $this->t('GOV.CO, portal único del Estado colombiano'), 'url' => $url];
   }
 
   /**

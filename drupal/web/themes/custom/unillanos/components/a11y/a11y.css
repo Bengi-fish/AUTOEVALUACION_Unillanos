@@ -1,48 +1,125 @@
 /**
- * Opciones de accesibilidad: botón de la franja y panel desplegable.
+ * Opciones de accesibilidad: botón flotante (columna de la esquina inferior
+ * derecha, encima de «Recomendaciones») y panel que se abre hacia arriba.
  * Las preferencias (atributos data-ua-a11y-* de html) se aplican abajo.
  */
 
 .ua-a11y {
   position: relative;
   flex: none;
+  animation: ua-flotante-entrada 420ms ease 160ms backwards;
 }
 
-.ua .ua-topbar__link.ua-a11y__boton {
-  /* 44 px: objetivo táctil completo; la franja mide lo mismo. */
-  min-height: 44px;
-  padding: 0;
+.ua-a11y__boton,
+.ua-a11y__enlace {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  box-sizing: border-box;
+  min-height: 52px;
+  padding: 0 22px 0 18px;
   border: 0;
-  background: none;
-  cursor: pointer;
+  border-radius: var(--radio-pill);
+  background: var(--verde-azulado-700);
+  color: var(--Surface);
+  /* Aro claro: se distingue también sobre fondos oscuros (carrusel, pie). */
+  box-shadow: 0 0 0 2px var(--Surface), var(--sombra-2);
   font-family: inherit;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.ua a.ua-a11y__enlace {
+  color: var(--Surface);
+  text-decoration: none;
+}
+
+.ua-a11y__boton:hover,
+.ua-a11y__enlace:hover {
+  background: var(--verde-azulado-900);
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 2px var(--Surface), 0 12px 28px rgba(29, 29, 27, 0.2);
+}
+
+.ua-a11y__boton:active,
+.ua-a11y__enlace:active {
+  transform: scale(0.97);
+}
+
+.ua-a11y__boton[aria-expanded="true"] {
+  background: var(--verde-azulado-900);
 }
 
 .ua .ua-a11y__boton[hidden],
-.ua .ua-a11y__panel[hidden],
 .ua .ua-a11y__enlace[hidden],
 .ua [data-ua-a11y-enlace][hidden] {
   display: none;
 }
 
+/*
+ * Panel: con JavaScript siempre está en el DOM y su visibilidad la lleva
+ * data-abierto; se abre hacia arriba con fundido y deslizamiento. Sin
+ * JavaScript queda con hidden.
+ */
+.ua .ua-a11y__panel[hidden] {
+  display: none;
+}
+
 .ua-a11y__panel {
   position: absolute;
-  top: calc(100% + 4px);
   right: 0;
+  bottom: calc(100% + 12px);
   z-index: 60;
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-2);
+  gap: var(--espacio-4);
   box-sizing: border-box;
-  width: 320px;
+  width: 340px;
   max-width: calc(100vw - 32px);
-  padding: var(--espacio-4);
+  max-height: calc(100vh - 168px);
+  max-height: calc(100dvh - 168px);
+  overflow-y: auto;
+  padding: var(--espacio-5);
   border: 1px solid var(--borde-calido);
   border-radius: var(--radio-md);
   background: var(--Surface);
   color: var(--carbon);
+  box-shadow: var(--sombra-2);
   --foco-interior: var(--Surface);
   --foco-exterior: var(--carbon);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  transform-origin: bottom right;
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease,
+    visibility 0s linear 200ms;
+}
+
+.ua-a11y[data-abierto] .ua-a11y__panel {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease,
+    visibility 0s;
+}
+
+.ua-a11y__cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
 }
 
 .ua-a11y__titulo {
@@ -50,6 +127,26 @@
   font-size: 18px;
   line-height: 24px;
   font-weight: 600;
+}
+
+.ua-a11y__cerrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--carbon);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.ua-a11y__cerrar:hover {
+  background: var(--superficie-calida);
 }
 
 .ua-a11y__fila {
@@ -62,6 +159,7 @@
 .ua-a11y__etiqueta {
   font-size: 15px;
   line-height: 22px;
+  font-weight: 600;
 }
 
 .ua-a11y__tamano {
@@ -71,11 +169,16 @@
 }
 
 .ua-a11y__valor {
-  min-width: 48px;
+  min-width: 52px;
   white-space: nowrap;
   text-align: center;
   font-size: 15px;
   font-variant-numeric: tabular-nums;
+}
+
+.ua-a11y__opciones {
+  display: grid;
+  gap: var(--espacio-2);
 }
 
 .ua-a11y__paso,
@@ -91,6 +194,16 @@
   font-size: 15px;
   line-height: 22px;
   cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.ua-a11y__paso:hover:not(:disabled),
+.ua-a11y__opcion:hover,
+.ua-a11y__restablecer:hover {
+  border-color: var(--carbon);
+  background: var(--superficie-calida);
 }
 
 .ua-a11y__paso {
@@ -104,19 +217,68 @@
   cursor: not-allowed;
 }
 
+/* Cada opción es un botón con interruptor visual (el estado va en aria-pressed). */
 .ua-a11y__opcion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
   text-align: left;
+}
+
+.ua-a11y__opcion-texto {
+  flex: 1;
+}
+
+.ua-a11y__interruptor {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 24px;
+  border: 2px solid var(--gris-texto);
+  border-radius: var(--radio-pill);
+  background: var(--Surface);
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.ua-a11y__interruptor::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gris-texto);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
 }
 
 .ua-a11y__opcion[aria-pressed="true"] {
   border-color: var(--verde-azulado-700);
-  background: var(--verde-azulado-700);
-  color: #fff;
+  background: var(--azul-grisaceo-50);
   font-weight: 600;
 }
 
-.ua-a11y__opcion[aria-pressed="true"]::before {
-  content: "✓ ";
+.ua-a11y__opcion[aria-pressed="true"] .ua-a11y__interruptor {
+  border-color: var(--verde-azulado-700);
+  background: var(--verde-azulado-700);
+}
+
+.ua-a11y__opcion[aria-pressed="true"] .ua-a11y__interruptor::after {
+  background: var(--Surface);
+  transform: translateX(16px);
+}
+
+.ua-a11y__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2) var(--espacio-4);
 }
 
 .ua-a11y__restablecer {
@@ -130,6 +292,60 @@
   min-height: 44px;
   color: var(--rojo-texto);
   font-size: 15px;
+}
+
+/* Aparición suave de los botones flotantes (también «Recomendaciones»). */
+@keyframes ua-flotante-entrada {
+
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+
+}
+
+/* Solo el ícono en pantallas pequeñas, como «Recomendaciones». */
+@media (max-width: 860px) {
+
+  .ua-a11y__boton,
+  .ua-a11y__enlace {
+    width: 56px;
+    padding: 0;
+  }
+
+  .ua-a11y__texto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ua-a11y,
+  .ua-a11y__boton,
+  .ua-a11y__enlace,
+  .ua-a11y__panel,
+  .ua-a11y__interruptor,
+  .ua-a11y__interruptor::after {
+    animation: none;
+    transition: none;
+  }
+
+  .ua-a11y__boton:hover,
+  .ua-a11y__enlace:hover {
+    transform: none;
+  }
+
 }
 
 /* ---------------------------------------------------------------------
@@ -176,8 +392,7 @@ html[data-ua-a11y-contraste] .ua a {
   text-decoration: underline;
 }
 
-/* Franja superior y pie conservan su fondo oscuro (logos blancos). */
-html[data-ua-a11y-contraste] .ua-topbar,
+/* El pie conserva su fondo oscuro (logos blancos). */
 html[data-ua-a11y-contraste] .ua-footer {
   background: #000;
   color: #fff;
@@ -186,16 +401,20 @@ html[data-ua-a11y-contraste] .ua-footer {
   --fondo-redes: #000;
 }
 
-html[data-ua-a11y-contraste] .ua-topbar {
-  border-bottom: 1px solid #fff;
-}
-
 html[data-ua-a11y-contraste] .ua-footer {
   border-top: 1px solid #fff;
 }
 
-html[data-ua-a11y-contraste] .ua .ua-topbar__link,
 html[data-ua-a11y-contraste] .ua .ua-footer a {
+  color: #fff;
+}
+
+/* Botones flotantes: texto blanco sobre negro con borde amarillo. */
+html[data-ua-a11y-contraste] .ua-a11y__boton,
+html[data-ua-a11y-contraste] .ua .ua-a11y__enlace,
+html[data-ua-a11y-contraste] .ua .ua-fab {
+  border: 2px solid #ffe066;
+  background: #000;
   color: #fff;
 }
 
@@ -251,7 +470,26 @@ html[data-ua-a11y-contraste] .ua img {
 
 html[data-ua-a11y-contraste] .ua-a11y__opcion[aria-pressed="true"] {
   border-color: #ffe066;
+  background: #000;
   color: #ffe066;
+}
+
+html[data-ua-a11y-contraste] .ua-a11y__interruptor {
+  border-color: #fff;
+  background: #000;
+}
+
+html[data-ua-a11y-contraste] .ua-a11y__interruptor::after {
+  background: #fff;
+}
+
+html[data-ua-a11y-contraste] .ua-a11y__opcion[aria-pressed="true"] .ua-a11y__interruptor {
+  border-color: #ffe066;
+  background: #ffe066;
+}
+
+html[data-ua-a11y-contraste] .ua-a11y__opcion[aria-pressed="true"] .ua-a11y__interruptor::after {
+  background: #000;
 }
 
 /* Subrayar los enlaces. */
@@ -279,15 +517,4 @@ html[data-ua-a11y-movimiento] *::after {
   animation-iteration-count: 1;
   scroll-behavior: auto;
   transition-duration: .001ms;
-}
-
-@media (max-width: 560px) {
-  .ua-a11y__panel {
-    position: fixed;
-    top: 52px;
-    right: 16px;
-    left: 16px;
-    width: auto;
-    max-width: none;
-  }
 }

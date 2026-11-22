@@ -13,6 +13,7 @@ props:
       title: Nombre
       description: 'Ícono del conjunto del prototipo.'
       enum:
+        - accessibility
         - arrow-right
         - award
         - book

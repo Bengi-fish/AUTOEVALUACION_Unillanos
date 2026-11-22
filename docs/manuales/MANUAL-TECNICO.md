@@ -154,11 +154,11 @@ Otras reglas:
 | `/admin/acreditacion` | Panel con accesos de edición. | `access acreditacion panel` |
 | `/admin/acreditacion/programa/{node}/ficha` y `/foto` | Formularios simples de la ficha y la foto. | Editar el programa |
 | `/admin/acreditacion/documento/{media}/editar` y `/nuevo` | Formularios simples de documentos. | Editar o crear documentos |
-| `/admin/config/unillanos/micrositio` | Cabecera, franja superior, pie, introducción y cifras. | `edit unillanos micrositio` |
+| `/admin/config/unillanos/micrositio` | Cabecera, redes, botón de accesibilidad, pie, introducción y cifras. | `edit unillanos micrositio` |
 
 ## 5. Configuración del micrositio
 
-El objeto `unillanos_autoeval.micrositio` (valores de instalación en `config/install/`, esquema en `config/schema/`) guarda el nombre del sistema, la URL de la web principal, GOV.CO, las redes, la franja superior, el enlace de accesibilidad, el pie (ubícanos, contacto, líneas, redes, políticas, logos y derechos) y el grupo `institucional` (frase de introducción, enlaces de cifras y URL del tablero). Se edita en `/admin/config/unillanos/micrositio`; el servicio `DatosMarco` lo entrega al tema. Cada URL pasa por `DatosMarco::urlSegura()` antes de imprimirse.
+El objeto `unillanos_autoeval.micrositio` (valores de instalación en `config/install/`, esquema en `config/schema/`) guarda el nombre del sistema, la URL de la web principal, las redes, el título y la URL opcional del botón de accesibilidad, el pie (ubícanos, contacto, líneas, redes, políticas, logos y derechos) y el grupo `institucional` (frase de introducción, enlaces de cifras y URL del tablero). Se edita en `/admin/config/unillanos/micrositio`; el servicio `DatosMarco` lo entrega al tema. Cada URL pasa por `DatosMarco::urlSegura()` antes de imprimirse.
 
 Los enlaces de la cabecera y del pie salen de los menús `main` y `footer`, definidos en `unillanos_autoeval.links.menu.yml`: Inicio, Programas, Institucional (con sus cinco hijos) y Documentos.
 

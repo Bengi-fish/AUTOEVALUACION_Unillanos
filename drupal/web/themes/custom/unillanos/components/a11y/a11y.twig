@@ -1,26 +1,44 @@
 {#
 /**
  * @file
- * Opciones de accesibilidad (franja superior).
+ * Opciones de accesibilidad: botón flotante y panel desplegable.
  *
- * Sin JavaScript solo se ve el enlace [data-ua-a11y-enlace] (si hay destino). Con JavaScript,
- * a11y.js lo oculta y muestra el botón y su panel (disclosure). El destino
- * ya viene validado por unillanos:topbar.
+ * Va en la columna flotante de la página (esquina inferior derecha), justo
+ * encima de «Recomendaciones». Sin JavaScript solo se ve el enlace
+ * [data-ua-a11y-enlace] (si hay destino). Con JavaScript, a11y.js lo oculta y
+ * muestra el botón y su panel (disclosure): el panel se abre hacia arriba con
+ * un fundido y un deslizamiento, y se cierra con Escape, con el botón «Cerrar»
+ * o con un clic fuera.
+ *
+ * Variables:
+ * - title: nombre del botón.
+ * - url: destino opcional (enlace de respaldo sin JavaScript). Un destino que
+ *   no sea relativo a la raíz (una sola barra, sin «\» ni espacios detrás),
+ *   ancla, consulta, http(s), mailto o tel se descarta (mismo filtro que
+ *   unillanos:button); el hook de la página ya lo entrega validado.
  */
 #}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% set url = url and ((url ~ '') matches seguro) ? url : '' %}
 <div class="ua-a11y" data-ua-a11y>
   {% if url %}
-    <a class="ua-topbar__link ua-topbar__acceso" href="{{ url }}" data-ua-a11y-enlace>
-      {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
-      <span>{{ title }}</span>
+    <a class="ua-a11y__enlace" href="{{ url }}" data-ua-a11y-enlace>
+      {%- include 'unillanos:icon' with {name: 'accessibility'} only -%}
+      <span class="ua-a11y__texto">{{ title }}</span>
     </a>
   {% endif %}
-  <button class="ua-topbar__link ua-a11y__boton" type="button" hidden aria-expanded="false" aria-controls="ua-a11y-panel" data-ua-a11y-boton>
-    {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
-    <span>{{ title }}</span>
+  <button class="ua-a11y__boton" type="button" hidden aria-expanded="false" aria-controls="ua-a11y-panel" data-ua-a11y-boton>
+    {%- include 'unillanos:icon' with {name: 'accessibility'} only -%}
+    <span class="ua-a11y__texto">{{ title }}</span>
   </button>
   <div class="ua-a11y__panel" id="ua-a11y-panel" role="group" aria-labelledby="ua-a11y-titulo" hidden data-ua-a11y-panel>
-    <h2 class="ua-a11y__titulo" id="ua-a11y-titulo">{{ 'Opciones de accesibilidad'|t }}</h2>
+    <div class="ua-a11y__cabeza">
+      <h2 class="ua-a11y__titulo" id="ua-a11y-titulo">{{ 'Opciones de accesibilidad'|t }}</h2>
+      <button class="ua-a11y__cerrar" type="button" data-ua-a11y-cerrar>
+        {%- include 'unillanos:icon' with {name: 'close', size: 'sm'} only -%}
+        <span class="ua-sr">{{ 'Cerrar las opciones de accesibilidad'|t }}</span>
+      </button>
+    </div>
     <div class="ua-a11y__fila" role="group" aria-labelledby="ua-a11y-texto-t">
       <span class="ua-a11y__etiqueta" id="ua-a11y-texto-t">{{ 'Tamaño del texto'|t }}</span>
       <div class="ua-a11y__tamano">
@@ -29,11 +47,22 @@
         <button class="ua-a11y__paso" type="button" data-ua-a11y-texto="mas" aria-label="{{ 'Aumentar el texto'|t }}">A+</button>
       </div>
     </div>
-    <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="contraste">{{ 'Alto contraste'|t }}</button>
-    <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="subrayado">{{ 'Subrayar los enlaces'|t }}</button>
-    <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="espaciado">{{ 'Más espacio entre líneas y letras'|t }}</button>
-    <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="movimiento">{{ 'Menos movimiento'|t }}</button>
-    <button class="ua-a11y__restablecer" type="button" data-ua-a11y-restablecer>{{ 'Restablecer'|t }}</button>
-    {% if url %}<a class="ua-a11y__mas" href="{{ url }}">{{ 'Más sobre accesibilidad'|t }}</a>{% endif %}
+    <div class="ua-a11y__opciones">
+      {% for clave, rotulo in {
+        contraste: 'Alto contraste'|t,
+        subrayado: 'Subrayar los enlaces'|t,
+        espaciado: 'Más espacio entre líneas y letras'|t,
+        movimiento: 'Menos movimiento'|t,
+      } %}
+        <button class="ua-a11y__opcion" type="button" aria-pressed="false" data-ua-a11y-opcion="{{ clave }}">
+          <span class="ua-a11y__opcion-texto">{{ rotulo }}</span>
+          <span class="ua-a11y__interruptor" aria-hidden="true"></span>
+        </button>
+      {% endfor %}
+    </div>
+    <div class="ua-a11y__pie">
+      <button class="ua-a11y__restablecer" type="button" data-ua-a11y-restablecer>{{ 'Restablecer'|t }}</button>
+      {% if url %}<a class="ua-a11y__mas" href="{{ url }}">{{ 'Más sobre accesibilidad'|t }}</a>{% endif %}
+    </div>
   </div>
 </div>

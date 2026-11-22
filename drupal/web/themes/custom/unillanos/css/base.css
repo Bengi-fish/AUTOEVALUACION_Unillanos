@@ -441,3 +441,32 @@
 .ua .user-login-form input.form-submit:hover {
   background: var(--rojo-700);
 }
+
+/*
+ * Columna de botones flotantes (esquina inferior derecha): accesibilidad
+ * encima de «Recomendaciones». Los hijos no se posicionan por su cuenta.
+ */
+.ua-flotantes {
+  position: fixed;
+  right: var(--espacio-5);
+  bottom: var(--espacio-5);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--espacio-3);
+}
+
+/* En pantallas pequeñas el pie deja sitio para no quedar tapado. */
+@media (max-width: 860px) {
+
+  .ua-flotantes {
+    right: var(--espacio-4);
+    bottom: var(--espacio-4);
+  }
+
+  .ua:has(.ua-flotantes) .ua-footer {
+    padding-bottom: 136px;
+  }
+
+}

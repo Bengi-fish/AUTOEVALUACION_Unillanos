@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * Prueba los menús principal y del pie, el elemento activo y el marco.
  *
- * El marco es la franja superior, la cabecera y el pie que arma la
+ * El marco es la cabecera, los botones flotantes y el pie que arma la
  * configuración `unillanos_autoeval.micrositio` (servicio DatosMarco).
  *
  * «Inicio» lo aporta el perfil `standard` y no existe en estas pruebas. El
@@ -642,9 +642,11 @@ class MenusTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * La cabecera lleva GOV.CO y redes; ninguna página dice «Ingresar».
+   * La cabecera no lleva franja ni redes; GOV.CO y redes van en el pie.
+   *
+   * Ninguna página dice «Ingresar».
    */
-  public function testCabeceraSinIngresarConGovcoMasRedes(): void {
+  public function testCabeceraSinFranjaMasGovcoMasRedesEnElPie(): void {
     $this->installConfig(['unillanos_autoeval']);
     foreach (['/programas', '/documentos'] as $ruta) {
       $html = $this->pagina($ruta);
@@ -653,10 +655,16 @@ class MenusTest extends UnillanosKernelTestBase {
       $this->assertStringNotContainsString('Ingresar', $html, $ruta);
       $this->assertStringNotContainsString('Mi cuenta', $html, $ruta);
       $this->assertStringNotContainsString('/user/login', $html, $ruta);
-      $this->assertStringContainsString('href="https://www.gov.co/"', $cabecera);
-      $this->assertSame(4, substr_count($cabecera, 'ua-redes__enlace"'), $ruta);
+      // La franja superior ya no existe: ni GOV.CO ni redes en la cabecera.
+      $this->assertStringNotContainsString('ua-topbar', $html, $ruta);
+      $this->assertStringNotContainsString('href="https://www.gov.co/"', $cabecera);
+      $this->assertStringNotContainsString('ua-redes__enlace', $cabecera, $ruta);
+      // Siguen en el pie.
+      $this->assertSame(1, preg_match('~<footer .*?</footer>~s', $html, $pie), $ruta);
+      $this->assertStringContainsString('href="https://www.gov.co/"', $pie[0]);
+      $this->assertSame(4, substr_count($pie[0], 'ua-redes__enlace"'), $ruta);
       foreach (['Facebook', 'X', 'Instagram', 'YouTube'] as $red) {
-        $this->assertStringContainsString('>' . $red . ' de la Universidad de los Llanos</span>', $cabecera);
+        $this->assertStringContainsString('>' . $red . ' de la Universidad de los Llanos</span>', $pie[0]);
       }
     }
   }
@@ -685,13 +693,14 @@ class MenusTest extends UnillanosKernelTestBase {
    */
   public function testSinDatosNoSePintaLoVacio(): void {
     $this->installConfig(['unillanos_autoeval']);
-    // Con lo de fábrica la franja solo lleva redes y GOV.CO (expectativa
-    // cambiada a propósito en el commit de la cabecera): sin enlaces propios
-    // ni accesibilidad.
+    // La franja superior ya no existe (expectativa cambiada a propósito en la
+    // tarea 2 de las mejoras de interfaz): la accesibilidad es un botón
+    // flotante que lleva su panel y, sin URL, no tiene enlace de respaldo.
     $con_marca = $this->pagina('/programas');
-    $this->assertStringContainsString('ua-topbar__derecha', $con_marca);
-    $this->assertStringNotContainsString('ua-topbar__list', $con_marca);
-    $this->assertStringNotContainsString('ua-topbar__acceso', $con_marca);
+    $this->assertStringNotContainsString('ua-topbar', $con_marca);
+    $this->assertStringContainsString('class="ua-flotantes"', $con_marca);
+    $this->assertStringContainsString('data-ua-a11y-boton', $con_marca);
+    $this->assertStringNotContainsString('data-ua-a11y-enlace', $con_marca);
     // El pie de fábrica: cuatro grupos, fila de logos y derechos (expectativa
     // cambiada a propósito: antes llevaba columnas de sedes y contacto vacías).
     foreach (['Ubícanos', 'Contacto', 'Líneas de atención'] as $titulo) {
@@ -699,11 +708,10 @@ class MenusTest extends UnillanosKernelTestBase {
     }
     $this->assertStringContainsString('<h3 class="ua-footer__redes-titulo">Redes</h3>', $con_marca);
     $this->assertStringContainsString('Nit: 892.000.757-3', $con_marca);
-    // Sin GOV.CO, redes ni título de accesibilidad tampoco hay franja; sin
-    // grupos, el pie no los pinta.
+    // Sin título de accesibilidad no hay botón; sin redes ni grupos, el pie no
+    // los pinta.
     $this->config('unillanos_autoeval.micrositio')
       ->set('accesibilidad.titulo', '')
-      ->set('url_govco', '')
       ->set('redes_sociales', ['facebook' => '', 'x' => '', 'instagram' => '', 'youtube' => ''])
       ->set('pie', [
         'ubicanos' => ['titulo' => '', 'sedes' => [], 'horario' => ['titulo' => '', 'texto' => '']],
@@ -717,6 +725,7 @@ class MenusTest extends UnillanosKernelTestBase {
       ->save();
     $html = $this->pagina('/programas');
     $this->assertStringNotContainsString('ua-topbar', $html);
+    $this->assertStringNotContainsString('data-ua-a11y-boton', $html);
     $this->assertStringNotContainsString('ua-footer__top', $html);
     $this->assertStringNotContainsString('ua-footer__logos', $html);
     $this->assertStringNotContainsString('ua-footer__bottom', $html);
@@ -731,25 +740,22 @@ class MenusTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * Con datos aparecen la franja y los grupos del pie, y solo ellos.
+   * Con datos aparecen el botón de accesibilidad y los grupos del pie.
    */
   public function testConDatosSePintaElMarco(): void {
     $this->installConfig(['unillanos_autoeval']);
     $this->config('unillanos_autoeval.micrositio')
-      ->set('franja_superior', [
-        ['titulo' => 'Biblioteca de prueba', 'url' => 'https://example.org/b'],
-        ['titulo' => 'Interno de prueba', 'url' => '/documentos'],
-      ])
       ->set('accesibilidad.url', '/programas')
       ->set('pie.ubicanos.sedes', [['titulo' => 'Sede de prueba', 'texto' => 'Calle de prueba 1']])
       ->set('pie.lineas', ['titulo' => '', 'items' => []])
       ->save();
     $html = $this->pagina('/programas');
-    $this->assertStringContainsString('<div data-component-id="unillanos:topbar" class="ua-topbar">', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="https://example.org/b" rel="noopener">~', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="/documentos">~', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/programas" data-ua-a11y-enlace>~', $html);
+    $this->assertStringNotContainsString('ua-topbar', $html);
+    $this->assertStringContainsString('class="ua-flotantes"', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-a11y__enlace" href="/programas" data-ua-a11y-enlace>~', $html);
     $this->assertStringContainsString('data-ua-a11y-boton', $html);
+    // «Recomendaciones» va debajo del botón de accesibilidad.
+    $this->assertLessThan(strpos($html, 'ua-fab'), strpos($html, 'data-ua-a11y-boton'));
     $this->assertStringContainsString('<strong>Sede de prueba</strong><span class="ua-footer__valor">Calle de prueba 1</span>', $html);
     $this->assertStringNotContainsString('Campus Barcelona', $html);
     // Sin líneas de atención la columna sigue con las redes; sin el grupo no
@@ -764,18 +770,12 @@ class MenusTest extends UnillanosKernelTestBase {
   public function testUrlPeligrosaNoLlegaAlHtml(): void {
     $this->installConfig(['unillanos_autoeval']);
     $this->config('unillanos_autoeval.micrositio')
-      ->set('franja_superior', [
-        ['titulo' => 'Peligrosa uno', 'url' => 'javascript:alert(1)'],
-        ['titulo' => 'Peligrosa dos', 'url' => '//example.org/x'],
-        ['titulo' => 'Peligrosa tres', 'url' => 'data:text/html,hola'],
-      ])
+      ->set('accesibilidad', ['titulo' => 'Peligrosa uno', 'url' => 'javascript:alert(1)'])
       ->set('pie.politicas.enlaces', [['titulo' => 'Política peligrosa', 'url' => 'JaVaScRiPt:alert(2)']])
       ->set('pie.contacto.items', [
         ['titulo' => 'Dato peligroso', 'texto' => '', 'url' => 'javascript:alert(5)', 'icono' => ''],
       ])
       ->set('pie.logos', [['clave' => 'govco', 'titulo' => 'Logo peligroso', 'url' => 'data:text/html,hola']])
-      ->set('accesibilidad.titulo', '')
-      ->set('url_govco', 'javascript:alert(3)')
       ->set('redes_sociales', [
         'facebook' => 'javascript:alert(4)',
         'x' => '//example.org/x',

@@ -1,6 +1,6 @@
 # Permisos propios del micrositio de autoevaluación (rol «Acreditación»).
 edit unillanos micrositio:
-  title: 'Editar la cabecera, la franja superior y el pie del micrositio'
+  title: 'Editar la cabecera, el botón de accesibilidad y el pie del micrositio'
   description: 'Permite abrir y guardar el formulario /admin/config/unillanos/micrositio. Cambia lo que se muestra en todas las páginas públicas.'
 
 access acreditacion panel:

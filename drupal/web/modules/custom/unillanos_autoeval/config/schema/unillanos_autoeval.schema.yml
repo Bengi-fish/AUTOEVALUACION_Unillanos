@@ -1,6 +1,6 @@
 unillanos_autoeval.micrositio:
   type: config_object
-  label: 'Cabecera, franja superior y pie del micrositio'
+  label: 'Cabecera, botón de accesibilidad y pie del micrositio'
   mapping:
     nombre_linea1:
       type: label
@@ -11,12 +11,9 @@ unillanos_autoeval.micrositio:
     url_web_principal:
       type: string
       label: 'URL de la web principal de la Universidad'
-    url_govco:
-      type: string
-      label: 'URL del logo GOV.CO'
     redes_sociales:
       type: mapping
-      label: 'Redes sociales de la Universidad (cabecera y pie)'
+      label: 'Redes sociales de la Universidad (pie)'
       mapping:
         facebook:
           type: string
@@ -30,14 +27,9 @@ unillanos_autoeval.micrositio:
         youtube:
           type: string
           label: 'URL de YouTube'
-    franja_superior:
-      type: sequence
-      label: 'Enlaces de la franja superior'
-      sequence:
-        type: unillanos_autoeval.enlace
     accesibilidad:
       type: unillanos_autoeval.enlace
-      label: 'Enlace de accesibilidad'
+      label: 'Botón de accesibilidad (título y URL opcional)'
     portal:
       type: mapping
       label: 'Portal: texto de bienvenida, accesos y sitios de interés'

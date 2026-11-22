@@ -2,8 +2,9 @@
 /**
  * @file
  * Página base: encabezado con el menú principal, migas, contenido y pie.
- * El botón flotante de recomendaciones (unillanos:fab) lleva a «Participa» y
- * se oculta en esa misma página (mostrar_fab).
+ * Los botones flotantes (unillanos:a11y y unillanos:fab) van en una columna
+ * fija abajo a la derecha; «Recomendaciones» lleva a «Participa» y se oculta en
+ * esa misma página (mostrar_fab).
  *
  * El título (h1), los mensajes y la ayuda van dentro de un contenedor; el
  * contenido de la portada va a todo el ancho para que sus secciones se
@@ -28,7 +29,7 @@
   solo_logo: 'unillanos',
   show_search: true,
   search_url: path('unillanos_autoeval.programas'),
-  topbar: {links: marco.franja, accessibility: marco.accesibilidad, social: marco.redes, govco: marco.govco, edicion: edicion_barra},
+  edicion: edicion_barra,
 } only %}
   {% block nav %}{{ menu }}{% endblock %}
 {% endembed %}
@@ -77,13 +78,23 @@
   edicion: edicion_pie|default(null),
 } only %}
 
-{% if mostrar_fab %}
-  {# Dentro de un landmark: el contenido fuera de ellos lo marcan los lectores de pantalla. #}
-  <aside aria-label="{{ 'Participa'|t }}">
-    {% include 'unillanos:fab' with {
-      url: path('unillanos_autoeval.participa') ~ '#recomendacion',
-      label: 'Recomendaciones'|t,
-      icon: 'message',
-    } only %}
+{#
+  Botones flotantes (esquina inferior derecha): accesibilidad, justo encima de
+  «Recomendaciones». Van dentro de un landmark: el contenido fuera de ellos lo
+  marcan los lectores de pantalla.
+#}
+{% if marco.accesibilidad or mostrar_fab %}
+  <aside class="ua-flotantes" aria-label="{{ 'Accesos rápidos'|t }}">
+    {% if marco.accesibilidad %}
+      {% include 'unillanos:a11y' with {title: marco.accesibilidad.title, url: marco.accesibilidad.url} only %}
+    {% endif %}
+    {% if mostrar_fab %}
+      {% include 'unillanos:fab' with {
+        url: path('unillanos_autoeval.participa') ~ '#recomendacion',
+        label: 'Recomendaciones'|t,
+        icon: 'message',
+        static: true,
+      } only %}
+    {% endif %}
   </aside>
 {% endif %}

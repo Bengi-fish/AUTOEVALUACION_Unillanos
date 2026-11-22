@@ -18,14 +18,14 @@ Las cuentas las crea la persona administradora; no hay registro abierto. Si olvi
 
 ![Pantalla de acceso de Acreditación](img/01-acceso-1440.png)
 
-### La barra negra
+### La barra de edición
 
-Con la sesión abierta aparece una barra negra arriba de todas las páginas, con cuatro opciones:
+Con la sesión abierta aparece una barra clara arriba de todas las páginas (sobre el encabezado), con cuatro opciones:
 
 | Opción | Para qué sirve |
 |---|---|
 | **Modo edición** | Muestra u oculta los lápices y los botones «+» sobre el contenido. |
-| **Editar la cabecera y el pie** | Abre el formulario de la cabecera, la franja superior y el pie. |
+| **Editar la cabecera y el pie** | Abre el formulario de la cabecera, las redes, el botón de accesibilidad y el pie. |
 | **Panel avanzado** | Abre `/admin/acreditacion`, la lista de programas con todos sus accesos de edición. |
 | **Cerrar sesión** | Termina la sesión. Hágalo siempre en un computador compartido. |
 
@@ -207,8 +207,8 @@ Para una dependencia, el documento lleva la **Dependencia** y, si corresponde, e
 
 ### La cabecera y el pie
 
-1. En la barra negra pulse **Editar la cabecera y el pie**.
-2. Cambie lo que necesite: nombre del sistema, enlaces de la franja superior, redes sociales, datos del pie, políticas, logos y derechos. Lo que deje vacío no se muestra.
+1. En la barra de edición pulse **Editar la cabecera y el pie**.
+2. Cambie lo que necesite: nombre del sistema, redes sociales, título del botón de accesibilidad, datos del pie, políticas, logos y derechos. Lo que deje vacío no se muestra.
 3. En el grupo **Institucional: introducción y cifras** puede cambiar la frase de la página de «Institucional» y los enlaces de «Cifras» (uno por línea: «Título | Descripción corta | URL», con URL que empiece por `https://`).
 4. Pulse **Guardar configuración**.
 
@@ -257,7 +257,7 @@ También se bloquea una dependencia o un programa que tiene documentos apuntando
 
 | Qué pasa | Qué hacer |
 |---|---|
-| No veo los lápices ni los «+». | Active **Modo edición** en la barra negra. Si no hay barra, la sesión se cerró: vuelva a entrar por `/acceso-acreditacion`. |
+| No veo los lápices ni los «+». | Active **Modo edición** en la barra que aparece sobre el encabezado. Si no hay barra, la sesión se cerró: vuelva a entrar por `/acceso-acreditacion`. |
 | En «Elemento del modelo» no aparece el factor que busco. | Elija primero el **Proceso**: solo se ofrecen los elementos de su modelo. Busque por el nombre, no por «Factor 1». |
 | «Un proceso tiene sede o programa, no ambos.» | Un proceso lleva programa **o** sede. Deje en blanco el que no corresponde. |
 | El formulario del documento pide «un archivo o un enlace». | Elija una de las dos opciones y llene solo ese campo. El enlace debe empezar por `https://`. |

@@ -266,7 +266,7 @@ class UnillanosHooks {
     // los contextos de caché del menú, del acceso y de las URL.
     $cache = new CacheableMetadata();
     $variables['pie_enlaces'] = $this->enlacesDelPie->enlaces($cache);
-    // Franja superior, nombre, pie: lo que dice la configuración del
+    // Nombre, accesibilidad, redes y pie: lo que dice la configuración del
     // micrositio, ya filtrado (sin URLs inseguras ni filas vacías).
     $variables['marco'] = $this->datosMarco->datos($cache);
     // Modo edición: la barra solo existe para quien tiene el permiso; por eso

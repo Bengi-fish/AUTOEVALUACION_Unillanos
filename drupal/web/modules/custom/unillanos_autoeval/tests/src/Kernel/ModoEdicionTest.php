@@ -261,7 +261,7 @@ class ModoEdicionTest extends UnillanosKernelTestBase {
     // Barra: interruptor con aria-pressed y «Cerrar sesión».
     $this->assertMatchesRegularExpression('~<button class="ua-edicion-barra__boton" type="button" aria-pressed="false" data-ua-edicion-toggle>~', $html);
     $this->assertStringContainsString('Modo edición', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="/user/logout/confirm">Cerrar sesión</a>~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-edicion-barra__enlace" href="/user/logout/confirm">Cerrar sesión</a>~', $html);
     // «+ Añadir programa» arriba de la lista.
     $this->assertMatchesRegularExpression('~href="/node/add/programa\\?destination=/programas"~', $html);
     $this->assertStringContainsString('>Añadir programa</span>', $html);

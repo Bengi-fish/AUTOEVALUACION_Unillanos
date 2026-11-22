@@ -1,0 +1,64 @@
+/**
+ * Componente edicion-barra: barra clara del modo edición, solo para quien
+ * puede editar. Sustituye a la antigua franja superior oscura (que ya no
+ * existe): no es una franja de la web, es una herramienta de trabajo.
+ */
+
+.ua-edicion-franja {
+  border-bottom: 1px solid var(--borde-calido);
+  background: var(--superficie-calida);
+  color: var(--carbon);
+}
+
+.ua-edicion-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-1) var(--espacio-4);
+  padding: var(--espacio-1) var(--espacio-6);
+}
+
+.ua .ua-edicion-barra__boton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: 44px;
+  padding: 0 var(--espacio-4);
+  border: 2px solid var(--carbon);
+  border-radius: var(--radio-pill);
+  background: transparent;
+  color: var(--carbon);
+  font-family: var(--font-base);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ua .ua-edicion-barra__boton[aria-pressed="true"] {
+  background: var(--carbon);
+  color: var(--Surface);
+}
+
+/* «Cerrar sesión»: también un objetivo de 44 px. */
+.ua .ua-edicion-barra__enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--carbon);
+}
+
+.ua .ua-edicion-barra__enlace:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 860px) {
+
+  .ua-edicion-barra {
+    padding-right: var(--espacio-4);
+    padding-left: var(--espacio-4);
+  }
+
+}

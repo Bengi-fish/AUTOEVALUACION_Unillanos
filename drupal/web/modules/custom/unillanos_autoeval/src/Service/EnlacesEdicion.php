@@ -276,7 +276,7 @@ class EnlacesEdicion {
   }
 
   /**
-   * Lápiz del formulario del micrositio (cabecera, franja y pie).
+   * Lápiz del formulario del micrositio (cabecera, accesibilidad y pie).
    *
    * Se muestra solo con el permiso propio de esa pantalla.
    *

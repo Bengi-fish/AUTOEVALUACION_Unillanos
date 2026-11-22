@@ -1,0 +1,28 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Barra del modo edición
+status: stable
+group: Página base
+description: 'Barra clara sobre el encabezado, solo para quien tiene permiso de editar: interruptor «Modo edición», enlace a la edición del micrositio, enlace a la página completa de Drupal y «Cerrar sesión». Sin cierre de sesión seguro no imprime nada. Un destino que no es seguro se imprime sin href (mismo filtro que unillanos:button).'
+props:
+  type: object
+  properties:
+    edicion:
+      type:
+        - object
+        - 'null'
+      title: Datos de la barra
+      description: 'Objeto con `logout_url` (obligatorio), `micrositio` y `avanzado` (cada uno con `title` y `url`).'
+      properties:
+        logout_url:
+          type: string
+        micrositio:
+          type:
+            - object
+            - 'null'
+        avanzado:
+          type:
+            - object
+            - 'null'
+    label:
+      type: string
+      title: Nombre accesible de la barra
