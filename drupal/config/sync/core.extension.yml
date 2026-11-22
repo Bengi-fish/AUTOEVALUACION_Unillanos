@@ -61,7 +61,6 @@ module:
   paragraphs: 11
   standard: 1000
 theme:
-  olivero: 0
   claro: 0
   unillanos: 0
 profile: standard

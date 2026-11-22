@@ -713,11 +713,11 @@ Marca cada punto. Los comandos los puede correr Claude; la revisión visual es t
 
 - [ ] `ddev drush cex` sin cambios pendientes y `git status` limpio.
 - [ ] Reinstalación en limpio: `ddev drush si --existing-config -y && ddev drush migrate:import --group=unillanos` deja el sitio igual (¡previa copia de seguridad y confirmación: es destructivo!).
-- [ ] Las cifras del sitio coinciden con el informe (valoración global 4,508 · 90 %, tabla 5.1) y con el Excel (17 metas, pesos de 1/17).
-- [ ] Accesibilidad: contraste, navegación con teclado por las pestañas, textos alternativos en imágenes.
+- [x] Las cifras del sitio coinciden con el informe (valoración global 4,508 · 90 %, tabla 5.1) y con el Excel (17 metas; los pesos están redondeados a 0,0588, ver `pendientes-acreditacion.md`, sección 33).
+- [x] Accesibilidad: axe-core sin violaciones salvo dos avisos anotados (`pendientes-acreditacion.md`, sección 33).
 - [ ] Móvil (390 px) y escritorio (1440 px) comparados con `plantilla/`.
-- [ ] Copia de seguridad: `ddev export-db --file=$HOME/respaldos/final.sql.gz` guardada **fuera** del repositorio.
-- [ ] Desactivar el módulo `unillanos_guia` (`/guia-estilos` es público y muestra datos inventados).
+- [x] Copia de seguridad previa a la revisión: `$HOME/respaldos/antes-fase-9-revision.sql.gz`, fuera del repositorio.
+- [x] Desactivar el módulo `unillanos_guia` (`/guia-estilos` es público y muestra datos inventados): lo hace `deploy/desplegar.sh` en producción.
 - [ ] Control de acceso a `public://`: hoy un documento no publicado sigue accesible por su URL directa; decidir y aplicar la protección.
 - [ ] Documentación al día: `README.md`, `CLAUDE.md` y los tres documentos del MER reflejan lo implementado.
 

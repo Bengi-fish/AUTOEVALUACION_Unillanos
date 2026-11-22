@@ -90,8 +90,8 @@ Solo texto; no cambian datos.
 **Fase 9**
 
 - [ ] **Recortar el starterkit:** eliminar del tema `unillanos` las plantillas y el CSS del starterkit que no se hayan personalizado (el tema parte de ~90 plantillas genéricas y CSS de componentes de core).
-- [ ] **Desactivar `unillanos_guia`** (`/guia-estilos` es público y muestra datos inventados) antes de mostrar el sitio.
-- [ ] **Desinstalar Olivero** y limpiar sus bloques (`block.block.olivero_*`), que se dejaron en la configuración al poner `unillanos` como tema por defecto.
+- [x] **Desactivar `unillanos_guia`** (`/guia-estilos` es público y muestra datos inventados) antes de mostrar el sitio: `deploy/desplegar.sh` la desinstala en cada despliegue; en desarrollo sigue activa para trabajar el tema.
+- [x] **Desinstalar Olivero** y limpiar sus bloques (`block.block.olivero_*`): hecho en la revisión de la Fase 9 (`drush theme:uninstall olivero`).
 
 **Notas**
 
@@ -361,7 +361,7 @@ Los 4 archivos de `docs/fuentes` entran como medios `documento` por migración d
 
 Verificado: la carpeta de archivos de Drupal está ignorada por git; `docs/fuentes` y los 4 archivos son visibles en el contenedor (`/var/www/html/docs/fuentes`); copias idénticas a los originales (SHA-256); rollback de las 4 migraciones deja 0 archivos en `public://documentos/` (quedan 3 carpetas vacías) y 0 medios, y los originales intactos; reimportar deja exactamente 4 archivos (`general/` ×2 y `ingenieria_electronica/` ×2), sin sufijos `_0`; importar de nuevo sin rollback no crea nada (0 procesados). Una carpeta de programa temporal con filas malas (ruta absoluta, archivo inexistente, extensión no permitida) falló fila por fila con mensajes claros y se borró.
 
-- [ ] **Extensiones del campo de archivo** (`pdf doc docx xls xlsx ppt pptx odt ods txt zip`): no se restringen ahora; **revisar en la Fase 9** (revisión de seguridad): `zip` y `txt` no hacen falta para documentos.
+- [x] **Extensiones del campo de archivo:** quitadas `zip` y `txt` en la revisión de la Fase 9 (quedan `pdf doc docx xls xlsx ppt pptx odt ods`); los archivos ya subidos no cambian.
 - [ ] **Fechas de publicación vacías:** ninguna fuente trae la fecha de publicación (la del plan, 19/06/2024, es la de suscripción). Se muestran solo si existen.
 - [ ] **El plan de mejoramiento** va en la categoría `documento_base` (el modelo no trae categoría «plan»); valorar una categoría propia si se amplía el modelo.
 - [ ] **Subcarpeta por programa:** hecha (`public://documentos/<programa>/`); dos archivos con el mismo nombre dentro de un mismo programa siguen renombrándose con sufijo (`file_exists: rename`).
@@ -518,3 +518,17 @@ Datos tomados el 20 de noviembre de 2026 de https://acreditacion.unillanos.edu.c
 - [ ] **Alcance del gestor:** `gestor_participacion` puede editar todos los campos de un envío, no solo el estado y la respuesta. Decidir si el texto del ciudadano debe quedar de solo lectura.
 - [ ] **Quién gestiona las recomendaciones:** la persona con el rol `gestor_participacion` entra por la dirección de resultados del formulario (sin menú propio). Confirmar quién será y si se quiere un acceso en el panel de Acreditación.
 - [ ] **Filtro por modelo:** el campo «Factor o característica» lista los elementos de todos los modelos (ya anotado en la sección de Fase 8); no se filtra por el modelo del proceso elegido.
+
+## 33. Fase 9: revisión antes de mostrar
+
+Hecho el 21 de noviembre de 2026 (copia previa: `$HOME/respaldos/antes-fase-9-revision.sql.gz`).
+
+- **Cifras contra el informe:** los 12 factores (4,90 · 4,27 · 4,39 · 4,45 · 4,48 · 4,44 · 4,20 · 4,65 · 4,28 · 4,54 · 4,66 · 4,84) y el total 4,508 · 90 % coinciden con la Tabla 5.1 del informe de 2022. Las 17 metas existen.
+- [ ] **Pesos de las metas:** cada una guarda 0,0588 (no 1/17 = 0,058823…); suman 0,9996 y el avance del plan (Σ peso × avance) queda hasta 0,04 % por debajo. Decidir si el campo admite más decimales o si se acepta el redondeo.
+- **Accesibilidad (axe-core en Edge, WCAG 2 A y AA más buenas prácticas, 10 páginas a 1440 y 390 px):** sin violaciones salvo dos avisos.
+- [ ] **Tarjeta de programa** (`/programas`, serio, regla `label-content-name-mismatch`): el enlace se nombra con `aria-labelledby` solo por el nombre del programa (decisión de diseño, para no repetir «Ver programa»), así que el texto visible de la tarjeta no está entero en el nombre accesible; afecta a quien manda órdenes por voz. Decidir si se prefiere el nombre completo.
+- [ ] **Orden de encabezados** (`/informacion/sac`, moderado): el pie usa `h3` y la página no tiene `h2` antes. Si Acreditación añade subtítulos al texto, desaparece; si no, cambiar los títulos del pie a `h2` (hoy las pruebas fijan `h3`).
+- [ ] **Control de acceso de `public://`:** sin decidir. Un documento no publicado sigue accesible por su URL directa. Opciones: archivos privados (`private://`, requiere una carpeta fuera del directorio web en el servidor y mover los archivos) o dejarlo así porque los documentos son públicos.
+- [ ] **Recortar el starterkit** (plantillas del tema sin personalizar): sin hacer; es limpieza sin efecto visible y conviene hacerla con una revisión de capturas.
+- [ ] **Reinstalación en limpio** (`drush si --existing-config` con migraciones): sin hacer, es destructiva y necesita tu confirmación.
+- **En producción:** `drush deploy` importa la configuración: borra los bloques de Olivero, lo desinstala y quita `zip` y `txt` de las extensiones. Los archivos ya subidos con esas extensiones no se tocan; revisarlos a mano.

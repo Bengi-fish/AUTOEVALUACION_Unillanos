@@ -25,6 +25,6 @@ Marque cada punto. Los detalles están en `docs/manuales/GUIA-DESPLIEGUE.md`.
 - [ ] Logos oficiales (Vigilada MinEducación, CO Colombia) y redes sociales confirmados.
 - [ ] Correo de PQRS del pie confirmado.
 - [ ] Correo (SMTP) definido.
-- [ ] Extensiones `zip` y `txt` restringidas en el tipo de medio «Documento».
+- [ ] Extensiones `zip` y `txt` fuera del tipo de medio «Documento» (ya viene en la configuración versionada; comprobar tras `drush deploy` y revisar a mano los archivos antiguos con esas extensiones).
 - [ ] Control de acceso de los documentos no publicados decidido.
 - [ ] Indexación por buscadores: publicar ya o con `noindex`.

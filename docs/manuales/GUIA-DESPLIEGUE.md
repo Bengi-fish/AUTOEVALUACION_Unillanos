@@ -180,9 +180,9 @@ La lista completa y marcable está en `deploy/CHECKLIST.md`. En resumen:
 - Servidor, dominio y HTTPS definidos y con certificado válido.
 - Correo (SMTP) pendiente de definir: sin él no salen correos de recuperación de clave ni avisos.
 - Módulos de desarrollo fuera de producción: `bash deploy/desplegar.sh` desinstala `unillanos_guia` (la guía de estilos) en cada despliegue.
-- Retirar el starterkit (plantillas sobrantes dentro del tema `unillanos`) y decidir qué hacer con el tema Olivero; el detalle está en `docs/pendientes-acreditacion.md`.
+- Retirar el starterkit (plantillas sobrantes dentro del tema `unillanos`); el detalle está en `docs/pendientes-acreditacion.md`. Olivero ya está desinstalado en la configuración versionada.
 - Cuentas reales creadas y cuentas de prueba eliminadas.
-- Restringir en el tipo de medio «Documento» las extensiones `zip` y `txt`.
+- Las extensiones `zip` y `txt` ya no se admiten en el tipo de medio «Documento» (viene en la configuración versionada). Los archivos subidos antes con esas extensiones no cambian: revíselos a mano si los hay.
 - Control de acceso de los documentos no publicados (hoy `public://` es público).
 - Logos oficiales de Vigilada MinEducación y CO Colombia (hoy son copias del sitio de Acreditación), redes oficiales por confirmar y barra GOV.CO según la guía de MinTIC.
 - Correo de PQRS del pie (hoy sin `.co`, como en el HTML original).

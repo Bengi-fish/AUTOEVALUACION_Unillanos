@@ -252,4 +252,4 @@ También se puede crear a mano desde el sitio (Modo edición › Programas › A
 
 El detalle está en `docs/pendientes-acreditacion.md`. Los que más afectan al código: la regla de redondeo de grados, la «regla del 4» (destino de los hallazgos), el modelo de los procesos nuevos, los textos editoriales de la portada y de `/documentos`, la visibilidad pública de los documentos y el formulario «Participa» (con los roles `editor_documentos` y `gestor_participacion` sin definir).
 
-Antes de publicar el sitio hay que retirar el starterkit, desactivar `unillanos_guia`, decidir sobre Olivero, restringir extensiones zip y txt en medios, controlar el acceso a los documentos no publicados y actualizar los módulos de terceros. La guía de despliegue tiene la lista completa.
+Antes de publicar el sitio hay que retirar el starterkit, controlar el acceso a los documentos no publicados y actualizar los módulos de terceros. Olivero ya está desinstalado, los medios ya no admiten zip ni txt y `desplegar.sh` desinstala `unillanos_guia`. La guía de despliegue tiene la lista completa.
