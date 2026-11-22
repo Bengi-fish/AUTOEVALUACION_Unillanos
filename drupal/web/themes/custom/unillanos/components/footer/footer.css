@@ -148,10 +148,14 @@
   width: auto;
 }
 
-/* El logo de la Universidad trae su propio fondo; el de CO Colombia solo mide
-   50 × 45 px: se muestra a su tamaño natural, sin ampliarlo. */
+/* El logo de la Universidad es un PNG con fondo transparente (se ve solo la
+   marca sobre el pie); el de CO Colombia solo mide 50 × 45 px: se muestra a su
+   tamaño natural, sin ampliarlo. */
 .ua-footer__logo--unillanos img {
   height: 56px;
+  /* En pantallas muy estrechas max-width acorta la caja: la marca conserva su
+     proporción dentro de ella (no se deforma). */
+  object-fit: contain;
 }
 
 .ua-footer__logo--colombia img {

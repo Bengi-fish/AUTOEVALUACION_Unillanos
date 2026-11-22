@@ -532,3 +532,13 @@ Hecho el 21 de noviembre de 2026 (copia previa: `$HOME/respaldos/antes-fase-9-re
 - [ ] **Recortar el starterkit** (plantillas del tema sin personalizar): sin hacer; es limpieza sin efecto visible y conviene hacerla con una revisión de capturas.
 - [ ] **Reinstalación en limpio** (`drush si --existing-config` con migraciones): sin hacer, es destructiva y necesita tu confirmación.
 - **En producción:** `drush deploy` importa la configuración: borra los bloques de Olivero, lo desinstala y quita `zip` y `txt` de las extensiones. Los archivos ya subidos con esas extensiones no se tocan; revisarlos a mano.
+
+## 34. Mejoras de interfaz (rama `mejoras-ui-ingeniero`)
+
+- [ ] **Barra de edición clara:** al quitar la franja negra, las herramientas de quien edita (Modo edición, edición del micrositio, panel avanzado y cerrar sesión) pasaron a una barra clara sobre el encabezado, visible solo con permiso de editar. Confirmar que es lo que se quiere y revisar su aspecto a 320 px con una sesión de Acreditación.
+- [ ] **Panel de «Recomendaciones»:** no se creó: el botón flotante lleva directo a `/participa`. Si se quiere un panel propio (texto breve y botón), hay que definirlo.
+- [ ] **Galería de Institucional:** vive en el campo del proceso institucional más reciente (el que no es de un programa ni de condiciones por sede). Si se crea un proceso institucional más nuevo, hay que subir las imágenes otra vez. Alternativas descartadas: un nodo nuevo «Página institucional» o subir las imágenes en el formulario del micrositio.
+- [ ] **Alto contraste del sistema (Windows, `forced-colors`) con tema claro:** el pie pasa a fondo blanco y los logos blancos (Universidad, MinEducación y GOV.CO) desaparecen; con el logo de la Universidad transparente queda igual que los otros dos. Decidir si el pie lleva fondo propio en ese modo.
+- [ ] **Botones flotantes sobre el carrusel:** pueden tapar las flechas cuando el carrusel queda abajo a la derecha de la pantalla; basta con desplazar la página. Decidir si se quiere moverlos.
+- [ ] **Capturas de los manuales:** las de `docs/manuales/img` que muestran la franja negra (`02`, `06`, `07`, `10` y `12`, y probablemente `08`, `09` y `11`) están desactualizadas; hay que regenerarlas con una sesión de Acreditación (la `10` también muestra el formulario anterior de la cabecera).
+- [ ] **Imágenes del carrusel:** las de prueba (3 en Ingeniería Electrónica y 2 en el proceso institucional) son generadas y solo existen en este equipo (`sites/default/files/galeria/`); Acreditación debe subir las reales.
