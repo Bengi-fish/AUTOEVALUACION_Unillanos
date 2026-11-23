@@ -43,19 +43,24 @@ git config user.email "tu-correo@ejemplo.com"                            # el co
 Si te pasaron una carpeta de archivos, ponla **en la raíz del proyecto con el nombre `archivos-sitio`** antes de seguir (si no te pasaron nada, sáltate esto; el sitio no la necesita para verse completo).
 
 ```bash
-bash scripts/instalar.sh     # arranca DDEV, instala, carga los 40 programas y Electrónica
+bash scripts/instalar.sh     # arranca DDEV, instala, carga los 40 programas, Electrónica y el contenido del sitio de Acreditación
 ```
 Es seguro repetirlo: no borra nada si ya está instalado. Al final imprime las direcciones a abrir.
+La configuración que importa ya trae los tipos de contenido, el formulario Participa y los roles (`acreditacion`, `editor_documentos` y `gestor_participacion`); las migraciones cargan, además de los programas, las noticias, las páginas informativas y el equipo. Las imágenes de las galerías de cada programa y de Institucional no vienen en el repositorio (viven en `sites/default/files/galeria/`): en una instalación nueva esos carruseles salen vacíos y no se pintan hasta que alguien suba las imágenes.
 
 ## 5. Cómo saber que quedó bien
 Abre la dirección que imprimió el script (`https://autoeval-unillanos.ddev.site`):
 
 | Dirección | Debes ver |
 |---|---|
-| `/` | La portada con cifras y programas |
+| `/` | El portal de Autoevaluación y Acreditación (carrusel, accesos y noticias) |
+| `/siaai` | La portada del sistema de información, con cifras y programas |
 | `/programas` | 40 programas |
 | Programa «Ingeniería Electrónica» | Su autoevaluación con 12 factores |
 | `/documentos` | El informe, el plan y los 2 acuerdos CESU |
+| `/institucional` | Una página con la interfaz de un programa, aplicada a la Universidad |
+| `/noticias` y `/nuestro-equipo` | Las noticias y el equipo (vienen de las migraciones) |
+| `/participa` | El formulario de recomendaciones |
 | `/acceso-acreditacion` | La entrada para el equipo de Acreditación |
 
 ## 6. Tu usuario administrador local

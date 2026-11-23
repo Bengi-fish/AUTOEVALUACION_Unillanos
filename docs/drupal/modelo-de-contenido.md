@@ -30,6 +30,7 @@ La lógica que Drupal no trae se programa en el módulo propio **`unillanos_auto
 | PROCESO | Nodo | `proceso` |
 | DEPENDENCIA | Nodo | `dependencia` |
 | NORMA | Nodo | `norma` |
+| DIAPOSITIVA (carrusel del portal) | Nodo | `diapositiva` |
 | NOTICIA | Nodo | `noticia` |
 | PAGINA_INFORMATIVA | Nodo | `pagina_informativa` |
 | MIEMBRO_EQUIPO | Nodo | `miembro_equipo` |
@@ -90,6 +91,9 @@ Regla: exactamente uno de `field_sede` o `field_programa` (validación en `unill
 ### `dependencia` (Fase 9, etapa 2)
 Dependencia de la Universidad que llena formatos del SIAAI (Admisiones, Biblioteca…). Título = nombre. `field_descripcion` (texto largo plano, opcional) · `field_orden` (entero, opcional; orden de la lista, las 25 salen en el orden del sitio de Acreditación). Crea revisión.
 
+### `diapositiva` (Fase 9, carrusel del portal)
+Diapositiva del carrusel de la portada del portal (`/`). Título = titular (hasta 90 caracteres). `field_imagen` (imagen, obligatoria, JPG/PNG/WebP de hasta 5 MB y al menos 1600 px de ancho, texto alternativo obligatorio) · `field_texto_corto` (texto opcional, 160 caracteres) · `field_enlace` (página del sitio `internal:/ruta` o `https://`, opcional) · `field_orden` (entero). Se muestran hasta 5 publicadas, por orden. Crea revisión. Sin relación con `field_galeria` de `programa` y `proceso`.
+
 ### `noticia` (Fase 9, sitio de Acreditación)
 Noticia del sitio de Acreditación (cinco, las del slider). Título = titular. `body` (texto con resumen, formato `basic_html`; obligatorio) · `field_imagen` (imagen opcional, JPG, PNG o WebP de hasta 5 MB, texto alternativo obligatorio; carpeta `noticias`) · `field_enlace` (enlace de origen `https://`, opcional). Sin fecha: el sitio de origen no la publica y no se inventa. Alias `/noticias/[título]` (patrón Pathauto `noticia`). Crea revisión. Se listan en `/noticias` y las tres primeras en el portal.
 
@@ -132,12 +136,21 @@ Título automático: `[meta] · [periodo]`.
 | `programacion_anual` | `field_anio` (entero) · `field_programado` (decimal 12,4) · `field_logrado` (decimal 12,4) |
 
 ## Media `documento`
-Fuente: archivo. Un documento lleva **un archivo (`field_media_file`) o un enlace externo (`field_enlace`, solo `https://`), no ambos ni ninguno**: ambos campos son opcionales y la restricción `UnillanosArchivoOEnlace` (en `unillanos_autoeval`) lo valida. En las listas, un enlace se rotula «Enlace» o «Carpeta de Drive» (si es `/drive/folders/`), se abre en pestaña nueva y no muestra tamaño. `field_categoria` (lista: `normatividad`, `documento_base`, `informe`, `acto_administrativo`, `soporte`) · `field_version` (texto) · `field_fecha_publicacion` (fecha) · `field_proceso` (→ `proceso`) · `field_lineamiento` (→ `lineamiento`) · `field_enlace` (enlace, para documentos externos). Publicado = `publico`. Fase 9, etapa 2: `field_dependencia` (→ `dependencia`), `field_programa` (→ `programa`, para formatos de una dependencia que no pasan por un proceso) y `field_facultad` (→ término `facultad`, documentos de directivos); `field_categoria` suma `directivos` y `dependencia`. Los documentos con dependencia o facultad, y los de un proceso con sede y sin programa, no salen en `/documentos`: son de «Institucional».
+Fuente: archivo. Un documento lleva **un archivo (`field_media_file`) o un enlace externo (`field_enlace`, solo `https://`), no ambos ni ninguno**: ambos campos son opcionales y la restricción `UnillanosArchivoOEnlace` (en `unillanos_autoeval`) lo valida. En las listas, un enlace se rotula «Enlace» o «Carpeta de Drive» (si es `/drive/folders/`), se abre en pestaña nueva y no muestra tamaño. `field_categoria` (lista: `normatividad`, `documento_base`, `informe`, `acto_administrativo`, `soporte`) · `field_version` (texto) · `field_fecha_publicacion` (fecha) · `field_proceso` (→ `proceso`) · `field_lineamiento` (→ `lineamiento`) · `field_enlace` (enlace, para documentos externos). Extensiones de archivo admitidas: `pdf doc docx xls xlsx ppt pptx odt ods` (Fase 9: ya no `zip` ni `txt`). Publicado = `publico`. Fase 9, etapa 2: `field_dependencia` (→ `dependencia`), `field_programa` (→ `programa`, para formatos de una dependencia que no pasan por un proceso) y `field_facultad` (→ término `facultad`, documentos de directivos); `field_categoria` suma `directivos` y `dependencia`. Los documentos con dependencia o facultad, y los de un proceso con sede y sin programa, no salen en `/documentos`: son de «Institucional».
 
 ## Webform `participa`
 Elementos: `proceso` (entidad → nodo `proceso`) · `elemento` (término `elemento_modelo`, opcional) · `estamento` (término `estamento`) · `nombre` (texto, opcional) · `texto` (área de texto, máx. 1000) · `consentimiento` (casilla obligatoria). Solo `gestor_participacion` y administradores: `estado_gestion` (`recibida`, `en_revision`, `respondida`, `descartada`) y `respuesta`. `fecha_envio` = fecha de envío del webform.
 
 La página `/participa` lleva el webform; los botones y el límite de envíos (5 por hora y por visitante) están en la configuración del webform. Los envíos solo los ven y actualizan los usuarios con el rol `gestor_participacion` (no borran ni cambian el formulario). El rol `editor_documentos` crea y edita el medio `documento`.
+
+## Roles
+| Rol (máquina) | Qué puede |
+|---|---|
+| `acreditacion` («Acreditación») | Crea y edita programas, procesos, valoraciones, hallazgos, planes, metas, seguimientos y documentos, y las diapositivas, dependencias, normas, noticias, páginas informativas y miembros del equipo; borra solo lo propio y sin dependientes; sin permisos `administer …`. Permisos propios: `edit unillanos micrositio`, `access acreditacion panel` y `change publication status on acreditacion content`. |
+| `editor_documentos` («Editor de documentos») | Crea y edita el medio `documento`, borra los propios y cambia «Publicado»; sin acceso a nodos ni a envíos. |
+| `gestor_participacion` («Gestor de participación») | Ve y actualiza los envíos del webform `participa`; no borra envíos ni cambia el formulario. |
+| `content_editor` («Editor de contenido») | Rol del perfil estándar de Drupal. |
+`editor_autoevaluacion` no existe: lo reemplaza `acreditacion`. Las cuentas las crea el administrador (`register: admin_only`).
 
 ## Lógica del módulo `unillanos_autoeval`
 
@@ -160,13 +173,18 @@ Una vista por factores filtra por el proceso (filtro contextual `field_proceso`)
 
 ## Páginas del prototipo → Drupal
 
+Nada se resuelve con Views: cada página sale de un controlador y servicios de `unillanos_autoeval`, con plantillas del tema.
+
 | Prototipo (`plantilla/`) | Drupal |
 |---|---|
-| `index.html` | Portada (`/`): bloques de Views (indicadores, procesos, hallazgos destacados) |
-| `institucional.html` | Página `/institucional` con 3 pestañas = 3 bloques de Views filtrados por procesos institucionales |
-| `programas.html` | View `programas` (`/programas`) con filtros expuestos (facultad, nivel, sede, texto) |
-| `programa-ejemplo.html` | Nodo `programa` en modo completo; pestañas con bloques de Views que reciben el nid por contexto |
-| `documentos.html` | View `documentos` (`/documentos`) de media `documento`, pestañas por categoría |
-| `participa.html` | Página `/participa` con el webform `participa` |
+| (nuevo) portal | `/` (ruta interna `/portal`): carrusel de `diapositiva`, accesos, sitios de interés y las tres últimas noticias |
+| `index.html` | `/siaai`: portada del SIAAI (cifras, programas, procesos); `/inicio` redirige (301) |
+| `institucional.html` | `/institucional`: una sola página con la interfaz de un programa (factores, plan, documentos y secciones propias); `/institucional/procesos`, `/dependencias`, `/directivos`, `/normatividad` y `/cifras` redirigen (301) a sus anclas |
+| `programas.html` | `/programas`: listado y buscador por servicio (`ListadoProgramas`) |
+| `programa-ejemplo.html` | Nodo `programa` en modo completo (`PaginaPrograma`, `FactoresPrograma`, `PlanMejoramientoPrograma`) con su carrusel `field_galeria` |
+| `documentos.html` | `/documentos` (media `documento`, con filtros y conteos) |
+| `participa.html` | `/participa` con el webform `participa` y el botón flotante «Recomendaciones» |
+| (nuevo) sitio de Acreditación | `/noticias`, `/nuestro-equipo` y los nodos `noticia` y `pagina_informativa` (alias `/informacion/sac`, `/informacion/esquema-organizacional`, `/noticias/boletines`, `/noticias/capacitaciones`) |
+| (nuevo) administración | `/admin/acreditacion` (panel), `/admin/acreditacion/programa/{node}/ficha`, `/admin/acreditacion/documento/{media}/editar` y `/nuevo`, `/admin/config/unillanos/micrositio` |
 
-Las pestañas animadas del prototipo (`data-ua-views`, `data-routes`, `data-view`) se conservan en las plantillas Twig del tema; `app.js` pasa a `Drupal.behaviors.unillanos`.
+Las pestañas animadas del prototipo (`data-ua-views`, `data-routes`, `data-view`) se conservan en las plantillas Twig del tema; el JS usa `Drupal.behaviors` con `once()`.

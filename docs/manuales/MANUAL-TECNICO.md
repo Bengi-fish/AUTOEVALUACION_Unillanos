@@ -1,8 +1,8 @@
 # Manual técnico
 
-Para quien mantenga el código del Sistema de Información de Autoevaluación de la Universidad de los Llanos. El sitio publica, por programa y a nivel institucional, los procesos de autoevaluación, las valoraciones por factor y característica, las fortalezas y los aspectos por mejorar, el plan de mejoramiento (FO-GCL-20) con su seguimiento, los documentos y lo institucional (dependencias, directivos, normatividad y cifras). El idioma del sitio, del código comentado y de esta documentación es el español.
+Para quien mantenga el código del Sistema de Información de Autoevaluación de la Universidad de los Llanos. El sitio publica, por programa y a nivel institucional, los procesos de autoevaluación, las valoraciones por factor y característica, las fortalezas y los aspectos por mejorar, el plan de mejoramiento (FO-GCL-20) con su seguimiento, los documentos y lo institucional (dependencias, directivos, normatividad y cifras). Además recoge el contenido del sitio de Acreditación (noticias, páginas informativas y equipo) y un formulario de participación. El idioma del sitio, del código comentado y de esta documentación es el español.
 
-Las reglas de trabajo del equipo están en `CLAUDE.md`. Este manual explica cómo está armado el sistema y cómo cambiarlo sin romperlo.
+Las reglas de trabajo del equipo están en `CLAUDE.md`.
 
 ## 1. Arquitectura
 
@@ -24,13 +24,15 @@ Las reglas de trabajo del equipo están en `CLAUDE.md`. Este manual explica cóm
 
 Todo comando se escribe con el prefijo `ddev`, desde la raíz del repositorio: `ddev drush cr`, `ddev composer install`.
 
+Temas instalados: `unillanos` (el público) y `claro` (administración). Olivero ya no está instalado ni en `config/sync`.
+
 Módulos de terceros que usa el proyecto: `paragraphs`, `webform`, `pathauto`, `field_group`, `auto_entitylabel`, `token`, `better_exposed_filters`, `migrate_plus`, `migrate_tools` y `migrate_source_csv`. Nunca se edita `web/core`, `web/modules/contrib` ni `vendor/`.
 
 ### Los tres módulos propios
 
-- **`unillanos_autoeval`** concentra las reglas de negocio: el cálculo del grado, las restricciones de validación, los servicios que arman cada página, los permisos propios, el panel de Acreditación, el modo edición y las páginas públicas (`/inicio`, `/programas`, `/documentos` y `/institucional…`).
+- **`unillanos_autoeval`** concentra las reglas de negocio: el cálculo del grado, las restricciones de validación, los servicios que arman cada página, los permisos propios, el panel de Acreditación, el modo edición y las páginas públicas (`/`, `/siaai`, `/programas`, `/documentos`, `/institucional`, `/noticias`, `/nuestro-equipo` y `/participa`). Tiene 14 ganchos (`src/Hook/`: `UnillanosAutoevalHooks`, `SimplificarAcreditacionHooks` y `DocumentoArchivoOEnlaceHooks`) y los servicios de `src/Service/`.
 - **`unillanos_migrate`** carga los datos desde los CSV con migraciones (`migrate_plus`).
-- **`unillanos_guia`** es la guía de estilos del tema. Solo es para desarrollo: se desactiva en producción.
+- **`unillanos_guia`** es la guía de estilos del tema. Solo es para desarrollo: sigue activa en el entorno local (está en `core.extension.yml`) y `deploy/desplegar.sh` la desinstala en producción.
 
 ### El tema `unillanos`
 
@@ -38,7 +40,10 @@ Módulos de terceros que usa el proyecto: `paragraphs`, `webform`, `pathauto`, `
 - Los estilos usan los tokens de `css/tokens.css`: rojo de marca `#e30613` (solo decorativo o grande), rojo de texto `#a8040e`, verde azulado `#174349` y `#0a2226`, carbón `#1d1d1b`, tipografía Public Sans en pesos 400 y 600. Radios 4, 8 y de píldora; sin sombras; objetivos táctiles de al menos 44 px; un solo anillo de foco.
 - El JavaScript usa `Drupal.behaviors` con `once()` y los atributos `data-ua-*`. No usa `innerHTML`.
 - Las plantillas de página (`templates/content/unillanos-*.html.twig`) solo cambian los nombres de las claves que entregan los servicios a las propiedades de los componentes: no deciden nada. Los componentes solo muestran valores guardados; no calculan grados, destinos ni avances.
-- Las plantillas de las páginas se registran en el tema (`src/Hook/UnillanosHooks.php`, `hook_theme`) y los controladores del módulo les entregan los datos.
+- Las plantillas de las páginas se registran en el tema (`src/Hook/UnillanosHooks.php`, `hook_theme`: `unillanos_portal`, `unillanos_portada`, `unillanos_programas`, `unillanos_documentos`, `unillanos_institucional`, `unillanos_noticias`, `unillanos_equipo` y `unillanos_participa`) y los controladores del módulo les entregan los datos. El tema también tiene plantillas de nodo propias para `programa`, `noticia` y `pagina_informativa`, y un parcial compartido, `partials/autoevaluacion.html.twig` (factores, plan y documentos), que usan la página de un programa y `/institucional`.
+- Componentes del marco (cabecera, pie y herramientas flotantes): `header`, `nav` (menú con submenús accesibles), `subnav` (barra secundaria del SIAAI y navegación por anclas de `/institucional`), `footer` (con las redes y los logos, GOV.CO incluido), `edicion-barra` (barra clara con las herramientas de quien edita; solo se pinta con permiso de editar), `a11y` (botón flotante «Accesibilidad» con panel) y `fab` (botón flotante «Recomendaciones»). Los dos botones flotantes van en la columna `.ua-flotantes`, abajo a la derecha; `fab` no aparece en `/participa`. La franja superior negra (componente `topbar`) ya no existe.
+- `carousel` sirve a tres usos: el de la portada (`/`, diapositivas de `CarruselPortada`) y el propio de cada programa y de `/institucional` (`GaleriaImagenes`, variante `contenida`). Funde y desliza cada 5,5 s, se pausa con el ratón, el foco o su botón, y respeta `prefers-reduced-motion`.
+- Hojas de estilo de página en `css/`: `portal.css`, `programa.css`, `documentos.css`, `participa.css`, `sitio.css`, además de `tokens.css`, `base.css` y `motion.css`.
 
 ### Cómo se arma una página pública
 
@@ -94,10 +99,16 @@ erDiagram
 | Dependencia | Nodo | `dependencia` |
 | Norma | Nodo | `norma` |
 | Diapositiva del carrusel | Nodo | `diapositiva` |
+| Noticia | Nodo | `noticia` |
+| Página informativa (SAC, Modelo de Autoevaluación, Boletines, Capacitaciones) | Nodo | `pagina_informativa` |
+| Miembro del equipo | Nodo | `miembro_equipo` |
 | Documento | Medio | `documento` |
 | Elemento del modelo (factor, característica, aspecto) | Taxonomía jerárquica | `elemento_modelo` |
 | Facultad, sede, grado de cumplimiento, estamento, responsable, proyecto institucional | Taxonomías | `facultad`, `sede`, `grado_cumplimiento`, `estamento`, `responsable`, `proyecto_institucional` |
 | Participación, indicador, programación anual | Paragraphs | `participacion`, `indicador`, `programacion_anual` |
+| Recomendaciones de la comunidad | Webform | `participa` (`webform.webform.participa`) |
+
+Los tipos `noticia`, `pagina_informativa` y `miembro_equipo` se crearon con `drupal/scripts/crear_modelo_sitio.php` y el webform con `drupal/scripts/crear_webform_participa.php`; ya viajan en `config/sync` y no hace falta correr los scripts en otro equipo. Los programas y los procesos tienen además el campo de imagen múltiple `field_galeria` (hasta 10 imágenes; `drupal/scripts/crear_galeria.php`), que alimenta el carrusel propio de cada página. La galería de `/institucional` vive en el proceso institucional más reciente.
 
 ### Reglas del dominio que no son obvias
 
@@ -123,7 +134,13 @@ erDiagram
 
 ## 3. Roles, permisos y control de acceso
 
-El rol `acreditacion` («Acreditación») es un solo rol que crea y edita programas, procesos, valoraciones, hallazgos, planes, metas, seguimientos, documentos, dependencias, normas y diapositivas. No borra lo que no creó, no accede a configuración, módulos, estructura, personas ni informes, y no tiene ningún permiso `administer …`.
+Hay tres roles propios, todos en `config/sync` y sin ningún permiso `administer …`:
+
+| Rol | Qué puede |
+|---|---|
+| `acreditacion` («Acreditación») | Crea y edita programas, procesos, valoraciones, hallazgos, planes, metas, seguimientos, documentos, dependencias, normas, diapositivas, noticias, páginas informativas y miembros del equipo. No borra lo que no creó, no accede a configuración, módulos, estructura, personas ni informes. |
+| `editor_documentos` («Editor de documentos») | Crea y edita el medio `documento`, borra los propios y cambia «Publicado». No accede a nodos ni a envíos. |
+| `gestor_participacion` («Gestor de participación») | Ve y actualiza los envíos del webform `participa` por las reglas de acceso del propio webform (`/admin/structure/webform/manage/participa/results/submissions`). No borra envíos ni cambia el formulario. |
 
 Permisos propios (`unillanos_autoeval.permissions.yml`):
 
@@ -131,12 +148,13 @@ Permisos propios (`unillanos_autoeval.permissions.yml`):
 |---|---|
 | `access acreditacion panel` | Abrir `/admin/acreditacion` y ver el modo edición. |
 | `edit unillanos micrositio` | Abrir el formulario de la cabecera y el pie. |
-| `change publication status on acreditacion content` | Marcar o desmarcar «Publicado» en los tipos de autoevaluación y en el medio `documento` (por `hook_entity_field_access`). |
+| `change publication status on acreditacion content` | Marcar o desmarcar «Publicado» en los tipos de autoevaluación (incluidos `noticia`, `pagina_informativa` y `miembro_equipo`) y en el medio `documento` (por `hook_entity_field_access`; lista en `UnillanosAutoevalHooks::TIPOS_PUBLICACION`). |
 
-La definición exacta del rol está duplicada, a propósito, en `drupal/config/sync/user.role.acreditacion.yml` y en `config/optional/` del módulo; una prueba exige que sean iguales. Las cuentas las crea el administrador a mano (`register: admin_only`).
+La definición exacta del rol `acreditacion` está duplicada, a propósito, en `drupal/config/sync/user.role.acreditacion.yml` y en `config/optional/` del módulo; una prueba exige que sean iguales. Los otros dos roles solo están en `config/sync`. Las cuentas las crea el administrador a mano (`register: admin_only`).
 
 Otras reglas:
 
+- Participa: `/participa` (webform `participa`) admite un máximo de 5 envíos por hora y por visitante (`limit_user`) y no guarda la dirección IP (`form_disable_remote_addr`). No hay captcha ni honeypot (pendiente, sección 32 de `docs/pendientes-acreditacion.md`).
 - Eliminar: `hook_entity_access` impide borrar un contenido al que otro todavía apunta (`EntidadesDependientes::REGLAS`). Solo borra lo propio quien no es administrador. Cada borrado queda en el registro (canal `unillanos_autoeval`).
 - Pantallas simples: el modo de formulario `acreditacion` (con ayudas en lenguaje sencillo) reemplaza al formulario completo para quien tiene el rol y no administra el sitio (`SimplificarAcreditacionHooks`). Quien administra conserva los formularios de Drupal.
 - Medios: `accessCheck(TRUE)` no basta en las consultas de medios; se comprueba el acceso de cada medio mostrado.
@@ -145,22 +163,33 @@ Otras reglas:
 
 | Ruta | Para qué | Acceso |
 |---|---|---|
-| `/inicio` (portada) | Portada con carrusel, cifras y programas. | `access content` |
+| `/` (ruta interna `/portal`) | Portal de Autoevaluación y Acreditación: carrusel, accesos, sitios de interés y las tres últimas noticias. Es la página de inicio (`system.site:page.front`). | `access content` |
+| `/siaai` | Portada del SIAAI (cifras y programas), con la barra secundaria. | `access content` |
+| `/inicio` | Redirige (301) a `/siaai`. | Pública |
 | `/programas` | Listado y buscador de programas. | `access content` |
-| `/programas/<alias>` | Página de un programa (plantilla `node--programa--full`). | Contenido publicado |
+| `/programas/<alias>` | Página de un programa (plantilla `node--programa--full`), con su propio carrusel. | Contenido publicado |
 | `/documentos` | Normatividad y documentos. | `access content` |
-| `/institucional` y `/institucional/{procesos,dependencias,directivos,normatividad,cifras}` | Lo institucional. | `access content` |
+| `/institucional` | Una sola página con la interfaz de un programa aplicada a la Universidad (factores y plan si el proceso institucional tiene valoraciones, y las secciones `#procesos`, `#dependencias`, `#directivos`, `#normatividad` y `#cifras`). | `access content` |
+| `/institucional/{procesos,dependencias,directivos,normatividad,cifras}` | Redirigen (301) a `/institucional#<sección>`. | Pública |
+| `/noticias`, `/nuestro-equipo` | Lista de noticias y equipo (`SitioAcreditacionController`, servicio `SitioAcreditacion`). | `access content` |
+| `/noticias/<título>`, `/noticias/boletines`, `/noticias/capacitaciones`, `/informacion/sac`, `/informacion/esquema-organizacional` | Nodos `noticia` y `pagina_informativa` (alias de Pathauto o fijados por la migración). | Contenido publicado |
+| `/participa` | Formulario de recomendaciones (`ParticipaController`, plantilla `unillanos-participa`). | `access content` |
 | `/acceso-acreditacion` | Entrada propia de Acreditación (no se enlaza). | Pública |
 | `/admin/acreditacion` | Panel con accesos de edición. | `access acreditacion panel` |
 | `/admin/acreditacion/programa/{node}/ficha` y `/foto` | Formularios simples de la ficha y la foto. | Editar el programa |
 | `/admin/acreditacion/documento/{media}/editar` y `/nuevo` | Formularios simples de documentos. | Editar o crear documentos |
-| `/admin/config/unillanos/micrositio` | Cabecera, redes, botón de accesibilidad, pie, introducción y cifras. | `edit unillanos micrositio` |
+| `/admin/config/unillanos/micrositio` | Cabecera, redes, botón de accesibilidad, pie, portal de inicio, introducción y cifras. | `edit unillanos micrositio` |
+| `/admin/structure/webform/manage/participa/results/submissions` | Envíos de «Participa». | Reglas del webform (`gestor_participacion`) |
 
 ## 5. Configuración del micrositio
 
-El objeto `unillanos_autoeval.micrositio` (valores de instalación en `config/install/`, esquema en `config/schema/`) guarda el nombre del sistema, la URL de la web principal, las redes, el título y la URL opcional del botón de accesibilidad, el pie (ubícanos, contacto, líneas, redes, políticas, logos y derechos) y el grupo `institucional` (frase de introducción, enlaces de cifras y URL del tablero). Se edita en `/admin/config/unillanos/micrositio`; el servicio `DatosMarco` lo entrega al tema. Cada URL pasa por `DatosMarco::urlSegura()` antes de imprimirse.
+El objeto `unillanos_autoeval.micrositio` (valores de instalación en `config/install/`, esquema en `config/schema/`) guarda el nombre del sistema, la URL de la web principal, las redes, el título y la URL opcional del botón de accesibilidad, el pie (ubícanos, contacto, líneas, redes, políticas, logos y derechos), el grupo `portal` (título, texto de bienvenida, accesos y sitios de interés de la página de inicio) y el grupo `institucional` (frase de introducción, enlaces de cifras y URL del tablero). Las claves `franja_superior` y `url_govco` ya no existen (se quitó la franja superior): la importación de `config/sync` las elimina del objeto, sin actualización de base de datos. Las redes y GOV.CO salen en el pie. Se edita en `/admin/config/unillanos/micrositio`; el servicio `DatosMarco` lo entrega al tema. Cada URL pasa por `DatosMarco::urlSegura()` antes de imprimirse.
 
-Los enlaces de la cabecera y del pie salen de los menús `main` y `footer`, definidos en `unillanos_autoeval.links.menu.yml`: Inicio, Programas, Institucional (con sus cinco hijos) y Documentos.
+Los enlaces de la cabecera y del pie salen de los menús `main` y `footer`, definidos en `unillanos_autoeval.links.menu.yml`:
+
+- Menú `main`: Inicio (aporta el perfil `standard`), SIAAI, «Información» (SAC, Modelo de Autoevaluación y Nuestro equipo) y «Noticias» (Noticias, Boletines y Capacitaciones (histórico)). «Información» y «Noticias» son padres sin destino (`<nolink>`): el rótulo es el botón del submenú.
+- Menú `footer` (columna «Explora»): Programas, Documentos y Participa.
+- Programas, Documentos e Institucional viven en la barra secundaria del SIAAI (componente `subnav`, armada por `UnillanosHooks::barraSiaai()` solo en las rutas de `RastroActivoSiaai::RUTAS` y en la página de un programa). `RastroActivoSiaai` deja «SIAAI» en el rastro activo de todas ellas.
 
 ## 6. Migraciones y semillas
 
@@ -168,11 +197,15 @@ Los datos entran por migraciones desde CSV, nunca a mano.
 
 | Carpeta | Contenido |
 |---|---|
-| `datos/semillas/` | Lo común: facultades, sedes, programas, lineamientos, elementos del modelo, grados, estamentos, proyectos, documentos generales, dependencias, normas, procesos institucionales, sus documentos y las diapositivas de prueba. |
+| `datos/semillas/` | Lo común: facultades, sedes, programas, lineamientos, elementos del modelo, grados, estamentos, proyectos, documentos generales, dependencias, normas, procesos institucionales, sus documentos, las diapositivas de prueba y el contenido del sitio de Acreditación (`noticias.csv`, `paginas.csv` y `equipo.csv`, con las imágenes de las noticias en `imagenes/noticias/`). |
 | `datos/importacion/<programa>/` | Lo de un programa: proceso, valoraciones, hallazgos, plan, metas, seguimientos, responsables, indicadores y documentos. Hoy solo `ingenieria-electronica`. |
-| `datos/semillas/imagenes/` | Las tres imágenes de prueba del carrusel (`scripts/generar-imagenes-carrusel.php`). |
+| `datos/semillas/imagenes/` | Las tres imágenes de prueba del carrusel (`scripts/generar-imagenes-carrusel.php`) y las de las noticias. |
 
 Las migraciones están en `unillanos_migrate/migrations/` (grupo `unillanos`). Las que van por programa llevan la marca `unillanos_por_programa` y se replican solas por cada carpeta de `datos/importacion/` (id `<migración>:<carpeta con guiones bajos>`). Las rutas de archivos de los CSV son relativas a la raíz del repositorio y las valida `RutaDeArchivo` (solo `docs/` y `datos/`, sin salirse de la raíz, con extensión permitida).
+
+Las migraciones del sitio de Acreditación son `archivos_noticias`, `noticias`, `paginas_informativas` y `equipo`. Sus CSV los genera `scripts/extraer-sitio-acreditacion.py` (`python3 scripts/extraer-sitio-acreditacion.py`) leyendo las páginas públicas de https://acreditacion.unillanos.edu.co; el script no inventa datos (la fecha de las noticias queda vacía) y limpia el HTML a las etiquetas de `basic_html`. Para repetir solo esa carga: `ddev drush migrate:import archivos_noticias,noticias,paginas_informativas,equipo`.
+
+Las imágenes de las galerías (`field_galeria`) no vienen de migraciones: se suben a mano en el sitio y quedan en `sites/default/files/galeria/`, fuera de git.
 
 ```bash
 ddev drush migrate:status --group=unillanos
@@ -199,7 +232,7 @@ ddev exec "cd drupal && vendor/bin/phpstan analyze --level=5 --no-progress web/m
 ddev drush config:status
 ```
 
-PHPStan corre en nivel 0 si no se le pasa `--level=5`. Las pruebas son de tipo Kernel (con un proceso aparte por prueba) y Unit. Una corrida completa tarda del orden de una hora (estimado); se puede acortar corriendo varios archivos a la vez.
+Estado actual: la suite de `unillanos_autoeval` tiene 539 pruebas y 26.390 aserciones, la de `unillanos_migrate` tiene 24 pruebas, PHPCS da 0 errores y PHPStan en nivel 5 sale limpio. Si el recuento baja tras un cambio, algo se borró. PHPStan corre en nivel 0 si no se le pasa `--level=5`. Las pruebas son de tipo Kernel (con un proceso aparte por prueba) y Unit. Una corrida completa tarda del orden de una hora (estimado); se puede acortar corriendo varios archivos a la vez.
 
 Además de las pruebas, cada cambio de tema se revisa con capturas reales a 1440, 390 y 320 px: sin desborde horizontal, sin palabras partidas, contraste AA y objetivos de 44 px medidos.
 
@@ -218,10 +251,10 @@ También se puede crear a mano desde el sitio (Modo edición › Programas › A
 
 ### Agregar un módulo institucional
 
-1. Crear el tipo de contenido con sus campos (en un computador de desarrollo, por la interfaz o por script) y exporte con `ddev drush cex -y`.
+1. Crear el tipo de contenido con sus campos (en un computador de desarrollo, por la interfaz o por script) y exportarlo con `ddev drush cex -y`.
 2. Dar al rol `acreditacion` los permisos de crear, editar cualquiera y borrar lo propio (en `config/sync` y en `config/optional` del módulo, iguales) y agregar el tipo a `SimplificarAcreditacionHooks::TIPOS`, `UnillanosAutoevalHooks::TIPOS_PUBLICACION` y `EntidadesDependientes::REGLAS`. Crear su pantalla de formulario `acreditacion`.
 3. Escribir el servicio que arma la página (extendiendo `InstitucionalBase` si lista documentos), el método del controlador, la ruta, la plantilla y los componentes que falten.
-4. Agregar el enlace al menú `main` en `links.menu.yml` y la ruta a `UnillanosHooks::RUTAS_CON_CABECERA` si la página trae su propio h1.
+4. Agregar el enlace al menú `main` en `links.menu.yml` (o a la barra secundaria del SIAAI, `RastroActivoSiaai::RUTAS`, si es una página del SIAAI) y la ruta a `UnillanosHooks::RUTAS_CON_CABECERA` si la página trae su propio h1.
 5. Escribir las pruebas, la migración y las semillas, y documentar en `docs/`.
 
 ### Agregar un campo
@@ -239,7 +272,7 @@ También se puede crear a mano desde el sitio (Modo edición › Programas › A
 | El modelo se declara por proceso y no hay equivalencias entre modelos. | Cada proceso se evaluó con una norma distinta; mezclar factores de modelos distintos daría comparaciones falsas. |
 | Los componentes solo muestran valores guardados. | Mostrar un grado o un destino calculado en la plantilla ocultaría reglas que Acreditación todavía debe confirmar. |
 | Servicios pequeños en vez de un presentador único. | El presentador original pasaba de 1500 líneas; cada servicio tiene un tema y se prueba por separado. |
-| Un solo rol `acreditacion` sin permisos `administer`. | Acreditación necesita crear y editar todo lo suyo, no administrar el sitio. |
+| Un solo rol `acreditacion` sin permisos `administer`. | Acreditación crea y edita todo lo suyo y no tiene por qué administrar el sitio. |
 | El borrado se bloquea si algo depende del contenido, sin cascada. | Un borrado en cascada podría llevarse un proceso entero por un clic equivocado. |
 | Formularios simples en vez de ocultar campos del formulario completo. | El administrador conserva Drupal tal cual; la gente de Acreditación ve solo lo necesario, con ayudas en su idioma. |
 | Datos por migraciones desde CSV. | Cualquier computador o el servidor recrean lo mismo; los CSV se revisan y se versionan. |
@@ -250,6 +283,6 @@ También se puede crear a mano desde el sitio (Modo edición › Programas › A
 
 ## 10. Pendientes conocidos
 
-El detalle está en `docs/pendientes-acreditacion.md`. Los que más afectan al código: la regla de redondeo de grados, la «regla del 4» (destino de los hallazgos), el modelo de los procesos nuevos, los textos editoriales de la portada y de `/documentos`, la visibilidad pública de los documentos y el formulario «Participa» (con los roles `editor_documentos` y `gestor_participacion` sin definir).
+El detalle está en `docs/pendientes-acreditacion.md`. Los que más afectan al código: la regla de redondeo de grados, la «regla del 4» (destino de los hallazgos), el modelo de los procesos nuevos, los textos editoriales de la portada y de `/documentos`, la visibilidad pública de los documentos y los ajustes de «Participa» (captcha o honeypot, política de datos y alcance de `gestor_participacion`; sección 32). Las secciones 31 a 34 recogen lo del contenido de Acreditación, la revisión de la Fase 9 y las mejoras de interfaz.
 
-Antes de publicar el sitio hay que retirar el starterkit, controlar el acceso a los documentos no publicados y actualizar los módulos de terceros. Olivero ya está desinstalado, los medios ya no admiten zip ni txt y `desplegar.sh` desinstala `unillanos_guia`. La guía de despliegue tiene la lista completa.
+Antes de publicar el sitio hay que retirar el starterkit, controlar el acceso a los documentos no publicados y actualizar los módulos de terceros. Olivero ya está desinstalado y fuera de `config/sync`, el medio `documento` ya no admite `zip` ni `txt` (solo `pdf doc docx xls xlsx ppt pptx odt ods`) y `desplegar.sh` desinstala `unillanos_guia`. La guía de despliegue tiene la lista completa.

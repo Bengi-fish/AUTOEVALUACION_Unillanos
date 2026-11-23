@@ -199,9 +199,9 @@ ddev export-db --file=$HOME/respaldos/antes-fase-N.sql.gz
 | 4 | `fase-4-reglas` | Módulo `unillanos_autoeval` | Grado se calcula; pruebas pasan | No |
 | 5 | `fase-5-importacion` | Migraciones y datos de Ingeniería Electrónica | `migrate:status` sin errores; 17 metas | Sí |
 | 6 | `fase-6-tema` | Tema `unillanos` desde la plantilla | Se ve igual que el prototipo | No |
-| 7 | `fase-7-vistas` | Listado y buscador de programas (`/programas`, por servicio, sin Views), página de programa sin autoevaluación, menús y división del presentador | `/programas` y las páginas de la Fase 6 con datos reales; `/institucional` queda fuera | No |
-| 8 | `fase-8-webform-roles` | Formulario Participa, roles y permisos | Cada rol ve solo lo suyo | Sí |
-| 9 | `fase-9-revision` | Revisión final | Lista de la sección 12 completa | No |
+| 7 | `fase-7-vistas` | Listado y buscador de programas (`/programas`, por servicio, sin Views), página de programa sin autoevaluación, menús y división del presentador | `/programas` y las páginas de la Fase 6 con datos reales (`/institucional` se creó después, en la Fase 9) | No |
+| 8 | `fase-8-acreditacion` y `fase-8-webform-roles` | Rol `acreditacion` (8.1), panel y formularios simples (8.2, 8.3), formulario Participa y roles de documentos y participación (8.4) | Cada rol ve solo lo suyo | Sí |
+| 9 | `fase-9-siaai`, `fase-9-revision` y `mejoras-ui-ingeniero` | Portal y SIAAI, contenido del sitio de Acreditación, revisión final y mejoras de interfaz | Lista de la sección 12 (abiertos: `public://`, starterkit, reinstalación en limpio) | No |
 
 ---
 
@@ -585,7 +585,7 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 
 **Cómo se resolvió (demo con datos reales de Ingeniería Electrónica, solo local):**
 
-- **Sin Views.** Las páginas públicas (portada `/inicio`, programa, plan de mejoramiento, `/documentos`) son plantillas de nodo o de página propia más servicios de `unillanos_autoeval` que preparan los datos (ver la sección 11). Los componentes SDC solo muestran valores ya preparados; no calculan nada. Views queda para la Fase 7 (listado y buscador de programas).
+- **Sin Views.** Las páginas públicas (portada `/siaai`, programa, plan de mejoramiento, `/documentos`) son plantillas de nodo o de página propia más servicios de `unillanos_autoeval` que preparan los datos (ver la sección 11). Los componentes SDC solo muestran valores ya preparados; no calculan nada. Views queda para la Fase 7 (listado y buscador de programas).
 - **El tema se genera con** `ddev exec -d /var/www/html/drupal php vendor/bin/dr generate-theme unillanos --path themes/custom` (el comando `core/scripts/drupal generate-theme` está obsoleto y falla con la estructura de este repositorio).
 - **Alias de URL:** los alias viven en la base de datos, no en la configuración. En una base nueva, o tras importar un respaldo o migrar antes de importar la configuración, ejecuta `ddev drush pathauto:aliases-generate create canonical_entities:node` (solo crea los que faltan). Sin él, el enlace «Programa de Electrónica» del menú no encuentra su alias.
 - **Documentos:** las migraciones de documentos (marcas `%raiz%` y `unillanos_csv_opcional`) copian los archivos a `public://documentos/`; `/documentos` y la sección «Documentos del programa» salen del servicio `DocumentosPublicados`. Un documento puede ser un archivo o un enlace externo (`field_enlace`, solo `https://`; Fase 9, etapa 1): en los CSV de documentos la columna opcional `enlace` reemplaza a `archivo` (la fila con enlace no copia ningún archivo).
@@ -627,7 +627,7 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 
 **Cómo se resolvió (rama `fase-7-vistas`, pasos 1 a 7d):**
 
-- **Rutas nuevas:** `/programas` (`ProgramasController`, ruta `unillanos_autoeval.programas`): listado y buscador con un formulario GET (`q`, facultad, nivel, sede; el filtro de sede solo si hay dos o más), resuelto en el servidor y sin Views. Los componentes `program-card` y `program-search` se usan; `pane`, `progsearch`, `reco-form`, `scope`, `tool` y `view-tabs` siguen sin usarse ni commitearse. `/institucional` no se creó.
+- **Rutas nuevas:** `/programas` (`ProgramasController`, ruta `unillanos_autoeval.programas`): listado y buscador con un formulario GET (`q`, facultad, nivel, sede; el filtro de sede solo si hay dos o más), resuelto en el servidor y sin Views. Los componentes `program-card` y `program-search` se usan; `pane`, `progsearch`, `reco-form`, `scope`, `tool` y `view-tabs` siguen sin usarse ni commitearse. `/institucional` no se creó en esta fase (llegó en la Fase 9, etapas 3 y 9).
 - **Concordancia:** los rótulos de cifras, plan y filtro concuerdan en singular y plural (`formatPlural()` en el servicio; el componente solo imprime lo recibido).
 - **Servicios** (`drupal/web/modules/custom/unillanos_autoeval/src/Service/`; ninguno calcula grados, destinos ni avances):
   - `ListadoProgramas`: tarjetas del listado, filtros y «otros programas de la facultad»; es la única fuente de la regla «con autoevaluación», compartida con la portada.
@@ -668,6 +668,8 @@ Aplica las REGLAS DEL CICLO de la sección 2.2 de docs/IMPLEMENTACION_DRUPAL.md.
 
 **Hecho cuando:** el formulario funciona, cada rol ve solo lo suyo y `config:status` queda sin diferencias.
 
+**Estado: completa (8.1 a 8.4).** 8.1 a 8.3 ya están en `main` (PR #5); 8.4 está sin fusionar. El prompt de arriba es el original: el rol `editor_autoevaluacion` no se creó, lo reemplaza `acreditacion` (8.1), y los detalles de cada subfase están en los apartados 8.1 a 8.4. Ramas: `fase-8-acreditacion` (8.1 a 8.3) y `fase-8-webform-roles` (8.4, commit `74b2445`).
+
 **Push y merge:** sección 2.6 con `fase-8-webform-roles`.
 
 #### Fase 8.1 (rama `fase-8-acreditacion`): rol «Acreditación»
@@ -707,7 +709,7 @@ Primera parte de la Fase 8, hecha antes del formulario Participa. Un solo rol, `
 
 ## 12. Fase 9 · Revisión antes de mostrar
 
-**Rama:** `fase-9-revision` (solo si hay correcciones).
+**Rama:** `fase-9-revision` (commit `3c5fe1b`; sale de `fase-8-webform-roles`).
 
 Marca cada punto. Los comandos los puede correr Claude; la revisión visual es tuya.
 
@@ -716,10 +718,11 @@ Marca cada punto. Los comandos los puede correr Claude; la revisión visual es t
 - [x] Las cifras del sitio coinciden con el informe (valoración global 4,508 · 90 %, tabla 5.1) y con el Excel (17 metas; los pesos están redondeados a 0,0588, ver `pendientes-acreditacion.md`, sección 33).
 - [x] Accesibilidad: axe-core sin violaciones salvo dos avisos anotados (`pendientes-acreditacion.md`, sección 33).
 - [ ] Móvil (390 px) y escritorio (1440 px) comparados con `plantilla/`.
+- [x] Olivero desinstalado y sus bloques fuera de `config/sync`; los documentos ya no admiten `zip` ni `txt` (`pdf doc docx xls xlsx ppt pptx odt ods`).
 - [x] Copia de seguridad previa a la revisión: `$HOME/respaldos/antes-fase-9-revision.sql.gz`, fuera del repositorio.
 - [x] Desactivar el módulo `unillanos_guia` (`/guia-estilos` es público y muestra datos inventados): lo hace `deploy/desplegar.sh` en producción.
 - [ ] Control de acceso a `public://`: hoy un documento no publicado sigue accesible por su URL directa; decidir y aplicar la protección.
-- [ ] Documentación al día: `README.md`, `CLAUDE.md` y los tres documentos del MER reflejan lo implementado.
+- [x] Documentación al día (23 de noviembre de 2026): `CLAUDE.md`, esta guía, `modelo-de-contenido.md` y el README del tema reflejan lo implementado hasta las mejoras de interfaz. Los manuales de `docs/manuales/` se revisan aparte.
 
 ### Rediseño del micrositio (rama `rediseno-micrositio`)
 
@@ -775,9 +778,9 @@ Rediseño visual por etapas sobre `main` tras la Fase 7. Reglas: solo CSS y marc
 
 Marca cada fase cuando ya esté fusionada en `main`:
 
-- [x] Fase 1 · [x] Fase 2 · [x] Fase 3 · [x] Fase 4 · [x] Fase 5 · [x] Fase 6 · [ ] Fase 7 · [ ] Fase 8 · [ ] Fase 9
+- [x] Fase 1 · [x] Fase 2 · [x] Fase 3 · [x] Fase 4 · [x] Fase 5 · [x] Fase 6 · [x] Fase 7 · [ ] Fase 8 (8.4 sin fusionar) · [ ] Fase 9
 
-**Fase 6 fusionada en `main`** (sección 10). **Fase 7 cerrada a falta del merge** (rama `fase-7-vistas`, sección 11); **siguiente: Fase 8** (rama `fase-8-webform-roles`, sección 11).
+**Fase 6 fusionada en `main`** (sección 10). La Fase 7 y las subfases 8.1 a 8.3 ya están en `main` (merge de la Fase 7 y PR #5). Lo demás está **hecho pero sin fusionar ni subir** (el merge y el push los hace el usuario), en una cadena de ramas donde cada una sale de la anterior: `fase-9-siaai` (`cf02431`, etapa 10) → `fase-8-webform-roles` (`74b2445`, 8.4) → `fase-9-revision` (`3c5fe1b`, Fase 9) → `mejoras-ui-ingeniero` (`1d1c384`, `8c7ebc8`, `ec42890`, `e99d5f1`, `955b43a`). Pendiente de la Fase 9: control de acceso de `public://`, recortar el starterkit del tema y la reinstalación en limpio (destructiva); detalle en la sección 12.
 
 **Pendientes abiertos** (detalle en 9.5; ninguno bloquea la Fase 6):
 
@@ -864,7 +867,7 @@ El sitio pasa a tener dos niveles. El **portal** de Autoevaluación y Acreditaci
 - **Menú principal:** «Inicio» (del perfil standard) y «SIAAI» (`unillanos_autoeval.menu.siaai`). Programas, Documentos e «Institucional» salieron del menú principal y viven en la **barra secundaria del SIAAI**; el menú del pie conserva Programas y Documentos. `RastroActivoSiaai` (antes `RastroActivoProgramas`) pone «SIAAI» en el rastro activo de todas las páginas del SIAAI, incluida la de cada programa. El componente `nav` conserva el desplegable accesible para los ítems con hijos.
 - **Barra secundaria:** componente `subnav` (Inicio del SIAAI · Programas · Documentos · Institucional; página exacta con `aria-current="page"`, sección que la contiene con `aria-current="true"`). La arma `UnillanosHooks::barraSiaai()` solo en las rutas de `RastroActivoSiaai::RUTAS` y en la página de un programa; `page.html.twig` la pinta debajo del menú principal.
 - **Migas del SIAAI:** «Inicio › Información › SIAAI › …» (Información es texto hasta que exista su página).
-- **Pendiente del cambio de rumbo:** `/institucional` como página de programa (hecho en la etapa 9), y migración del contenido del sitio de Acreditación, widget de accesibilidad y carrusel en el portal (hechos en la etapa 10).
+- **Resuelto después del cambio de rumbo:** `/institucional` como página de programa (hecho en la etapa 9), y migración del contenido del sitio de Acreditación, widget de accesibilidad y carrusel en el portal (hechos en la etapa 10).
 
 ## Fase 9, cambio de rumbo, etapa 9: «Institucional» con la interfaz de un programa
 
@@ -903,6 +906,6 @@ Cambios pedidos por el ingeniero tras revisar el sitio. Una tarea por commit, ca
 
 **Tarea 2 · sin franja superior y botones flotantes.** Se eliminó la franja negra (componente `topbar`, su CSS y los datos `franja_superior` y `url_govco` de `unillanos_autoeval.micrositio`). Las redes y los logos (GOV.CO incluido) siguen en el pie. Lo que la franja daba a quien edita pasa al componente `edicion-barra`: una barra clara, solo con el permiso de editar (`Modo edición`, edición del micrositio, página completa de Drupal y «Cerrar sesión»). El botón de accesibilidad es ahora un botón flotante (`unillanos:a11y`) en la columna `.ua-flotantes` (esquina inferior derecha), justo encima de «Recomendaciones» (`unillanos:fab`): aparición suave, elevación al pasar el ratón, panel que se abre hacia arriba con fundido y deslizamiento y se cierra con Escape, el botón «Cerrar» o un clic fuera. Las opciones son interruptores (`aria-pressed`) de 44 px; en pantallas pequeñas ambos botones muestran solo el ícono y el pie deja sitio debajo.
 
-*Al desplegar:* `drush deploy` importa `config/sync`, que ya no trae `url_govco` ni `franja_superior`; la importación las elimina de `unillanos_autoeval.micrositio`, por eso no hay una actualización de base de datos para ellas. Las capturas de `docs/manuales/img` que muestran la barra negra se regeneran al cerrar la Tarea 4.
+*Al desplegar:* `drush deploy` importa `config/sync`, que ya no trae `url_govco` ni `franja_superior`; la importación las elimina de `unillanos_autoeval.micrositio`, por eso no hay una actualización de base de datos para ellas. Las capturas de `docs/manuales/img` se regeneraron el 23 de noviembre de 2026 y ya no muestran la barra negra (seis quedan por rehacer porque los botones flotantes tapan controles; ver `pendientes-acreditacion.md`).
 
 **Tarea 3 · carrusel propio en cada programa y en Institucional.** Campo de imagen de valor múltiple `field_galeria` (hasta 10; `alt` obligatorio, leyenda opcional en el título de la imagen, orden por arrastre; JPG/PNG/WebP de hasta 5 MB y 1280 px de ancho como mínimo) en los tipos `programa` y `proceso`, creado con `drupal/scripts/crear_galeria.php` y visible en los formularios por defecto y `acreditacion`. La página del programa lee **solo** su campo (servicio `GaleriaImagenes`, que comparte con `CarruselPortada` la construcción de la imagen en `ImagenesDeCarruselTrait`); la página «Institucional» lee el de su proceso institucional (`InstitucionalProcesos`: el más reciente sin programa y que no es de condiciones). Nunca se usan las diapositivas de la portada ni las imágenes de otro nodo. El componente `carousel` es el mismo (animación, avance, pausa y accesibilidad) con la variante `contenida` (dentro del contenedor, esquinas redondeadas) y diapositivas sin titular (sin franja: los controles llevan fondo propio y la lista de titulares sin JavaScript se omite). El carrusel va entre el bloque superior (texto y ficha) y las tarjetas de factores (`partials/autoevaluacion.html.twig`); sin factores, en su propia sección; sin imágenes no se imprime; con una sola no hay flechas, puntos ni avance. Decisión: la galería institucional vive en el proceso institucional (si se crea uno más nuevo, hay que subir las imágenes otra vez). Las imágenes de prueba (2–3 por nodo) viven en `sites/default/files/galeria/`, fuera de git.
