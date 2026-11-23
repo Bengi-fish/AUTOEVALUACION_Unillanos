@@ -20,8 +20,10 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 
 $bundles = ['programa', 'proceso'];
-$aviso = [
-  'proceso' => ' Solo se usa en el proceso institucional (el que no tiene programa): sus imágenes forman el carrusel de la página «Institucional». En los procesos de un programa no se usa; las del programa van en la ficha del programa.',
+// Ayudas breves (menos de 200 caracteres), en lenguaje sencillo.
+$descripcion = [
+  'programa' => 'Hasta 10 imágenes; se ordenan arrastrando. JPG, PNG o WebP, hasta 5 MB y 1280 px de ancho o más. Escriba el texto alternativo de cada una; el título es opcional.',
+  'proceso' => 'Imágenes del carrusel de «Institucional» (hasta 10; se ordenan arrastrando). Solo en el proceso institucional. JPG, PNG o WebP, hasta 5 MB y 1280 px o más. Texto alternativo obligatorio.',
 ];
 // Peso del campo en el formulario de cada modo (después de la foto).
 $formularios = ['default' => 14, 'acreditacion' => 23];
@@ -46,7 +48,7 @@ foreach ($bundles as $bundle) {
       'entity_type' => 'node',
       'bundle' => $bundle,
       'label' => 'Galería de imágenes',
-      'description' => 'Imágenes del carrusel de esta página (hasta 10). Se ordenan arrastrando. JPG, PNG o WebP de hasta 5 MB y al menos 1280 píxeles de ancho; se muestran con proporción 16:6 (se recorta al centro). Escriba siempre el texto alternativo; la leyenda es opcional. Sin imágenes, no se muestra el carrusel.' . ($aviso[$bundle] ?? ''),
+      'description' => $descripcion[$bundle] ?? $descripcion['programa'],
       'required' => FALSE,
       'settings' => [
         'file_directory' => 'galeria/' . $bundle,

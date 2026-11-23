@@ -11,6 +11,7 @@ use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\file\Entity\File;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\media\Entity\Media;
 use Drupal\media\Entity\MediaType;
@@ -53,6 +54,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     'field_resolucion_acreditacion',
     'field_acreditacion_hasta',
     'field_imagen',
+    'field_galeria',
     'status',
   ];
 
@@ -144,6 +146,16 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     $imagen = FieldConfig::loadByName('node', 'programa', 'field_imagen');
     if ($imagen instanceof FieldConfig) {
       $imagen->setSetting('alt_field_required', FALSE)->save();
+    }
+    // Galería de imágenes del programa (varias; con la ayuda real del sitio).
+    $this->crearCampo('node', 'programa', 'field_galeria', 'image', [], 10);
+    $galeria = FieldConfig::loadByName('node', 'programa', 'field_galeria');
+    if ($galeria instanceof FieldConfig) {
+      $real = $this->configuracion('field.field.node.programa.field_galeria');
+      $galeria->setSetting('alt_field_required', FALSE)
+        ->setSetting('title_field', TRUE)
+        ->setDescription((string) $real['description'])
+        ->save();
     }
     // Medio «documento» y sus campos.
     $tipo = MediaType::create(['id' => 'documento', 'label' => 'Documento', 'source' => 'file']);
@@ -256,6 +268,15 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
   protected function programa(): Node {
     $facultad = Term::create(['vid' => 'facultad', 'name' => 'Facultad de Pruebas']);
     $facultad->save();
+    // Con una imagen en la galería: al enviar el formulario por código, el
+    // widget de imágenes múltiple no genera su primera fila si el campo está
+    // vacío y core avisa; así la prueba se parece al uso real.
+    $archivo = File::create([
+      'uri' => 'public://galeria-de-prueba.jpg',
+      'filename' => 'galeria-de-prueba.jpg',
+      'status' => 1,
+    ]);
+    $archivo->save();
     return $this->crearNodo('programa', [
       'title' => 'Programa de prueba',
       'field_clave' => 'programa-de-prueba',
@@ -263,6 +284,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
       'field_nivel' => 'pregrado',
       'field_director' => 'Persona Uno',
       'field_codigo_snies' => '1234',
+      'field_galeria' => [['target_id' => $archivo->id(), 'alt' => 'Imagen de prueba']],
     ]);
   }
 

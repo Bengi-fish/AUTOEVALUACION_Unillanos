@@ -84,7 +84,8 @@
   marcan los lectores de pantalla.
 #}
 {% if marco.accesibilidad or mostrar_fab %}
-  <aside class="ua-flotantes" aria-label="{{ 'Accesos rápidos'|t }}">
+  {# role=complementary y no <aside>: la página solo tiene un <aside> (la ficha del programa). #}
+  <div class="ua-flotantes" role="complementary" aria-label="{{ 'Accesos rápidos'|t }}">
     {% if marco.accesibilidad %}
       {% include 'unillanos:a11y' with {title: marco.accesibilidad.title, url: marco.accesibilidad.url} only %}
     {% endif %}
@@ -96,5 +97,5 @@
         static: true,
       } only %}
     {% endif %}
-  </aside>
+  </div>
 {% endif %}

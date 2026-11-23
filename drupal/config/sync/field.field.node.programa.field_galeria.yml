@@ -12,7 +12,7 @@ field_name: field_galeria
 entity_type: node
 bundle: programa
 label: 'Galería de imágenes'
-description: 'Imágenes del carrusel de esta página (hasta 10). Se ordenan arrastrando. JPG, PNG o WebP de hasta 5 MB y al menos 1280 píxeles de ancho; se muestran con proporción 16:6 (se recorta al centro). Escriba siempre el texto alternativo; la leyenda es opcional. Sin imágenes, no se muestra el carrusel.'
+description: 'Hasta 10 imágenes; se ordenan arrastrando. JPG, PNG o WebP, hasta 5 MB y 1280 px de ancho o más. Escriba el texto alternativo de cada una; el título es opcional.'
 required: false
 translatable: true
 default_value: {  }
