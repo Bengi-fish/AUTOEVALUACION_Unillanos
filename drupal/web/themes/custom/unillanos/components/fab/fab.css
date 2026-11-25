@@ -1,5 +1,7 @@
 /**
- * Componente fab.
+ * Componente fab: botón flotante «Recomendaciones». Va dentro de la columna
+ * flotante de la página (.ua-flotantes), debajo del botón de accesibilidad. Sin
+ * esa columna (guía de estilos) se fija solo en la esquina inferior derecha.
  */
 
 .ua-fab {
@@ -9,7 +11,9 @@
   z-index: 40;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--espacio-2);
+  box-sizing: border-box;
   min-height: 52px;
   padding: 0 22px 0 18px;
   border-radius: var(--radio-pill);
@@ -18,9 +22,15 @@
   color: var(--Surface);
   box-shadow: var(--sombra-2);
   font-size: 15px;
+  line-height: 20px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
+  animation: ua-flotante-entrada 420ms ease backwards;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
 }
 
 .ua a.ua-fab {
@@ -30,6 +40,17 @@
 
 .ua-fab:hover {
   background: var(--rojo-700);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(29, 29, 27, 0.2);
+}
+
+.ua-fab:active {
+  transform: scale(0.97);
+}
+
+/* Dentro de la columna flotante no se posiciona por su cuenta. */
+.ua-fab--estatico {
+  position: static;
 }
 
 @media (max-width: 860px) {
@@ -46,11 +67,19 @@
   .ua-fab {
     padding: 0;
     width: 56px;
-    justify-content: center;
   }
 
 }
 
-.ua-fab--estatico {
-  position: static;
+@media (prefers-reduced-motion: reduce) {
+
+  .ua-fab {
+    animation: none;
+    transition: none;
+  }
+
+  .ua-fab:hover {
+    transform: none;
+  }
+
 }

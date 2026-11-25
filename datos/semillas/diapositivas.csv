@@ -1,0 +1,4 @@
+id,titular,texto,enlace,orden,imagen,alt
+prueba-carrusel-1,Diapositiva de prueba 1,Texto corto de prueba para la primera diapositiva.,internal:/programas,1,datos/semillas/imagenes/prueba-carrusel-1.jpg,Imagen de prueba
+prueba-carrusel-2,Diapositiva de prueba 2,,,2,datos/semillas/imagenes/prueba-carrusel-2.jpg,Imagen de prueba
+prueba-carrusel-3,Diapositiva de prueba 3,,,3,datos/semillas/imagenes/prueba-carrusel-3.jpg,Imagen de prueba

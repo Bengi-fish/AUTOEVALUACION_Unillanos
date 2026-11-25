@@ -82,6 +82,7 @@ final class AcreditacionController extends ControllerBase {
         'total' => count($filas),
         'total_general' => $filtrado['total'],
         'generales' => $this->accesosGenerales($cache),
+        'institucional' => $this->accesosInstitucionales($cache),
         'programas' => $filas,
       ],
       '#attached' => ['library' => ['unillanos_autoeval/acreditacion']],
@@ -221,8 +222,79 @@ final class AcreditacionController extends ControllerBase {
       $this->enlace($this->t('Contenido sin publicar'), 'system.admin_content', [], ['status' => 2], $cache),
       $this->enlace($this->t('Subir un documento'), 'unillanos_autoeval.acreditacion_documento_nuevo', [], [], $cache),
       $this->enlace($this->t('Documentos'), 'entity.media.collection', [], ['type' => 'documento'], $cache),
+      $this->enlace($this->t('Añadir una diapositiva al carrusel'), 'node.add', ['node_type' => 'diapositiva'], [], $cache),
+      $this->enlace($this->t('Diapositivas del carrusel'), 'system.admin_content', [], ['type' => 'diapositiva'], $cache),
       $this->enlace($this->t('Cabecera y pie del micrositio'), 'unillanos_autoeval.micrositio', [], [], $cache),
     ]));
+  }
+
+  /**
+   * Arma los accesos de la sección «Institucional» del panel.
+   *
+   * Los mismos de edición que ya tiene el resto del panel: crear y listar
+   * dependencias, normas y procesos institucionales, subir documentos de
+   * dependencias o directivos y editar las cifras. Solo salen los que la
+   * persona puede usar.
+   *
+   * @param \Drupal\Core\Cache\CacheableMetadata $cache
+   *   Recibe los metadatos de las URL.
+   *
+   * @return array<int, array{titulo: mixed, enlaces: array<int, array<string, mixed>>}>
+   *   Grupos con titulo y enlaces; vacío si no hay ningún acceso.
+   */
+  protected function accesosInstitucionales(CacheableMetadata $cache): array {
+    $documento = ['unillanos_autoeval.acreditacion_documento_nuevo', [], []];
+    $lista = fn(string $tipo): array => ['system.admin_content', [], ['type' => $tipo]];
+    $crear = fn(string $tipo): array => ['node.add', ['node_type' => $tipo], []];
+    $grupos = [
+      [
+        $this->t('Procesos institucionales'),
+        [
+          [$this->t('Crear un proceso institucional'), $crear('proceso')],
+          [$this->t('Ver la lista de procesos'), $lista('proceso')],
+          [$this->t('Subir un documento'), $documento],
+        ],
+      ],
+      [
+        $this->t('Dependencias'),
+        [
+          [$this->t('Añadir una dependencia'), $crear('dependencia')],
+          [$this->t('Ver la lista de dependencias'), $lista('dependencia')],
+        ],
+      ],
+      [
+        $this->t('Directivos'),
+        [[$this->t('Subir un documento de directivos'), $documento]],
+      ],
+      [
+        $this->t('Normatividad'),
+        [
+          [$this->t('Añadir una norma'), $crear('norma')],
+          [$this->t('Ver la lista de normas'), $lista('norma')],
+        ],
+      ],
+      [
+        $this->t('Introducción y cifras'),
+        [
+          [
+            $this->t('Editar la introducción y los enlaces de cifras'),
+            ['unillanos_autoeval.micrositio', [], []],
+          ],
+        ],
+      ],
+    ];
+    $salida = [];
+    foreach ($grupos as [$titulo, $accesos]) {
+      $enlaces = [];
+      foreach ($accesos as [$texto, [$ruta, $parametros, $consulta]]) {
+        $enlaces[] = $this->enlace($texto, $ruta, $parametros, $consulta, $cache);
+      }
+      $enlaces = array_values(array_filter($enlaces));
+      if ($enlaces) {
+        $salida[] = ['titulo' => $titulo, 'enlaces' => $enlaces];
+      }
+    }
+    return $salida;
   }
 
   /**

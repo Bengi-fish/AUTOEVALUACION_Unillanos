@@ -1,0 +1,21 @@
+uuid: 7a484bc7-89fd-4698-a039-7a7cff920be0
+langcode: es
+status: true
+dependencies: {  }
+name: unillanos_carrusel_800
+label: 'Carrusel 800 px'
+effects:
+  bdfe0c36-d30b-4e50-a95b-9a5a6b5d7940:
+    uuid: bdfe0c36-d30b-4e50-a95b-9a5a6b5d7940
+    id: image_scale
+    weight: 1
+    data:
+      width: 800
+      height: null
+      upscale: false
+  5abd0e43-04d2-4312-bf41-33058682e34f:
+    uuid: 5abd0e43-04d2-4312-bf41-33058682e34f
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

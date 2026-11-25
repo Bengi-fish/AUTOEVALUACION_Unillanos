@@ -3,11 +3,14 @@ langcode: es
 status: true
 dependencies:
   config:
+    - core.entity_form_mode.node.acreditacion
     - field.field.node.programa.field_acreditacion_hasta
+    - field.field.node.programa.field_clave
     - field.field.node.programa.field_codigo_snies
     - field.field.node.programa.field_director
     - field.field.node.programa.field_duracion
     - field.field.node.programa.field_facultad
+    - field.field.node.programa.field_galeria
     - field.field.node.programa.field_imagen
     - field.field.node.programa.field_modalidad
     - field.field.node.programa.field_nivel
@@ -59,6 +62,14 @@ content:
     weight: 2
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_galeria:
+    type: image_image
+    weight: 23
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
     third_party_settings: {  }
   field_imagen:
     type: image_image

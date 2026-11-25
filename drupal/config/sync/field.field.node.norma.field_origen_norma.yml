@@ -1,0 +1,21 @@
+uuid: 9cfba05a-2eed-4c53-8f67-b316e63d2367
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_origen_norma
+    - node.type.norma
+  module:
+    - options
+id: node.norma.field_origen_norma
+field_name: field_origen_norma
+entity_type: node
+bundle: norma
+label: Origen
+description: 'Elija si la norma la expide una entidad externa o la Universidad.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

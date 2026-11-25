@@ -17,6 +17,13 @@
 #}
 {{ attach_library('unillanos/programa') }}
 
+{# ------------------------------------------------------------- migas #}
+<div class="ua-page__migas">
+  <div class="ua-container">
+    {% include 'unillanos:breadcrumb' with {items: [{title: 'Inicio'|t, url: '/'}, {title: 'Información'|t}, {title: 'SIAAI'|t}]} only %}
+  </div>
+</div>
+
 {# ---------------------------------------------------------------- hero #}
 {% embed 'unillanos:hero' with {
   eyebrow: datos.eyebrow,

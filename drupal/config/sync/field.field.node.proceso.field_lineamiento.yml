@@ -12,7 +12,7 @@ entity_type: node
 bundle: proceso
 label: 'Modelo (lineamiento)'
 description: 'Modelo con el que se hizo el proceso. Sus factores y elementos se muestran y validan según este modelo.'
-required: true
+required: false
 translatable: true
 default_value: {  }
 default_value_callback: ''

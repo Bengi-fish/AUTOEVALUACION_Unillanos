@@ -87,3 +87,65 @@ services:
     class: Drupal\unillanos_autoeval\Twig\UnillanosTwigExtension
     tags:
       - { name: twig.extension }
+
+  # Página de «Institucional» (Fase 9, etapa 3; reunida en el cambio de rumbo).
+  unillanos_autoeval.institucional_portada:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalPortada
+    arguments: ['@config.factory', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalPortada: '@unillanos_autoeval.institucional_portada'
+
+  unillanos_autoeval.institucional_procesos:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalProcesos
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion', '@unillanos_autoeval.factores_programa', '@unillanos_autoeval.plan_mejoramiento_programa', '@unillanos_autoeval.galeria_imagenes']
+  Drupal\unillanos_autoeval\Service\InstitucionalProcesos: '@unillanos_autoeval.institucional_procesos'
+
+  unillanos_autoeval.institucional_dependencias:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalDependencias
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalDependencias: '@unillanos_autoeval.institucional_dependencias'
+
+  unillanos_autoeval.institucional_directivos:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalDirectivos
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalDirectivos: '@unillanos_autoeval.institucional_directivos'
+
+  unillanos_autoeval.institucional_normas:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalNormas
+    arguments: ['@entity_type.manager', '@unillanos_autoeval.documentos_publicados', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalNormas: '@unillanos_autoeval.institucional_normas'
+
+  unillanos_autoeval.institucional_cifras:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalCifras
+    arguments: ['@config.factory', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\InstitucionalCifras: '@unillanos_autoeval.institucional_cifras'
+
+  unillanos_autoeval.carrusel_portada:
+    class: Drupal\unillanos_autoeval\Service\CarruselPortada
+    arguments: ['@entity_type.manager', '@file_url_generator', '@current_user', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\CarruselPortada: '@unillanos_autoeval.carrusel_portada'
+
+  unillanos_autoeval.galeria_imagenes:
+    class: Drupal\unillanos_autoeval\Service\GaleriaImagenes
+    arguments: ['@entity_type.manager', '@file_url_generator', '@current_user']
+  Drupal\unillanos_autoeval\Service\GaleriaImagenes: '@unillanos_autoeval.galeria_imagenes'
+
+  unillanos_autoeval.sitio_acreditacion:
+    class: Drupal\unillanos_autoeval\Service\SitioAcreditacion
+    arguments: ['@entity_type.manager', '@file_url_generator', '@current_user']
+  Drupal\unillanos_autoeval\Service\SitioAcreditacion: '@unillanos_autoeval.sitio_acreditacion'
+
+  unillanos_autoeval.portal_inicio:
+    class: Drupal\unillanos_autoeval\Service\PortalInicio
+    arguments: ['@config.factory', '@unillanos_autoeval.enlaces_edicion']
+  Drupal\unillanos_autoeval\Service\PortalInicio: '@unillanos_autoeval.portal_inicio'
+
+  unillanos_autoeval.institucional_pagina:
+    class: Drupal\unillanos_autoeval\Service\InstitucionalPagina
+    arguments:
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalPortada'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalProcesos'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalDependencias'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalDirectivos'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalNormas'
+      - '@Drupal\unillanos_autoeval\Service\InstitucionalCifras'
+  Drupal\unillanos_autoeval\Service\InstitucionalPagina: '@unillanos_autoeval.institucional_pagina'

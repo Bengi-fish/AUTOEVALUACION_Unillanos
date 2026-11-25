@@ -7,7 +7,9 @@ dependencies:
     - field.field.node.programa.field_clave
     - field.field.node.programa.field_codigo_snies
     - field.field.node.programa.field_director
+    - field.field.node.programa.field_duracion
     - field.field.node.programa.field_facultad
+    - field.field.node.programa.field_galeria
     - field.field.node.programa.field_imagen
     - field.field.node.programa.field_modalidad
     - field.field.node.programa.field_nivel
@@ -136,4 +138,6 @@ content:
     weight: 100
     region: content
 hidden:
+  field_duracion: true
+  field_galeria: true
   langcode: true

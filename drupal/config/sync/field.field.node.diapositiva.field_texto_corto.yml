@@ -1,0 +1,19 @@
+uuid: ff6339ab-ac30-4ae7-8c9a-360b28c3662f
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_texto_corto
+    - node.type.diapositiva
+id: node.diapositiva.field_texto_corto
+field_name: field_texto_corto
+entity_type: node
+bundle: diapositiva
+label: 'Texto corto'
+description: 'Una frase breve bajo el titular (hasta 160 caracteres). Es opcional.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

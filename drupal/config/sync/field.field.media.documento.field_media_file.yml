@@ -12,8 +12,8 @@ field_name: field_media_file
 entity_type: media
 bundle: documento
 label: Archivo
-description: ''
-required: true
+description: 'Suba el archivo, o deje este campo vacío y use el enlace externo. Debe haber uno de los dos, no ambos.'
+required: false
 translatable: true
 default_value: {  }
 default_value_callback: ''
@@ -21,7 +21,7 @@ settings:
   handler: 'default:file'
   handler_settings: {  }
   file_directory: 'documentos/[date:custom:Y-m]'
-  file_extensions: 'pdf doc docx xls xlsx ppt pptx odt ods txt zip'
+  file_extensions: 'pdf doc docx xls xlsx ppt pptx odt ods'
   max_filesize: ''
   description_field: false
 field_type: file

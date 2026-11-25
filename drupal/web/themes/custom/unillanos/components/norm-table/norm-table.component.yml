@@ -1,0 +1,81 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Tabla de normas
+status: stable
+group: Contenido
+description: 'Matriz legal: tabla de siete columnas en escritorio y una tarjeta por norma en pantallas estrechas, con filtros por origen y tipo de norma y búsqueda por texto. Los filtros nacen ocultos y los muestra el JavaScript; sin él todas las filas se ven. Solo imprime lo que recibe; los conteos de los filtros y el total son valores guardados.'
+props:
+  type: object
+  required:
+    - rows
+  properties:
+    id:
+      type: string
+      title: Identificador
+      description: 'Base de los ids; solo letras, números, guion y guion bajo. Por defecto «normas».'
+    total:
+      type: integer
+      minimum: 0
+    origins:
+      type: array
+      title: Opciones del filtro de origen
+      items:
+        type: object
+        required:
+          - value
+          - label
+        properties:
+          value:
+            type: string
+          label:
+            type: string
+          count:
+            type: integer
+    types:
+      type: array
+      title: Opciones del filtro de tipo de norma
+      items:
+        type: object
+        required:
+          - value
+          - label
+        properties:
+          value:
+            type: string
+          label:
+            type: string
+          count:
+            type: integer
+    rows:
+      type: array
+      title: Normas
+      items:
+        type: object
+        properties:
+          origin:
+            type: string
+          origin_key:
+            type: string
+          type:
+            type: string
+          type_key:
+            type: string
+          number:
+            type: string
+          entity:
+            type: string
+          epigraph:
+            type: string
+          chapters:
+            type: string
+          application:
+            type: string
+          link:
+            type: object
+          search:
+            type: string
+          edit:
+            type: object
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once

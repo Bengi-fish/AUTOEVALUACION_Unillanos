@@ -45,3 +45,6 @@ props:
             description: 'Rótulo del ícono (PDF, XLSX, DOCX…). Por defecto PDF; caben hasta cuatro letras.'
           url:
             type: string
+          externo:
+            type: boolean
+            description: 'TRUE si es un enlace externo (carpeta de Drive u otra dirección https): ícono de enlace, pestaña nueva y aviso para lectores de pantalla.'

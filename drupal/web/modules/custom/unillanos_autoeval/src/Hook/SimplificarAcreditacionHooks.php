@@ -37,6 +37,9 @@ class SimplificarAcreditacionHooks {
       'plan_mejoramiento',
       'meta',
       'seguimiento',
+      'dependencia',
+      'norma',
+      'diapositiva',
     ],
     'media' => ['documento'],
   ];

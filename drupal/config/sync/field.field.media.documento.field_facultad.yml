@@ -1,0 +1,24 @@
+uuid: 6d934292-508f-4e2a-a560-4d81207cd7ec
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_facultad
+    - media.type.documento
+    - taxonomy.vocabulary.facultad
+id: media.documento.field_facultad
+field_name: field_facultad
+entity_type: media
+bundle: documento
+label: Facultad
+description: 'Solo para documentos de directivos por facultad.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      facultad: facultad
+field_type: entity_reference

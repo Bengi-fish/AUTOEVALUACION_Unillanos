@@ -1,0 +1,38 @@
+uuid: 618e3d7e-95e5-400e-979a-3e7fc0c04737
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_galeria
+    - node.type.proceso
+  module:
+    - image
+id: node.proceso.field_galeria
+field_name: field_galeria
+entity_type: node
+bundle: proceso
+label: 'Galería de imágenes'
+description: 'Imágenes del carrusel de «Institucional» (hasta 10; se ordenan arrastrando). Solo en el proceso institucional. JPG, PNG o WebP, hasta 5 MB y 1280 px o más. Texto alternativo obligatorio.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: galeria/proceso
+  file_extensions: 'png jpg jpeg webp'
+  max_filesize: '5 MB'
+  max_resolution: ''
+  min_resolution: 1280x1
+  alt_field: true
+  alt_field_required: true
+  title_field: true
+  title_field_required: false
+  default_image:
+    uuid: null
+    alt: ''
+    title: ''
+    width: null
+    height: null
+field_type: image

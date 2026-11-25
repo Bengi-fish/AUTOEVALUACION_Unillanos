@@ -1,10 +1,31 @@
+# Portal de Autoevaluación y Acreditación: es la página de inicio del sitio
+# (system.site:page.front). Su ruta interna es /portal; se entra por «/».
+unillanos_autoeval.portal:
+  path: '/portal'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\PortalController::portal'
+    _title: 'Autoevaluación y Acreditación'
+  requirements:
+    _permission: 'access content'
+
+# SIAAI: la portada del sistema de información de autoevaluación (antes /inicio).
 unillanos_autoeval.portada:
-  path: '/inicio'
+  path: '/siaai'
   defaults:
     _controller: '\Drupal\unillanos_autoeval\Controller\PortadaController::portada'
     _title: 'Sistema de Información de Autoevaluación Institucional'
   requirements:
     _permission: 'access content'
+
+# Direcciones anteriores que siguen funcionando: redirigen (301) a la página o
+# a la sección que hoy las contiene.
+unillanos_autoeval.inicio_anterior:
+  path: '/inicio'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.portada'
+  requirements:
+    _access: 'TRUE'
 
 unillanos_autoeval.documentos:
   path: '/documentos'
@@ -96,3 +117,86 @@ unillanos_autoeval.acreditacion_documento_nuevo:
     _title: 'Subir un documento'
   requirements:
     _entity_create_access: 'media:documento'
+
+# «Institucional»: portada y sus cinco módulos (Fase 9, etapa 3).
+unillanos_autoeval.institucional:
+  path: '/institucional'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\InstitucionalController::portada'
+    _title: 'Institucional'
+  requirements:
+    _permission: 'access content'
+
+unillanos_autoeval.institucional_procesos:
+  path: '/institucional/procesos'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'procesos'
+  requirements:
+    _access: 'TRUE'
+
+unillanos_autoeval.institucional_dependencias:
+  path: '/institucional/dependencias'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'dependencias'
+  requirements:
+    _access: 'TRUE'
+
+unillanos_autoeval.institucional_directivos:
+  path: '/institucional/directivos'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'directivos'
+  requirements:
+    _access: 'TRUE'
+
+unillanos_autoeval.institucional_normatividad:
+  path: '/institucional/normatividad'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'normatividad'
+  requirements:
+    _access: 'TRUE'
+
+unillanos_autoeval.institucional_cifras:
+  path: '/institucional/cifras'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\RedireccionController::redirigir'
+    _ruta: 'unillanos_autoeval.institucional'
+    _ancla: 'cifras'
+  requirements:
+    _access: 'TRUE'
+
+# Sitio de Acreditación (Fase 9): noticias y equipo. Las páginas SAC, Esquema
+# organizacional, Boletines y Capacitaciones son nodos «pagina_informativa» con
+# su propio alias (/informacion/…, /noticias/boletines y /noticias/capacitaciones).
+unillanos_autoeval.noticias:
+  path: '/noticias'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\SitioAcreditacionController::noticias'
+    _title: 'Noticias'
+  requirements:
+    _permission: 'access content'
+
+unillanos_autoeval.equipo:
+  path: '/nuestro-equipo'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\SitioAcreditacionController::equipo'
+    _title: 'Nuestro equipo'
+  requirements:
+    _permission: 'access content'
+
+# Participa (Fase 8): página pública con el webform `participa`. El webform
+# decide quién puede enviar (anónimos y autenticados).
+unillanos_autoeval.participa:
+  path: '/participa'
+  defaults:
+    _controller: '\Drupal\unillanos_autoeval\Controller\ParticipaController::participa'
+    _title: 'Participa'
+  requirements:
+    _permission: 'access content'

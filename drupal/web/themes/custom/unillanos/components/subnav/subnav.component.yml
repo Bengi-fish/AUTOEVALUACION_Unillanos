@@ -1,0 +1,30 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Barra secundaria del SIAAI
+status: stable
+group: Página base
+description: 'Barra de navegación propia del SIAAI (Inicio del SIAAI, Programas, Documentos, Institucional). Solo aparece dentro del SIAAI, debajo del menú principal. La página actual lleva aria-current="page"; una sección que la contiene, aria-current="true".'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    label:
+      type: string
+      title: Nombre de la navegación
+    items:
+      type: array
+      title: Enlaces
+      items:
+        type: object
+        required:
+          - title
+          - url
+        properties:
+          title:
+            type: string
+          url:
+            type: string
+          active:
+            type: boolean
+          trail:
+            type: boolean

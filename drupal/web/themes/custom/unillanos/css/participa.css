@@ -1,0 +1,173 @@
+/**
+ * Página «Participa»: introducción y formulario de recomendaciones (webform).
+ */
+
+.ua-reco {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: var(--espacio-8);
+  align-items: start;
+}
+
+.ua-reco__intro p {
+  margin: var(--espacio-4) 0 0;
+  font-size: 18px;
+  line-height: 30px;
+}
+
+.ua-reco__points {
+  display: grid;
+  gap: var(--espacio-3);
+  margin: var(--espacio-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ua-reco__points li {
+  display: flex;
+  gap: var(--espacio-3);
+  align-items: flex-start;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.ua-reco__points .ua-icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--rojo-700);
+}
+
+.ua-reco__form {
+  padding: var(--espacio-6);
+  border: 1px solid var(--borde-calido);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
+}
+
+/* Campos del webform con el aspecto de los del sistema. */
+.ua-reco .webform-submission-form {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.ua-reco .form-item {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.ua-reco .form-item label {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--tinta-900);
+}
+
+.ua-reco .form-required::after {
+  content: " *";
+  color: var(--rojo-700);
+}
+
+.ua-reco .form-text,
+.ua-reco .form-select,
+.ua-reco .form-textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 11px 14px;
+  border: 1px solid var(--tinta-700);
+  border-radius: var(--radio-sm);
+  background-color: var(--Surface);
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--tinta-900);
+}
+
+.ua-reco .form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%233d424a' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.ua-reco .form-textarea {
+  min-height: 132px;
+  resize: vertical;
+}
+
+.ua-reco .form-text:hover,
+.ua-reco .form-select:hover,
+.ua-reco .form-textarea:hover {
+  border-color: var(--tinta-900);
+}
+
+.ua-reco .description,
+.ua-reco .webform-counter-message {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--tinta-500);
+}
+
+.ua-reco .form-type-checkbox {
+  display: flex;
+  gap: var(--espacio-3);
+  align-items: flex-start;
+  min-height: 44px;
+}
+
+.ua-reco .form-type-checkbox input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  accent-color: var(--rojo-700);
+}
+
+.ua-reco .form-type-checkbox label {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 400;
+}
+
+.ua-reco .form-item--error-message,
+.ua-reco .error {
+  color: var(--rojo-700);
+}
+
+.ua-reco .form-text.error,
+.ua-reco .form-select.error,
+.ua-reco .form-textarea.error {
+  border-color: var(--rojo-700);
+}
+
+/* Mensaje de confirmación y de error del formulario. */
+.ua-reco .webform-confirmation__message,
+.ua-reco [role="status"],
+.ua-reco [role="alert"] {
+  margin: 0;
+  padding: var(--espacio-4);
+  border: 1px solid var(--borde-calido);
+  border-left: 4px solid var(--rojo-700);
+  border-radius: var(--radio-sm);
+  background: var(--superficie-1, #f1f0ec);
+}
+
+@media (max-width: 860px) {
+
+  .ua-reco {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espacio-6);
+  }
+
+  .ua-reco__form {
+    padding: var(--espacio-5);
+  }
+
+  .ua-reco .ua-btn {
+    width: 100%;
+  }
+
+}

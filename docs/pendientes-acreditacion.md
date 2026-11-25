@@ -90,8 +90,8 @@ Solo texto; no cambian datos.
 **Fase 9**
 
 - [ ] **Recortar el starterkit:** eliminar del tema `unillanos` las plantillas y el CSS del starterkit que no se hayan personalizado (el tema parte de ~90 plantillas genéricas y CSS de componentes de core).
-- [ ] **Desactivar `unillanos_guia`** (`/guia-estilos` es público y muestra datos inventados) antes de mostrar el sitio.
-- [ ] **Desinstalar Olivero** y limpiar sus bloques (`block.block.olivero_*`), que se dejaron en la configuración al poner `unillanos` como tema por defecto.
+- [x] **Desactivar `unillanos_guia`** (`/guia-estilos` es público y muestra datos inventados) antes de mostrar el sitio: `deploy/desplegar.sh` la desinstala en cada despliegue; en desarrollo sigue activa para trabajar el tema.
+- [x] **Desinstalar Olivero** y limpiar sus bloques (`block.block.olivero_*`): hecho en la revisión de la Fase 9 (`drush theme:uninstall olivero`).
 
 **Notas**
 
@@ -361,7 +361,7 @@ Los 4 archivos de `docs/fuentes` entran como medios `documento` por migración d
 
 Verificado: la carpeta de archivos de Drupal está ignorada por git; `docs/fuentes` y los 4 archivos son visibles en el contenedor (`/var/www/html/docs/fuentes`); copias idénticas a los originales (SHA-256); rollback de las 4 migraciones deja 0 archivos en `public://documentos/` (quedan 3 carpetas vacías) y 0 medios, y los originales intactos; reimportar deja exactamente 4 archivos (`general/` ×2 y `ingenieria_electronica/` ×2), sin sufijos `_0`; importar de nuevo sin rollback no crea nada (0 procesados). Una carpeta de programa temporal con filas malas (ruta absoluta, archivo inexistente, extensión no permitida) falló fila por fila con mensajes claros y se borró.
 
-- [ ] **Extensiones del campo de archivo** (`pdf doc docx xls xlsx ppt pptx odt ods txt zip`): no se restringen ahora; **revisar en la Fase 9** (revisión de seguridad): `zip` y `txt` no hacen falta para documentos.
+- [x] **Extensiones del campo de archivo:** quitadas `zip` y `txt` en la revisión de la Fase 9 (quedan `pdf doc docx xls xlsx ppt pptx odt ods`); los archivos ya subidos no cambian.
 - [ ] **Fechas de publicación vacías:** ninguna fuente trae la fecha de publicación (la del plan, 19/06/2024, es la de suscripción). Se muestran solo si existen.
 - [ ] **El plan de mejoramiento** va en la categoría `documento_base` (el modelo no trae categoría «plan»); valorar una categoría propia si se amplía el modelo.
 - [ ] **Subcarpeta por programa:** hecha (`public://documentos/<programa>/`); dos archivos con el mismo nombre dentro de un mismo programa siguen renombrándose con sufijo (`file_exists: rename`).
@@ -411,7 +411,7 @@ Los ajustes técnicos de la Fase 7 (foco del buscador, logos de la guía, placeh
 Textos nuevos que escribió el equipo técnico durante el rediseño y que **Acreditación debe confirmar o redactar**. Se muestran tal cual hasta entonces; ninguno se calcula.
 
 - [ ] **Panel de filtro de `/documentos`** (Etapa 6): «Filtrar por tipo», «Todos», el rótulo «Programas» y el aviso «Se muestra 1 documento» / «Se muestran N documentos».
-- [ ] **Cabecera, franja superior y pie:** se editan en `/admin/config/unillanos/micrositio` (Etapa 8). Faltan los datos reales: enlace a la web principal, entidades, sedes, contacto, redes, enlaces legales y enlace de accesibilidad.
+- [ ] **Cabecera y pie:** se editan en `/admin/config/unillanos/micrositio` (Etapa 8). Faltan los datos reales: enlace a la web principal, entidades, sedes, contacto, redes, enlaces legales y enlace de accesibilidad.
 - [ ] **Tarjetas de facultad con conteo** (Etapa 5, no implementadas): requieren una descripción corta y, si se quiere, una imagen por facultad (`field_descripcion` y `field_imagen` en la taxonomía `facultad`) y el texto del conteo («9 programas»). Decidir si se quieren y de dónde sale el dato.
 - [ ] **Título de la portada con League Gothic:** no está incorporada; espera la confirmación del diseñador.
 - [ ] **Textos editoriales de la portada:** siguen siendo los del prototipo (bajada, «¿Qué es la autoevaluación?», principios y fases).
@@ -469,3 +469,79 @@ Decisiones tomadas por el equipo técnico que **Acreditación debe confirmar**.
 - [ ] **Excepción de 44 px:** la flecha pequeña del botón de lista con viñetas/numerada del editor de texto del panel mide 17 px de ancho (limitación del editor; el botón principal mide 44 px). Aceptar o pedir otro editor.
 - [ ] **Escritorio de `/admin/acreditacion`:** solo el celular se rehízo (tarjetas de 44 px); en la tabla de escritorio los enlaces miden 21 a 42 px de alto. Confirmar si se quiere 44 px también ahí.
 - [ ] **Lectores de pantalla en la subida de la foto:** el aviso «Subiendo…» es el indicador de Drupal y no tiene `aria-live`; no se anuncia al empezar ni al terminar. Probar con un lector real y decidir si se pide un aviso propio.
+
+## 28. Fase 9, etapas 1 y 2: documentos con enlace y datos institucionales
+
+Datos tomados el 18 de noviembre de 2026 de las páginas públicas de https://acreditacion.unillanos.edu.co (SIAAI) y del Acuerdo CESU 01 de 2025; cada fila de las semillas conserva su URL de origen.
+
+- [ ] **Modelo institucional 2020 no cargado:** el Acuerdo CESU 02 de 2020 (PDF) trae factores y características para instituciones (artículo 20), pero el texto del PDF sale con letras perdidas y no se pudo transcribir con certeza. Solo se cargó «Institucional 2025» (`CESU2025-INST`: 12 factores, 41 características y 68 aspectos, capítulo 3 del acuerdo de 2025). Acreditación debe confirmar si hace falta el de 2020 y entregar el texto.
+- [ ] **Sin modelo en los procesos institucionales:** los cuatro procesos cargados (informe 2015-2019 y condiciones institucionales de Villavicencio, Granada y El Retorno) no llevan modelo, porque el de 2025 no es el que se usó. `field_lineamiento` dejó de ser obligatorio.
+- [ ] **Tipo de proceso de «condiciones institucionales»:** se cargaron como `registro_calificado` (condiciones de calidad institucionales del MEN). Confirmar con Acreditación.
+- [ ] **«Esp. en Gestión de Proyectos»** aparece en 13 dependencias del SIAAI y no es uno de los 40 programas: las 13 filas quedan sin programa (nombre visible tal cual).
+- [ ] **Sedes:** se agregaron «Sede Villavicencio», «Sede Granada» y «Lugar de desarrollo El Retorno (Guaviare)» (nombres del SIAAI) sin renombrar las existentes (Barcelona, San Antonio, Emporio).
+- [ ] **«Documentación Condiciones de Programa MEN»** (9 carpetas de condición y 8 matrices 2016-2022) no se cargó: es documentación de apoyo de programas, no de lo institucional. Definir dónde va.
+- [ ] **Enlaces de Drive de acceso restringido:** casi todos los enlaces cargados abren carpetas de Google Drive que el SIAAI marca como restringidas. Confirmar con Acreditación qué puede ser público.
+- [ ] **Abreviaturas «CARP» y «ENL»** del ícono de los documentos con enlace: confirmar con el diseñador.
+- [ ] **Nombres de aspecto abreviados:** en `elementos_modelo.csv`, 25 aspectos y 2 características institucionales (C22 y C27) superan los 255 caracteres del nombre de un término: el nombre se corta con «…» y la descripción guarda el texto completo. Acreditación debe validarlo.
+- [ ] **Número y fecha de las normas** van en un solo campo de texto, como en la hoja; no se puede filtrar por fecha.
+
+## 29. Fase 9, etapa 5: carrusel de la portada
+
+- [ ] **Imágenes reales (con permiso de uso):** el carrusel lleva tres diapositivas de prueba («Diapositiva de prueba N», imagen abstracta propia). Reemplazarlas por las reales y quitar las de prueba (comando en `docs/IMPLEMENTACION_DRUPAL.md`, etapa 5).
+- [ ] **Textos y destino de cada diapositiva:** titular, texto corto y enlace los define Acreditación; las de prueba solo enlazan (la primera) a `/programas`.
+- [ ] **Licencia de las fotos** y el recorte: la imagen se muestra con proporción fija 16:6 en escritorio y 4:3 en celular (`object-fit: cover`), así que lo importante debe quedar centrado.
+
+## 30. Fase 9, etapa 6: qué se ve en la página propia de una valoración
+
+- [ ] **Campos de la valoración en `/node/<número>`:** la vista pública de una valoración publicada muestra, además del proceso, el elemento, la valoración y el grado, el porcentaje (y la ponderación, el juicio, la síntesis y el estado de la condición cuando tienen valor). La página del programa no los muestra. El manual de Acreditación lo dice así. Decidir con Acreditación si esos campos deben verse o si se ocultan en la vista de la valoración (cambio de configuración).
+
+## 31. Fase 9, etapa 10: contenido del sitio de Acreditación, accesibilidad y carrusel
+
+Datos tomados el 20 de noviembre de 2026 de https://acreditacion.unillanos.edu.co.
+
+- [ ] **Fecha de las noticias:** el sitio de origen no la publica; las cinco noticias quedan sin fecha y se listan en el orden del slider. Acreditación debe entregarla si quiere ordenarlas por fecha.
+- [ ] **Boletines y capacitaciones:** los enlaces a los PDF apuntan al sitio de origen (`/phocadownload/…`); si ese sitio se retira, los enlaces se rompen. Decidir si se descargan los archivos y se cargan como documentos. «Capacitaciones (histórico)» conserva el texto y los enlaces de la página original sin reorganizar.
+- [ ] **Nombres y correos del equipo:** se copiaron tal cual los publica el sitio de origen (18 personas; correos institucionales). Confirmar con Acreditación que siguen vigentes y que pueden publicarse. «Karol Vanessa Baquero» aparece en los dos grupos, como en el original.
+- [ ] **Texto del SAC y del Modelo de Autoevaluación:** se migró el texto sin tablas ni imágenes (el formato `basic_html` no las admite). Revisar con Acreditación si falta algo.
+- [ ] **Menús «Información» y «Noticias»:** nombres y orden tomados del sitio de origen. Confirmar con Acreditación o el diseñador.
+- [ ] **Texto de la página de accesibilidad:** el botón no necesita una página de destino; si Acreditación publica una declaración de accesibilidad, se escribe su dirección en el formulario del micrositio y el panel enlaza a ella.
+- [ ] **Widget de accesibilidad:** el tamaño del texto usa `zoom` (admitido en Edge, Chrome, Safari y Firefox 126 o posterior). Confirmar si basta o si se quiere otro mecanismo. El alto contraste usa amarillo `#ffe066` para enlaces y acentos: confirmar con el diseñador.
+- [ ] **Carrusel:** sigue con las tres diapositivas de prueba (sección 29). Las imágenes del slider del sitio de origen miden 1170 px de ancho y el carrusel exige 1600 px, por eso las noticias no alimentan el carrusel; si se quieren ahí, hay que pedir las imágenes en mayor tamaño.
+
+## 32. Fase 8, parte 4: Participa y roles
+
+- [ ] **Proceso opcional:** el formulario no obliga a elegir el proceso (el prototipo no lo pedía); si el visitante no lo elige, la recomendación queda sin proceso. Confirmar si debe ser obligatorio o si se asigna al clasificarla.
+- [ ] **Estado de gestión vacío:** al enviar, `estado_gestion` queda vacío (el formulario público no lo muestra); se entiende como «recibida». Confirmar si se quiere que se guarde `recibida` al enviar.
+- [ ] **Política de datos:** el texto del consentimiento no enlaza a la política (el webform admite solo texto simple); la política está en el pie. Confirmar el texto legal.
+- [ ] **Límite de envíos y correo basura:** 5 por hora y por visitante; para un anónimo se cuenta por sesión, así que borrar las cookies lo evita. No hay captcha ni honeypot. Decidir si se instala `honeypot` o `captcha`, o si se acepta el riesgo.
+- [ ] **Dirección IP:** el formulario no la guarda (`form_disable_remote_addr`). Si Acreditación la quiere para auditar abusos, hay que activarla y nombrarla en la política de datos.
+- [ ] **Alcance del gestor:** `gestor_participacion` puede editar todos los campos de un envío, no solo el estado y la respuesta. Decidir si el texto del ciudadano debe quedar de solo lectura.
+- [ ] **Quién gestiona las recomendaciones:** la persona con el rol `gestor_participacion` entra por la dirección de resultados del formulario (sin menú propio). Confirmar quién será y si se quiere un acceso en el panel de Acreditación.
+- [ ] **Filtro por modelo:** el campo «Factor o característica» lista los elementos de todos los modelos (ya anotado en la sección de Fase 8); no se filtra por el modelo del proceso elegido.
+
+## 33. Fase 9: revisión antes de mostrar
+
+Hecho el 21 de noviembre de 2026 (copia previa: `$HOME/respaldos/antes-fase-9-revision.sql.gz`).
+
+- **Cifras contra el informe:** los 12 factores (4,90 · 4,27 · 4,39 · 4,45 · 4,48 · 4,44 · 4,20 · 4,65 · 4,28 · 4,54 · 4,66 · 4,84) y el total 4,508 · 90 % coinciden con la Tabla 5.1 del informe de 2022. Las 17 metas existen.
+- [ ] **Pesos de las metas:** cada una guarda 0,0588 (no 1/17 = 0,058823…); suman 0,9996 y el avance del plan (Σ peso × avance) queda hasta 0,04 % por debajo. Decidir si el campo admite más decimales o si se acepta el redondeo.
+- **Accesibilidad (axe-core en Edge, WCAG 2 A y AA más buenas prácticas, 10 páginas a 1440 y 390 px):** sin violaciones salvo dos avisos.
+- [ ] **Tarjeta de programa** (`/programas`, serio, regla `label-content-name-mismatch`): el enlace se nombra con `aria-labelledby` solo por el nombre del programa (decisión de diseño, para no repetir «Ver programa»), así que el texto visible de la tarjeta no está entero en el nombre accesible; afecta a quien manda órdenes por voz. Decidir si se prefiere el nombre completo.
+- [ ] **Orden de encabezados** (`/informacion/sac`, moderado): el pie usa `h3` y la página no tiene `h2` antes. Si Acreditación añade subtítulos al texto, desaparece; si no, cambiar los títulos del pie a `h2` (hoy las pruebas fijan `h3`).
+- [ ] **Control de acceso de `public://`:** sin decidir. Un documento no publicado sigue accesible por su URL directa. Opciones: archivos privados (`private://`, requiere una carpeta fuera del directorio web en el servidor y mover los archivos) o dejarlo así porque los documentos son públicos.
+- [ ] **Recortar el starterkit** (plantillas del tema sin personalizar): sin hacer; es limpieza sin efecto visible y conviene hacerla con una revisión de capturas.
+- [ ] **Reinstalación en limpio** (`drush si --existing-config` con migraciones): sin hacer, es destructiva y necesita tu confirmación.
+- **En producción:** `drush deploy` importa la configuración: borra los bloques de Olivero, lo desinstala y quita `zip` y `txt` de las extensiones. Los archivos ya subidos con esas extensiones no se tocan; revisarlos a mano.
+
+## 34. Mejoras de interfaz (rama `mejoras-ui-ingeniero`)
+
+- [ ] **Barra de edición clara:** al quitar la franja negra, las herramientas de quien edita (Modo edición, edición del micrositio, panel avanzado y cerrar sesión) pasaron a una barra clara sobre el encabezado, visible solo con permiso de editar. Confirmar que es lo que se quiere y revisar su aspecto a 320 px con una sesión de Acreditación.
+- [ ] **Panel de «Recomendaciones»:** no se creó: el botón flotante lleva directo a `/participa`. Si se quiere un panel propio (texto breve y botón), hay que definirlo.
+- [ ] **Galería de Institucional:** vive en el campo del proceso institucional más reciente (el que no es de un programa ni de condiciones por sede). Si se crea un proceso institucional más nuevo, hay que subir las imágenes otra vez. Alternativas descartadas: un nodo nuevo «Página institucional» o subir las imágenes en el formulario del micrositio.
+- [ ] **Alto contraste del sistema (Windows, `forced-colors`) con tema claro:** el pie pasa a fondo blanco y los logos blancos (Universidad, MinEducación y GOV.CO) desaparecen; con el logo de la Universidad transparente queda igual que los otros dos. Decidir si el pie lleva fondo propio en ese modo.
+- [ ] **Botones flotantes sobre el carrusel:** pueden tapar las flechas cuando el carrusel queda abajo a la derecha de la pantalla; basta con desplazar la página. Decidir si se quiere moverlos.
+- [ ] **Capturas de los manuales:** regeneradas el 23 de noviembre de 2026 (01 a 03 y 06 a 12 reemplazadas; 13 a 23 nuevas) y rehechas el 25 de noviembre las 06, 07, 08, 11, 15 y 22, sin los botones flotantes encima. Falta decidir si se difumina la 20 (Nuestro equipo: nombres, cargos, teléfonos y correos públicos del sitio de Acreditación).
+- [ ] **Imágenes del carrusel:** las de prueba (3 en Ingeniería Electrónica y 2 en el proceso institucional) son generadas y solo existen en este equipo (`sites/default/files/galeria/`); Acreditación debe subir las reales.
+- [ ] **Alta de un programa:** el manual dice que **Añadir programa** pide **Título**, **Clave**, **Facultad** y **Nivel**; comprobar en el sitio, con una cuenta de Acreditación, que ese formulario muestra la **Clave** y que el programa nuevo recibe su dirección `/programas/<clave>`. La pantalla simple de la ficha (`/admin/acreditacion/programa/{node}/ficha`) oculta la clave a propósito.
+- [ ] **Noticias, páginas informativas y equipo:** no tienen acceso en el panel avanzado ni «+» en la página; hoy se crean por `/node/add/noticia`, `/node/add/pagina_informativa` y `/node/add/miembro_equipo`. Decidir si se añaden esos accesos.
+- [ ] **Participa, campo «Proceso»:** el campo opcional «Proceso de autoevaluación» no aparece para un visitante; revisar por qué (la lista de procesos sale vacía para anónimos) y si debe mostrarse.

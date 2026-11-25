@@ -1,0 +1,36 @@
+{#
+/**
+ * @file
+ * Barra del modo edición: solo para quien tiene permiso de editar.
+ *
+ * Variables:
+ * - edicion: logout_url, micrositio ({title, url}) y avanzado ({title, url}).
+ *   Sin logout_url seguro no imprime nada.
+ *
+ * Un destino que no sea relativo a la raíz (una sola barra, sin «\» ni
+ * espacios detrás), ancla, consulta, http(s), mailto o tel se imprime sin
+ * href (mismo filtro que unillanos:button).
+ */
+#}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
+{% if edicion and edicion.logout_url and ((edicion.logout_url ~ '') matches seguro) %}
+  <nav{{ attributes.addClass('ua-edicion-franja') }} aria-label="{{ label|default('Modo edición'|t) }}">
+    <div class="ua-edicion-barra">
+      <button class="ua-edicion-barra__boton" type="button" aria-pressed="false" data-ua-edicion-toggle>
+        {%- include 'unillanos:icon' with {name: 'pencil', size: 'sm'} only -%}
+        <span>{{ 'Modo edición'|t }}</span>
+      </button>
+      {% if edicion.micrositio %}
+        {% include 'unillanos:edit-link' with {url: edicion.micrositio.url, label: edicion.micrositio.title, show_label: true} only %}
+      {% endif %}
+      {% if edicion.avanzado and edicion.avanzado.url and ((edicion.avanzado.url ~ '') matches seguro) %}
+        {# Página completa de Drupal, no el panel lateral: enlace normal con el aspecto de los lápices. #}
+        <a class="ua-edit ua-edit--lapiz ua-edit--texto" href="{{ edicion.avanzado.url }}">
+          {%- include 'unillanos:icon' with {name: 'layers', size: 'sm'} only -%}
+          <span>{{ edicion.avanzado.title }}</span>
+        </a>
+      {% endif %}
+      <a class="ua-edicion-barra__enlace" href="{{ edicion.logout_url }}">{{ 'Cerrar sesión'|t }}</a>
+    </div>
+  </nav>
+{% endif %}

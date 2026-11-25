@@ -1,0 +1,19 @@
+uuid: 9995da7a-89c0-4d1e-acd5-bd5e7018c0d6
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_descripcion
+    - node.type.dependencia
+id: node.dependencia.field_descripcion
+field_name: field_descripcion
+entity_type: node
+bundle: dependencia
+label: 'Descripción corta'
+description: 'Una o dos frases sobre lo que hace la dependencia. Es opcional.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

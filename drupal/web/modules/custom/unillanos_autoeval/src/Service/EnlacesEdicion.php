@@ -169,6 +169,53 @@ class EnlacesEdicion {
   }
 
   /**
+   * Enlace «Añadir una dependencia».
+   *
+   * @return array<string, string>|null
+   *   Datos del enlace o NULL sin permiso.
+   */
+  public function dependenciaNueva(): ?array {
+    return $this->enlace('node.add', ['node_type' => 'dependencia'], (string) $this->t('Añadir una dependencia'), 'mas');
+  }
+
+  /**
+   * Enlace «Añadir una diapositiva» (carrusel de la portada).
+   *
+   * @return array<string, string>|null
+   *   Datos del enlace o NULL sin permiso.
+   */
+  public function diapositivaNueva(): ?array {
+    return $this->enlace('node.add', ['node_type' => 'diapositiva'], (string) $this->t('Añadir una diapositiva'), 'mas');
+  }
+
+  /**
+   * Enlace «Añadir una norma».
+   *
+   * @return array<string, string>|null
+   *   Datos del enlace o NULL sin permiso.
+   */
+  public function normaNueva(): ?array {
+    return $this->enlace('node.add', ['node_type' => 'norma'], (string) $this->t('Añadir una norma'), 'mas');
+  }
+
+  /**
+   * Enlace «Añadir un documento» con la dependencia, la facultad o el proceso.
+   *
+   * @param string $parametro
+   *   Uno de `dependencia`, `facultad` o `proceso`.
+   * @param int $id
+   *   Identificador del contenido o término que se precarga.
+   * @param string $titulo
+   *   Nombre accesible del enlace.
+   *
+   * @return array<string, string>|null
+   *   Datos del enlace o NULL sin permiso.
+   */
+  public function documentoPara(string $parametro, int $id, string $titulo): ?array {
+    return $this->enlace('unillanos_autoeval.acreditacion_documento_nuevo', [], $titulo, 'mas', [$parametro => (string) $id]);
+  }
+
+  /**
    * Añade los enlaces de edición a los datos de la página de un programa.
    *
    * Solo agrega (nunca quita ni cambia) claves: `edicion` en cada pestaña de
@@ -229,7 +276,7 @@ class EnlacesEdicion {
   }
 
   /**
-   * Lápiz del formulario del micrositio (cabecera, franja y pie).
+   * Lápiz del formulario del micrositio (cabecera, accesibilidad y pie).
    *
    * Se muestra solo con el permiso propio de esa pantalla.
    *

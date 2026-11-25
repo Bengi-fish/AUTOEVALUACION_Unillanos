@@ -6,6 +6,9 @@
  * etiqueta html). El estado se recuerda en el navegador; si el almacenamiento
  * no está disponible, empieza apagado.
  */
+
+/* phpcs:disable Generic.PHP.UpperCaseConstant.Found */
+
 ((Drupal, once) => {
   const CLAVE = 'ua-edicion';
 

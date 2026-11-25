@@ -1,0 +1,23 @@
+uuid: 63d15e16-59cf-4e15-8d36-c17d2bb6cd52
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_enlace
+    - node.type.pagina_informativa
+  module:
+    - link
+id: node.pagina_informativa.field_enlace
+field_name: field_enlace
+entity_type: node
+bundle: pagina_informativa
+label: 'Enlace de origen'
+description: 'Dirección de la página en el sitio de origen (https://).'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 0
+  link_type: 17
+field_type: link

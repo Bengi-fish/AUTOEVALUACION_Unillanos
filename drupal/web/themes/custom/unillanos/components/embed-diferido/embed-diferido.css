@@ -1,0 +1,31 @@
+/**
+ * Componente embed-diferido (Fase 9, etapa 3): aviso, acciones y marco del
+ * contenido externo. Sin sombras.
+ */
+
+.ua-embed {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.ua-embed__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3);
+}
+
+.ua-embed [data-ua-embed-cargar][hidden] {
+  display: none;
+}
+
+.ua-embed__marco:empty {
+  display: none;
+}
+
+.ua-embed__marco iframe {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  background: var(--Surface);
+}

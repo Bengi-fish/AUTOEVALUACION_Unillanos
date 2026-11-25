@@ -1,0 +1,105 @@
+{#
+/**
+ * @file
+ * Carrusel accesible de la portada.
+ *
+ * Sin JavaScript: la primera diapositiva y, debajo, la lista de titulares como
+ * enlaces (los controles nacen ocultos y los muestra carousel.js). Con una sola
+ * diapositiva es una imagen fija sin controles ni lista. El titular y el texto
+ * van en una franja oscura, nunca dentro de la imagen. La primera imagen carga
+ * sin diferir; las demás, diferidas (componente media).
+ *
+ * Con JavaScript las diapositivas se apilan y el cambio es un fundido con un
+ * leve deslizamiento (carousel.css); la activa lleva data-ua-activa. Sin
+ * JavaScript solo se ve la primera. Avanza sola cada 5,5 s por defecto.
+ *
+ * Lo usan la portada (con titular y texto sobre una franja oscura) y las
+ * galerías de las páginas de programa e institucional (`contenida`: dentro del
+ * contenedor de la página, con las esquinas redondeadas; el titular y el texto
+ * son opcionales y, sin ellos, no hay franja). Con una sola diapositiva no
+ * hay flechas, puntos ni avance.
+ */
+#}
+{% set base = ((id ~ '') matches '~^[A-Za-z0-9_-]+$~') ? id : 'carrusel' %}
+{% set total = items|length %}
+{% set seguro = '~^(?:/(?![/\\\\\\s])|https?://)~i' %}
+{% set sizes_imagen = contenida ? '(min-width: 1200px) 1152px, 100vw' : '100vw' %}
+{# La lista de titulares (sin JavaScript) solo tiene sentido si alguna diapositiva tiene titular. #}
+{% set hay_titulares = items|filter(d => d.title)|length > 0 %}
+{% if total > 0 %}
+<section{{ attributes.addClass(contenida ? ['ua-carousel', 'ua-carousel--contenida'] : ['ua-carousel']).setAttribute('id', base).setAttribute('role', 'region').setAttribute('aria-roledescription', 'carrusel'|t).setAttribute('aria-label', label|default('Noticias destacadas'|t)).setAttribute('data-ua-carousel', true).setAttribute('data-interval', interval|default(5500)) }}>
+  {% if total > 1 %}
+    {# Primer control en el orden de tabulación. #}
+    <div class="ua-carousel__barra" data-ua-carousel-barra hidden>
+      <button type="button" class="ua-carousel__pausa" aria-pressed="false" data-ua-carousel-pausa data-pausar="{{ 'Pausar el carrusel'|t }}" data-reproducir="{{ 'Reproducir el carrusel'|t }}">
+        <span data-ua-carousel-pausa-texto>{{ 'Pausar el carrusel'|t }}</span>
+      </button>
+    </div>
+  {% endif %}
+  <div class="ua-carousel__slides" id="{{ base }}-slides" aria-live="off" data-ua-carousel-slides>
+    {% for diapositiva in items %}
+      {% set con_enlace = diapositiva.url and ((diapositiva.url ~ '') matches seguro) %}
+      <div class="ua-carousel__slide"{% if loop.first %} data-ua-activa{% endif %} id="{{ base }}-d{{ loop.index }}" role="group" aria-roledescription="{{ 'diapositiva'|t }}" aria-label="{{ 'Diapositiva @n de @total'|t({'@n': loop.index, '@total': total}) }}" data-ua-carousel-slide>
+        <div class="ua-carousel__imagen">
+          {% include 'unillanos:media' with {src: diapositiva.image.src, srcset: diapositiva.image.srcset, type: diapositiva.image.type, width: diapositiva.image.width, height: diapositiva.image.height, alt: diapositiva.image.alt, sizes: sizes_imagen, priority: loop.first ? 'high' : ''} only %}
+        </div>
+        {# Sin titular, texto ni lápiz de edición no hay franja (solo la imagen). #}
+        {% if diapositiva.title or diapositiva.text or diapositiva.edit %}
+        <div class="ua-carousel__franja">
+          <div class="{{ contenida ? 'ua-carousel__texto' : 'ua-container ua-carousel__texto' }}">
+            {% if diapositiva.title %}
+            <p class="ua-carousel__titular">
+              {%- if con_enlace -%}
+                <a class="ua-carousel__enlace" href="{{ diapositiva.url }}"{% if diapositiva.external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ diapositiva.title|sin_cortes }}{% if diapositiva.external %}<span class="ua-sr"> ({{ 'se abre en una pestaña nueva'|t }})</span>{% endif %}</a>
+              {%- else -%}
+                {{ diapositiva.title|sin_cortes }}
+              {%- endif -%}
+            </p>
+            {% endif %}
+            {% if diapositiva.text %}<p class="ua-carousel__resumen">{{ diapositiva.text|sin_cortes }}</p>{% endif %}
+            {% if diapositiva.edit %}
+              <span class="ua-carousel__edicion">{% include 'unillanos:edit-link' with {url: diapositiva.edit.url, label: diapositiva.edit.title, variant: diapositiva.edit.tipo} only %}</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% if total > 1 %}
+    <div class="ua-carousel__controles" data-ua-carousel-controles hidden>
+      <button type="button" class="ua-carousel__flecha ua-carousel__flecha--ant" data-ua-carousel-ant aria-controls="{{ base }}-slides">
+        {%- include 'unillanos:icon' with {name: 'chevron-left'} only -%}
+        <span class="ua-sr">{{ 'Diapositiva anterior'|t }}</span>
+      </button>
+      <ul class="ua-carousel__puntos" role="list">
+        {% for diapositiva in items %}
+          <li>
+            <button type="button" class="ua-carousel__punto" data-ua-carousel-punto aria-label="{{ diapositiva.title ? 'Diapositiva @n de @total: @titulo'|t({'@n': loop.index, '@total': total, '@titulo': diapositiva.title}) : 'Diapositiva @n de @total'|t({'@n': loop.index, '@total': total}) }}" aria-current="{{ loop.first ? 'true' : 'false' }}"><span class="ua-carousel__punto-marca" aria-hidden="true"></span></button>
+          </li>
+        {% endfor %}
+      </ul>
+      <button type="button" class="ua-carousel__flecha ua-carousel__flecha--sig" data-ua-carousel-sig aria-controls="{{ base }}-slides">
+        {%- include 'unillanos:icon' with {name: 'chevron-right'} only -%}
+        <span class="ua-sr">{{ 'Diapositiva siguiente'|t }}</span>
+      </button>
+    </div>
+    {# Sin JavaScript: los titulares como lista de enlaces. #}
+    {% if hay_titulares %}
+    <nav class="ua-carousel__lista" aria-label="{{ 'Titulares destacados'|t }}" data-ua-carousel-lista>
+      <ul role="list">
+        {% for diapositiva in items|filter(d => d.title) %}
+          <li>
+            {% if diapositiva.url and ((diapositiva.url ~ '') matches seguro) %}
+              <a href="{{ diapositiva.url }}"{% if diapositiva.external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ diapositiva.title|sin_cortes }}</a>
+            {% else %}
+              {{ diapositiva.title|sin_cortes }}
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    {% endif %}
+  {% endif %}
+</section>
+{% endif %}

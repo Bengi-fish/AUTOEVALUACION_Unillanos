@@ -3,20 +3,21 @@
  * @file
  * Cuadrícula de tarjetas de acceso.
  *
- * Mismo filtro de URL que unillanos:button.
+ * Mismo filtro de URL que unillanos:button. Una tarjeta con `external` se abre
+ * en pestaña nueva y lo dice a los lectores de pantalla.
  */
 #}
 {% set seguro = '~^(?:/(?![/\\\\\\s])|#|\\?|https?://|mailto:|tel:)~i' %}
 {% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
 <div{{ attributes.addClass('ua-cards') }}>
   {% for tarjeta in items %}
-    <a class="ua-card"{% if tarjeta.url and ((tarjeta.url ~ '') matches seguro) %} href="{{ tarjeta.url }}"{% endif %}>
+    <a class="ua-card"{% if tarjeta.url and ((tarjeta.url ~ '') matches seguro) %} href="{{ tarjeta.url }}"{% if tarjeta.external %} target="_blank" rel="noopener noreferrer"{% endif %}{% endif %}>
       {%- if tarjeta.icon -%}
         <span class="ua-card__icon">{% include 'unillanos:icon' with {name: tarjeta.icon} only %}</span>
       {%- endif -%}
-      <{{ nivel }} class="ua-card__title">{{ tarjeta.title|sin_cortes }}</{{ nivel }}>
+      <{{ nivel }} class="ua-card__title">{{ tarjeta.title|sin_cortes }}{% if tarjeta.external %}<span class="ua-sr"> ({{ 'se abre en una pestaña nueva'|t }})</span>{% endif %}</{{ nivel }}>
       {% if tarjeta.text %}<p class="ua-card__text">{{ tarjeta.text|sin_cortes }}</p>{% endif %}
-      {% if tarjeta.cta %}<span class="ua-card__cta">{{ tarjeta.cta }}{% include 'unillanos:icon' with {name: 'arrow-right', size: 'sm'} only %}</span>{% endif %}
+      {% if tarjeta.cta %}<span class="ua-card__cta">{{ tarjeta.cta }}{% include 'unillanos:icon' with {name: tarjeta.external ? 'external' : 'arrow-right', size: 'sm'} only %}</span>{% endif %}
     </a>
   {% endfor %}
 </div>

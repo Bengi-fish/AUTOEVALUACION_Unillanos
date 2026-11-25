@@ -1,0 +1,14 @@
+uuid: 45a0f7bc-876d-4513-b868-d6e4d68770d2
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.gestor_participacion
+  module:
+    - user
+id: user_remove_role_action.gestor_participacion
+label: 'Elimina el rol Gestor de participación al(los) usuario(s) seleccionado(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: gestor_participacion

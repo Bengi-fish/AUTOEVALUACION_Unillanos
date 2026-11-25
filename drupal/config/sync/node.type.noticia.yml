@@ -1,0 +1,11 @@
+uuid: b55fcb28-e45d-4d8a-a629-b893f6fdff57
+langcode: es
+status: true
+dependencies: {  }
+name: Noticia
+type: noticia
+description: 'Noticia del sitio de Acreditación (portal y SIAAI).'
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: false

@@ -1,0 +1,23 @@
+uuid: 4e5c5f12-5e5c-4c52-959b-6571b5a4b515
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_enlace
+    - node.type.diapositiva
+  module:
+    - link
+id: node.diapositiva.field_enlace
+field_name: field_enlace
+entity_type: node
+bundle: diapositiva
+label: Enlace
+description: 'A dónde lleva la diapositiva: una página del sitio (por ejemplo /programas) o una dirección que empiece por https://. Es opcional.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 0
+  link_type: 17
+field_type: link

@@ -1,0 +1,35 @@
+id: noticias
+label: 'Noticias del sitio de Acreditación'
+migration_group: unillanos
+# Cinco noticias del slider del sitio de Acreditación (datos/semillas/noticias.csv,
+# generado con scripts/extraer-sitio-acreditacion.py). La fecha no la publica el
+# sitio de origen: no se inventa.
+source:
+  plugin: csv
+  path: '%datos%/semillas/noticias.csv'
+  ids: [id]
+process:
+  title: titulo
+  body/value: cuerpo
+  body/format:
+    plugin: default_value
+    default_value: basic_html
+  field_enlace/uri:
+    plugin: skip_on_empty
+    method: process
+    source: fuente
+  field_imagen/target_id:
+    plugin: migration_lookup
+    migration: archivos_noticias
+    source: id
+    no_stub: true
+  field_imagen/alt: alt
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:node'
+  default_bundle: noticia
+migration_dependencies:
+  required:
+    - archivos_noticias

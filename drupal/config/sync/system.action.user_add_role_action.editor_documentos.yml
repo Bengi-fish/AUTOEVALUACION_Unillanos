@@ -1,0 +1,14 @@
+uuid: 5e910fee-43be-425b-a891-1c2d13d9ca6b
+langcode: es
+status: true
+dependencies:
+  config:
+    - user.role.editor_documentos
+  module:
+    - user
+id: user_add_role_action.editor_documentos
+label: 'Añade el rol Editor de documentos al(los) usuario(s) seleccionado(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: editor_documentos

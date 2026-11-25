@@ -1,0 +1,19 @@
+uuid: f946ebd5-fea8-4874-a9af-22d142cf5f79
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_cargo
+    - node.type.miembro_equipo
+id: node.miembro_equipo.field_cargo
+field_name: field_cargo
+entity_type: node
+bundle: miembro_equipo
+label: 'Dependencia o cargo'
+description: 'Por ejemplo: «Vicerrectoría Académica».'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

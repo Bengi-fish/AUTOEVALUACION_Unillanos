@@ -1,0 +1,5 @@
+id,nombre,tipo_proceso,sede_id,periodo,estado,fuente
+pi-acreditacion-2015-2019,Autoevaluación con fines de acreditación institucional 2015-2019,acreditacion,villavicencio,2015-2019,finalizado,https://acreditacion.unillanos.edu.co/index.php/informacion/siaai/procesos-institucionales
+pi-condiciones-villavicencio-2021,Condiciones institucionales Sede Villavicencio 2021 IPA,registro_calificado,villavicencio,2021 IPA,finalizado,https://acreditacion.unillanos.edu.co/index.php/informacion/siaai/procesos-institucionales
+pi-condiciones-granada-2021,Condiciones institucionales Sede Granada 2021 IIPA,registro_calificado,granada,2021 IIPA,finalizado,https://acreditacion.unillanos.edu.co/index.php/informacion/siaai/procesos-institucionales
+pi-condiciones-el-retorno-2024,Condiciones institucionales Lugar de desarrollo El Retorno (Guaviare) 2024 IIPA,registro_calificado,el_retorno,2024 IIPA,finalizado,https://acreditacion.unillanos.edu.co/index.php/informacion/siaai/procesos-institucionales

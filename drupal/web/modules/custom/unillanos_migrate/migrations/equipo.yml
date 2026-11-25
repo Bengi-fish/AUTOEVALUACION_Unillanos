@@ -1,0 +1,28 @@
+id: equipo
+label: 'Equipo y comité de Acreditación'
+migration_group: unillanos
+# Nombre, dependencia, teléfono y correo institucional tal como los publica el
+# sitio de Acreditación (datos/semillas/equipo.csv).
+source:
+  plugin: csv
+  path: '%datos%/semillas/equipo.csv'
+  ids: [id]
+process:
+  title: nombre
+  field_cargo: cargo
+  field_grupo: grupo
+  field_telefono:
+    plugin: skip_on_empty
+    method: process
+    source: telefono
+  field_correo:
+    plugin: skip_on_empty
+    method: process
+    source: correo
+  field_orden: orden
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:node'
+  default_bundle: miembro_equipo

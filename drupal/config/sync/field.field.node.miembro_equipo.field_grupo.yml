@@ -1,0 +1,19 @@
+uuid: 6cf9805c-2fa0-49f4-94d5-6174f96d0894
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_grupo
+    - node.type.miembro_equipo
+id: node.miembro_equipo.field_grupo
+field_name: field_grupo
+entity_type: node
+bundle: miembro_equipo
+label: Grupo
+description: 'Por ejemplo: «Comité Autoevaluación y Acreditación Institucional».'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

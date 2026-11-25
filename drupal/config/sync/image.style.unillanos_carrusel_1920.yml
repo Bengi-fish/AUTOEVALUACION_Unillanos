@@ -1,0 +1,21 @@
+uuid: 69d8844e-b0cd-4e22-906b-23f90ed28d8c
+langcode: es
+status: true
+dependencies: {  }
+name: unillanos_carrusel_1920
+label: 'Carrusel 1920 px'
+effects:
+  e04c98de-ba6a-49f9-b6a6-051e3073409a:
+    uuid: e04c98de-ba6a-49f9-b6a6-051e3073409a
+    id: image_scale
+    weight: 1
+    data:
+      width: 1920
+      height: null
+      upscale: false
+  e0dfa379-094b-405b-9b3e-c8a805152fce:
+    uuid: e0dfa379-094b-405b-9b3e-c8a805152fce
+    id: image_convert
+    weight: 2
+    data:
+      extension: webp

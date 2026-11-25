@@ -82,6 +82,37 @@ class PlanMejoramientoPrograma {
   }
 
   /**
+   * Arma el plan de mejoramiento de un proceso dado (p. ej. institucional).
+   *
+   * @param \Drupal\node\NodeInterface $proceso
+   *   Nodo `proceso`.
+   * @param array<string, mixed> $factores
+   *   Resultado de FactoresPrograma::delProceso() (puede estar vacío).
+   * @param \Drupal\Core\Cache\CacheableMetadata $cache
+   *   Recibe los metadatos de caché de todo lo que se lee.
+   *
+   * @return array<string, mixed>
+   *   Lo mismo que ::delPrograma(): factores y plan (vacío si no hay plan con
+   *   metas).
+   */
+  public function delProceso(NodeInterface $proceso, array $factores, CacheableMetadata $cache): array {
+    $cache->addCacheTags(ProgramasYProcesos::ETIQUETAS_AUTOEVALUACION);
+    $plan = $this->planDeProceso($proceso, $factores, $cache);
+    if ($plan) {
+      foreach ($factores['pestanas'] ?? [] as $indice => $pestana) {
+        $cuenta = $plan['cuenta'][$pestana['key']] ?? 0;
+        if ($cuenta > 0) {
+          $factores['pestanas'][$indice]['plan_count'] = $cuenta;
+          $factores['pestanas'][$indice]['plan_note'] = (string) $this->formatPlural($cuenta, 'formulada para este factor', 'formuladas para este factor');
+          $factores['pestanas'][$indice]['plan_url'] = '#plan';
+        }
+      }
+      unset($plan['cuenta']);
+    }
+    return ['factores' => $factores, 'plan' => $plan];
+  }
+
+  /**
    * Arma las filas del plan de mejoramiento de un proceso.
    *
    * @param \Drupal\node\NodeInterface $proceso

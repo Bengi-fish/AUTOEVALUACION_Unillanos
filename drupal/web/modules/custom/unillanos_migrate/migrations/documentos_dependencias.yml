@@ -1,0 +1,39 @@
+id: documentos_dependencias
+label: 'Formatos de las dependencias (enlaces de Drive)'
+migration_group: unillanos
+# Un enlace por dependencia y programa. Si el nombre del programa no coincide
+# con uno de la Universidad, la fila queda sin programa (columna vacía).
+source:
+  plugin: csv
+  path: '%datos%/semillas/documentos_dependencias.csv'
+  ids: [id]
+process:
+  name: nombre
+  field_categoria:
+    plugin: default_value
+    default_value: dependencia
+  field_enlace/uri: enlace
+  field_dependencia:
+    plugin: migration_lookup
+    migration: dependencias
+    source: dependencia_id
+    no_stub: true
+  field_programa:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: programa_clave
+    -
+      plugin: migration_lookup
+      migration: programas
+      no_stub: true
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:media'
+  default_bundle: documento
+migration_dependencies:
+  required:
+    - dependencias
+    - programas

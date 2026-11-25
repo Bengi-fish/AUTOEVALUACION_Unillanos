@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.proceso.field_ambito
     - field.field.node.proceso.field_estado
     - field.field.node.proceso.field_fase_actual
+    - field.field.node.proceso.field_galeria
     - field.field.node.proceso.field_lineamiento
     - field.field.node.proceso.field_participaciones
     - field.field.node.proceso.field_periodo_evaluado
@@ -13,10 +14,10 @@ dependencies:
     - field.field.node.proceso.field_resultado
     - field.field.node.proceso.field_sede
     - field.field.node.proceso.field_tipo_proceso
+    - image.style.thumbnail
     - node.type.proceso
   module:
-    - paragraphs
-    - path
+    - image
 id: node.proceso.acreditacion
 targetEntityType: node
 bundle: proceso
@@ -40,6 +41,14 @@ content:
     region: content
     settings:
       placeholder: ''
+    third_party_settings: {  }
+  field_galeria:
+    type: image_image
+    weight: 23
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
     third_party_settings: {  }
   field_lineamiento:
     type: options_select

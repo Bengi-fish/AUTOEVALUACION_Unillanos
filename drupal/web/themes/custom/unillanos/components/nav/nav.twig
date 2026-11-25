@@ -11,6 +11,15 @@
  * una sección que contiene la página actual (aria-current="true" y la clase
  * is-current): se ve igual que el activo.
  *
+ * Un elemento con `children` lleva su submenú (un nivel): el enlace va a la
+ * sección y el botón de al lado (aria-expanded, aria-controls) abre y cierra el
+ * submenú. Con JavaScript el submenú nace cerrado (hidden); sin él se ve
+ * cerrado por CSS y el enlace lleva a la página de la sección.
+ *
+ * Un elemento con `children` y sin destino seguro (por ejemplo «Información»,
+ * que no tiene página propia) imprime su rótulo como un botón con
+ * aria-expanded y aria-controls; sin JavaScript su submenú se ve abierto.
+ *
  * `login` añade un último elemento («Ingresar») que solo se ve en pantallas
  * pequeñas con el menú abierto: allí el botón del encabezado está oculto.
  */
@@ -20,7 +29,37 @@
   <div class="ua-container">
     <ul class="ua-nav__list">
       {% for item in items %}
-        <li class="ua-nav__item"><a class="ua-nav__link{% if item.trail and not item.active %} is-current{% endif %}"{% if item.url and ((item.url ~ '') matches seguro) %} href="{{ item.url }}"{% endif %}{% if item.active %} aria-current="page"{% elseif item.trail %} aria-current="true"{% endif %}>{{ item.title }}</a></li>
+        {% set base = (id|default('ua-menu')) ~ '-sub-' ~ loop.index %}
+        {% set hijos = item.children|default([]) %}
+        {# Un padre sin destino (menú desplegable sin página propia) es él mismo
+           el botón del submenú; con JavaScript apagado el submenú queda abierto. #}
+        {% set sin_destino = hijos and not (item.url and ((item.url ~ '') matches seguro)) %}
+        <li class="ua-nav__item{% if hijos %} ua-nav__item--sub{% endif %}{% if sin_destino %} ua-nav__item--sin-destino{% endif %}"{% if hijos %} data-ua-nav-sub{% endif %}>
+          {% if sin_destino %}
+            <button type="button" class="ua-nav__link ua-nav__link--boton{% if item.trail %} is-current{% endif %}" aria-expanded="false" aria-controls="{{ base }}" data-ua-nav-toggle{% if item.trail %} aria-current="true"{% endif %}>
+              <span>{{ item.title }}</span>
+              {%- include 'unillanos:icon' with {name: 'chevron-down', size: 'sm'} only -%}
+            </button>
+          {% else %}
+          <a class="ua-nav__link{% if item.trail and not item.active %} is-current{% endif %}"{% if item.url and ((item.url ~ '') matches seguro) %} href="{{ item.url }}"{% endif %}{% if item.active %} aria-current="page"{% elseif item.trail %} aria-current="true"{% endif %}>{{ item.title }}</a>
+          {% endif %}
+          {% if hijos and not sin_destino %}
+            {# El botón nace oculto y lo muestra nav.js; sin JavaScript el
+               submenú queda cerrado y el enlace lleva a la página de la
+               sección, que lista todos sus módulos. #}
+            <button type="button" class="ua-nav__toggle" aria-expanded="false" aria-controls="{{ base }}" data-ua-nav-toggle hidden>
+              <span class="ua-sr">{{ 'Mostrar el submenú de @titulo'|t({'@titulo': item.title}) }}</span>
+              {%- include 'unillanos:icon' with {name: 'chevron-down', size: 'sm'} only -%}
+            </button>
+          {% endif %}
+          {% if hijos %}
+            <ul class="ua-nav__sub" id="{{ base }}" role="list" data-ua-nav-panel>
+              {% for hijo in hijos %}
+                <li class="ua-nav__subitem"><a class="ua-nav__sublink"{% if hijo.url and ((hijo.url ~ '') matches seguro) %} href="{{ hijo.url }}"{% endif %}{% if hijo.active %} aria-current="page"{% endif %}>{{ hijo.title }}</a></li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </li>
       {% endfor %}
       {% if login and login.url and ((login.url ~ '') matches seguro) %}
         <li class="ua-nav__item ua-nav__item--movil"><a class="ua-nav__link" href="{{ login.url }}">{{ login.title }}</a></li>

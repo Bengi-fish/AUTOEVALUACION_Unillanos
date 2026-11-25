@@ -103,3 +103,54 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* «¿Qué va a cargar?» del documento: cada opción (círculo y texto) mide al
+   menos 44 px de alto para que sea fácil de tocar. */
+.form-item--tipo-carga {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+  min-height: 44px;
+}
+
+.form-item--tipo-carga .form-item__label {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding-block: 0;
+  line-height: 1.5;
+}
+
+.form-item--tipo-carga .form-radio {
+  margin-block: 0;
+}
+
+/* Sección «Institucional» del panel: accesos en una cuadrícula que baja a una
+   columna; cada enlace mide al menos 44 px de alto. */
+.unillanos-acreditacion__institucional dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.unillanos-acreditacion__institucional dt {
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.unillanos-acreditacion__institucional dd {
+  margin: 0;
+}
+
+.unillanos-acreditacion__institucional ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unillanos-acreditacion__institucional a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}

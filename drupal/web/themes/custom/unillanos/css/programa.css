@@ -88,3 +88,8 @@
   gap: var(--espacio-3);
   margin-top: var(--espacio-6);
 }
+
+/* Galería propia de la página (carrusel entre el texto y las tarjetas). */
+.ua-programa__galeria {
+  margin: var(--espacio-6) 0;
+}

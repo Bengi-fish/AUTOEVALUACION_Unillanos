@@ -1,16 +1,59 @@
 nombre_linea1: 'Sistema de'
 nombre_linea2: Autoevaluación
 url_web_principal: ''
-url_govco: 'https://www.gov.co/'
 redes_sociales:
   facebook: 'https://www.facebook.com/UnillanosOficial/'
   x: 'https://twitter.com/unillanos_?lang=es'
   instagram: 'https://www.instagram.com/unillanos_/'
   youtube: 'https://www.youtube.com/channel/UCmhXbLrVeyotUiBsaPBcxcA'
-franja_superior: {  }
 accesibilidad:
   titulo: Accesibilidad
   url: ''
+portal:
+  titulo: 'Autoevaluación y Acreditación'
+  texto: |-
+    Portal de la autoevaluación y la acreditación de la Universidad de los Llanos. Aquí encuentra información sobre el sistema de aseguramiento de la calidad y sobre el Sistema de Información de Autoevaluación Institucional (SIAAI), donde se publican los procesos de autoevaluación por programa y a nivel institucional.
+
+    Entre al SIAAI para consultar los programas, los documentos y la información institucional.
+  accesos:
+    -
+      titulo: 'SIAAI'
+      texto: 'Sistema de Información de Autoevaluación Institucional: programas, procesos, factores, hallazgos y planes de mejoramiento.'
+      url: /siaai
+    -
+      titulo: 'Programas académicos'
+      texto: 'Autoevaluación de cada programa, por factores y características.'
+      url: /programas
+    -
+      titulo: 'Institucional'
+      texto: 'Autoevaluación de la Universidad, dependencias, directivos, normatividad y cifras.'
+      url: /institucional
+    -
+      titulo: 'Documentos'
+      texto: 'Informes, resoluciones y demás documentos de los procesos.'
+      url: /documentos
+  sitios: {  }
+institucional:
+  introduccion: 'Información de la Universidad para su autoevaluación: procesos institucionales, dependencias, directivos, normatividad y cifras.'
+  cifras:
+    enlaces:
+      -
+        titulo: 'Estudiantes en Colombia (SNIES)'
+        texto: 'Consulta poblacional del Ministerio de Educación Nacional sobre estudiantes de educación superior.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/content/poblacional/index.jsf'
+      -
+        titulo: 'Mapa de graduados'
+        texto: 'Graduados de educación superior en Colombia, por departamento.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapagraduados.html'
+      -
+        titulo: 'Caracterización de graduados del Meta'
+        texto: 'Detalle de los graduados del departamento del Meta.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapa_graduados_detalle?departamento=CO-MET&anio=2021&semestre=0&departamentoName=META'
+      -
+        titulo: 'Mapa de movilidad'
+        texto: 'Movilidad de estudiantes de educación superior en el país.'
+        url: 'https://hecaa.mineducacion.gov.co/consultaspublicas/mapamovilidad.html'
+    tablero_url: 'https://public.tableau.com/views/PIACACifras/Dashboard1'
 pie:
   ubicanos:
     titulo: Ubícanos

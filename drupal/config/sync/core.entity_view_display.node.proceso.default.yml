@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.proceso.field_ambito
     - field.field.node.proceso.field_estado
     - field.field.node.proceso.field_fase_actual
+    - field.field.node.proceso.field_galeria
     - field.field.node.proceso.field_lineamiento
     - field.field.node.proceso.field_participaciones
     - field.field.node.proceso.field_periodo_evaluado
@@ -110,4 +111,5 @@ content:
     weight: 100
     region: content
 hidden:
+  field_galeria: true
   langcode: true

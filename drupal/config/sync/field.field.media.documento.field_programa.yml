@@ -1,0 +1,24 @@
+uuid: e9ee6a5f-469e-417d-bf08-a0e60e93140b
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_programa
+    - media.type.documento
+    - node.type.programa
+id: media.documento.field_programa
+field_name: field_programa
+entity_type: media
+bundle: documento
+label: Programa
+description: 'Programa al que pertenece el documento, si no pasa por un proceso.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      programa: programa
+field_type: entity_reference

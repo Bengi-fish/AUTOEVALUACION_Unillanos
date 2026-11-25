@@ -36,3 +36,6 @@ props:
             type: string
           cta:
             type: string
+          external:
+            type: boolean
+            description: 'TRUE si el destino es otro sitio: pestaña nueva, ícono de enlace externo y aviso para lectores de pantalla.'

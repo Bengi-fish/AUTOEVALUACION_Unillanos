@@ -1,0 +1,121 @@
+{#
+/**
+ * @file
+ * Portada del portal de Autoevaluación y Acreditación (página de inicio, `/`).
+ *
+ * Variables:
+ * - datos: lo arma PortalInicio::datos(): titulo, parrafos, accesos (title,
+ *   text, url, principal y external), sitios (title y url), edicion y
+ *   carrusel (CarruselPortada::datos(): diapositivas y edicion) y noticias
+ *   (las tres primeras: title, url, extracto e imagen).
+ *   Solo trae lo que existe: lo vacío se omite.
+ *
+ * El h1 es el título de la portada (la página base omite el bloque de título).
+ * El acceso principal (el primero) es el del SIAAI.
+ */
+#}
+{{ attach_library('unillanos/portal') }}
+{% set titulo = datos.titulo|default('Autoevaluación y Acreditación'|t) %}
+{% set parrafos = datos.parrafos %}
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Universidad de los Llanos'|t,
+  title: titulo,
+  lead: parrafos ? parrafos|first : '',
+} only %}
+
+{# ------------------------------------------------------------ carrusel #}
+{# Justo debajo de la cabecera del portal. Sin diapositivas no aparece; en modo
+   edición se ofrece «+ Añadir una diapositiva» aunque no haya ninguna. #}
+{% set carrusel = datos.carrusel|default({}) %}
+{% if carrusel.edicion.nueva %}
+  <div class="ua-container">
+    <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: carrusel.edicion.nueva.url, label: carrusel.edicion.nueva.title, variant: carrusel.edicion.nueva.tipo, show_label: true} only %}</div>
+  </div>
+{% endif %}
+{% if carrusel.diapositivas %}
+  {% set diapositivas = [] %}
+  {% for d in carrusel.diapositivas %}
+    {% set diapositivas = diapositivas|merge([{
+      title: d.title,
+      text: d.text,
+      url: d.url,
+      external: d.externo,
+      image: d.imagen,
+      edit: d.edicion|default({}),
+    }]) %}
+  {% endfor %}
+  {% include 'unillanos:carousel' with {id: 'carrusel-portada', label: 'Noticias destacadas'|t, items: diapositivas} only %}
+{% endif %}
+
+{% embed 'unillanos:section' with {id: 'portal', datos: datos} only %}
+  {% block content %}
+    <div class="ua-portal__bloques">
+    {% if datos.edicion.micrositio %}
+      <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: datos.edicion.micrositio.url, label: datos.edicion.micrositio.title, variant: datos.edicion.micrositio.tipo, show_label: true} only %}</div>
+    {% endif %}
+    {% for parrafo in datos.parrafos|slice(1) %}
+      <p class="ua-lead">{{ parrafo }}</p>
+    {% endfor %}
+    {% set principal = datos.accesos|first %}
+    {% if principal %}
+      {% include 'unillanos:cta-row' with {
+        heading: 'h2',
+        title: principal.title,
+        text: principal.text,
+        button_label: 'Entrar'|t,
+        button_url: principal.url,
+      } only %}
+    {% endif %}
+    {% set otros = datos.accesos|slice(1) %}
+    {% if otros %}
+      {% set tarjetas = [] %}
+      {% for acceso in otros %}
+        {% set tarjetas = tarjetas|merge([{
+          title: acceso.title,
+          text: acceso.text,
+          url: acceso.url,
+          external: acceso.external,
+          cta: 'Ir'|t,
+        }]) %}
+      {% endfor %}
+      {% include 'unillanos:card' with {heading: 'h2', items: tarjetas} only %}
+    {% endif %}
+    </div>
+  {% endblock %}
+{% endembed %}
+
+{% if datos.noticias %}
+  {% embed 'unillanos:section' with {id: 'noticias', noticias: datos.noticias} only %}
+    {% block content %}
+      {{ attach_library('unillanos/sitio') }}
+      {% include 'unillanos:section-head' with {
+        eyebrow: 'Noticias'|t,
+        title: 'Lo más reciente'|t,
+        lead: '',
+      } only %}
+      {% set tarjetas = [] %}
+      {% for noticia in noticias %}
+        {% set tarjetas = tarjetas|merge([{title: noticia.title, text: noticia.extracto, url: noticia.url, cta: 'Leer'|t}]) %}
+      {% endfor %}
+      {% include 'unillanos:card' with {heading: 'h3', items: tarjetas} only %}
+      <p class="ua-portal__mas"><a href="{{ path('unillanos_autoeval.noticias') }}">{{ 'Ver todas las noticias'|t }}</a></p>
+    {% endblock %}
+  {% endembed %}
+{% endif %}
+
+{% if datos.sitios %}
+  {% embed 'unillanos:section' with {id: 'sitios-de-interes', variant: 'alt', sitios: datos.sitios} only %}
+    {% block content %}
+      {% include 'unillanos:section-head' with {
+        eyebrow: 'Enlaces'|t,
+        title: 'Sitios de interés'|t,
+        lead: 'Se abren en otro sitio.'|t,
+      } only %}
+      {% set tarjetas = [] %}
+      {% for sitio in sitios %}
+        {% set tarjetas = tarjetas|merge([{title: sitio.title, url: sitio.url, external: true, cta: 'Abrir'|t}]) %}
+      {% endfor %}
+      {% include 'unillanos:card' with {heading: 'h3', items: tarjetas} only %}
+    {% endblock %}
+  {% endembed %}
+{% endif %}

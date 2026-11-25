@@ -23,10 +23,12 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * Prueba los menús principal y del pie, el elemento activo y el marco.
  *
- * El marco es la franja superior, la cabecera y el pie que arma la
+ * El marco es la cabecera, los botones flotantes y el pie que arma la
  * configuración `unillanos_autoeval.micrositio` (servicio DatosMarco).
  *
- * «Inicio» lo aporta el perfil `standard` y no existe en estas pruebas.
+ * «Inicio» lo aporta el perfil `standard` y no existe en estas pruebas. El
+ * menú principal del portal lleva «Inicio» y «SIAAI»; las secciones del SIAAI
+ * (Programas, Documentos, Institucional) van en su barra secundaria.
  */
 #[Group('unillanos_autoeval')]
 #[RunTestsInSeparateProcesses]
@@ -50,6 +52,7 @@ class MenusTest extends UnillanosKernelTestBase {
     'taxonomy',
     'file',
     'image',
+    'link',
     'media',
     'entity_reference_revisions',
     'paragraphs',
@@ -108,6 +111,25 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->crearCampo('media', 'documento', 'field_fecha_publicacion', 'string');
     $this->crearCampo('media', 'documento', 'field_proceso', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('media', 'documento', 'field_lineamiento', 'entity_reference', ['target_type' => 'node']);
+    // La página de «Institucional» reúne todas sus secciones: necesita los
+    // campos de dependencias, normas, procesos y documentos institucionales.
+    $this->crearCampo('media', 'documento', 'field_enlace', 'link');
+    $this->crearCampo('media', 'documento', 'field_programa', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_dependencia', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_facultad', 'entity_reference', ['target_type' => 'taxonomy_term']);
+    $this->crearCampo('node', 'dependencia', 'field_descripcion', 'string_long');
+    $this->crearCampo('node', 'dependencia', 'field_orden', 'integer');
+    $this->crearCampo('node', 'norma', 'field_origen_norma', 'list_string', [
+      'allowed_values' => ['externo' => 'Externo', 'interno' => 'Interno'],
+    ]);
+    foreach (['tipo_norma', 'numero_fecha', 'entidad', 'capitulos'] as $nombre) {
+      $this->crearCampo('node', 'norma', 'field_' . $nombre, 'string');
+    }
+    $this->crearCampo('node', 'norma', 'field_epigrafe', 'string_long');
+    $this->crearCampo('node', 'norma', 'field_aplicacion', 'string_long');
+    $this->crearCampo('node', 'norma', 'field_documento', 'entity_reference', ['target_type' => 'media']);
+    $this->crearCampo('node', 'proceso', 'field_tipo_proceso', 'string');
+    $this->crearCampo('taxonomy_term', 'facultad', 'field_sigla', 'string');
     $this->container->get('theme_installer')->install(['unillanos']);
     $this->config('system.theme')->set('default', 'unillanos')->save();
     $this->container->get('theme.manager')->setActiveTheme(
@@ -124,7 +146,7 @@ class MenusTest extends UnillanosKernelTestBase {
         'label_display' => '0',
         'provider' => 'system',
         'level' => 1,
-        'depth' => 1,
+        'depth' => 2,
         'expand_all_items' => FALSE,
       ],
     ])->save();
@@ -152,13 +174,108 @@ class MenusTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * El menú principal lleva solo Programas y Documentos, por ruta.
+   * El menú principal lleva «SIAAI» (la portada del sistema), por ruta.
    */
   public function testMenuPrincipal(): void {
+    // «Información» y «Noticias» son padres sin destino (etapa 10): agrupan
+    // las páginas informativas y las noticias del sitio de Acreditación.
     $this->assertSame([
-      ['Programas', 'unillanos_autoeval.programas'],
-      ['Documentos', 'unillanos_autoeval.documentos'],
+      ['SIAAI', 'unillanos_autoeval.portada'],
+      ['Información', '<nolink>'],
+      ['Noticias', '<nolink>'],
     ], $this->enlaces('main'));
+  }
+
+  /**
+   * Programas, Documentos e «Institucional» ya no están en el menú principal.
+   *
+   * Viven en la barra secundaria del SIAAI; «SIAAI» no lleva submenú.
+   */
+  public function testElMenuPrincipalNoLlevaLasSeccionesDelSiaai(): void {
+    $arbol = $this->container->get('menu.link_tree');
+    $parametros = new MenuTreeParameters();
+    $parametros->setMaxDepth(2)->onlyEnabledLinks();
+    $elementos = $arbol->transform($arbol->load('main', $parametros), [
+      ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+    ]);
+    // SIAAI, Información y Noticias; «SIAAI» no lleva submenú.
+    $this->assertCount(3, $elementos);
+    foreach ($elementos as $elemento) {
+      if ($elemento->link->getTitle() == 'SIAAI') {
+        $this->assertCount(0, $elemento->subtree);
+      }
+    }
+    $rutas = array_column($this->enlaces('main'), 1);
+    foreach (['programas', 'documentos', 'institucional'] as $seccion) {
+      $this->assertNotContains('unillanos_autoeval.' . $seccion, $rutas);
+    }
+  }
+
+  /**
+   * El desplegable del componente nav: botón con ARIA, submenú y ruta activa.
+   *
+   * El menú principal ya no lleva submenús; el componente se conserva para los
+   * ítems con hijos (por ejemplo «Información») y se prueba directamente.
+   */
+  public function testHtmlDelDesplegable(): void {
+    $construccion = [
+      '#type' => 'component',
+      '#component' => 'unillanos:nav',
+      '#props' => [
+        'id' => 'ua-menu',
+        'items' => [
+          [
+            'title' => 'Sección',
+            'url' => '/seccion',
+            'trail' => TRUE,
+            'children' => [
+              ['title' => 'Uno', 'url' => '/seccion/uno', 'active' => FALSE],
+              ['title' => 'Dos', 'url' => '/seccion/dos', 'active' => TRUE],
+            ],
+          ],
+          ['title' => 'Otro', 'url' => '/otro'],
+        ],
+      ],
+    ];
+    $menu = (string) $this->container->get('renderer')->renderInIsolation($construccion);
+    $this->assertSame(1, substr_count($menu, 'data-ua-nav-sub'));
+    // El enlace de la sección sigue siendo un enlace; el botón va al lado.
+    $this->assertMatchesRegularExpression('~<a class="ua-nav__link is-current" href="/seccion" aria-current="true">Sección</a>~', $menu);
+    $this->assertMatchesRegularExpression('~<button type="button" class="ua-nav__toggle" aria-expanded="false" aria-controls="ua-menu-sub-(\d+)" data-ua-nav-toggle hidden>~', $menu);
+    $this->assertStringContainsString('Mostrar el submenú de Sección', $menu);
+    // El botón controla el submenú que existe.
+    preg_match('~aria-controls="(ua-menu-sub-\d+)"~', $menu, $controles);
+    $this->assertStringContainsString('<ul class="ua-nav__sub" id="' . $controles[1] . '"', $menu);
+    foreach (['uno', 'dos'] as $hijo) {
+      $this->assertStringContainsString('href="/seccion/' . $hijo . '"', $menu);
+    }
+    // En el menú solo el hijo activo es la página actual.
+    $this->assertSame(1, substr_count($menu, 'aria-current="page"'));
+    $this->assertMatchesRegularExpression('~<a class="ua-nav__sublink" href="/seccion/dos" aria-current="page">Dos</a>~', $menu);
+    // Los demás elementos no llevan submenú.
+    $this->assertSame(1, substr_count($menu, 'ua-nav__toggle"'));
+  }
+
+  /**
+   * El rastro del menú en «Institucional» pone «SIAAI» en el recorrido.
+   */
+  public function testRastroEnUnModuloInstitucional(): void {
+    $this->enRuta('unillanos_autoeval.institucional');
+    $rastro = $this->container->get('menu.active_trail')->getActiveTrailIds('main');
+    $this->assertArrayHasKey('unillanos_autoeval.menu.siaai', $rastro);
+    $this->assertArrayNotHasKey('unillanos_autoeval.menu.programas', $rastro);
+    $this->assertArrayNotHasKey('unillanos_autoeval.menu.documentos', $rastro);
+  }
+
+  /**
+   * En /institucional «SIAAI» está en el recorrido y la barra marca la sección.
+   */
+  public function testHtmlDeLaPortadaInstitucional(): void {
+    $html = $this->pagina('/institucional');
+    $menu = $this->menu($html);
+    $this->assertMatchesRegularExpression('~<a class="ua-nav__link is-current" href="/siaai" aria-current="true">SIAAI</a>~', $menu);
+    $this->assertStringNotContainsString('aria-current="page"', $menu);
+    $this->assertMatchesRegularExpression('~<a class="ua-subnav__enlace is-current" href="/institucional" aria-current="page">Institucional</a>~', $html);
   }
 
   /**
@@ -168,6 +285,7 @@ class MenusTest extends UnillanosKernelTestBase {
     $this->assertSame([
       ['Programas', 'unillanos_autoeval.programas'],
       ['Documentos', 'unillanos_autoeval.documentos'],
+      ['Participa', 'unillanos_autoeval.participa'],
     ], $this->enlaces('footer'));
   }
 
@@ -182,10 +300,10 @@ class MenusTest extends UnillanosKernelTestBase {
         $this->assertNotEmpty($proveedor->getRoutesByNames([$ruta]), "«{$titulo}» de {$menu} apunta a {$ruta}.");
       }
     }
-    // Institucional y Participa no están hasta que existan sus rutas.
+    // «Participa» (pie) y el SIAAI (principal) ya existen.
     $titulos = array_merge(array_column($this->enlaces('main'), 0), array_column($this->enlaces('footer'), 0));
-    $this->assertNotContains('Institucional', $titulos);
-    $this->assertNotContains('Participa', $titulos);
+    $this->assertContains('SIAAI', $titulos);
+    $this->assertContains('Participa', $titulos);
   }
 
   /**
@@ -231,7 +349,7 @@ class MenusTest extends UnillanosKernelTestBase {
   public function testRastroEnElListado(): void {
     $this->enRuta('unillanos_autoeval.programas');
     $rastro = $this->container->get('menu.active_trail')->getActiveTrailIds('main');
-    $this->assertArrayHasKey('unillanos_autoeval.menu.programas', $rastro);
+    $this->assertArrayHasKey('unillanos_autoeval.menu.siaai', $rastro);
     $this->assertArrayNotHasKey('unillanos_autoeval.menu.documentos', $rastro);
   }
 
@@ -241,21 +359,21 @@ class MenusTest extends UnillanosKernelTestBase {
   public function testRastroEnDocumentos(): void {
     $this->enRuta('unillanos_autoeval.documentos');
     $rastro = $this->container->get('menu.active_trail')->getActiveTrailIds('main');
-    $this->assertArrayHasKey('unillanos_autoeval.menu.documentos', $rastro);
+    $this->assertArrayHasKey('unillanos_autoeval.menu.siaai', $rastro);
     $this->assertArrayNotHasKey('unillanos_autoeval.menu.programas', $rastro);
   }
 
   /**
-   * La página de un programa pone «Programas» en el rastro.
+   * La página de un programa pone «SIAAI» en el rastro.
    */
   public function testRastroEnLaPaginaDeUnPrograma(): void {
     $programa = $this->crearNodo('programa', ['title' => 'Enfermería', 'field_clave' => 'enfermeria']);
     $this->enRuta('entity.node.canonical', ['node' => $programa]);
     $rastro = $this->container->get('menu.active_trail')->getActiveTrailIds('main');
-    $this->assertArrayHasKey('unillanos_autoeval.menu.programas', $rastro);
+    $this->assertArrayHasKey('unillanos_autoeval.menu.siaai', $rastro);
     $this->assertArrayNotHasKey('unillanos_autoeval.menu.documentos', $rastro);
     // Solo el menú principal lo recibe.
-    $this->assertArrayNotHasKey('unillanos_autoeval.menu.programas', $this->container->get('menu.active_trail')->getActiveTrailIds('footer'));
+    $this->assertArrayNotHasKey('unillanos_autoeval.menu.siaai', $this->container->get('menu.active_trail')->getActiveTrailIds('footer'));
   }
 
   /**
@@ -265,42 +383,165 @@ class MenusTest extends UnillanosKernelTestBase {
     $otro = $this->crearNodo('lineamiento', ['title' => 'Un lineamiento']);
     $this->enRuta('entity.node.canonical', ['node' => $otro]);
     $rastro = $this->container->get('menu.active_trail')->getActiveTrailIds('main');
+    $this->assertArrayNotHasKey('unillanos_autoeval.menu.siaai', $rastro);
     $this->assertArrayNotHasKey('unillanos_autoeval.menu.programas', $rastro);
     $this->assertArrayNotHasKey('unillanos_autoeval.menu.documentos', $rastro);
   }
 
   /**
-   * El HTML marca «Programas» como la página actual en /programas.
+   * La barra del SIAAI marca «Programas» como la página actual en /programas.
    */
   public function testHtmlDelListado(): void {
     $html = (string) $this->container->get('http_kernel')->handle(Request::create('/programas'))->getContent();
-    $this->assertMatchesRegularExpression('~<a class="ua-nav__link" href="/programas" aria-current="page">Programas</a>~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-subnav__enlace is-current" href="/programas" aria-current="page">Programas</a>~', $html);
     $this->assertDoesNotMatchRegularExpression('~href="/documentos" aria-current~', $html);
-    // En el menú solo «Programas» es la actual (las migas llevan la suya).
-    $this->assertSame(1, substr_count($this->menu($html), 'aria-current="page"'));
+    // En el menú principal «SIAAI» está en el recorrido, no es la actual.
+    $this->assertMatchesRegularExpression('~<a class="ua-nav__link is-current" href="/siaai" aria-current="true">SIAAI</a>~', $this->menu($html));
+    $this->assertSame(0, substr_count($this->menu($html), 'aria-current="page"'));
   }
 
   /**
-   * El HTML marca «Documentos» como la página actual en /documentos.
+   * La barra del SIAAI marca «Documentos» como la página actual.
    */
   public function testHtmlDeDocumentos(): void {
     $html = (string) $this->container->get('http_kernel')->handle(Request::create('/documentos'))->getContent();
-    $this->assertMatchesRegularExpression('~<a class="ua-nav__link" href="/documentos" aria-current="page">Documentos</a>~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-subnav__enlace is-current" href="/documentos" aria-current="page">Documentos</a>~', $html);
     $this->assertDoesNotMatchRegularExpression('~href="/programas" aria-current~', $html);
   }
 
   /**
-   * En un programa «Programas» está en el recorrido y no es la actual.
+   * En un programa «Programas» (barra del SIAAI) está en el recorrido.
    */
   public function testHtmlDeLaPaginaDeUnPrograma(): void {
     $programa = $this->crearNodo('programa', ['title' => 'Enfermería', 'field_clave' => 'enfermeria']);
     $html = (string) $this->container->get('http_kernel')->handle(Request::create('/node/' . $programa->id()))->getContent();
-    $this->assertMatchesRegularExpression('~<a class="ua-nav__link is-current" href="/programas" aria-current="true">Programas</a>~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-subnav__enlace is-current" href="/programas" aria-current="true">Programas</a>~', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-nav__link is-current" href="/siaai" aria-current="true">SIAAI</a>~', $this->menu($html));
     $this->assertDoesNotMatchRegularExpression('~href="/documentos" aria-current~', $html);
     // Ningún elemento del menú es «la página actual».
     $this->assertStringNotContainsString('aria-current="page"', $this->menu($html));
     // Las migas llevan «Programas».
     $this->assertMatchesRegularExpression('~<a href="/programas">Programas</a>~', $html);
+  }
+
+  /**
+   * El portal es la página de inicio: un h1, accesos y sin barra del SIAAI.
+   */
+  public function testElPortalEsLaPaginaDeInicio(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    $html = $this->pagina('/portal');
+    $this->assertSame(1, substr_count($html, '<h1'));
+    $this->assertStringContainsString('Autoevaluación y Acreditación', $html);
+    // El acceso principal (el primero) lleva al SIAAI; los otros, a sus rutas.
+    $this->assertMatchesRegularExpression('~<a [^>]*href="/siaai"[^>]*>~', $html);
+    foreach (['/programas', '/institucional', '/documentos'] as $ruta) {
+      $this->assertMatchesRegularExpression('~<a class="ua-card" href="' . $ruta . '">~', $html);
+    }
+    // Fuera del SIAAI no hay barra secundaria.
+    $this->assertStringNotContainsString('ua-subnav', $html);
+    // Sin «sitios de interés» configurados, esa sección no se pinta.
+    $this->assertStringNotContainsString('sitios-de-interes', $html);
+  }
+
+  /**
+   * Lo vacío del portal se omite: sin accesos ni texto solo queda el título.
+   */
+  public function testElPortalSinDatosNoPintaLoVacio(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    $this->config('unillanos_autoeval.micrositio')
+      ->set('portal', ['titulo' => '', 'texto' => '', 'accesos' => [], 'sitios' => []])
+      ->save();
+    $html = $this->pagina('/portal');
+    $this->assertSame(1, substr_count($html, '<h1'));
+    $this->assertStringNotContainsString('ua-cta-row', $html);
+    $this->assertStringNotContainsString('class="ua-card"', $html);
+    $this->assertStringNotContainsString('sitios-de-interes', $html);
+  }
+
+  /**
+   * Los accesos descartan destinos inseguros; los sitios, lo que no es https.
+   */
+  public function testElPortalDescartaDestinosInseguros(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    $this->config('unillanos_autoeval.micrositio')
+      ->set('portal', [
+        'titulo' => 'Portal',
+        'texto' => 'Texto.',
+        'accesos' => [
+          ['titulo' => 'Bueno', 'texto' => '', 'url' => '/siaai'],
+          ['titulo' => 'Malo', 'texto' => '', 'url' => 'javascript:alert(1)'],
+          ['titulo' => 'Externo', 'texto' => '', 'url' => 'https://example.org/'],
+        ],
+        'sitios' => [
+          ['titulo' => 'Seguro', 'texto' => '', 'url' => 'https://example.org/a'],
+          ['titulo' => 'Inseguro', 'texto' => '', 'url' => 'http://example.org/b'],
+          ['titulo' => 'Interno', 'texto' => '', 'url' => '/programas'],
+        ],
+      ])->save();
+    $html = $this->pagina('/portal');
+    $this->assertStringNotContainsString('javascript:', $html);
+    $this->assertStringNotContainsString('Malo', $html);
+    $this->assertStringContainsString('Externo', $html);
+    $this->assertStringContainsString('Seguro', $html);
+    $this->assertStringNotContainsString('Inseguro', $html);
+    $this->assertStringNotContainsString('Interno', $html);
+    // Los destinos externos se abren aparte y lo anuncian.
+    $this->assertMatchesRegularExpression('~<a class="ua-card" href="https://example.org/a" target="_blank" rel="noopener noreferrer">~', $html);
+    $this->assertStringContainsString('se abre en una pestaña nueva', $html);
+  }
+
+  /**
+   * La página /siaai lleva la barra secundaria, con su ítem activo y las migas.
+   */
+  public function testElSiaaiLlevaLaBarraSecundaria(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    $html = $this->pagina('/siaai');
+    $this->assertSame(1, substr_count($html, '<h1'));
+    $this->assertSame(1, preg_match('~<nav [^>]*class="ua-subnav" aria-label="SIAAI">.*?</nav>~s', $html, $barra));
+    $this->assertSame(4, substr_count($barra[0], 'class="ua-subnav__enlace'));
+    $this->assertSame(['/siaai', '/programas', '/documentos', '/institucional'], $this->destinos($barra[0]));
+    $this->assertMatchesRegularExpression('~<a class="ua-subnav__enlace is-current" href="/siaai" aria-current="page">Inicio del SIAAI</a>~', $barra[0]);
+    $this->assertSame(1, substr_count($barra[0], 'aria-current'));
+    // Migas: Inicio › Información › SIAAI.
+    $this->assertSame(1, preg_match('~<nav [^>]*class="ua-breadcrumb".*?</nav>~s', $html, $migas));
+    $this->assertStringContainsString('<a href="/">Inicio</a>', $migas[0]);
+    $this->assertStringContainsString('Información', $migas[0]);
+    $this->assertStringContainsString('<span aria-current="page">SIAAI</span>', $migas[0]);
+  }
+
+  /**
+   * La barra del SIAAI aparece en cada sección del SIAAI y solo en ellas.
+   */
+  public function testLaBarraDelSiaaiSoloEstaEnElSiaai(): void {
+    $this->installConfig(['unillanos_autoeval']);
+    foreach (['/siaai', '/programas', '/documentos', '/institucional'] as $ruta) {
+      $this->assertStringContainsString('ua-subnav', $this->pagina($ruta), $ruta);
+    }
+    $programa = $this->crearNodo('programa', ['title' => 'Enfermería', 'field_clave' => 'enfermeria']);
+    $this->assertStringContainsString('ua-subnav', $this->pagina('/node/' . $programa->id()));
+    $otro = $this->crearNodo('lineamiento', ['title' => 'Un lineamiento']);
+    $this->assertStringNotContainsString('ua-subnav', $this->pagina('/node/' . $otro->id()));
+    $this->assertStringNotContainsString('ua-subnav', $this->pagina('/portal'));
+  }
+
+  /**
+   * La dirección anterior de la portada del sistema redirige a /siaai.
+   */
+  public function testElInicioAnteriorRedirigeAlSiaai(): void {
+    $respuesta = $this->container->get('http_kernel')->handle(Request::create('/inicio'));
+    $this->assertSame(301, $respuesta->getStatusCode());
+    $this->assertSame('/siaai', parse_url((string) $respuesta->headers->get('Location'), PHP_URL_PATH));
+  }
+
+  /**
+   * Los destinos (href) de los enlaces de un fragmento de HTML, en orden.
+   *
+   * @return string[]
+   *   Los valores de href.
+   */
+  protected function destinos(string $html): array {
+    preg_match_all('~href="([^"]+)"~', $html, $coincidencias);
+    return $coincidencias[1];
   }
 
   /**
@@ -311,15 +552,17 @@ class MenusTest extends UnillanosKernelTestBase {
     $nucleo = $this->container->get('http_kernel');
     $html = (string) $nucleo->handle(Request::create('/programas'))->getContent();
     $this->assertStringContainsString('Explora', $html);
-    $this->assertSame(2, preg_match_all('~<li><a href="/(programas|documentos)">(Programas|Documentos)</a></li>~', $html));
+    $this->assertSame(3, preg_match_all('~<li><a href="/(programas|documentos|participa)">(Programas|Documentos|Participa)</a></li>~', $html));
 
     $gestor = $this->container->get('plugin.manager.menu.link');
     // Con uno.
     $gestor->updateDefinition('unillanos_autoeval.pie.documentos', ['enabled' => 0]);
+    $gestor->updateDefinition('unillanos_autoeval.pie.participa', ['enabled' => 0]);
     $html = (string) $nucleo->handle(Request::create('/programas'))->getContent();
     $this->assertStringContainsString('Explora', $html);
     $this->assertSame(1, preg_match_all('~<li><a href="/programas">Programas</a></li>~', $html));
     $this->assertStringNotContainsString('<li><a href="/documentos">Documentos</a></li>', $html);
+    $this->assertStringNotContainsString('<li><a href="/participa">Participa</a></li>', $html);
 
     // Con ninguno: ni la columna ni su título.
     $gestor->updateDefinition('unillanos_autoeval.pie.programas', ['enabled' => 0]);
@@ -389,18 +632,21 @@ class MenusTest extends UnillanosKernelTestBase {
     $html = $this->pagina('/programas');
     $this->assertSame(1, preg_match('~<header .*?</header>~s', $html, $encabezado));
     $this->assertStringContainsString('class="ua-nav"', $encabezado[0]);
-    // Programas y Documentos: ya no hay «Ingresar» en el menú (expectativa
-    // cambiada a propósito, la cabecera lleva GOV.CO y redes en su lugar).
-    $this->assertSame(2, substr_count($this->menu($html), 'class="ua-nav__link'));
+    // «SIAAI», «Información» y «Noticias» (aquí «Inicio» no existe: lo aporta
+    // el perfil standard). Los dos últimos son botones sin destino. No hay
+    // «Ingresar» en el menú: la cabecera lleva GOV.CO y redes.
+    $this->assertSame(3, substr_count($this->menu($html), 'class="ua-nav__link'));
     $this->assertStringNotContainsString('Ingresar', $encabezado[0]);
     $this->assertStringContainsString('aria-controls="ua-menu"', $html);
     $this->assertSame(1, substr_count($html, 'id="ua-menu"'));
   }
 
   /**
-   * La cabecera lleva GOV.CO y redes; ninguna página dice «Ingresar».
+   * La cabecera no lleva franja ni redes; GOV.CO y redes van en el pie.
+   *
+   * Ninguna página dice «Ingresar».
    */
-  public function testCabeceraSinIngresarConGovcoMasRedes(): void {
+  public function testCabeceraSinFranjaMasGovcoMasRedesEnElPie(): void {
     $this->installConfig(['unillanos_autoeval']);
     foreach (['/programas', '/documentos'] as $ruta) {
       $html = $this->pagina($ruta);
@@ -409,10 +655,16 @@ class MenusTest extends UnillanosKernelTestBase {
       $this->assertStringNotContainsString('Ingresar', $html, $ruta);
       $this->assertStringNotContainsString('Mi cuenta', $html, $ruta);
       $this->assertStringNotContainsString('/user/login', $html, $ruta);
-      $this->assertStringContainsString('href="https://www.gov.co/"', $cabecera);
-      $this->assertSame(4, substr_count($cabecera, 'ua-redes__enlace"'), $ruta);
+      // La franja superior ya no existe: ni GOV.CO ni redes en la cabecera.
+      $this->assertStringNotContainsString('ua-topbar', $html, $ruta);
+      $this->assertStringNotContainsString('href="https://www.gov.co/"', $cabecera);
+      $this->assertStringNotContainsString('ua-redes__enlace', $cabecera, $ruta);
+      // Siguen en el pie.
+      $this->assertSame(1, preg_match('~<footer .*?</footer>~s', $html, $pie), $ruta);
+      $this->assertStringContainsString('href="https://www.gov.co/"', $pie[0]);
+      $this->assertSame(4, substr_count($pie[0], 'ua-redes__enlace"'), $ruta);
       foreach (['Facebook', 'X', 'Instagram', 'YouTube'] as $red) {
-        $this->assertStringContainsString('>' . $red . ' de la Universidad de los Llanos</span>', $cabecera);
+        $this->assertStringContainsString('>' . $red . ' de la Universidad de los Llanos</span>', $pie[0]);
       }
     }
   }
@@ -441,13 +693,14 @@ class MenusTest extends UnillanosKernelTestBase {
    */
   public function testSinDatosNoSePintaLoVacio(): void {
     $this->installConfig(['unillanos_autoeval']);
-    // Con lo de fábrica la franja solo lleva redes y GOV.CO (expectativa
-    // cambiada a propósito en el commit de la cabecera): sin enlaces propios
-    // ni accesibilidad.
+    // La franja superior ya no existe (expectativa cambiada a propósito en la
+    // tarea 2 de las mejoras de interfaz): la accesibilidad es un botón
+    // flotante que lleva su panel y, sin URL, no tiene enlace de respaldo.
     $con_marca = $this->pagina('/programas');
-    $this->assertStringContainsString('ua-topbar__derecha', $con_marca);
-    $this->assertStringNotContainsString('ua-topbar__list', $con_marca);
-    $this->assertStringNotContainsString('ua-topbar__acceso', $con_marca);
+    $this->assertStringNotContainsString('ua-topbar', $con_marca);
+    $this->assertStringContainsString('class="ua-flotantes"', $con_marca);
+    $this->assertStringContainsString('data-ua-a11y-boton', $con_marca);
+    $this->assertStringNotContainsString('data-ua-a11y-enlace', $con_marca);
     // El pie de fábrica: cuatro grupos, fila de logos y derechos (expectativa
     // cambiada a propósito: antes llevaba columnas de sedes y contacto vacías).
     foreach (['Ubícanos', 'Contacto', 'Líneas de atención'] as $titulo) {
@@ -455,9 +708,10 @@ class MenusTest extends UnillanosKernelTestBase {
     }
     $this->assertStringContainsString('<h3 class="ua-footer__redes-titulo">Redes</h3>', $con_marca);
     $this->assertStringContainsString('Nit: 892.000.757-3', $con_marca);
-    // Sin GOV.CO ni redes tampoco hay franja; sin grupos, el pie no los pinta.
+    // Sin título de accesibilidad no hay botón; sin redes ni grupos, el pie no
+    // los pinta.
     $this->config('unillanos_autoeval.micrositio')
-      ->set('url_govco', '')
+      ->set('accesibilidad.titulo', '')
       ->set('redes_sociales', ['facebook' => '', 'x' => '', 'instagram' => '', 'youtube' => ''])
       ->set('pie', [
         'ubicanos' => ['titulo' => '', 'sedes' => [], 'horario' => ['titulo' => '', 'texto' => '']],
@@ -471,6 +725,7 @@ class MenusTest extends UnillanosKernelTestBase {
       ->save();
     $html = $this->pagina('/programas');
     $this->assertStringNotContainsString('ua-topbar', $html);
+    $this->assertStringNotContainsString('data-ua-a11y-boton', $html);
     $this->assertStringNotContainsString('ua-footer__top', $html);
     $this->assertStringNotContainsString('ua-footer__logos', $html);
     $this->assertStringNotContainsString('ua-footer__bottom', $html);
@@ -485,24 +740,22 @@ class MenusTest extends UnillanosKernelTestBase {
   }
 
   /**
-   * Con datos aparecen la franja y los grupos del pie, y solo ellos.
+   * Con datos aparecen el botón de accesibilidad y los grupos del pie.
    */
   public function testConDatosSePintaElMarco(): void {
     $this->installConfig(['unillanos_autoeval']);
     $this->config('unillanos_autoeval.micrositio')
-      ->set('franja_superior', [
-        ['titulo' => 'Biblioteca de prueba', 'url' => 'https://example.org/b'],
-        ['titulo' => 'Interno de prueba', 'url' => '/documentos'],
-      ])
       ->set('accesibilidad.url', '/programas')
       ->set('pie.ubicanos.sedes', [['titulo' => 'Sede de prueba', 'texto' => 'Calle de prueba 1']])
       ->set('pie.lineas', ['titulo' => '', 'items' => []])
       ->save();
     $html = $this->pagina('/programas');
-    $this->assertStringContainsString('<div data-component-id="unillanos:topbar" class="ua-topbar">', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="https://example.org/b" rel="noopener">~', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="/documentos">~', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/programas">~', $html);
+    $this->assertStringNotContainsString('ua-topbar', $html);
+    $this->assertStringContainsString('class="ua-flotantes"', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-a11y__enlace" href="/programas" data-ua-a11y-enlace>~', $html);
+    $this->assertStringContainsString('data-ua-a11y-boton', $html);
+    // «Recomendaciones» va debajo del botón de accesibilidad.
+    $this->assertLessThan(strpos($html, 'ua-fab'), strpos($html, 'data-ua-a11y-boton'));
     $this->assertStringContainsString('<strong>Sede de prueba</strong><span class="ua-footer__valor">Calle de prueba 1</span>', $html);
     $this->assertStringNotContainsString('Campus Barcelona', $html);
     // Sin líneas de atención la columna sigue con las redes; sin el grupo no
@@ -517,17 +770,12 @@ class MenusTest extends UnillanosKernelTestBase {
   public function testUrlPeligrosaNoLlegaAlHtml(): void {
     $this->installConfig(['unillanos_autoeval']);
     $this->config('unillanos_autoeval.micrositio')
-      ->set('franja_superior', [
-        ['titulo' => 'Peligrosa uno', 'url' => 'javascript:alert(1)'],
-        ['titulo' => 'Peligrosa dos', 'url' => '//example.org/x'],
-        ['titulo' => 'Peligrosa tres', 'url' => 'data:text/html,hola'],
-      ])
+      ->set('accesibilidad', ['titulo' => 'Peligrosa uno', 'url' => 'javascript:alert(1)'])
       ->set('pie.politicas.enlaces', [['titulo' => 'Política peligrosa', 'url' => 'JaVaScRiPt:alert(2)']])
       ->set('pie.contacto.items', [
         ['titulo' => 'Dato peligroso', 'texto' => '', 'url' => 'javascript:alert(5)', 'icono' => ''],
       ])
       ->set('pie.logos', [['clave' => 'govco', 'titulo' => 'Logo peligroso', 'url' => 'data:text/html,hola']])
-      ->set('url_govco', 'javascript:alert(3)')
       ->set('redes_sociales', [
         'facebook' => 'javascript:alert(4)',
         'x' => '//example.org/x',

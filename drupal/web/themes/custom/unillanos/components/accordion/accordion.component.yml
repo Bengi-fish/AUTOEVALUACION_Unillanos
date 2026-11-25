@@ -1,0 +1,67 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Acordeón
+status: stable
+group: Contenido
+description: 'Lista de paneles que se abren y se cierran; varios pueden estar abiertos. Cada entrada es un botón con aria-expanded y su panel. Sin JavaScript todos los paneles se ven abiertos. Con `searchable` ofrece un buscador por texto (solo con JavaScript). Dentro de cada panel van grupos de documentos (doc-list) y, en modo edición, enlaces de edición.'
+props:
+  type: object
+  required:
+    - items
+  properties:
+    id:
+      type: string
+      title: Identificador del acordeón
+      description: 'Base de los ids; solo letras, números, guion y guion bajo. Por defecto «acordeon».'
+    heading:
+      type: string
+      title: Nivel del título de cada entrada
+      enum:
+        - ''
+        - h2
+        - h3
+        - h4
+      default: h3
+    searchable:
+      type: boolean
+      title: Con buscador
+      default: false
+    search_label:
+      type: string
+      title: Rótulo del buscador
+    items:
+      type: array
+      title: Entradas
+      items:
+        type: object
+        required:
+          - id
+          - title
+        properties:
+          id:
+            type: string
+            description: 'Solo letras, números, guion y guion bajo.'
+          title:
+            type: string
+          description:
+            type: string
+          count:
+            type: integer
+            minimum: 0
+          groups:
+            type: array
+            items:
+              type: object
+              properties:
+                title:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+          edicion:
+            type: object
+            description: 'Enlaces del modo edición (cada valor: url, title y tipo).'
+libraryOverrides:
+  dependencies:
+    - core/drupal
+    - core/once

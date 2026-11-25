@@ -1,0 +1,26 @@
+uuid: b558ab87-55d0-48e8-a381-49273a4baab4
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.pagina_informativa.body
+    - field.field.node.pagina_informativa.field_enlace
+    - node.type.pagina_informativa
+  module:
+    - text
+id: node.pagina_informativa.default
+targetEntityType: node
+bundle: pagina_informativa
+mode: default
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  field_enlace: true
+  langcode: true
+  links: true

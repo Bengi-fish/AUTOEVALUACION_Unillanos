@@ -6,7 +6,8 @@
  * Variables:
  * - datos: lo arma AcreditacionController::panel(): q (búsqueda validada),
  *   total (programas que se muestran), total_general, generales (accesos de la
- *   parte superior) y programas (por programa: id, nombre, facultad, nivel,
+ *   parte superior), institucional (grupos de accesos de «Institucional», cada
+ *   uno con titulo y enlaces) y programas (por programa: id, nombre, facultad, nivel,
  *   sede, indicadores y grupos de accesos, cada uno con titulo y enlaces).
  *   Solo trae lo que tiene dato: lo vacío se omite.
  *
@@ -31,6 +32,26 @@
           <li><a href="{{ enlace.url }}">{{ enlace.texto }}</a></li>
         {% endfor %}
       </ul>
+    </nav>
+  {% endif %}
+
+  {% if datos.institucional %}
+    <nav class="unillanos-acreditacion__institucional" aria-label="{{ 'Institucional'|t }}">
+      <p class="unillanos-acreditacion__titulo"><strong>{{ 'Institucional'|t }}</strong></p>
+      <dl>
+        {% for grupo in datos.institucional %}
+          <div class="unillanos-acreditacion__grupo">
+            <dt>{{ grupo.titulo }}</dt>
+            <dd>
+              <ul>
+                {% for enlace in grupo.enlaces %}
+                  <li><a href="{{ enlace.url }}">{{ enlace.texto }}</a></li>
+                {% endfor %}
+              </ul>
+            </dd>
+          </div>
+        {% endfor %}
+      </dl>
     </nav>
   {% endif %}
 

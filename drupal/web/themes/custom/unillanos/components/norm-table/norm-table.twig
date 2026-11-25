@@ -1,0 +1,83 @@
+{#
+/**
+ * @file
+ * Tabla de la matriz legal con filtros por origen y tipo, y búsqueda.
+ *
+ * Los filtros nacen ocultos (hidden): norm-table.js los muestra. Sin JS todas
+ * las filas se ven. Bajo 760 px cada fila es una tarjeta con la etiqueta de
+ * cada dato (data-label), como el plan de mejoramiento.
+ */
+#}
+{% set base = ((id ~ '') matches '~^[A-Za-z0-9_-]+$~') ? id : 'normas' %}
+{% set columnas = [
+  'Origen'|t,
+  'Tipo de norma'|t,
+  'Número y fecha'|t,
+  'Entidad que la expide'|t,
+  'Epígrafe'|t,
+  'Capítulos o artículos'|t,
+  'Aplicación específica'|t,
+] %}
+<div{{ attributes.addClass('ua-norm').setAttribute('data-ua-norm', true) }}>
+  <div class="ua-norm__filtros" data-ua-norm-filtros hidden>
+    <div class="ua-norm__campo">
+      <label for="{{ base }}-origen">{{ 'Origen'|t }}</label>
+      <select id="{{ base }}-origen" data-ua-norm-origen>
+        <option value="">{{ 'Todos'|t }}</option>
+        {% for opcion in origins|default([]) %}
+          {% if (opcion.value ~ '') matches '~^[A-Za-z0-9_-]+$~' %}
+            <option value="{{ opcion.value }}">{{ opcion.label }}{% if opcion.count is not null %} ({{ opcion.count }}){% endif %}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="ua-norm__campo">
+      <label for="{{ base }}-tipo">{{ 'Tipo de norma'|t }}</label>
+      <select id="{{ base }}-tipo" data-ua-norm-tipo>
+        <option value="">{{ 'Todos'|t }}</option>
+        {% for opcion in types|default([]) %}
+          {% if (opcion.value ~ '') matches '~^[A-Za-z0-9_-]+$~' %}
+            <option value="{{ opcion.value }}">{{ opcion.label }}{% if opcion.count is not null %} ({{ opcion.count }}){% endif %}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="ua-norm__campo ua-norm__campo--texto">
+      <label for="{{ base }}-buscar">{{ 'Buscar en la matriz'|t }}</label>
+      <input id="{{ base }}-buscar" type="search" autocomplete="off" data-ua-norm-texto>
+    </div>
+    <p class="ua-norm__conteo" data-ua-norm-conteo>{% if total is not null %}{% trans %}Se muestra 1 norma.{% plural total %}Se muestran {{ total }} normas.{% endtrans %}{% endif %}</p>
+    <p class="ua-sr" role="status" aria-live="polite" aria-atomic="true" data-ua-norm-live></p>
+  </div>
+  <div class="ua-norm__caja">
+    <table>
+      <caption class="ua-sr">{{ 'Matriz legal aplicable a los procesos de la Universidad'|t }}</caption>
+      <thead>
+        <tr>{% for columna in columnas %}<th scope="col">{{ columna }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for fila in rows %}
+          <tr data-ua-norm-fila data-origen="{{ fila.origin_key }}" data-tipo="{{ fila.type_key }}" data-texto="{{ fila.search|lower }}">
+            <td data-label="{{ columnas[0] }}">{{ fila.origin }}</td>
+            <td data-label="{{ columnas[1] }}">{{ fila.type|sin_cortes }}</td>
+            <td data-label="{{ columnas[2] }}">{{ fila.number|sin_cortes }}</td>
+            <td data-label="{{ columnas[3] }}">{{ fila.entity }}</td>
+            <td data-label="{{ columnas[4] }}">
+              {{ fila.epigraph|sin_cortes }}
+              {% if fila.link and fila.link.url %}
+                <p class="ua-norm__doc">
+                  {% include 'unillanos:button' with {label: ('Abrir'|t) ~ ' ' ~ fila.link.title, variant: 'texto', size: 'sm', icon: fila.link.externo ? 'external' : 'download', icon_size: 'sm', url: fila.link.url, attributes: fila.link.externo ? create_attribute({target: '_blank', rel: 'noopener noreferrer'}) : create_attribute()} only %}
+                </p>
+              {% endif %}
+              {% if fila.edit %}
+                <span class="ua-norm__edit">{% include 'unillanos:edit-link' with {url: fila.edit.url, label: fila.edit.title, variant: fila.edit.tipo} only %}</span>
+              {% endif %}
+            </td>
+            <td data-label="{{ columnas[5] }}">{{ fila.chapters }}</td>
+            <td data-label="{{ columnas[6] }}">{{ fila.application }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

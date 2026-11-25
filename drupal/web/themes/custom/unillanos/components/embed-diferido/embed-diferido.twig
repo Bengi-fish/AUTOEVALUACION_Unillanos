@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Contenido de otro sitio que se carga solo si la persona lo pide.
+ *
+ * No imprime ningún iframe: embed-diferido.js lo crea al pulsar el botón. Solo
+ * acepta direcciones https; con otra, no imprime el botón ni el enlace.
+ */
+#}
+{% set base = ((id ~ '') matches '~^[A-Za-z0-9_-]+$~') ? id : 'externo' %}
+{% set https = '~^https://[^\\s/]+~i' %}
+{% set alto = height ?: 800 %}
+<div{{ attributes.addClass('ua-embed').setAttribute('data-ua-embed', true) }}>
+  {% if notice %}
+    <p class="ua-nota">
+      {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
+      <span>{{ notice }}</span>
+    </p>
+  {% endif %}
+  <div class="ua-embed__acciones">
+    {% if (embed_url ~ '') matches https %}
+      {% include 'unillanos:button' with {label: button_label|default('Cargar el contenido'|t), variant: 'primario', attributes: create_attribute({'data-ua-embed-cargar': true, 'data-url': embed_url, 'data-title': title, 'data-height': alto, 'aria-controls': base ~ '-marco', hidden: true})} only %}
+    {% endif %}
+    {% if open_url and (open_url ~ '') matches https %}
+      {% include 'unillanos:button' with {label: (open_label|default('Abrir en una pestaña nueva'|t)) ~ (host ? ' (' ~ host ~ ')' : ''), variant: 'secundario', icon: 'external', icon_size: 'sm', url: open_url, attributes: create_attribute({target: '_blank', rel: 'noopener noreferrer'})} only %}
+    {% endif %}
+  </div>
+  <div class="ua-embed__marco" id="{{ base }}-marco" data-ua-embed-marco></div>
+  <p class="ua-sr" role="status" aria-live="polite" aria-atomic="true" data-ua-embed-live></p>
+</div>

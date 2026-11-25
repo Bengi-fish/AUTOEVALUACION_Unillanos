@@ -1,0 +1,11 @@
+uuid: f5e9a1b1-daeb-4f06-a26e-9a309519f206
+langcode: es
+status: true
+dependencies: {  }
+name: Diapositiva
+type: diapositiva
+description: 'Diapositiva del carrusel de la portada.'
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: false

@@ -1,6 +1,6 @@
 unillanos_autoeval.micrositio:
   type: config_object
-  label: 'Cabecera, franja superior y pie del micrositio'
+  label: 'Cabecera, botón de accesibilidad y pie del micrositio'
   mapping:
     nombre_linea1:
       type: label
@@ -11,12 +11,9 @@ unillanos_autoeval.micrositio:
     url_web_principal:
       type: string
       label: 'URL de la web principal de la Universidad'
-    url_govco:
-      type: string
-      label: 'URL del logo GOV.CO'
     redes_sociales:
       type: mapping
-      label: 'Redes sociales de la Universidad (cabecera y pie)'
+      label: 'Redes sociales de la Universidad (pie)'
       mapping:
         facebook:
           type: string
@@ -30,14 +27,48 @@ unillanos_autoeval.micrositio:
         youtube:
           type: string
           label: 'URL de YouTube'
-    franja_superior:
-      type: sequence
-      label: 'Enlaces de la franja superior'
-      sequence:
-        type: unillanos_autoeval.enlace
     accesibilidad:
       type: unillanos_autoeval.enlace
-      label: 'Enlace de accesibilidad'
+      label: 'Botón de accesibilidad (título y URL opcional)'
+    portal:
+      type: mapping
+      label: 'Portal: texto de bienvenida, accesos y sitios de interés'
+      mapping:
+        titulo:
+          type: label
+          label: 'Título de la portada del portal'
+        texto:
+          type: text
+          label: 'Texto de bienvenida (párrafos separados por una línea en blanco)'
+        accesos:
+          type: sequence
+          label: 'Accesos (el primero es el principal)'
+          sequence:
+            type: unillanos_autoeval.enlace_texto_url
+        sitios:
+          type: sequence
+          label: 'Sitios de interés'
+          sequence:
+            type: unillanos_autoeval.enlace_texto_url
+    institucional:
+      type: mapping
+      label: 'Institucional: introducción y cifras'
+      mapping:
+        introduccion:
+          type: text
+          label: 'Frase de introducción de /institucional'
+        cifras:
+          type: mapping
+          label: 'Cifras'
+          mapping:
+            enlaces:
+              type: sequence
+              label: 'Enlaces de cifras'
+              sequence:
+                type: unillanos_autoeval.enlace_texto_url
+            tablero_url:
+              type: string
+              label: 'URL del tablero institucional'
     pie:
       type: mapping
       label: 'Pie de página'
@@ -148,6 +179,20 @@ unillanos_autoeval.enlace_texto:
     texto:
       type: label
       label: 'Texto'
+
+unillanos_autoeval.enlace_texto_url:
+  type: mapping
+  label: 'Título, descripción corta y URL'
+  mapping:
+    titulo:
+      type: label
+      label: 'Título'
+    texto:
+      type: label
+      label: 'Descripción corta'
+    url:
+      type: string
+      label: 'URL'
 
 unillanos_autoeval.enlace:
   type: mapping

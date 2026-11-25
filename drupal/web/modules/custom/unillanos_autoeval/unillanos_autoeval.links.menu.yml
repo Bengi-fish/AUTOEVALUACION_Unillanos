@@ -1,18 +1,61 @@
-# Menús de la demostración: solo páginas que existen. «Inicio» lo aporta el
-# perfil standard (standard.front_page). Los enlaces apuntan a la ruta y no a
-# una URL escrita, así que solo existen si la ruta existe.
-# «Institucional» y «Participa» se añaden cuando existan sus rutas (Participa,
-# Fase 8): no se deja ningún enlace a una página que no existe.
-unillanos_autoeval.menu.programas:
-  title: 'Programas'
-  route_name: unillanos_autoeval.programas
-  menu_name: main
-  weight: 1
-unillanos_autoeval.menu.documentos:
-  title: 'Documentos'
-  route_name: unillanos_autoeval.documentos
+# Menú principal del portal. Solo enlaces a páginas que existen. «Inicio» lo
+# aporta el perfil standard (standard.front_page) y lleva al portal. «SIAAI»
+# lleva al sistema de información; sus secciones (Programas, Documentos,
+# Institucional) viven en la barra secundaria del SIAAI, no en este menú.
+unillanos_autoeval.menu.siaai:
+  title: 'SIAAI'
+  route_name: unillanos_autoeval.portada
   menu_name: main
   weight: 2
+
+# Información y Noticias del sitio de Acreditación (Fase 9): dos menús
+# desplegables sin página propia (<nolink>), con las páginas como hijos.
+unillanos_autoeval.menu.informacion:
+  title: 'Información'
+  route_name: '<nolink>'
+  menu_name: main
+  weight: 3
+unillanos_autoeval.menu.informacion.sac:
+  title: 'Sistema de Aseguramiento de la Calidad (SAC)'
+  url: 'internal:/informacion/sac'
+  menu_name: main
+  parent: unillanos_autoeval.menu.informacion
+  weight: 1
+unillanos_autoeval.menu.informacion.modelo:
+  title: 'Modelo de Autoevaluación'
+  url: 'internal:/informacion/esquema-organizacional'
+  menu_name: main
+  parent: unillanos_autoeval.menu.informacion
+  weight: 2
+unillanos_autoeval.menu.informacion.equipo:
+  title: 'Nuestro equipo'
+  route_name: unillanos_autoeval.equipo
+  menu_name: main
+  parent: unillanos_autoeval.menu.informacion
+  weight: 3
+unillanos_autoeval.menu.noticias:
+  title: 'Noticias'
+  route_name: '<nolink>'
+  menu_name: main
+  weight: 4
+unillanos_autoeval.menu.noticias.lista:
+  title: 'Noticias'
+  route_name: unillanos_autoeval.noticias
+  menu_name: main
+  parent: unillanos_autoeval.menu.noticias
+  weight: 1
+unillanos_autoeval.menu.noticias.boletines:
+  title: 'Boletines'
+  url: 'internal:/noticias/boletines'
+  menu_name: main
+  parent: unillanos_autoeval.menu.noticias
+  weight: 2
+unillanos_autoeval.menu.noticias.capacitaciones:
+  title: 'Capacitaciones (histórico)'
+  url: 'internal:/noticias/capacitaciones'
+  menu_name: main
+  parent: unillanos_autoeval.menu.noticias
+  weight: 3
 
 # Menú del pie: la columna «Explora» (se omite si no hay enlaces).
 unillanos_autoeval.pie.programas:
@@ -25,11 +68,16 @@ unillanos_autoeval.pie.documentos:
   route_name: unillanos_autoeval.documentos
   menu_name: footer
   weight: 2
+unillanos_autoeval.pie.participa:
+  title: 'Participa'
+  route_name: unillanos_autoeval.participa
+  menu_name: footer
+  weight: 3
 
-# Administración: configuración del micrositio (cabecera, franja superior y pie).
+# Administración: configuración del micrositio (cabecera, accesibilidad y pie).
 unillanos_autoeval.admin.micrositio:
   title: 'Micrositio de autoevaluación'
-  description: 'Nombre, franja superior y pie de página del micrositio.'
+  description: 'Nombre, redes, accesibilidad y pie de página del micrositio.'
   route_name: unillanos_autoeval.micrositio
   parent: system.admin_config_system
   weight: 10

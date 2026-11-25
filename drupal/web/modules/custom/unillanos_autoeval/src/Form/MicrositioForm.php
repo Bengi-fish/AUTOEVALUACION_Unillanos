@@ -12,7 +12,7 @@ use Drupal\unillanos_autoeval\Service\DatosMarco;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Formulario de administración de la cabecera, la franja y el pie.
+ * Formulario de administración de la cabecera, la accesibilidad y el pie.
  *
  * Edita `unillanos_autoeval.micrositio`. Las listas se escriben una por línea
  * con partes separadas por «|» («Título | URL», «Título | Valor | URL | Ícono»,
@@ -76,7 +76,7 @@ final class MicrositioForm extends ConfigFormBase {
 
     $form['cabecera'] = [
       '#type' => 'details',
-      '#title' => $this->t('Cabecera y franja superior'),
+      '#title' => $this->t('Cabecera, redes y accesibilidad'),
       '#open' => TRUE,
     ];
     $form['cabecera']['nombre_linea1'] = [
@@ -97,12 +97,6 @@ final class MicrositioForm extends ConfigFormBase {
       '#default_value' => $config->get('url_web_principal'),
       '#maxlength' => 255,
     ];
-    $form['cabecera']['url_govco'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('URL del logo GOV.CO'),
-      '#default_value' => $config->get('url_govco'),
-      '#maxlength' => 255,
-    ];
     $redes = (array) ($config->get('redes_sociales') ?? []);
     foreach ([
       'facebook' => $this->t('URL de Facebook'),
@@ -113,27 +107,21 @@ final class MicrositioForm extends ConfigFormBase {
       $form['cabecera']['red_' . $red] = [
         '#type' => 'textfield',
         '#title' => $titulo,
-        '#description' => $this->t('Sin URL, el ícono no se muestra (cabecera y pie).'),
+        '#description' => $this->t('Sin URL, el ícono no se muestra (pie).'),
         '#default_value' => $redes[$red] ?? '',
         '#maxlength' => 255,
       ];
     }
-    $form['cabecera']['franja_superior'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Enlaces de la franja superior'),
-      '#description' => $ayuda_enlaces,
-      '#default_value' => $this->enlacesComoLineas($config->get('franja_superior')),
-      '#rows' => 4,
-    ];
     $form['cabecera']['accesibilidad_titulo'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Enlace de accesibilidad: título'),
+      '#title' => $this->t('Botón de accesibilidad: título'),
       '#default_value' => $accesibilidad['titulo'] ?? '',
       '#maxlength' => 100,
     ];
     $form['cabecera']['accesibilidad_url'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Enlace de accesibilidad: URL'),
+      '#title' => $this->t('Botón de accesibilidad: URL'),
+      '#description' => $this->t('Opcional. Si la deja vacía, el botón de accesibilidad abre igual sus opciones (tamaño del texto, contraste y más), sin enlace a otra página.'),
       '#default_value' => $accesibilidad['url'] ?? '',
       '#maxlength' => 255,
     ];
@@ -264,6 +252,67 @@ final class MicrositioForm extends ConfigFormBase {
       '#default_value' => $derechos['nit'] ?? '',
       '#maxlength' => 100,
     ];
+    $portal = (array) ($config->get('portal') ?? []);
+    $form['portal'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Portal de inicio: texto, accesos y sitios de interés'),
+      '#open' => TRUE,
+    ];
+    $form['portal']['portal_titulo'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Título de la portada'),
+      '#default_value' => $portal['titulo'] ?? '',
+      '#maxlength' => 120,
+    ];
+    $form['portal']['portal_texto'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Texto de bienvenida'),
+      '#description' => $this->t('Separe los párrafos con una línea en blanco.'),
+      '#default_value' => $portal['texto'] ?? '',
+      '#rows' => 6,
+    ];
+    $form['portal']['portal_accesos'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Accesos'),
+      '#description' => $this->t('Uno por línea, con el formato «Título | Descripción corta | URL». La URL es una ruta del sitio (empieza por «/») o una dirección https://. El primero es el acceso principal (el del SIAAI).'),
+      '#default_value' => $this->cifrasComoLineas($portal['accesos'] ?? NULL),
+      '#rows' => 6,
+    ];
+    $form['portal']['portal_sitios'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Sitios de interés'),
+      '#description' => $this->t('Uno por línea, con el formato «Nombre | URL». La URL debe empezar por https://.'),
+      '#default_value' => $this->enlacesComoLineas($portal['sitios'] ?? NULL),
+      '#rows' => 6,
+    ];
+    $institucional = (array) ($config->get('institucional') ?? []);
+    $cifras = (array) ($institucional['cifras'] ?? []);
+    $form['institucional'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Institucional: introducción y cifras'),
+      '#open' => TRUE,
+    ];
+    $form['institucional']['institucional_introduccion'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Frase de introducción de la página «Institucional»'),
+      '#default_value' => $institucional['introduccion'] ?? '',
+      '#rows' => 2,
+      '#maxlength' => 300,
+    ];
+    $form['institucional']['cifras_enlaces'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Cifras: enlaces'),
+      '#description' => $this->t('Uno por línea, con el formato «Título | Descripción corta | URL». La URL debe empezar por https://.'),
+      '#default_value' => $this->cifrasComoLineas($cifras['enlaces'] ?? NULL),
+      '#rows' => 5,
+    ];
+    $form['institucional']['cifras_tablero_url'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Cifras: URL del tablero institucional'),
+      '#description' => $this->t('Tablero externo (por ejemplo, de Tableau Public). Debe empezar por https://. Sin URL, no se muestra.'),
+      '#default_value' => $cifras['tablero_url'] ?? '',
+      '#maxlength' => 255,
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -279,8 +328,7 @@ final class MicrositioForm extends ConfigFormBase {
     parent::validateForm($form, $form_state);
     $campos_url = [
       'url_web_principal' => $this->t('URL de la web principal de la Universidad'),
-      'accesibilidad_url' => $this->t('Enlace de accesibilidad: URL'),
-      'url_govco' => $this->t('URL del logo GOV.CO'),
+      'accesibilidad_url' => $this->t('Botón de accesibilidad: URL'),
       'pie_derechos_url' => $this->t('Derechos: URL de la institución'),
       'red_facebook' => $this->t('URL de Facebook'),
       'red_x' => $this->t('URL de X'),
@@ -293,9 +341,14 @@ final class MicrositioForm extends ConfigFormBase {
         $form_state->setErrorByName($campo, $this->t('@campo: la URL no es válida. Use una ruta que empiece por «/», «#», «https://», «mailto:» o «tel:».', ['@campo' => $titulo]));
       }
     }
-    foreach (['franja_superior', 'pie_politicas_enlaces'] as $campo) {
-      $this->lineasComoEnlaces((string) $form_state->getValue($campo), $campo, $form_state);
+    $this->lineasComoCifras((string) $form_state->getValue('portal_accesos'), 'portal_accesos', $form_state, TRUE);
+    $this->lineasComoSitios((string) $form_state->getValue('portal_sitios'), 'portal_sitios', $form_state);
+    $this->lineasComoCifras((string) $form_state->getValue('cifras_enlaces'), 'cifras_enlaces', $form_state);
+    $tablero = trim((string) $form_state->getValue('cifras_tablero_url'));
+    if ($tablero !== '' && !preg_match('~^https://[^\s/]+~i', $tablero)) {
+      $form_state->setErrorByName('cifras_tablero_url', $this->t('Cifras: la URL del tablero debe empezar por https://.'));
     }
+    $this->lineasComoEnlaces((string) $form_state->getValue('pie_politicas_enlaces'), 'pie_politicas_enlaces', $form_state);
     foreach (['pie_contacto_items', 'pie_lineas_items'] as $campo) {
       $this->lineasComoDatos((string) $form_state->getValue($campo), $campo, $form_state);
     }
@@ -317,12 +370,23 @@ final class MicrositioForm extends ConfigFormBase {
       ->set('nombre_linea1', trim((string) $form_state->getValue('nombre_linea1')))
       ->set('nombre_linea2', trim((string) $form_state->getValue('nombre_linea2')))
       ->set('url_web_principal', trim((string) $form_state->getValue('url_web_principal')))
-      ->set('url_govco', trim((string) $form_state->getValue('url_govco')))
       ->set('redes_sociales', array_combine(DatosMarco::REDES, array_map(
         fn(string $red): string => trim((string) $form_state->getValue('red_' . $red)),
         DatosMarco::REDES,
       )))
-      ->set('franja_superior', $enlaces('franja_superior'))
+      ->set('portal', [
+        'titulo' => trim((string) $form_state->getValue('portal_titulo')),
+        'texto' => trim((string) $form_state->getValue('portal_texto')),
+        'accesos' => $this->lineasComoCifras((string) $form_state->getValue('portal_accesos'), NULL, NULL, TRUE),
+        'sitios' => $this->lineasComoSitios((string) $form_state->getValue('portal_sitios')),
+      ])
+      ->set('institucional', [
+        'introduccion' => trim((string) $form_state->getValue('institucional_introduccion')),
+        'cifras' => [
+          'enlaces' => $this->lineasComoCifras((string) $form_state->getValue('cifras_enlaces')),
+          'tablero_url' => trim((string) $form_state->getValue('cifras_tablero_url')),
+        ],
+      ])
       ->set('accesibilidad', [
         'titulo' => trim((string) $form_state->getValue('accesibilidad_titulo')),
         'url' => trim((string) $form_state->getValue('accesibilidad_url')),
@@ -360,6 +424,68 @@ final class MicrositioForm extends ConfigFormBase {
       ])
       ->save();
     parent::submitForm($form, $form_state);
+  }
+
+  /**
+   * Convierte los enlaces de cifras guardados en líneas.
+   *
+   * Formato de cada línea: «Título | Descripción corta | URL».
+   *
+   * @param mixed $lista
+   *   Valor de la configuración.
+   *
+   * @return string
+   *   Una línea por enlace.
+   */
+  protected function cifrasComoLineas(mixed $lista): string {
+    $lineas = [];
+    foreach (is_array($lista) ? $lista : [] as $dato) {
+      if (is_array($dato)) {
+        $lineas[] = implode(' | ', [
+          trim((string) ($dato['titulo'] ?? '')),
+          trim((string) ($dato['texto'] ?? '')),
+          trim((string) ($dato['url'] ?? '')),
+        ]);
+      }
+    }
+    return implode("\n", $lineas);
+  }
+
+  /**
+   * Convierte líneas «Título | Descripción corta | URL» en enlaces de cifras.
+   *
+   * @param string $texto
+   *   Contenido del campo.
+   * @param string|null $campo
+   *   Campo donde marcar los errores (si se indica con $form_state).
+   * @param \Drupal\Core\Form\FormStateInterface|null $form_state
+   *   Estado del formulario donde marcar los errores.
+   * @param bool $internas
+   *   TRUE para aceptar también rutas del sitio (que empiezan por «/»).
+   *
+   * @return array<int, array{titulo: string, texto: string, url: string}>
+   *   Los enlaces válidos.
+   */
+  protected function lineasComoCifras(string $texto, ?string $campo = NULL, ?FormStateInterface $form_state = NULL, bool $internas = FALSE): array {
+    $enlaces = [];
+    foreach (preg_split('/\R/u', $texto) ?: [] as $numero => $linea) {
+      $linea = trim($linea);
+      if ($linea === '') {
+        continue;
+      }
+      [$titulo, $descripcion, $url] = array_pad(array_map('trim', explode('|', $linea, 3)), 3, '');
+      $patron = $internas ? '~^(?:/(?![/\\\\\s])|https://[^\s/]+)~i' : '~^https://[^\s/]+~i';
+      if ($titulo === '' || !preg_match($patron, $url)) {
+        if ($campo !== NULL && $form_state !== NULL) {
+          $form_state->setErrorByName($campo, $internas
+            ? $this->t('Línea @numero: use «Título | Descripción corta | URL» con título y una URL que empiece por «/» o por https://.', ['@numero' => $numero + 1])
+            : $this->t('Línea @numero: use «Título | Descripción corta | URL» con título y una URL que empiece por https://.', ['@numero' => $numero + 1]));
+        }
+        continue;
+      }
+      $enlaces[] = ['titulo' => $titulo, 'texto' => $descripcion, 'url' => $url];
+    }
+    return $enlaces;
   }
 
   /**
@@ -583,6 +709,38 @@ final class MicrositioForm extends ConfigFormBase {
       $enlaces[] = ['titulo' => $titulo, 'url' => $url];
     }
     return $enlaces;
+  }
+
+  /**
+   * Convierte líneas «Nombre | URL» en sitios de interés (solo https).
+   *
+   * @param string $texto
+   *   Contenido del campo.
+   * @param string|null $campo
+   *   Campo donde marcar los errores (si se indica con $form_state).
+   * @param \Drupal\Core\Form\FormStateInterface|null $form_state
+   *   Estado del formulario donde marcar los errores.
+   *
+   * @return array<int, array{titulo: string, texto: string, url: string}>
+   *   Los sitios válidos.
+   */
+  protected function lineasComoSitios(string $texto, ?string $campo = NULL, ?FormStateInterface $form_state = NULL): array {
+    $sitios = [];
+    foreach (preg_split('/\R/u', $texto) ?: [] as $numero => $linea) {
+      $linea = trim($linea);
+      if ($linea === '') {
+        continue;
+      }
+      [$titulo, $url] = array_pad(array_map('trim', explode('|', $linea, 2)), 2, '');
+      if ($titulo === '' || !preg_match('~^https://[^\s/]+~i', $url)) {
+        if ($campo !== NULL && $form_state !== NULL) {
+          $form_state->setErrorByName($campo, $this->t('Línea @numero: use «Nombre | URL» con una URL que empiece por https://.', ['@numero' => $numero + 1]));
+        }
+        continue;
+      }
+      $sitios[] = ['titulo' => $titulo, 'texto' => '', 'url' => $url];
+    }
+    return $sitios;
   }
 
   /**

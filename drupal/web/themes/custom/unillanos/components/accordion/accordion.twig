@@ -1,0 +1,58 @@
+{#
+/**
+ * @file
+ * Acordeón accesible: un botón por entrada con aria-expanded y aria-controls.
+ *
+ * Varias entradas pueden estar abiertas. Sin JavaScript todas se ven abiertas
+ * (aria-expanded="true", panel sin hidden); accordion.js las cierra al cargar.
+ * El buscador nace oculto y lo muestra el JS. Solo imprime lo que recibe: las
+ * entradas sin id válido se omiten.
+ */
+#}
+{% set base = ((id ~ '') matches '~^[A-Za-z0-9_-]+$~') ? id : 'acordeon' %}
+{% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
+{% set nivel_doc = nivel == 'h2' ? 'h3' : 'h4' %}
+<div{{ attributes.addClass('ua-acc').setAttribute('data-ua-acc', true) }}>
+  {% if searchable %}
+    <div class="ua-acc__tools" data-ua-acc-tools hidden>
+      <label class="ua-acc__label" for="{{ base }}-buscar">{{ search_label|default('Buscar'|t) }}</label>
+      <input class="ua-acc__search" id="{{ base }}-buscar" type="search" autocomplete="off" data-ua-acc-search>
+      <p class="ua-sr" role="status" aria-live="polite" aria-atomic="true" data-ua-acc-live></p>
+    </div>
+  {% endif %}
+  {% for entrada in items %}
+    {% if (entrada.id ~ '') matches '~^[A-Za-z0-9_-]+$~' and entrada.title %}
+      {% set clave = base ~ '-' ~ entrada.id %}
+      {% set texto = entrada.title %}
+      {% for grupo in entrada.groups|default([]) %}
+        {% set texto = texto ~ ' ' ~ grupo.title %}
+        {% for doc in grupo.items|default([]) %}{% set texto = texto ~ ' ' ~ doc.title %}{% endfor %}
+      {% endfor %}
+      <div class="ua-acc__item" data-ua-acc-item data-ua-acc-text="{{ texto|lower }}" id="{{ clave }}">
+        <{{ nivel }} class="ua-acc__head">
+          <button type="button" class="ua-acc__btn" id="{{ clave }}-boton" aria-expanded="true" aria-controls="{{ clave }}-panel" data-ua-acc-btn>
+            <span class="ua-acc__title">{{ entrada.title|sin_cortes }}</span>
+            {%- if entrada.count is not null %}<span class="ua-acc__count">{{ entrada.count }}</span>{% endif -%}
+            <span class="ua-acc__icon" aria-hidden="true">{% include 'unillanos:icon' with {name: 'chevron-down', size: 'sm'} only %}</span>
+          </button>
+        </{{ nivel }}>
+        <div class="ua-acc__panel" id="{{ clave }}-panel" role="region" aria-labelledby="{{ clave }}-boton" data-ua-acc-panel>
+          {% if entrada.description %}<p class="ua-acc__desc">{{ entrada.description|sin_cortes }}</p>{% endif %}
+          {% for grupo in entrada.groups|default([]) %}
+            {% if grupo.items %}
+              {% if grupo.title %}<p class="ua-acc__group">{{ grupo.title|sin_cortes }}</p>{% endif %}
+              {% include 'unillanos:doc-list' with {heading: nivel_doc, items: grupo.items} only %}
+            {% endif %}
+          {% endfor %}
+          {% if entrada.edicion %}
+            <div class="ua-edicion-zona">
+              {% for enlace in entrada.edicion %}
+                {% if enlace %}{% include 'unillanos:edit-link' with {url: enlace.url, label: enlace.title, variant: enlace.tipo, show_label: true} only %}{% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

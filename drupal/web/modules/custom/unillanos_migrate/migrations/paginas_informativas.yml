@@ -1,0 +1,29 @@
+id: paginas_informativas
+label: 'Páginas informativas (SAC, esquema, boletines, capacitaciones)'
+migration_group: unillanos
+# Texto del sitio de Acreditación (datos/semillas/paginas.csv). El alias es el
+# de la columna `alias`; Pathauto no lo cambia.
+source:
+  plugin: csv
+  path: '%datos%/semillas/paginas.csv'
+  ids: [id]
+process:
+  title: titulo
+  body/value: cuerpo
+  body/format:
+    plugin: default_value
+    default_value: basic_html
+  field_enlace/uri:
+    plugin: skip_on_empty
+    method: process
+    source: fuente
+  path/alias: alias
+  path/pathauto:
+    plugin: default_value
+    default_value: 0
+  status:
+    plugin: default_value
+    default_value: 1
+destination:
+  plugin: 'entity:node'
+  default_bundle: pagina_informativa

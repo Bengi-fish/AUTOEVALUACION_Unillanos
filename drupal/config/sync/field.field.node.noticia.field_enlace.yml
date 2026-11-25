@@ -1,0 +1,23 @@
+uuid: 0863cd5d-ff84-4cba-b04e-2f6a787b678e
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_enlace
+    - node.type.noticia
+  module:
+    - link
+id: node.noticia.field_enlace
+field_name: field_enlace
+entity_type: node
+bundle: noticia
+label: 'Enlace de origen'
+description: 'Dirección de la noticia en el sitio de origen (https://).'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 0
+  link_type: 17
+field_type: link

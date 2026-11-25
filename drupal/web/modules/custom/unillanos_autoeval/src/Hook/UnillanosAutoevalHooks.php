@@ -66,6 +66,12 @@ class UnillanosAutoevalHooks {
       'meta',
       'seguimiento',
       'lineamiento',
+      'dependencia',
+      'norma',
+      'diapositiva',
+      'noticia',
+      'pagina_informativa',
+      'miembro_equipo',
     ],
     'media' => ['documento'],
   ];
@@ -105,7 +111,11 @@ class UnillanosAutoevalHooks {
       'meta' => ['field_plan' => ['plan', 'plan_mejoramiento']],
     ],
     'media' => [
-      'documento' => ['field_proceso' => ['proceso', 'proceso']],
+      'documento' => [
+        'field_proceso' => ['proceso', 'proceso'],
+        'field_dependencia' => ['dependencia', 'dependencia'],
+        'field_programa' => ['programa', 'programa'],
+      ],
     ],
   ];
 
@@ -121,6 +131,9 @@ class UnillanosAutoevalHooks {
   const PRECARGA_TERMINOS = [
     'node' => [
       'valoracion' => ['field_elemento' => ['elemento', 'elemento_modelo']],
+    ],
+    'media' => [
+      'documento' => ['field_facultad' => ['facultad', 'facultad']],
     ],
   ];
 
@@ -205,6 +218,18 @@ class UnillanosAutoevalHooks {
     $this->enPanelLateral($form, $form_state, $form_id);
     if ($form_id === 'node_programa_foto_form') {
       $this->ayudasDeLaFoto($form, $form_state);
+      return;
+    }
+    if (in_array($form_id, ['node_diapositiva_form', 'node_diapositiva_edit_form'], TRUE)) {
+      // Como «Cambiar foto»: la imagen se sube sola al elegirla (o soltarla) y
+      // un solo botón guarda. El panel lateral aplica el mismo estilo.
+      $this->ayudasDeLaFoto($form, $form_state);
+      $form['#attached']['library'][] = 'unillanos/panel_foto';
+      foreach ($this->ayudasDeLaDiapositiva() as $campo => $texto) {
+        if (isset($form[$campo])) {
+          $this->ponerAyuda($form[$campo], $texto);
+        }
+      }
       return;
     }
     $ayudas = match ($form_id) {
@@ -671,6 +696,7 @@ class UnillanosAutoevalHooks {
       ['widget', 'value'],
       ['widget', 0, 'value'],
       ['widget', 0, 'target_id'],
+      ['widget', 0, 'uri'],
       ['widget', 0],
     ];
     foreach ($rutas as $ruta) {
@@ -710,6 +736,22 @@ class UnillanosAutoevalHooks {
   }
 
   /**
+   * Ayudas de la diapositiva del carrusel (lenguaje sencillo).
+   *
+   * @return array<string, mixed>
+   *   Texto de ayuda por campo.
+   */
+  protected function ayudasDeLaDiapositiva(): array {
+    return [
+      'title' => $this->t('Titular que se ve sobre la imagen (hasta 90 caracteres).'),
+      'field_texto_corto' => $this->t('Frase breve bajo el titular (hasta 160 caracteres). Si no la necesita, déjela en blanco.'),
+      'field_enlace' => $this->t('A dónde lleva la diapositiva: una página del sitio (por ejemplo /programas) o una dirección que empiece por https://. Si no lleva a ninguna parte, déjelo en blanco.'),
+      'field_orden' => $this->t('Número para ordenar las diapositivas: la 1 sale primero. Se muestran hasta 5.'),
+      'status' => $this->t('Si quita la marca, la diapositiva deja de verse en el sitio público.'),
+    ];
+  }
+
+  /**
    * Ayudas del documento (lenguaje sencillo).
    *
    * @return array<string, mixed>
@@ -719,11 +761,15 @@ class UnillanosAutoevalHooks {
     return [
       'name' => $this->t('Nombre del documento, tal como debe verse en la lista.'),
       'field_media_file' => $this->t('Suba aquí el archivo del documento.'),
+      'field_enlace' => $this->t('Escriba la dirección completa, que empiece por https://, por ejemplo la de una carpeta de Google Drive.'),
       'field_categoria' => $this->t('Elija qué tipo de documento es, por ejemplo un informe o una norma.'),
       'field_fecha_publicacion' => $this->t('Fecha en que se publicó el documento.'),
       'field_version' => $this->t('Versión del documento, si la tiene.'),
       'field_proceso' => $this->t('Proceso de autoevaluación al que pertenece. Escriba parte del nombre y elíjalo de la lista. Déjelo en blanco si es un documento general.'),
       'field_lineamiento' => $this->t('Solo para normas: el modelo de evaluación al que corresponde. Si no aplica, déjelo en blanco.'),
+      'field_programa' => $this->t('Solo para formatos de una dependencia: el programa al que corresponde. Escriba parte del nombre y elíjalo de la lista. Si no aplica, déjelo en blanco.'),
+      'field_dependencia' => $this->t('Solo para formatos de una dependencia (Biblioteca, Admisiones…): elija a cuál pertenece. Si no aplica, déjelo en blanco.'),
+      'field_facultad' => $this->t('Solo para los documentos de los directivos: elija la facultad. Si no aplica, déjelo en blanco.'),
       'status' => $this->t('Si quita la marca, el documento deja de verse en el sitio público.'),
     ];
   }
@@ -822,6 +868,14 @@ class UnillanosAutoevalHooks {
       }
       $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], ['config:image_style_list']);
     }
+    // Las imágenes de la galería (carrusel propio del programa).
+    if ($entity->hasField('field_galeria') && !$entity->get('field_galeria')->isEmpty()) {
+      foreach ($entity->get('field_galeria')->referencedEntities() as $archivo) {
+        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $archivo->getCacheTags());
+      }
+      $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], ['config:image_style_list']);
+      $build['#cache']['contexts'][] = 'url.site';
+    }
   }
 
   /**
@@ -853,6 +907,10 @@ class UnillanosAutoevalHooks {
       $entity_types['node']->addConstraint('UnillanosProcesoSedeOPrograma');
       $entity_types['node']->addConstraint('UnillanosEstadoPorTipo');
       $entity_types['node']->addConstraint('UnillanosModeloDelProceso');
+      $entity_types['node']->addConstraint('UnillanosDiapositiva');
+    }
+    if (isset($entity_types['media'])) {
+      $entity_types['media']->addConstraint('UnillanosArchivoOEnlace');
     }
   }
 

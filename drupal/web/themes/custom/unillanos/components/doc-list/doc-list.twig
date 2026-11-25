@@ -6,7 +6,10 @@
  * El botón de descarga es el componente button: con una url segura es un
  * enlace; sin url (el documento aún no existe) queda desactivado, sin href. Su
  * nombre accesible incluye el tipo y el tamaño (meta): «Descargar {título}
- * (PDF · 5,2 MB)».
+ * (PDF · 5,2 MB)». Un documento externo (enlace o carpeta de Drive, con
+ * `externo`) lleva el ícono de enlace, se abre en una pestaña nueva y su
+ * nombre accesible lo dice: «Abrir {título} (Enlace; se abre en una pestaña
+ * nueva)».
  */
 #}
 {% set nivel = (heading ~ '') in ['h2', 'h3', 'h4'] ? heading : 'h3' %}
@@ -14,7 +17,7 @@
   {% for doc in items %}
     <li class="ua-doc">
       <span class="ua-doc__icon">
-        {%- include 'unillanos:icon' with {name: 'file'} only -%}
+        {%- include 'unillanos:icon' with {name: doc.externo ? 'external' : 'file'} only -%}
         {{ doc.kind|default('PDF') }}
       </span>
       <div class="ua-doc__main">
@@ -23,7 +26,11 @@
         {% if doc.desc %}<p class="ua-doc__desc">{{ doc.desc|sin_cortes }}</p>{% endif %}
         {% if doc.meta %}<p class="ua-meta">{{ doc.meta|sin_cortes }}</p>{% endif %}
       </div>
-      {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ doc.title ~ (doc.meta ? ' (' ~ doc.meta ~ ')' : '') ~ (doc.url ? '' : ' (' ~ ('aún no disponible'|t) ~ ')'), variant: 'icono', icon: 'download', url: doc.url|default(''), disabled: not doc.url} only %}
+      {% if doc.externo %}
+        {% include 'unillanos:button' with {label: ('Abrir'|t) ~ ' ' ~ doc.title ~ (doc.meta ? ' (' ~ doc.meta ~ ')' : '') ~ ' (' ~ ('se abre en una pestaña nueva'|t) ~ ')', variant: 'icono', icon: 'external', url: doc.url|default(''), disabled: not doc.url, attributes: create_attribute({target: '_blank', rel: 'noopener noreferrer'})} only %}
+      {% else %}
+        {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ doc.title ~ (doc.meta ? ' (' ~ doc.meta ~ ')' : '') ~ (doc.url ? '' : ' (' ~ ('aún no disponible'|t) ~ ')'), variant: 'icono', icon: 'download', url: doc.url|default(''), disabled: not doc.url} only %}
+      {% endif %}
     </li>
   {% endfor %}
 </ul>

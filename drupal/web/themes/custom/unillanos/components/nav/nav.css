@@ -104,3 +104,169 @@
   }
 
 }
+
+/* Submenú (Fase 9, etapa 4): panel blanco con borde, sin sombra; cada opción
+   mide al menos 44 px. Sin JavaScript el panel queda cerrado y el enlace de la
+   sección lleva a su página. */
+
+.ua-nav__item--sub {
+  display: flex;
+  align-items: stretch;
+}
+
+.ua-nav__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-height: 56px;
+  margin: 0 0 0 calc(var(--espacio-2) * -1);
+  padding: 0;
+  border: 0;
+  border-bottom: 4px solid transparent;
+  background: transparent;
+  color: var(--tinta-900);
+  cursor: pointer;
+}
+
+.ua-nav__toggle[hidden] {
+  display: none;
+}
+
+.ua-nav__toggle svg {
+  transition: transform .15s ease;
+}
+
+.ua-nav__toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.ua-nav__toggle:hover,
+.ua-nav__item--sub.is-open > .ua-nav__toggle {
+  color: var(--rojo-700);
+}
+
+.ua-nav__sub {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  min-width: 17rem;
+  margin: 0;
+  padding: var(--espacio-2) 0;
+  list-style: none;
+  background: var(--Surface);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.ua-nav__item--sub.is-open > .ua-nav__sub {
+  display: block;
+}
+
+.ua .ua-nav__sublink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--espacio-4);
+  color: var(--tinta-900);
+  background: transparent;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+  border-left: 4px solid transparent;
+}
+
+.ua .ua-nav__sublink:hover {
+  color: var(--rojo-700);
+  background: var(--superficie-50);
+}
+
+.ua .ua-nav__sublink[aria-current="page"] {
+  color: var(--rojo-700);
+  border-left-color: var(--Unillanos_Red);
+  background: var(--superficie-50);
+}
+
+@media (max-width: 860px) {
+
+  .ua-nav__item--sub {
+    flex-wrap: wrap;
+  }
+
+  .ua-nav__item--sub > .ua-nav__link {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  /* El fondo del elemento actual cubre también el botón del submenú. */
+  .ua-nav__item--sub:has(> .ua-nav__link.is-current, > .ua-nav__link[aria-current="page"]) {
+    background: var(--superficie-50);
+  }
+
+  .ua-nav__toggle {
+    margin: 0;
+    width: 48px;
+    min-height: 48px;
+    border: 0;
+  }
+
+  .ua-nav__sub {
+    position: static;
+    flex: 1 0 100%;
+    min-width: 0;
+    padding: 0 0 var(--espacio-2);
+    border: 0;
+    border-radius: 0;
+    background: var(--superficie-50);
+  }
+
+  .ua .ua-nav__sublink {
+    padding-left: var(--espacio-6);
+    white-space: normal;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ua-nav__toggle svg {
+    transition: none;
+  }
+
+}
+
+@media (forced-colors: active) {
+
+  .ua-nav__sub {
+    border: 1px solid CanvasText;
+  }
+
+}
+
+/* Padre sin destino: el rótulo es un botón con el aspecto de un enlace. */
+.ua .ua-nav__link--boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ua-nav__link--boton svg {
+  transition: transform .15s ease;
+}
+
+.ua-nav__link--boton[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+/* Sin JavaScript no hay quien abra el submenú: se muestra abierto. */
+html:not(.js) .ua-nav__item--sin-destino .ua-nav__sub {
+  display: block;
+}

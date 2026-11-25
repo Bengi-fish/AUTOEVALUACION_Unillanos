@@ -2,8 +2,9 @@
 /**
  * @file
  * Página base: encabezado con el menú principal, migas, contenido y pie.
- * El botón flotante de recomendaciones (unillanos:fab) vuelve en la Fase 8,
- * cuando exista la página «Participa».
+ * Los botones flotantes (unillanos:a11y y unillanos:fab) van en una columna
+ * fija abajo a la derecha; «Recomendaciones» lleva a «Participa» y se oculta en
+ * esa misma página (mostrar_fab).
  *
  * El título (h1), los mensajes y la ayuda van dentro de un contenedor; el
  * contenido de la portada va a todo el ancho para que sus secciones se
@@ -13,6 +14,7 @@
  * - page: regiones (primary_menu, breadcrumb, page_title, highlighted,
  *   help, content).
  * - is_front, logged_in.
+ * - barra_siaai: enlaces de la barra secundaria del SIAAI (vacía fuera de él).
  * - pagina_propia: la plantilla del nodo pinta su cabecera, migas y título
  *   (programa); se omiten el bloque de migas y el del título.
  */
@@ -27,10 +29,14 @@
   solo_logo: 'unillanos',
   show_search: true,
   search_url: path('unillanos_autoeval.programas'),
-  topbar: {links: marco.franja, accessibility: marco.accesibilidad, social: marco.redes, govco: marco.govco, edicion: edicion_barra},
+  edicion: edicion_barra,
 } only %}
   {% block nav %}{{ menu }}{% endblock %}
 {% endembed %}
+
+{% if barra_siaai %}
+  {% include 'unillanos:subnav' with {label: 'SIAAI'|t, items: barra_siaai} only %}
+{% endif %}
 
 {% if page.breadcrumb and not pagina_propia %}
   <div class="ua-page__migas">
@@ -71,3 +77,25 @@
   rights: pie.derechos,
   edicion: edicion_pie|default(null),
 } only %}
+
+{#
+  Botones flotantes (esquina inferior derecha): accesibilidad, justo encima de
+  «Recomendaciones». Van dentro de un landmark: el contenido fuera de ellos lo
+  marcan los lectores de pantalla.
+#}
+{% if marco.accesibilidad or mostrar_fab %}
+  {# role=complementary y no <aside>: la página solo tiene un <aside> (la ficha del programa). #}
+  <div class="ua-flotantes" role="complementary" aria-label="{{ 'Accesos rápidos'|t }}">
+    {% if marco.accesibilidad %}
+      {% include 'unillanos:a11y' with {title: marco.accesibilidad.title, url: marco.accesibilidad.url} only %}
+    {% endif %}
+    {% if mostrar_fab %}
+      {% include 'unillanos:fab' with {
+        url: path('unillanos_autoeval.participa') ~ '#recomendacion',
+        label: 'Recomendaciones'|t,
+        icon: 'message',
+        static: true,
+      } only %}
+    {% endif %}
+  </div>
+{% endif %}

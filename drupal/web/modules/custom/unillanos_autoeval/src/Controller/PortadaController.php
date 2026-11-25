@@ -18,9 +18,7 @@ final class PortadaController extends ControllerBase {
   /**
    * Constructor.
    */
-  public function __construct(
-    protected DatosPortada $portada,
-  ) {}
+  public function __construct(protected DatosPortada $portada) {}
 
   /**
    * {@inheritdoc}

@@ -14,7 +14,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * Prueba el formulario de administración de la cabecera, la franja y el pie.
+ * Prueba el formulario de la cabecera, la accesibilidad y el pie.
  */
 #[Group('unillanos_autoeval')]
 #[RunTestsInSeparateProcesses]
@@ -58,12 +58,10 @@ class MicrositioFormTest extends KernelTestBase {
       'nombre_linea1' => 'Sistema de',
       'nombre_linea2' => 'Autoevaluación',
       'url_web_principal' => '',
-      'url_govco' => 'https://www.gov.co/',
       'red_facebook' => 'https://www.facebook.com/UnillanosOficial/',
       'red_x' => '',
       'red_instagram' => '',
       'red_youtube' => '',
-      'franja_superior' => '',
       'accesibilidad_titulo' => 'Accesibilidad',
       'accesibilidad_url' => '',
       'pie_ubicanos_titulo' => 'Ubícanos',
@@ -93,23 +91,26 @@ class MicrositioFormTest extends KernelTestBase {
     $estado = $this->enviar([
       'nombre_linea1' => '  Sistema de  ',
       'url_web_principal' => 'https://www.unillanos.edu.co',
-      'franja_superior' => "Admisiones | https://www.unillanos.edu.co/admisiones\n\n  Correo | mailto:info@unillanos.edu.co  ",
       'pie_ubicanos_sedes' => "Villavicencio | Km 12\n\n  Granada  ",
       'pie_horario_titulo' => 'Horario',
       'pie_horario_texto' => '8 a 5',
       'pie_contacto_items' => "Correo | info@unillanos.edu.co | mailto:info@unillanos.edu.co | mail\nChat | | https://example.org/chat |",
       'pie_lineas_items' => 'PBX | (57) 608 6611623 | tel:+576086611623 | phone',
-      'pie_politicas_enlaces' => 'Términos | https://example.org/terminos',
+      'pie_politicas_enlaces' => "Términos | https://example.org/terminos\n\n  Correo | mailto:info@unillanos.edu.co  ",
       'pie_logos' => "govco | GOV.CO | https://www.gov.co/\nunillanos | Universidad | https://www.unillanos.edu.co/",
     ] + $this->base());
     $this->assertSame([], $estado->getErrors());
 
     $config = $this->config('unillanos_autoeval.micrositio');
     $this->assertSame('Sistema de', $config->get('nombre_linea1'));
+    // Las líneas en blanco y los espacios sobrantes se descartan.
     $this->assertSame([
-      ['titulo' => 'Admisiones', 'url' => 'https://www.unillanos.edu.co/admisiones'],
+      ['titulo' => 'Términos', 'url' => 'https://example.org/terminos'],
       ['titulo' => 'Correo', 'url' => 'mailto:info@unillanos.edu.co'],
-    ], $config->get('franja_superior'));
+    ], $config->get('pie.politicas.enlaces'));
+    // La franja superior y el logo GOV.CO de la cabecera ya no se guardan.
+    $this->assertNull($config->get('franja_superior'));
+    $this->assertNull($config->get('url_govco'));
     $this->assertSame([
       ['titulo' => 'Villavicencio', 'texto' => 'Km 12'],
       ['titulo' => 'Granada', 'texto' => ''],
@@ -129,25 +130,23 @@ class MicrositioFormTest extends KernelTestBase {
 
     $datos = $this->container->get('unillanos_autoeval.datos_marco')->datos(new CacheableMetadata());
     $this->assertSame('https://www.unillanos.edu.co', $datos['web_principal']);
-    $this->assertSame(['Admisiones', 'Correo'], array_column($datos['franja'], 'title'));
+    $this->assertSame(['Términos', 'Correo'], array_column($datos['pie']['politicas']['enlaces'], 'title'));
     $this->assertSame(['Villavicencio', 'Granada'], array_column($datos['pie']['ubicanos']['sedes'], 'title'));
     $this->assertSame(['Correo', 'Chat'], array_column($datos['pie']['contacto']['items'], 'title'));
     $this->assertSame(['govco', 'unillanos'], array_column($datos['pie']['logos'], 'clave'));
-    $this->assertSame('Términos', $datos['pie']['politicas']['enlaces'][0]['title']);
+    $this->assertArrayNotHasKey('franja', $datos);
   }
 
   /**
-   * GOV.CO y las redes se guardan, se leen y las vacías no se muestran.
+   * Las redes se guardan, se leen y las vacías no se muestran.
    */
-  public function testGuardaGovcoConRedes(): void {
+  public function testGuardaRedes(): void {
     $estado = $this->enviar([
-      'url_govco' => ' https://www.gov.co/ ',
       'red_x' => 'https://twitter.com/unillanos_?lang=es',
       'red_youtube' => 'https://www.youtube.com/channel/UCmhXbLrVeyotUiBsaPBcxcA',
     ] + $this->base());
     $this->assertSame([], $estado->getErrors());
     $config = $this->config('unillanos_autoeval.micrositio');
-    $this->assertSame('https://www.gov.co/', $config->get('url_govco'));
     $this->assertSame([
       'facebook' => 'https://www.facebook.com/UnillanosOficial/',
       'x' => 'https://twitter.com/unillanos_?lang=es',
@@ -156,6 +155,40 @@ class MicrositioFormTest extends KernelTestBase {
     ], $config->get('redes_sociales'));
     $datos = $this->container->get('unillanos_autoeval.datos_marco')->datos(new CacheableMetadata());
     $this->assertSame(['facebook', 'x', 'youtube'], array_column($datos['redes'], 'red'));
+  }
+
+  /**
+   * El portal guarda su texto, accesos (internos o https) y sitios (https).
+   */
+  public function testGuardaElPortalConSusAccesos(): void {
+    $estado = $this->enviar([
+      'portal_titulo' => ' Portal de prueba ',
+      'portal_texto' => "Primero.\n\nSegundo.",
+      'portal_accesos' => "SIAAI | El sistema | /siaai\nExterno | Otro sitio | https://example.org/a\n",
+      'portal_sitios' => 'SNIES | https://snies.example.org/',
+    ] + $this->base());
+    $this->assertSame([], $estado->getErrors());
+    $config = $this->config('unillanos_autoeval.micrositio');
+    $this->assertSame('Portal de prueba', $config->get('portal.titulo'));
+    $this->assertSame([
+      ['titulo' => 'SIAAI', 'texto' => 'El sistema', 'url' => '/siaai'],
+      ['titulo' => 'Externo', 'texto' => 'Otro sitio', 'url' => 'https://example.org/a'],
+    ], $config->get('portal.accesos'));
+    $this->assertSame([
+      ['titulo' => 'SNIES', 'texto' => '', 'url' => 'https://snies.example.org/'],
+    ], $config->get('portal.sitios'));
+    $datos = $this->container->get('unillanos_autoeval.portal_inicio')->datos(new CacheableMetadata());
+    $this->assertSame('Portal de prueba', $datos['titulo']);
+    $this->assertSame(['Primero.', 'Segundo.'], $datos['parrafos']);
+    $this->assertSame(['SIAAI', 'Externo'], array_column($datos['accesos'], 'title'));
+    $this->assertTrue($datos['accesos'][0]['principal']);
+    $this->assertFalse($datos['accesos'][1]['principal']);
+    $this->assertTrue($datos['accesos'][1]['external']);
+    $this->assertSame(['SNIES'], array_column($datos['sitios'], 'title'));
+    // El formulario devuelve lo guardado en líneas.
+    $form = $this->container->get('form_builder')->getForm(MicrositioForm::class);
+    $this->assertSame("SIAAI | El sistema | /siaai\nExterno | Otro sitio | https://example.org/a", $form['portal']['portal_accesos']['#default_value']);
+    $this->assertSame('SNIES | https://snies.example.org/', $form['portal']['portal_sitios']['#default_value']);
   }
 
   /**
@@ -179,12 +212,11 @@ class MicrositioFormTest extends KernelTestBase {
     return [
       'javascript en la web' => ['url_web_principal', 'javascript:alert(1)'],
       'ruta sin barra' => ['url_web_principal', 'unillanos.edu.co'],
-      'govco con javascript' => ['url_govco', 'javascript:alert(1)'],
       'red con datos' => ['red_instagram', 'data:text/html,hola'],
       'red con doble barra' => ['red_x', '//otro.sitio'],
       'doble barra' => ['accesibilidad_url', '//otro.sitio'],
-      'franja sin url' => ['franja_superior', 'Solo título'],
-      'franja con javascript' => ['franja_superior', 'Malo | javascript:alert(1)'],
+      'política sin url' => ['pie_politicas_enlaces', 'Solo título'],
+      'política con javascript' => ['pie_politicas_enlaces', 'Malo | javascript:alert(1)'],
       'sede sin título' => ['pie_ubicanos_sedes', ' | Calle 1'],
       'contacto sin título' => ['pie_contacto_items', ' | valor | mailto:a@example.org'],
       'contacto sin valor ni url' => ['pie_contacto_items', 'Solo título'],
@@ -195,6 +227,13 @@ class MicrositioFormTest extends KernelTestBase {
       'logo sin nombre' => ['pie_logos', 'govco | | https://www.gov.co/'],
       'logo con url peligrosa' => ['pie_logos', 'govco | GOV.CO | javascript:alert(1)'],
       'derechos con url peligrosa' => ['pie_derechos_url', 'javascript:alert(1)'],
+      'acceso con url peligrosa' => ['portal_accesos', 'Malo | texto | javascript:alert(1)'],
+      'acceso sin url' => ['portal_accesos', 'Solo título'],
+      'acceso con doble barra' => ['portal_accesos', 'Malo | texto | //otro.sitio'],
+      'acceso con http' => ['portal_accesos', 'Malo | texto | http://example.org'],
+      'sitio con http' => ['portal_sitios', 'Sitio | http://example.org'],
+      'sitio interno' => ['portal_sitios', 'Sitio | /programas'],
+      'sitio sin url' => ['portal_sitios', 'Solo nombre'],
     ];
   }
 
@@ -203,10 +242,13 @@ class MicrositioFormTest extends KernelTestBase {
    */
   public function testMuestraLoGuardadoConPermiso(): void {
     $this->config('unillanos_autoeval.micrositio')
-      ->set('franja_superior', [['titulo' => 'Uno', 'url' => '/uno']])
+      ->set('pie.politicas.enlaces', [['titulo' => 'Uno', 'url' => '/uno']])
       ->save();
     $form = $this->container->get('form_builder')->getForm(MicrositioForm::class);
-    $this->assertSame('Uno | /uno', $form['cabecera']['franja_superior']['#default_value']);
+    $this->assertSame('Uno | /uno', $form['pie_otros']['pie_politicas_enlaces']['#default_value']);
+    // La franja superior y el logo GOV.CO de la cabecera ya no se ofrecen.
+    $this->assertArrayNotHasKey('franja_superior', $form['cabecera']);
+    $this->assertArrayNotHasKey('url_govco', $form['cabecera']);
     // El pie ofrece cada grupo con sus líneas.
     $this->assertSame('Ubícanos', $form['pie_ubicanos']['pie_ubicanos_titulo']['#default_value']);
     $this->assertSame('Campus Barcelona | Km. 12 Vía Puerto López', explode("\n", $form['pie_ubicanos']['pie_ubicanos_sedes']['#default_value'])[0]);

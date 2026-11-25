@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Sección «Dependencias» de /institucional: un acordeón con los formatos de
+ * cada dependencia.
+ *
+ * Variables (se pasan con `only`):
+ * - datos: InstitucionalDependencias::datos() (dependencias, edicion, vacio).
+ * - alterna: TRUE para la banda gris.
+ */
+#}
+{% embed 'unillanos:section' with {id: 'dependencias', variant: alterna ? 'alt' : '', datos: datos} only %}
+  {% block content %}
+    {% include 'unillanos:section-head' with {eyebrow: 'Institucional'|t, title: 'Formatos por dependencia'|t, lead: 'Los formatos que llena cada dependencia con la información de cada programa.'|t} only %}
+    {% if datos.edicion.nueva %}
+      <div class="ua-edicion-zona">{% include 'unillanos:edit-link' with {url: datos.edicion.nueva.url, label: datos.edicion.nueva.title, variant: datos.edicion.nueva.tipo, show_label: true} only %}</div>
+    {% endif %}
+    {% if not datos.vacio %}
+      {% set entradas = [] %}
+      {% for dependencia in datos.dependencias %}
+        {% set grupos = [] %}
+        {% for grupo in dependencia.grupos %}
+          {% set grupos = grupos|merge([{title: grupo.titulo, items: grupo.items}]) %}
+        {% endfor %}
+        {% set entradas = entradas|merge([{id: dependencia.id, title: dependencia.titulo, description: dependencia.descripcion, count: dependencia.total, groups: grupos, edicion: dependencia.edicion}]) %}
+      {% endfor %}
+      {% include 'unillanos:accordion' with {id: 'dependencias-lista', heading: 'h3', searchable: true, search_label: 'Buscar por dependencia o programa'|t, items: entradas} only %}
+    {% endif %}
+  {% endblock %}
+{% endembed %}

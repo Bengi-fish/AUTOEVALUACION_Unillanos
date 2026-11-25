@@ -12,7 +12,7 @@ field_name: field_enlace
 entity_type: media
 bundle: documento
 label: 'Enlace externo'
-description: 'Para documentos que no se suben al sitio.'
+description: 'Dirección https:// de un documento que no se sube al sitio (por ejemplo, una carpeta de Google Drive). Debe haber archivo o enlace, no ambos.'
 required: false
 translatable: true
 default_value: {  }

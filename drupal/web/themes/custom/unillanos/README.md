@@ -28,22 +28,37 @@ diseñador.
 
 ## Estructura
 
-- `css/`: tokens, fuentes, base global y movimiento compartido.
+- `css/`: tokens, fuentes, base global, movimiento compartido y una hoja por
+  página o función (`portal`, `programa`, `documentos`, `sitio`, `participa`,
+  `panel-eliminar`, `panel-foto`); cada una es una biblioteca de
+  `unillanos.libraries.yml`.
 - `components/`: componentes de directorio único (SDC), cada uno con su
-  `*.component.yml`, plantilla Twig, CSS y, si hace falta, JS.
-- `js/`: ayudas compartidas de movimiento (librería `unillanos/motion`).
-- `images/`: logos y favicon del prototipo.
-- `templates/`: plantillas del starterkit más las propias del tema.
+  `*.component.yml`, plantilla Twig, CSS y, si hace falta, JS. Entre ellos:
+  `a11y` (botón flotante de accesibilidad), `fab` (botón flotante
+  «Recomendaciones»), `edicion-barra` (barra clara de edición), `carousel`,
+  `subnav`, `accordion`, `norm-table`, `embed-diferido`, `doc-filter` y
+  `kv-list`. El componente `topbar` (franja superior) ya no existe.
+- `js/`: `unillanos.motion.js` (librería `unillanos/motion`) y `edicion.js`
+  (librería `unillanos/edicion`, paneles laterales de edición).
+- `images/`: favicon, logos (`logos/`), íconos de redes (`redes/`) e íconos de
+  tipos de archivo (`icons/`).
+- `templates/`: plantillas del starterkit más las propias del tema. En
+  `templates/content/` están las de cada página (`unillanos-portal`,
+  `unillanos-portada`, `unillanos-programas`, `unillanos-documentos`,
+  `unillanos-institucional`, `unillanos-noticias`, `unillanos-equipo`,
+  `unillanos-participa`), las de nodo (`node--programa--full`,
+  `node--noticia--full`, `node--pagina-informativa--full`) y los parciales
+  compartidos (`partials/`).
 
 ## Alcance
 
-Las páginas públicas del demo (portada, programa, plan y `/documentos`) usan
-plantillas de nodo o de página propia (`templates/content/`) más el servicio
-los servicios de `unillanos_autoeval` que arman los datos de cada página
-(`PaginaPrograma`, `FactoresPrograma`, `PlanMejoramientoPrograma`,
-`DatosPortada`, `DocumentosPublicados`); no usan Views. El listado y buscador
-de `/programas` también sale de un servicio (`ListadoProgramas`), no de Views. Los datos de ejemplo viven solo en el
-módulo `unillanos_guia` (`/guia-estilos`).
+Todas las páginas públicas usan plantillas propias (`templates/content/`) y los
+servicios de `unillanos_autoeval` que arman sus datos (`PaginaPrograma`,
+`FactoresPrograma`, `PlanMejoramientoPrograma`, `DatosPortada`,
+`DocumentosPublicados`, `ListadoProgramas`, `GaleriaImagenes`,
+`CarruselPortada`, entre otros); no usan Views. Los datos de ejemplo viven solo
+en el módulo `unillanos_guia` (`/guia-estilos`), que se desinstala en
+producción.
 
 ## Logos de terceros e íconos de redes
 
@@ -54,7 +69,7 @@ cambian sus colores o proporciones.
 | Archivo | Titular | Fuente oficial | Descargado |
 |---|---|---|---|
 | `images/logos/govco-blanco.svg` | GOV.CO (Gobierno de Colombia) | https://cdn.www.gov.co/v2/assets/images/logo.svg (CDN de https://www.gov.co/); versión para fondo oscuro. Fuente oficial. | 8 de noviembre de 2026 |
-| `images/logos/unillanos-blanco.png` | Universidad de los Llanos | https://acreditacion.unillanos.edu.co/images/logos/trascendencia.png (sitio de la propia Universidad; 555 × 99 px, con fondo gris oscuro opaco incluido en el archivo) | 8 de noviembre de 2026 |
+| `images/logos/unillanos-blanco.png` | Universidad de los Llanos | https://acreditacion.unillanos.edu.co/images/logos/trascendencia.png (sitio de la propia Universidad; 555 × 99 px). El original traía un fondo gris oscuro opaco (`#2a363b`) dentro del archivo, que se veía como un recuadro sobre el pie negro; el archivo del tema es una versión con fondo transparente: la marca es blanca, así que el fondo se convirtió en canal alfa (cada píxel pasa a blanco con la opacidad que tenía respecto del fondo) sin cambiar colores ni proporciones. El original queda en el historial de git | 8 de noviembre de 2026 |
 | `images/logos/mineducacion-vigilada-blanco.png` | Ministerio de Educación Nacional («Vigilada MinEducación») | https://acreditacion.unillanos.edu.co/images/logos/certificaciones.png (copia publicada por la Universidad; 298 × 100 px, blanco). **Pendiente:** reemplazar por el archivo oficial de https://www.mineducacion.gov.co/ cuando se obtenga | 8 de noviembre de 2026 |
 | `images/logos/colombia-marca-pais.png` | Marca País «CO Colombia» (Procolombia / Gobierno de Colombia) | https://acreditacion.unillanos.edu.co/images/logos/m_pais.png (copia publicada por la Universidad; solo 50 × 45 px: se muestra a su tamaño natural, sin ampliarlo). **Pendiente:** reemplazar por el archivo oficial de https://www.colombia.co/ | 8 de noviembre de 2026 |
 

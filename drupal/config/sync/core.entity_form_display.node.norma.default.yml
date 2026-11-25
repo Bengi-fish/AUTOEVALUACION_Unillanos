@@ -1,0 +1,105 @@
+uuid: 82bbd101-b508-4329-a0bb-9aabc1dbe443
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.field.node.norma.field_aplicacion
+    - field.field.node.norma.field_capitulos
+    - field.field.node.norma.field_documento
+    - field.field.node.norma.field_entidad
+    - field.field.node.norma.field_epigrafe
+    - field.field.node.norma.field_numero_fecha
+    - field.field.node.norma.field_origen_norma
+    - field.field.node.norma.field_tipo_norma
+    - node.type.norma
+id: node.norma.default
+targetEntityType: node
+bundle: norma
+mode: default
+content:
+  field_aplicacion:
+    type: string_textarea
+    weight: 7
+    region: content
+    settings:
+      rows: 4
+      placeholder: ''
+    third_party_settings: {  }
+  field_capitulos:
+    type: string_textfield
+    weight: 6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_documento:
+    type: entity_reference_autocomplete
+    weight: 8
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_entidad:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_epigrafe:
+    type: string_textarea
+    weight: 5
+    region: content
+    settings:
+      rows: 4
+      placeholder: ''
+    third_party_settings: {  }
+  field_numero_fecha:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_origen_norma:
+    type: options_select
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_tipo_norma:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 100
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  langcode: true
+  path: true
+  promote: true
+  sticky: true
+  uid: true

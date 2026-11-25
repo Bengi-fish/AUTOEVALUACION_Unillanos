@@ -1,0 +1,19 @@
+uuid: 0718891b-ad2e-470d-940f-135566410ace
+langcode: es
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_correo
+    - node.type.miembro_equipo
+id: node.miembro_equipo.field_correo
+field_name: field_correo
+entity_type: node
+bundle: miembro_equipo
+label: 'Correo electrónico'
+description: 'Correo institucional.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

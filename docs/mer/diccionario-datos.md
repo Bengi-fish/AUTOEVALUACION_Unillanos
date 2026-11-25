@@ -48,6 +48,22 @@ Oferta con registro calificado.
 | `acreditacion_hasta` | `date` |  |
 | `activo` | `bool` |  |
 
+### `GALERIA_IMAGEN` · Imagen de galería (carrusel propio)
+
+Imagen del carrusel de la página de un programa o de la página «Institucional». En Drupal es el campo `field_galeria` (imagen, hasta 10 valores) del tipo `programa` y del tipo `proceso`; el orden es el del campo. Cada imagen es de **un** programa **o** de **un** proceso (el institucional), nunca de ambos ni de la portada.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `programa_id` | `int` | FK |
+| `proceso_id` | `int` | FK |
+| `imagen` | `file` |  |
+| `texto_alternativo` | `varchar(512)` |  |
+| `leyenda` | `varchar(255)` |  |
+| `orden` | `int` |  |
+
+Reglas: `texto_alternativo` obligatorio; `leyenda` opcional (sin leyenda, la imagen se muestra sin franja de texto); JPG, PNG o WebP de hasta 5 MB y al menos 1280 px de ancho; sin imágenes no se imprime el carrusel y con una sola se ve fija, sin flechas, puntos ni avance.
+
 ## Modelo de calidad
 
 ### `LINEAMIENTO` · Lineamiento
@@ -271,7 +287,7 @@ Reporte semestral de una meta.
 
 ### `DOCUMENTO` · Documento
 
-Documento descargable.
+Documento descargable o enlace externo: lleva un archivo o un `enlace` `https://` (por ejemplo, una carpeta de Drive), no ambos ni ninguno.
 
 | Campo | Tipo | Llave |
 |---|---|---|
@@ -284,6 +300,73 @@ Documento descargable.
 | `proceso_id` | `int` | FK |
 | `lineamiento_id` | `int` | FK |
 | `publico` | `bool` |  |
+
+### `DEPENDENCIA` · Dependencia (Fase 9)
+
+Dependencia que llena formatos del SIAAI.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `nombre` | `varchar(255)` |  |
+| `descripcion` | `text` |  |
+| `orden` | `int` |  |
+
+### `NORMA` · Norma (Fase 9)
+
+Fila de la matriz legal aplicable.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `origen` | `enum` (externo, interno) |  |
+| `tipo` | `varchar(255)` |  |
+| `numero_fecha` | `varchar(255)` |  |
+| `entidad` | `varchar(255)` |  |
+| `epigrafe` | `text` |  |
+| `capitulos` | `varchar(255)` |  |
+| `aplicacion` | `text` |  |
+| `documento_id` | `int` | FK |
+
+`DOCUMENTO` suma `dependencia_id` (FK, opcional), `programa_id` (FK, opcional) y `facultad_id` (FK, opcional).
+
+### `NOTICIA` · Noticia (Fase 9)
+
+Noticia del sitio de Acreditación.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `titulo` | `varchar(255)` |  |
+| `texto` | `text` |  |
+| `imagen` | `file` |  |
+| `texto_alternativo` | `varchar(512)` |  |
+| `enlace_origen` | `varchar(2048)` |  |
+
+### `PAGINA_INFORMATIVA` · Página informativa (Fase 9)
+
+Página de texto (SAC, Modelo de Autoevaluación, Boletines, Capacitaciones).
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `titulo` | `varchar(255)` |  |
+| `texto` | `text` |  |
+| `enlace_origen` | `varchar(2048)` |  |
+
+### `MIEMBRO_EQUIPO` · Miembro del equipo (Fase 9)
+
+Persona del comité o del equipo de trabajo de Acreditación.
+
+| Campo | Tipo | Llave |
+|---|---|---|
+| `id` | `int` | PK |
+| `nombre` | `varchar(255)` |  |
+| `cargo` | `varchar(255)` |  |
+| `grupo` | `varchar(255)` |  |
+| `telefono` | `varchar(100)` |  |
+| `correo` | `varchar(254)` |  |
+| `orden` | `int` |  |
 
 ### `RECOMENDACION` · Recomendación
 

@@ -1,0 +1,11 @@
+uuid: 49030457-c1e7-4904-8e5a-9622cc87e056
+langcode: es
+status: true
+dependencies: {  }
+name: Norma
+type: norma
+description: null
+help: null
+new_revision: true
+preview_mode: 0
+display_submitted: false

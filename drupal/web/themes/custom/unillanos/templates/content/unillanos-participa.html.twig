@@ -1,0 +1,35 @@
+{#
+/**
+ * @file
+ * Página «Participa»: introducción y formulario de recomendaciones.
+ *
+ * Variables:
+ * - formulario: arreglo de render del webform `participa`.
+ *
+ * El h1 es el título de la cabecera (la página omite el bloque de título).
+ */
+#}
+{{ attach_library('unillanos/participa') }}
+{% include 'unillanos:pagehead' with {
+  eyebrow: 'Participa'|t,
+  title: 'Tu voz hace parte del'|t,
+  title_accent: 'proceso'|t,
+  breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Participa'|t}],
+} only %}
+
+{% embed 'unillanos:section' with {id: 'recomendacion', formulario: formulario} only %}
+  {% block content %}
+    <div class="ua-reco">
+      <div class="ua-reco__intro">
+        <h2 class="ua-h2">{{ '¿Qué recomendarías para fortalecer la mejora continua en la Universidad?'|t }}</h2>
+        <p>{{ 'Cada recomendación se revisa por el comité de autoevaluación.'|t }}</p>
+        <ul class="ua-reco__points" role="list">
+          <li>{% include 'unillanos:icon' with {name: 'check', size: 'sm'} only %} {{ 'Se clasifica por factor y se remite a la dependencia responsable.'|t }}</li>
+          <li>{% include 'unillanos:icon' with {name: 'check', size: 'sm'} only %} {{ 'Alimenta la actualización del plan de mejoramiento.'|t }}</li>
+          <li>{% include 'unillanos:icon' with {name: 'check', size: 'sm'} only %} {{ 'Los resultados se publican en el informe de seguimiento.'|t }}</li>
+        </ul>
+      </div>
+      <div class="ua-reco__form">{{ formulario }}</div>
+    </div>
+  {% endblock %}
+{% endembed %}

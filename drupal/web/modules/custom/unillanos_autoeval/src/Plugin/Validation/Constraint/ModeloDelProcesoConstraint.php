@@ -21,6 +21,11 @@ class ModeloDelProcesoConstraint extends SymfonyConstraint {
   public string $mensajeModelo = 'El modelo del proceso debe ser uno de los siguientes: %modelos.';
 
   /**
+   * Mensaje cuando el modelo no es del ámbito del proceso.
+   */
+  public string $mensajeAmbito = 'El modelo «%modelo» es de otro ámbito: un proceso de programa usa un modelo de programa y uno institucional, un modelo institucional.';
+
+  /**
    * Mensaje cuando se cambia el modelo de un proceso que ya tiene datos.
    */
   public string $mensajeCambio = 'No se puede cambiar el modelo a %modelo: el proceso ya tiene elementos de otro modelo (%tipo %id).';

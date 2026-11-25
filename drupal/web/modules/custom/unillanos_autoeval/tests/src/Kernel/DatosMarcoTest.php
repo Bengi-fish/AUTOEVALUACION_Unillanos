@@ -79,8 +79,11 @@ class DatosMarcoTest extends KernelTestBase {
     $datos = $this->datos();
     $this->assertSame(['linea1' => 'Sistema de', 'linea2' => 'Autoevaluación'], $datos['nombre']);
     $this->assertSame('', $datos['web_principal']);
-    $this->assertSame([], $datos['franja']);
-    $this->assertNull($datos['accesibilidad']);
+    // La franja superior y su logo GOV.CO ya no existen: el logo va en el pie.
+    $this->assertArrayNotHasKey('franja', $datos);
+    $this->assertArrayNotHasKey('govco', $datos);
+    // Las opciones de accesibilidad no necesitan página de destino.
+    $this->assertSame(['title' => 'Accesibilidad', 'url' => '', 'externo' => FALSE], $datos['accesibilidad']);
     $pie = $datos['pie'];
     $this->assertSame('Ubícanos', $pie['ubicanos']['titulo']);
     $this->assertSame(
@@ -144,11 +147,12 @@ class DatosMarcoTest extends KernelTestBase {
   }
 
   /**
-   * GOV.CO y las redes de la configuración por defecto, en su orden.
+   * El logo GOV.CO del pie y las redes por defecto, en su orden.
    */
-  public function testGovcoMasRedesPorDefecto(): void {
+  public function testGovcoDelPieMasRedesPorDefecto(): void {
     $datos = $this->datos();
-    $this->assertSame('https://www.gov.co/', $datos['govco']['url']);
+    $logos = array_column($datos['pie']['logos'], 'url', 'clave');
+    $this->assertSame('https://www.gov.co/', $logos['govco']);
     $this->assertSame(['facebook', 'x', 'instagram', 'youtube'], array_column($datos['redes'], 'red'));
     $this->assertSame([
       'Facebook de la Universidad de los Llanos',
@@ -159,7 +163,7 @@ class DatosMarcoTest extends KernelTestBase {
   }
 
   /**
-   * Una red sin URL o con una URL peligrosa no se entrega; sin GOV.CO, NULL.
+   * Una red sin URL o con una URL peligrosa no se entrega.
    */
   public function testRedesSinUrlNiInsegurasSeOmiten(): void {
     $this->fijar('redes_sociales', [
@@ -168,14 +172,10 @@ class DatosMarcoTest extends KernelTestBase {
       'instagram' => 'https://www.instagram.com/unillanos_/',
       'youtube' => '//otro.sitio',
     ]);
-    $this->fijar('url_govco', '');
     $datos = $this->datos();
     $this->assertSame(['instagram'], array_column($datos['redes'], 'red'));
-    $this->assertNull($datos['govco']);
     $this->fijar('redes_sociales', ['facebook' => '', 'x' => '', 'instagram' => '', 'youtube' => '']);
     $this->assertSame([], $this->datos()['redes']);
-    $this->fijar('url_govco', 'javascript:alert(1)');
-    $this->assertNull($this->datos()['govco']);
   }
 
   /**
@@ -233,18 +233,21 @@ class DatosMarcoTest extends KernelTestBase {
    * Un enlace sin título o con URL peligrosa se descarta; el resto se queda.
    */
   public function testSeDescartanEnlacesSinTituloMasLosInseguros(): void {
-    $this->fijar('franja_superior', [
+    // Las políticas del pie usan la misma regla que usaba la franja superior.
+    $pie = $this->config('unillanos_autoeval.micrositio')->get('pie');
+    $pie['politicas']['enlaces'] = [
       ['titulo' => 'Uno', 'url' => 'https://example.org/1'],
       ['titulo' => '', 'url' => 'https://example.org/sin-titulo'],
       ['titulo' => '   ', 'url' => 'https://example.org/espacios'],
       ['titulo' => 'Peligroso', 'url' => 'javascript:alert(1)'],
       ['titulo' => 'Sin URL', 'url' => ''],
       ['titulo' => 'Interno', 'url' => '/programas'],
-    ]);
+    ];
+    $this->fijar('pie', $pie);
     $this->assertSame([
       ['title' => 'Uno', 'url' => 'https://example.org/1', 'externo' => TRUE],
       ['title' => 'Interno', 'url' => '/programas', 'externo' => FALSE],
-    ], $this->datos()['franja']);
+    ], $this->datos()['pie']['politicas']['enlaces']);
   }
 
   /**
@@ -258,6 +261,10 @@ class DatosMarcoTest extends KernelTestBase {
     $this->fijar('accesibilidad.url', '/documentos');
     $this->fijar('accesibilidad.titulo', '');
     $this->assertNull($this->datos()['accesibilidad']);
+    $this->fijar('accesibilidad.url', '');
+    $this->assertNull($this->datos()['accesibilidad']);
+    $this->fijar('accesibilidad.titulo', 'Accesibilidad');
+    $this->assertSame(['title' => 'Accesibilidad', 'url' => '', 'externo' => FALSE], $this->datos()['accesibilidad']);
   }
 
   /**
@@ -318,16 +325,12 @@ class DatosMarcoTest extends KernelTestBase {
       ['clave' => 'unillanos', 'titulo' => 'Peligroso', 'url' => 'javascript:alert(1)'],
       'suelto',
     ];
-    $this->fijarSinEsquema([
-      'pie' => $pie,
-      'franja_superior' => [7, [], ['titulo' => 5, 'url' => 7]],
-    ]);
+    $this->fijarSinEsquema(['pie' => $pie]);
     $datos = $this->datos();
     $this->assertSame([], $datos['pie']['ubicanos']['sedes']);
     $this->assertSame([], $datos['pie']['contacto']['items']);
     $this->assertSame([], $datos['pie']['politicas']['enlaces']);
     $this->assertSame([], $datos['pie']['logos']);
-    $this->assertSame([], $datos['franja']);
   }
 
   /**
@@ -368,9 +371,7 @@ class DatosMarcoTest extends KernelTestBase {
     $this->config('unillanos_autoeval.micrositio')->delete();
     $datos = $this->datos();
     $this->assertSame('', $datos['nombre']['linea1']);
-    $this->assertSame([], $datos['franja']);
     $this->assertNull($datos['accesibilidad']);
-    $this->assertNull($datos['govco']);
     $this->assertSame([], $datos['redes']);
     $this->assertSame([], $datos['pie']['ubicanos']['sedes']);
     $this->assertNull($datos['pie']['ubicanos']['horario']);

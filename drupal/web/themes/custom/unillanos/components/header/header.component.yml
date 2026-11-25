@@ -2,7 +2,7 @@ $schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schema
 name: Encabezado
 status: stable
 group: Página base
-description: 'Encabezado del sitio: enlace para saltar al contenido, franja superior opcional, logo con el nombre del sistema, el menú principal en el slot nav y las herramientas (búsqueda opcional, ingreso, botón del menú móvil).'
+description: 'Encabezado del sitio: enlace para saltar al contenido, barra del modo edición (solo para quien edita), logo con el nombre del sistema, el menú principal en el slot nav y las herramientas (búsqueda opcional, ingreso, botón del menú móvil).'
 props:
   type: object
   properties:
@@ -20,10 +20,12 @@ props:
       type: string
       title: Destino del enlace «Saltar al contenido»
       description: 'Si se omite no se imprime el enlace.'
-    topbar:
-      type: object
-      title: Franja superior
-      description: 'Objeto con `links`, `accessibility`, `social`, `govco` y `edicion` (ver unillanos:topbar). Sin él no hay franja.'
+    edicion:
+      type:
+        - object
+        - 'null'
+      title: Barra del modo edición
+      description: 'Datos de unillanos:edicion-barra; solo para quien puede editar. Sin ellos no se imprime nada.'
     solo_logo:
       type: string
       title: Logo único

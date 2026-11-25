@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * Prueba el marcado de la franja superior, el encabezado, el pie y los logos.
+ * Prueba el marcado de los botones flotantes, el encabezado y el pie.
  *
  * Renderiza los componentes del tema `unillanos`: lo vacío se omite, un
  * destino inseguro se imprime sin href y el texto se escapa.
@@ -39,7 +39,7 @@ class MarcoComponentesTest extends KernelTestBase {
    * Renderiza un componente y devuelve su HTML.
    *
    * @param string $componente
-   *   Por ejemplo `unillanos:topbar`.
+   *   Por ejemplo `unillanos:a11y`.
    * @param array<string, mixed> $props
    *   Props del componente.
    *
@@ -52,25 +52,48 @@ class MarcoComponentesTest extends KernelTestBase {
   }
 
   /**
-   * Sin enlaces ni accesibilidad la franja no imprime nada.
+   * El botón de accesibilidad: con título siempre; el enlace, solo con URL.
+   *
+   * La franja superior ya no existe: el botón es flotante (unillanos:a11y).
    */
-  public function testFranjaVaciaNoImprimeNada(): void {
-    $this->assertSame('', trim($this->renderizar('unillanos:topbar', [])));
-    $this->assertSame('', trim($this->renderizar('unillanos:topbar', ['links' => [], 'accessibility' => NULL])));
-    // Accesibilidad sin URL o con una URL peligrosa tampoco cuenta.
-    foreach (['', 'javascript:alert(1)'] as $url) {
-      $props = ['accessibility' => ['title' => 'Accesibilidad', 'url' => $url]];
-      $this->assertSame('', trim($this->renderizar('unillanos:topbar', $props)));
+  public function testBotonDeAccesibilidad(): void {
+    // Con título y sin URL, o con una URL peligrosa, solo hay botón y panel.
+    foreach (['', 'javascript:alert(1)', '//otro.sitio'] as $url) {
+      $html = $this->renderizar('unillanos:a11y', ['title' => 'Accesibilidad', 'url' => $url]);
+      $this->assertStringContainsString('data-ua-a11y-boton', $html);
+      $this->assertStringContainsString('data-ua-a11y-panel', $html);
+      $this->assertStringNotContainsString('data-ua-a11y-enlace', $html);
+      $this->assertStringNotContainsString('ua-a11y__mas', $html);
+      $this->assertStringNotContainsString('javascript', $html);
+      $this->assertStringNotContainsString('//otro.sitio', $html);
     }
+    // Con una URL segura hay además un enlace de respaldo y «Más sobre…».
+    $html = $this->renderizar('unillanos:a11y', ['title' => 'Accesibilidad', 'url' => '/documentos']);
+    $this->assertMatchesRegularExpression('~<a class="ua-a11y__enlace" href="/documentos" data-ua-a11y-enlace>~', $html);
+    $this->assertStringContainsString('data-ua-a11y-boton', $html);
+    $this->assertStringContainsString('class="ua-a11y__mas" href="/documentos"', $html);
+    // El panel: título, tamaño del texto, cuatro opciones y cierre.
+    $this->assertStringContainsString('role="group" aria-labelledby="ua-a11y-titulo"', $html);
+    $this->assertSame(4, substr_count($html, 'data-ua-a11y-opcion='));
+    $this->assertSame(4, substr_count($html, 'aria-pressed="false"'));
+    $this->assertStringContainsString('data-ua-a11y-cerrar', $html);
+    $this->assertStringContainsString('data-ua-a11y-restablecer', $html);
+    // El título se escapa.
+    $html = $this->renderizar('unillanos:a11y', ['title' => '<script>alert(1)</script>']);
+    $this->assertStringNotContainsString('<script>', $html);
+    $this->assertStringContainsString('&lt;script&gt;', $html);
   }
 
   /**
-   * La franja con redes y GOV.CO: enlaces accesibles, solo los que tienen URL.
+   * Las redes: enlaces accesibles, solo los que tienen URL segura.
+   *
+   * Ahora van solo en el pie (unillanos:redes); el componente filtra por sí
+   * mismo, como lo hacía la franja superior.
    */
-  public function testFranjaConRedesMasGovco(): void {
+  public function testRedesFiltranLoInseguroMasLoDesconocido(): void {
     $propio = 'de la Universidad de los Llanos';
-    $html = $this->renderizar('unillanos:topbar', [
-      'social' => [
+    $html = $this->renderizar('unillanos:redes', [
+      'redes' => [
         [
           'red' => 'facebook',
           'title' => "Facebook $propio",
@@ -81,7 +104,6 @@ class MarcoComponentesTest extends KernelTestBase {
         ['red' => 'youtube', 'title' => "YouTube $propio", 'url' => 'https://www.youtube.com/channel/UCx'],
         ['red' => 'tiktok', 'title' => 'TikTok', 'url' => 'https://example.org'],
       ],
-      'govco' => ['title' => 'GOV.CO, portal único del Estado colombiano', 'url' => 'https://www.gov.co/'],
     ]);
     $this->assertSame(2, substr_count($html, 'ua-redes__enlace"'));
     $this->assertStringContainsString('href="https://www.facebook.com/UnillanosOficial/"', $html);
@@ -90,64 +112,58 @@ class MarcoComponentesTest extends KernelTestBase {
     $this->assertStringNotContainsString('javascript', $html);
     $this->assertStringNotContainsString('tiktok', $html);
     $this->assertStringNotContainsString('target=', $html);
-    $this->assertLessThan(strpos($html, 'ua-topbar__govco'), strpos($html, 'ua-redes__enlace'));
-    $this->assertMatchesRegularExpression(
-      '~<a class="ua-topbar__govco" href="https://www.gov.co/"[^>]*>\\s*<img src="[^"]*govco-blanco\\.svg" alt="GOV\\.CO, portal único del Estado colombiano">~',
-      $html,
-    );
-    // Sin ninguna red válida ni GOV.CO la franja no imprime nada.
-    $invalidas = [
-      'social' => [['red' => 'x', 'title' => 'X', 'url' => 'javascript:x']],
-      'govco' => ['title' => 'G', 'url' => ''],
-    ];
-    $this->assertSame('', trim($this->renderizar('unillanos:topbar', $invalidas)));
-    // Las redes solas tampoco se marcan como «solo enlaces» (se ven en móvil).
-    $this->assertStringNotContainsString('ua-topbar--solo-enlaces', $html);
+    // Sin ninguna red válida no se imprime nada.
+    $invalidas = ['redes' => [['red' => 'x', 'title' => 'X', 'url' => 'javascript:x']]];
+    $this->assertSame('', trim($this->renderizar('unillanos:redes', $invalidas)));
   }
 
   /**
-   * Con enlaces: lista, ícono y texto para lectores en los externos.
+   * Datos de la barra del modo edición.
+   *
+   * @return array<string, mixed>
+   *   Props de `unillanos:edicion-barra`.
    */
-  public function testFranjaConEnlaces(): void {
-    $html = $this->renderizar('unillanos:topbar', [
-      'links' => [
-        ['title' => 'Biblioteca', 'url' => 'https://example.org/b', 'externo' => TRUE],
-        ['title' => 'Interno', 'url' => '/programas'],
+  protected function datosEdicion(): array {
+    return [
+      'edicion' => [
+        'logout_url' => '/user/logout/confirm',
+        'micrositio' => ['title' => 'Editar la cabecera y el pie', 'url' => '/admin/config/unillanos/micrositio'],
+        'avanzado' => ['title' => 'Panel avanzado', 'url' => '/admin/acreditacion'],
       ],
-      'accessibility' => ['title' => 'Accesibilidad', 'url' => '/documentos'],
-    ]);
-    $this->assertStringContainsString('class="ua-topbar"', $html);
-    $this->assertStringNotContainsString('ua-topbar--solo-enlaces', $html);
-    $this->assertStringContainsString('aria-label="Enlaces de la Universidad"', $html);
-    $this->assertSame(2, substr_count($html, 'class="ua-topbar__item"'));
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link" href="https://example.org/b" rel="noopener">~', $html);
-    $this->assertStringContainsString('(enlace externo)', $html);
-    $this->assertMatchesRegularExpression('~<a class="ua-topbar__link ua-topbar__acceso" href="/documentos">~', $html);
+    ];
   }
 
   /**
-   * Sin accesibilidad la franja se marca para ocultarla en móvil.
+   * La barra del modo edición: interruptor, enlaces y cierre de sesión.
    */
-  public function testFranjaSoloConEnlacesSeMarca(): void {
-    $html = $this->renderizar('unillanos:topbar', ['links' => [['title' => 'Biblioteca', 'url' => '/programas']]]);
-    $this->assertStringContainsString('ua-topbar--solo-enlaces', $html);
-    $this->assertStringNotContainsString('ua-topbar__acceso', $html);
+  public function testBarraDelModoEdicion(): void {
+    $html = $this->renderizar('unillanos:edicion-barra', $this->datosEdicion());
+    $this->assertStringContainsString('class="ua-edicion-franja"', $html);
+    $this->assertStringContainsString('aria-label="Modo edición"', $html);
+    $this->assertMatchesRegularExpression('~<button class="ua-edicion-barra__boton" type="button" aria-pressed="false" data-ua-edicion-toggle>~', $html);
+    $this->assertStringContainsString('href="/admin/config/unillanos/micrositio"', $html);
+    $this->assertStringContainsString('href="/admin/acreditacion"', $html);
+    $this->assertMatchesRegularExpression('~<a class="ua-edicion-barra__enlace" href="/user/logout/confirm">Cerrar sesión</a>~', $html);
+    // Ya no hay franja superior ni sus clases.
+    $this->assertStringNotContainsString('ua-topbar', $html);
+    // Sin cierre de sesión seguro, o sin datos, no se imprime nada.
+    foreach ([[], ['edicion' => NULL], ['edicion' => ['logout_url' => 'javascript:alert(1)']]] as $props) {
+      $this->assertSame('', trim($this->renderizar('unillanos:edicion-barra', $props)));
+    }
   }
 
   /**
    * Un destino inseguro se imprime sin href y el título se escapa.
    */
-  public function testFranjaFiltraLaUrlMasEscapeDelTexto(): void {
-    $html = $this->renderizar('unillanos:topbar', [
-      'links' => [
-        ['title' => 'Peligroso', 'url' => 'javascript:alert(1)'],
-        ['title' => '<script>alert(1)</script>', 'url' => '/programas'],
-      ],
-    ]);
+  public function testBarraDelModoEdicionFiltraLaUrlMasEscapeDelTexto(): void {
+    $props = $this->datosEdicion();
+    $props['edicion']['avanzado'] = ['title' => '<script>alert(1)</script>', 'url' => 'javascript:alert(1)'];
+    $props['edicion']['micrositio'] = ['title' => '<b>x</b>', 'url' => '/admin/config/unillanos/micrositio'];
+    $html = $this->renderizar('unillanos:edicion-barra', $props);
     $this->assertStringNotContainsString('javascript:', $html);
-    $this->assertStringContainsString('<span class="ua-topbar__link">Peligroso</span>', $html);
     $this->assertStringNotContainsString('<script>', $html);
-    $this->assertStringContainsString('&lt;script&gt;', $html);
+    $this->assertStringNotContainsString('<b>x</b>', $html);
+    $this->assertStringContainsString('&lt;b&gt;x&lt;/b&gt;', $html);
   }
 
   /**
@@ -262,18 +278,24 @@ class MarcoComponentesTest extends KernelTestBase {
   }
 
   /**
-   * Un solo logo, nombre en dos líneas y franja con datos.
+   * Un solo logo, nombre en dos líneas y barra de edición solo si hay datos.
    */
-  public function testEncabezadoConFranjaMasUnLogo(): void {
+  public function testEncabezadoConBarraDeEdicionMasUnLogo(): void {
     $html = $this->renderizar('unillanos:header', [
       'solo_logo' => 'unillanos',
       'kicker' => 'Sistema de',
       'name' => 'Autoevaluación',
-      'topbar' => ['links' => [['title' => 'Biblioteca', 'url' => '/programas']], 'accessibility' => NULL],
+      'edicion' => $this->datosEdicion()['edicion'],
     ]);
     $this->assertSame(1, substr_count($html, 'ua-logos__img--'));
     $this->assertStringContainsString('<span class="ua-brand__kicker">Sistema de</span><span class="ua-brand__name">Autoevaluación</span>', $html);
-    $this->assertStringContainsString('data-component-id="unillanos:topbar"', $html);
+    $this->assertStringContainsString('data-component-id="unillanos:edicion-barra"', $html);
+    // Antes de la barra del encabezado, no dentro de ella.
+    $this->assertLessThan(strpos($html, 'class="ua-header__bar"'), strpos($html, 'ua-edicion-franja'));
+    // Sin datos de edición no hay barra, y la franja superior no existe.
+    $html = $this->renderizar('unillanos:header', ['kicker' => 'Sistema de', 'name' => 'Autoevaluación']);
+    $this->assertStringNotContainsString('ua-edicion-franja', $html);
+    $this->assertStringNotContainsString('ua-topbar', $html);
   }
 
   /**

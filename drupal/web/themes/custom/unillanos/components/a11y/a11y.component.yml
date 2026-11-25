@@ -1,0 +1,17 @@
+$schema: https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json
+name: Opciones de accesibilidad
+status: stable
+group: Página base
+description: 'Botón flotante de accesibilidad (columna de la esquina inferior derecha, encima de «Recomendaciones»). Sin JavaScript queda el enlace a la página de accesibilidad; con JavaScript el enlace se oculta y aparece un botón que abre un panel con tamaño del texto, alto contraste, subrayado de enlaces, espaciado del texto y menos movimiento. Las preferencias se guardan en el navegador (localStorage, si está disponible) y se aplican con atributos data-ua-a11y-* en el elemento html.'
+props:
+  type: object
+  required:
+    - title
+  properties:
+    title:
+      type: string
+      title: Texto del enlace y del botón
+    url:
+      type: string
+      title: Destino del enlace sin JavaScript
+      description: 'Opcional; el componente lo filtra de nuevo (ruta, ancla, consulta, http(s), mailto o tel). Vacío: no hay enlace ni «Más sobre accesibilidad».'

@@ -46,6 +46,12 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     'plan_mejoramiento',
     'meta',
     'seguimiento',
+    'dependencia',
+    'norma',
+    'diapositiva',
+    'noticia',
+    'pagina_informativa',
+    'miembro_equipo',
   ];
 
   /**
@@ -99,7 +105,7 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     $campo->save();
     $tipo->set('source_configuration', ['source_field' => $campo->getName()])->save();
     // Un tipo que no es de autoevaluación, para comprobar que no cambia.
-    NodeType::create(['type' => 'noticia', 'name' => 'noticia'])->save();
+    NodeType::create(['type' => 'otro_tipo', 'name' => 'otro_tipo'])->save();
   }
 
   /**
@@ -197,8 +203,11 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     $sync = $this->archivoDelRol('sync');
     $this->assertSame($esperados, $modulo['permissions']);
     $this->assertSame($esperados, $sync['permissions']);
-    // 35 antes del paso 14 (commit 4): se quitó «access navigation».
-    $this->assertCount(34, $esperados);
+    // 35 antes del paso 14 (commit 4): se quitó «access navigation». En la
+    // Fase 9 (etapa 2) suman 6 de dependencia y norma (crear, editar, borrar
+    // lo propio), en la etapa 5, 3 de diapositiva y en la etapa 10, 9 de
+    // noticia, página informativa y miembro del equipo.
+    $this->assertCount(52, $esperados);
     // El módulo y el sitio declaran el mismo rol.
     unset($sync['uuid']);
     $this->assertEquals($modulo, $sync);
@@ -268,9 +277,9 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
     $this->assertFalse(Node::create(['type' => 'lineamiento', 'title' => 'x'])->access('create', $acreditacion));
     $lineamiento = $this->crearNodo('lineamiento', ['title' => 'Modelo']);
     $this->assertFalse($lineamiento->access('update', $acreditacion));
-    $noticia = $this->crearNodo('noticia', ['title' => 'Noticia']);
-    $this->assertFalse($noticia->access('update', $acreditacion));
-    $this->assertFalse(Node::create(['type' => 'noticia', 'title' => 'x'])->access('create', $acreditacion));
+    $otro = $this->crearNodo('otro_tipo', ['title' => 'Otro']);
+    $this->assertFalse($otro->access('update', $acreditacion));
+    $this->assertFalse(Node::create(['type' => 'otro_tipo', 'title' => 'x'])->access('create', $acreditacion));
   }
 
   /**
@@ -386,8 +395,8 @@ class RolAcreditacionTest extends UnillanosKernelTestBase {
   public function testPublicadoNoAfectaOtrosTiposNiCampos(): void {
     $con = $this->usuarioConPermisos([self::PUBLICACION]);
     // Otro tipo de contenido.
-    $noticia = $this->crearNodo('noticia', ['title' => 'N']);
-    $this->assertFalse($noticia->get('status')->access('edit', $con), 'otro tipo de nodo');
+    $otro = $this->crearNodo('otro_tipo', ['title' => 'N']);
+    $this->assertFalse($otro->get('status')->access('edit', $con), 'otro tipo de nodo');
     // Otros campos de un tipo cubierto.
     $programa = $this->crearNodo('programa', ['title' => 'P']);
     foreach (['uid', 'promote', 'sticky', 'created'] as $campo) {

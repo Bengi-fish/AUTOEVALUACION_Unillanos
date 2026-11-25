@@ -6,6 +6,9 @@
  * Variables:
  * - factores: tarjetas y pestañas de factores del proceso del programa (pueden
  *   faltar o estar vacías).
+ * - galeria: imágenes propias del programa (field_galeria) para su carrusel;
+ *   vacía si no tiene (entonces no se imprime). Nunca son las diapositivas de
+ *   la portada.
  * - plan: lead, opciones del filtro, filas y aviso del plan de mejoramiento
  *   (vacío si el programa no tiene un plan con metas).
  * - documentos: items, informe y plan del programa (vacío si no tiene
@@ -26,7 +29,7 @@
     title: programa.nombre_inicio,
     title_accent: programa.nombre_acento,
     lead: lead,
-    breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Programas'|t, url: path('unillanos_autoeval.programas')}, {title: programa.nombre}],
+    breadcrumb: [{title: 'Inicio'|t, url: '/'}, {title: 'Información'|t}, {title: 'SIAAI'|t, url: path('unillanos_autoeval.portada')}, {title: 'Programas'|t, url: path('unillanos_autoeval.programas')}, {title: programa.nombre}],
     etiquetas: programa.etiquetas,
     variant: 'hero',
     image: programa.imagen,
@@ -60,129 +63,36 @@
     {%- endif -%}
   {% endset %}
 
-  {# Factores del proceso (modelo y cantidad según cada programa). #}
-  {% set hay_plan = plan.filas|default([]) is not empty %}
-  {% if factores.pestanas %}
-    {# Banda alterna salvo que la cabecera gris quede pegada a ella (sin ficha). #}
-    {% set variante = hay_ficha ? 'alt' : '' %}
-    {% embed 'unillanos:section' with {id: 'autoevaluacion', variant: variante, factores: factores, hay_plan: hay_plan, informe: documentos.informe|default(null), hay_ficha: hay_ficha, ficha_aside: ficha_aside} only %}
+  {# Sin factores no hay sección donde ponerlo: el carrusel va en la suya,
+     debajo de la cabecera. Con factores lo pinta el parcial, entre el bloque
+     superior y las tarjetas. #}
+  {% if galeria and not factores.pestanas %}
+    {% embed 'unillanos:section' with {id: 'galeria', galeria: galeria} only %}
       {% block content %}
-        {% set partes = [] %}
-        {% if factores.proceso %}{% set partes = partes|merge([factores.proceso]) %}{% endif %}
-        {% if factores.resultado %}{% set partes = partes|merge([('Resultado'|t) ~ ': ' ~ factores.resultado]) %}{% endif %}
-        <div class="ua-programa__zona{% if hay_ficha %} ua-programa__zona--ficha{% endif %}">
-          <div class="ua-programa__principal">
-          {% embed 'unillanos:section-head' with {
-            eyebrow: 'Autoevaluación del programa'|t,
-            title: 'Factores y valoración'|t,
-            lead: partes|join('. '),
-            hay_plan: hay_plan,
-            informe: informe,
-          } only %}
-            {% block right %}
-              {% if hay_plan or informe %}
-                <div class="ua-section__acciones">
-                  {% if informe %}
-                    {% include 'unillanos:button' with {label: ('Ver'|t) ~ ' ' ~ informe.title ~ ' (' ~ informe.kind ~ ')', variant: 'secundario', url: informe.url, icon: 'download', icon_size: 'sm'} only %}
-                  {% endif %}
-                  {% if hay_plan %}
-                    {% include 'unillanos:button' with {label: 'Ir al plan de mejoramiento'|t, variant: 'secundario', url: '#plan', icon: 'arrow-right', icon_position: 'after', icon_size: 'sm'} only %}
-                  {% endif %}
-                </div>
-              {% endif %}
-            {% endblock %}
-          {% endembed %}
-          </div>
-          {% if hay_ficha %}{{ ficha_aside }}{% endif %}
-        </div>
-        {% set hay_grado = false %}
-        {% for tarjeta in factores.tarjetas %}
-          {% if tarjeta.grade %}{% set hay_grado = true %}{% endif %}
-        {% endfor %}
-        {% if factores.tarjetas %}
-          {% include 'unillanos:factor-card' with {heading: 'h3', image: 'tema', items: factores.tarjetas} only %}
-        {% endif %}
-        {% if hay_grado %}
-          <p class="ua-nota">
-            {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
-            <span>{{ 'Las etiquetas de grado se muestran como están guardadas; la regla de asignación está por confirmar.'|t }}</span>
-          </p>
-        {% endif %}
-        <div class="ua-subsection">
-          {% include 'unillanos:factor-tabs' with {
-            id: 'factores',
-            label: 'Factores del programa'|t,
-            heading: 'h3',
-            image: 'tema',
-            report: false,
-            items: factores.pestanas,
-          } only %}
-        </div>
+        {% include 'unillanos:carousel' with {id: 'carrusel-galeria', label: 'Imágenes del programa'|t, contenida: true, items: galeria} only %}
       {% endblock %}
     {% endembed %}
   {% endif %}
 
-  {# Plan de mejoramiento del proceso (una fila por meta). #}
-  {% if hay_plan %}
-    {% embed 'unillanos:section' with {id: 'plan', plan: plan, hay_factores: factores.pestanas is not empty, plan_documento: documentos.plan|default(null)} only %}
-      {% block content %}
-        {% embed 'unillanos:section-head' with {
-          eyebrow: 'Plan de mejoramiento'|t,
-          title: 'Acciones del programa'|t,
-          lead: plan.lead,
-          hay_factores: hay_factores,
-          plan_documento: plan_documento,
-        } only %}
-          {% block right %}
-            {% if hay_factores or plan_documento %}
-              <div class="ua-section__acciones">
-                {% if plan_documento %}
-                  {% include 'unillanos:button' with {label: ('Descargar'|t) ~ ' ' ~ plan_documento.title ~ ' (' ~ plan_documento.kind ~ ')', variant: 'secundario', url: plan_documento.url, icon: 'download', icon_size: 'sm'} only %}
-                {% endif %}
-                {% if hay_factores %}
-                  {% include 'unillanos:button' with {label: 'Volver a los factores'|t, variant: 'secundario', url: '#autoevaluacion', icon: 'chevron-left', icon_size: 'sm'} only %}
-                {% endif %}
-              </div>
-            {% endif %}
-          {% endblock %}
-        {% endembed %}
-        {% include 'unillanos:plan-filter' with {
-          heading: 'h3',
-          title: 'Acciones de mejora'|t,
-          show_plazo: false,
-          factor_options: plan.opciones,
-          page_size: 6,
-          columns: [
-            {label: 'Situación para intervenir'|t},
-            {label: 'Acción de mejora'|t},
-            {label: 'Responsables'|t},
-            {label: 'Avance reportado'|t},
-          ],
-          rows: plan.filas,
-        } only %}
-        {% if plan.aviso %}
-          <p class="ua-nota">
-            {%- include 'unillanos:icon' with {name: 'info', size: 'sm'} only -%}
-            <span>{{ 'El avance es el reportado por el programa en cada periodo; no está verificado.'|t }}</span>
-          </p>
-        {% endif %}
-      {% endblock %}
-    {% endembed %}
-  {% endif %}
-
-  {# Documentos del programa (informe, plan y los demás). #}
-  {% if documentos.items %}
-    {% embed 'unillanos:section' with {id: 'documentos', variant: 'alt', documentos: documentos} only %}
-      {% block content %}
-        {% include 'unillanos:section-head' with {
-          eyebrow: 'Documentos'|t,
-          title: 'Documentos del programa'|t,
-          lead: 'Informes, planes y otros documentos descargables de este programa.'|t,
-        } only %}
-        {% include 'unillanos:doc-list' with {heading: 'h3', items: documentos.items} only %}
-      {% endblock %}
-    {% endembed %}
-  {% endif %}
+  {# Factores, plan y documentos: el mismo parcial que usa «Institucional». #}
+  {% include '@unillanos/templates/content/partials/autoevaluacion.html.twig' with {
+    galeria: galeria|default([]),
+    factores: factores,
+    plan: plan,
+    documentos: documentos,
+    hay_ficha: hay_ficha,
+    ficha_aside: ficha_aside,
+    textos: {
+      autoevaluacion: 'Autoevaluación del programa'|t,
+      factores: 'Factores y valoración'|t,
+      etiqueta_factores: 'Factores del programa'|t,
+      acciones: 'Acciones del programa'|t,
+      documentos: 'Documentos del programa'|t,
+      documentos_lead: 'Informes, planes y otros documentos descargables de este programa.'|t,
+      galeria: 'Imágenes del programa'|t,
+      aviso_avance: 'El avance es el reportado por el programa en cada periodo; no está verificado.'|t,
+    },
+  } only %}
   {# Sin nada de autoevaluación: los demás programas de la facultad y los enlaces. #}
   {% set otros_bloque %}
         {% if otros %}

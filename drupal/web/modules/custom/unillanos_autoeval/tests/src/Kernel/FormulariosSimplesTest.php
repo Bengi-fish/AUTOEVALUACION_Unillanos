@@ -11,6 +11,7 @@ use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\file\Entity\File;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\media\Entity\Media;
 use Drupal\media\Entity\MediaType;
@@ -53,6 +54,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     'field_resolucion_acreditacion',
     'field_acreditacion_hasta',
     'field_imagen',
+    'field_galeria',
     'status',
   ];
 
@@ -62,11 +64,15 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
   const CAMPOS_DOCUMENTO = [
     'name',
     'field_media_file',
+    'field_enlace',
     'field_categoria',
     'field_fecha_publicacion',
     'field_version',
     'field_proceso',
+    'field_programa',
     'field_lineamiento',
+    'field_dependencia',
+    'field_facultad',
     'status',
   ];
 
@@ -85,6 +91,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     'file',
     'image',
     'datetime',
+    'link',
     'media',
     'unillanos_autoeval',
   ];
@@ -140,6 +147,16 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     if ($imagen instanceof FieldConfig) {
       $imagen->setSetting('alt_field_required', FALSE)->save();
     }
+    // Galería de imágenes del programa (varias; con la ayuda real del sitio).
+    $this->crearCampo('node', 'programa', 'field_galeria', 'image', [], 10);
+    $galeria = FieldConfig::loadByName('node', 'programa', 'field_galeria');
+    if ($galeria instanceof FieldConfig) {
+      $real = $this->configuracion('field.field.node.programa.field_galeria');
+      $galeria->setSetting('alt_field_required', FALSE)
+        ->setSetting('title_field', TRUE)
+        ->setDescription((string) $real['description'])
+        ->save();
+    }
     // Medio «documento» y sus campos.
     $tipo = MediaType::create(['id' => 'documento', 'label' => 'Documento', 'source' => 'file']);
     $tipo->save();
@@ -161,7 +178,10 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     $this->crearCampo('media', 'documento', 'field_version', 'string');
     $this->crearCampo('media', 'documento', 'field_proceso', 'entity_reference', ['target_type' => 'node']);
     $this->crearCampo('media', 'documento', 'field_lineamiento', 'entity_reference', ['target_type' => 'node']);
-    $this->crearCampo('media', 'documento', 'field_enlace', 'string');
+    $this->crearCampo('media', 'documento', 'field_enlace', 'link');
+    $this->crearCampo('media', 'documento', 'field_programa', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_dependencia', 'entity_reference', ['target_type' => 'node']);
+    $this->crearCampo('media', 'documento', 'field_facultad', 'entity_reference', ['target_type' => 'taxonomy_term']);
     // Los modos y las pantallas de formulario simples: los de la configuración.
     // El módulo instala solo el modo de la ficha (config/optional); el del
     // medio se crea aquí desde el mismo archivo si el módulo no lo instaló.
@@ -248,6 +268,15 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
   protected function programa(): Node {
     $facultad = Term::create(['vid' => 'facultad', 'name' => 'Facultad de Pruebas']);
     $facultad->save();
+    // Con una imagen en la galería: al enviar el formulario por código, el
+    // widget de imágenes múltiple no genera su primera fila si el campo está
+    // vacío y core avisa; así la prueba se parece al uso real.
+    $archivo = File::create([
+      'uri' => 'public://galeria-de-prueba.jpg',
+      'filename' => 'galeria-de-prueba.jpg',
+      'status' => 1,
+    ]);
+    $archivo->save();
     return $this->crearNodo('programa', [
       'title' => 'Programa de prueba',
       'field_clave' => 'programa-de-prueba',
@@ -255,6 +284,7 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
       'field_nivel' => 'pregrado',
       'field_director' => 'Persona Uno',
       'field_codigo_snies' => '1234',
+      'field_galeria' => [['target_id' => $archivo->id(), 'alt' => 'Imagen de prueba']],
     ]);
   }
 
@@ -268,6 +298,8 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
       'status' => 1,
       'field_version' => '1',
       'field_proceso' => $proceso ?: NULL,
+      // Un documento lleva archivo o enlace (Fase 9, etapa 1).
+      'field_enlace' => ['uri' => 'https://example.org/informe-de-prueba'],
     ]);
     $medio->save();
     return $medio;
@@ -388,9 +420,11 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     foreach (['field_clave', 'uid', 'created', 'path', 'langcode', 'promote', 'sticky'] as $campo) {
       $this->assertArrayNotHasKey($campo, $ficha['content'], $campo);
     }
-    foreach (['uid', 'created', 'path', 'langcode', 'field_enlace'] as $campo) {
+    foreach (['uid', 'created', 'path', 'langcode'] as $campo) {
       $this->assertArrayNotHasKey($campo, $documento['content'], $campo);
     }
+    // El enlace externo sí está (Fase 9, etapa 1): archivo o enlace.
+    $this->assertArrayHasKey('field_enlace', $documento['content']);
     // Las pantallas completas no se tocaron: siguen con sus campos
     // administrativos.
     $completa = $this->configuracion('core.entity_form_display.node.programa.default');
@@ -545,9 +579,11 @@ class FormulariosSimplesTest extends UnillanosKernelTestBase {
     foreach (self::CAMPOS_DOCUMENTO as $campo) {
       $this->assertArrayHasKey($campo, $formulario, $campo);
     }
-    foreach (['uid', 'created', 'path', 'langcode', 'field_enlace'] as $campo) {
+    foreach (['uid', 'created', 'path', 'langcode'] as $campo) {
       $this->assertOculto($formulario, $campo);
     }
+    // El enlace externo y el selector «¿Qué va a cargar?» sí se ven.
+    $this->assertNotFalse($formulario['field_enlace']['#access'] ?? TRUE);
     $estado = $this->enviar($medio, [
       'name' => [['value' => 'Informe de prueba 2']],
       'field_version' => [['value' => '2']],
